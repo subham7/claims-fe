@@ -334,78 +334,8 @@ const SettingsInfo = ({
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid item md={3}>
-                  {tokenType === "erc721" ? (
-                    <>
-                      {!daoDetails.isGovernance ? (
-                        // <Grid item ml={4} mt={1} mb={2}>
-                        <Stack spacing={1}>
-                          <Typography variant="settingText">
-                            NFTs Minted so far
-                          </Typography>
-                          <Typography
-                            variant="p"
-                            className={classes.valuesStyle}>
-                            {daoDetails.nftMinted !== null ? (
-                              daoDetails.nftMinted
-                            ) : (
-                              <Skeleton
-                                variant="rectangular"
-                                width={100}
-                                height={25}
-                              />
-                            )}
-                          </Typography>
-                        </Stack>
-                      ) : (
-                        // </Grid>
-                        ""
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      <Grid container direction="column">
-                        <Grid item>
-                          <Typography variant="settingText">
-                            Your ownership
-                          </Typography>
-                        </Grid>
-                        <Grid item mt={2}>
-                          <Typography
-                            variant="p"
-                            className={classes.valuesStyle}>
-                            {daoDetails.balanceOfClubToken !== null &&
-                            daoDetails.clubTokensMinted !== null &&
-                            isNaN(
-                              Number(
-                                (daoDetails.balanceOfClubToken /
-                                  convertFromWeiGovernance(
-                                    daoDetails.clubTokensMinted,
-                                    18,
-                                  )) *
-                                  100,
-                              ).toFixed(2),
-                            )
-                              ? 0
-                              : Number(
-                                  (daoDetails.balanceOfClubToken /
-                                    convertFromWeiGovernance(
-                                      daoDetails.clubTokensMinted,
-                                      18,
-                                    )) *
-                                    100,
-                                ).toFixed(2)}
-                            % <br />({daoDetails.balanceOfClubToken}{" "}
-                            {daoDetails.daoSymbol})
-                          </Typography>
-                        </Grid>
-                      </Grid>
-                    </>
-                  )}
-                </Grid>
                 {daoDetails.isGovernance ? (
                   <>
-                    {" "}
                     <Grid item md={3}>
                       <Grid container direction="column">
                         <Grid item>
@@ -457,7 +387,7 @@ const SettingsInfo = ({
                   </>
                 ) : (
                   <>
-                    {!daoDetails.isGovernance && tokenType === "erc721" && (
+                    {tokenType === "erc721" && (
                       <Grid item md={3}>
                         <Grid container direction="column">
                           <Grid item>
@@ -473,7 +403,13 @@ const SettingsInfo = ({
                                 daoDetails.isTotalSupplyUnlimited ? (
                                   "Unlimited"
                                 ) : (
-                                  daoDetails.distributionAmt
+                                  (
+                                    daoDetails.distributionAmt *
+                                    convertFromWeiGovernance(
+                                      daoDetails.pricePerToken,
+                                      6,
+                                    )
+                                  ).toFixed(3)
                                 )
                               ) : (
                                 <Skeleton
@@ -492,167 +428,155 @@ const SettingsInfo = ({
               </Grid>
             </Paper>
 
-            <>
-              <Grid item mx={1} mt={4} mb={2}>
-                {walletAddress &&
-                tokenType === "erc721" &&
-                !daoDetails.isTotalSupplyUnlimited ? (
-                  <>
-                    <ProgressBar
-                      value={calculateTreasuryTargetShare(
-                        daoDetails.nftMinted,
-                        daoDetails.distributionAmt,
-                      )}
-                    />
-                  </>
-                ) : tokenType === "erc721" &&
-                  daoDetails.isTotalSupplyUnlimited ? null : walletAddress &&
-                  daoDetails.clubTokensMinted ? (
+            <Grid item mx={1} mt={4} mb={2}>
+              {walletAddress &&
+              tokenType === "erc721" &&
+              !daoDetails.isTotalSupplyUnlimited ? (
+                <>
                   <ProgressBar
-                    value={
-                      Number(
-                        convertFromWeiGovernance(
-                          +daoDetails.clubTokensMinted,
-                          +daoDetails.decimals,
-                        ) *
-                          Number(
-                            convertFromWeiGovernance(
-                              +daoDetails.pricePerToken,
-                              +erc20TokenDetails.tokenDecimal,
-                            ),
-                          ) *
-                          100,
-                      ) /
-                      Number(
-                        convertFromWeiGovernance(
-                          +daoDetails.totalSupply.toFixed(0),
-                          +erc20TokenDetails.tokenDecimal,
-                        ),
-                      )
-                    }
-                  />
-                ) : (
-                  <Skeleton variant="rectangular" />
-                )}
-              </Grid>
-
-              <Grid container spacing={2}>
-                {tokenType === "erc721" ? (
-                  <>
-                    {daoDetails.isGovernance && (
-                      <Grid item ml={1} mt={1} mb={2}>
-                        <Stack spacing={1}>
-                          <Typography variant="settingText">
-                            NFTs Minted so far
-                          </Typography>
-                          <Typography
-                            variant="p"
-                            className={classes.valuesStyle}>
-                            {daoDetails.nftMinted !== null ? (
-                              daoDetails.nftMinted
-                            ) : (
-                              <Skeleton
-                                variant="rectangular"
-                                width={100}
-                                height={25}
-                              />
-                            )}
-                          </Typography>
-                        </Stack>
-                      </Grid>
+                    value={calculateTreasuryTargetShare(
+                      daoDetails.nftMinted,
+                      daoDetails.distributionAmt,
                     )}
-                  </>
-                ) : (
-                  <Grid item ml={1} mt={1} mb={2}>
-                    <Stack spacing={1}>
-                      <Typography variant="settingText">
-                        Amount raised so far
-                      </Typography>
-                      <Typography variant="p" className={classes.valuesStyle}>
-                        {walletAddress ? (
+                  />
+                </>
+              ) : tokenType === "erc721" &&
+                daoDetails.isTotalSupplyUnlimited ? null : walletAddress &&
+                daoDetails.clubTokensMinted ? (
+                <ProgressBar
+                  value={
+                    Number(
+                      convertFromWeiGovernance(
+                        +daoDetails.clubTokensMinted,
+                        +daoDetails.decimals,
+                      ) *
+                        Number(
                           convertFromWeiGovernance(
-                            daoDetails.clubTokensMinted,
-                            daoDetails.decimals,
-                          ) *
-                            convertFromWeiGovernance(
-                              daoDetails.pricePerToken,
-                              erc20TokenDetails.tokenDecimal,
-                            ) +
-                          " $USDC"
-                        ) : (
-                          <Skeleton
-                            variant="rectangular"
-                            width={100}
-                            height={25}
-                          />
-                        )}
-                      </Typography>
-                    </Stack>
-                  </Grid>
-                )}
+                            +daoDetails.pricePerToken,
+                            +erc20TokenDetails.tokenDecimal,
+                          ),
+                        ) *
+                        100,
+                    ) /
+                    Number(
+                      convertFromWeiGovernance(
+                        +daoDetails.totalSupply.toFixed(0),
+                        +erc20TokenDetails.tokenDecimal,
+                      ),
+                    )
+                  }
+                />
+              ) : (
+                <Skeleton variant="rectangular" />
+              )}
+            </Grid>
 
-                <Grid
-                  item
-                  ml={1}
-                  mt={1}
-                  mb={2}
-                  mr={1}
-                  xs
-                  sx={{ display: "flex", justifyContent: "flex-end" }}>
+            <Grid container spacing={2}>
+              {tokenType === "erc721" ? (
+                <Grid item ml={1} mt={1} mb={2}>
                   <Stack spacing={1}>
                     <Typography variant="settingText">
-                      {tokenType === "erc721"
-                        ? "Total NFT Supply"
-                        : "Total Raise Amount"}
+                      NFTs Minted so far
                     </Typography>
-
-                    {tokenType === "erc721" ? (
-                      <>
-                        {daoDetails.isGovernance && (
-                          <Typography
-                            textAlign="right"
-                            variant="p"
-                            className={classes.valuesStyle}>
-                            {daoDetails.totalNftSupply !== null ? (
-                              daoDetails.isTotalSupplyUnlimited ? (
-                                "Unlimited"
-                              ) : (
-                                daoDetails.distributionAmt
-                              )
-                            ) : (
-                              <Skeleton
-                                variant="rectangular"
-                                width={100}
-                                height={25}
-                              />
-                            )}{" "}
-                          </Typography>
-                        )}
-                      </>
-                    ) : (
-                      <Typography
-                        textAlign="right"
-                        variant="p"
-                        className={classes.valuesStyle}>
-                        {daoDetails.totalSupply ? (
-                          convertFromWeiGovernance(
-                            daoDetails.totalSupply.toFixed(0),
-                            erc20TokenDetails.tokenDecimal,
-                          ) +
-                          (" $" + erc20TokenDetails.tokenSymbol)
-                        ) : (
-                          <Skeleton
-                            variant="rectangular"
-                            width={100}
-                            height={25}
-                          />
-                        )}
-                      </Typography>
-                    )}
+                    <Typography variant="p" className={classes.valuesStyle}>
+                      {daoDetails.nftMinted !== null ? (
+                        daoDetails.nftMinted
+                      ) : (
+                        <Skeleton
+                          variant="rectangular"
+                          width={100}
+                          height={25}
+                        />
+                      )}
+                    </Typography>
                   </Stack>
                 </Grid>
+              ) : (
+                <Grid item ml={1} mt={1} mb={2}>
+                  <Stack spacing={1}>
+                    <Typography variant="settingText">
+                      Amount raised so far
+                    </Typography>
+                    <Typography variant="p" className={classes.valuesStyle}>
+                      {walletAddress ? (
+                        convertFromWeiGovernance(
+                          daoDetails.clubTokensMinted,
+                          daoDetails.decimals,
+                        ) *
+                          convertFromWeiGovernance(
+                            daoDetails.pricePerToken,
+                            erc20TokenDetails.tokenDecimal,
+                          ) +
+                        " $USDC"
+                      ) : (
+                        <Skeleton
+                          variant="rectangular"
+                          width={100}
+                          height={25}
+                        />
+                      )}
+                    </Typography>
+                  </Stack>
+                </Grid>
+              )}
+
+              <Grid
+                item
+                ml={1}
+                mt={1}
+                mb={2}
+                mr={1}
+                xs
+                sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <Stack spacing={1}>
+                  <Typography variant="settingText">
+                    {tokenType === "erc721"
+                      ? "Total NFT Supply"
+                      : "Total Raise Amount"}
+                  </Typography>
+
+                  {tokenType === "erc721" ? (
+                    <Typography
+                      textAlign="right"
+                      variant="p"
+                      className={classes.valuesStyle}>
+                      {daoDetails.totalNftSupply !== null ? (
+                        daoDetails.isTotalSupplyUnlimited ? (
+                          "Unlimited"
+                        ) : (
+                          daoDetails.distributionAmt
+                        )
+                      ) : (
+                        <Skeleton
+                          variant="rectangular"
+                          width={100}
+                          height={25}
+                        />
+                      )}{" "}
+                    </Typography>
+                  ) : (
+                    <Typography
+                      textAlign="right"
+                      variant="p"
+                      className={classes.valuesStyle}>
+                      {daoDetails.totalSupply ? (
+                        convertFromWeiGovernance(
+                          daoDetails.totalSupply.toFixed(0),
+                          erc20TokenDetails.tokenDecimal,
+                        ) +
+                        (" $" + erc20TokenDetails.tokenSymbol)
+                      ) : (
+                        <Skeleton
+                          variant="rectangular"
+                          width={100}
+                          height={25}
+                        />
+                      )}
+                    </Typography>
+                  )}
+                </Stack>
               </Grid>
-            </>
+            </Grid>
           </Card>
           <br />
         </Grid>
