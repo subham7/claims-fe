@@ -9,8 +9,8 @@ import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 import ERC20 from "@components/depositPageComps/ERC20/ERC20";
-import ERC721 from "@components/depositPageComps/ERC721/Erc721";
 import BackdropLoader from "@components/common/BackdropLoader";
+import ERC721 from "@components/depositPageComps/ERC721/ERC721";
 
 const Join = ({ daoAddress }) => {
   const [daoDetails, setDaoDetails] = useState({
