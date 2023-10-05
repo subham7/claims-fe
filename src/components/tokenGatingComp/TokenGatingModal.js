@@ -63,7 +63,7 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
 
   return (
     <>
-      <BackdropLoader isOpen={true} forLoading={false}>
+      <BackdropLoader isOpen={true} showLoading={false}>
         <div className={classes.container}>
           <form className={classes.form}>
             <div>

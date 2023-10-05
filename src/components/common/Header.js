@@ -3,6 +3,16 @@ import React from "react";
 import classes from "../claims/Claim.module.scss";
 import { formatEpochTime } from "utils/helper";
 
+const HeaderShimmer = () => {
+  return (
+    <>
+      <Skeleton width={100} height={30} />
+      <Skeleton width={150} height={50} />
+      <Skeleton variant="text" width={450} />
+    </>
+  );
+};
+
 const Header = ({
   contractData,
   isActive,
@@ -31,38 +41,26 @@ const Header = ({
     return classes.inactive;
   };
 
-  const HeaderShimmer = () => {
-    return (
-      <>
-        <Skeleton width={100} height={30} />
-        <Skeleton width={150} height={50} />
-        <Skeleton variant="text" width={450} />
-      </>
-    );
-  };
+  if (!tokenDetails?.tokenSymbol || !contractData) {
+    return <HeaderShimmer />;
+  }
 
   return (
     <>
-      {tokenDetails?.tokenSymbol && contractData ? (
-        <>
-          <h1>{isDeposit ? contractData?.name : tokenDetails?.tokenSymbol}</h1>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-            }}>
-            <Typography variant="inherit" className={getStatusClassName()}>
-              {getStatusText()}
-            </Typography>
-            <Typography variant="inherit" className={classes.endTime}>
-              | Closes in {formatEpochTime(deadline)}
-            </Typography>
-          </div>
-        </>
-      ) : (
-        <HeaderShimmer />
-      )}
+      <h1>{isDeposit ? contractData?.name : tokenDetails?.tokenSymbol}</h1>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+        }}>
+        <Typography variant="inherit" className={getStatusClassName()}>
+          {getStatusText()}
+        </Typography>
+        <Typography variant="inherit" className={classes.endTime}>
+          | Closes in {formatEpochTime(deadline)}
+        </Typography>
+      </div>
     </>
   );
 };

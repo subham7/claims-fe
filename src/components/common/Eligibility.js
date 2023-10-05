@@ -55,6 +55,7 @@ const Eligibility = ({
     getClaimInfo(claimType, contractData, tokenDetails);
 
   let gatedTokenText = "";
+
   const getGatedTokenValue = (amount, decimal) => {
     return decimal > 0 ? convertFromWeiGovernance(amount, decimal) : amount;
   };
@@ -87,6 +88,7 @@ const Eligibility = ({
       ? gatedTokenText
       : "Everyone can join"
     : defaultDisplayText;
+
   const description = isDeposit
     ? isWhitelist
       ? "Only allowlisted users by the creator can join this station."

@@ -46,7 +46,7 @@ const DepositOwnerFee = ({ updateOwnerFeesHandler, onClose, loading }) => {
 
   return (
     <>
-      <BackdropLoader isOpen={true} forLoading={false}>
+      <BackdropLoader isOpen={true} showLoading={false}>
         <div className={classes.container}>
           <Typography
             sx={{ textAlign: "left", fontSize: "24px", marginBottom: "8px" }}>

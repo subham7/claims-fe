@@ -60,7 +60,7 @@ const UploadDocModal = ({
 
   return (
     <>
-      <BackdropLoader forLoading={false} isOpen={true}>
+      <BackdropLoader showLoading={false} isOpen={true}>
         <div className={classes.modal}>
           <div className={classes.heading}>
             <h2>Sign & upload W-8BEN</h2>

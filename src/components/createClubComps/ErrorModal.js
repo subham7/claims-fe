@@ -45,7 +45,7 @@ const ErrorModal = ({ isSignRejected = false, isError = false }) => {
   const classes = useStyles();
   return (
     <>
-      <BackdropLoader isOpen={true} forLoading={false}>
+      <BackdropLoader isOpen={true} showLoading={false}>
         <div className={classes.modal}>
           <div>
             <h2 className={classes.title}>Error</h2>

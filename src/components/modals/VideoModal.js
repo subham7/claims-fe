@@ -34,7 +34,7 @@ const VideoModal = ({ onClose }) => {
 
   return (
     <>
-      <BackdropLoader isOpen={true} forLoading={false}>
+      <BackdropLoader isOpen={true} showLoading={false}>
         <div className={classes.modal}>
           <IoMdClose
             onClick={onClose}

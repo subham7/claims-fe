@@ -462,6 +462,7 @@ const Claim = ({ claimAddress }) => {
 
         <SocialButtons data={claimGeneralInfo} />
       </section>
+
       <section className={classes.rightContainer}>
         <div className={classes.bannerContainer}>
           {claimGeneralInfo?.imageLinks?.banner ? (

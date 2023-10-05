@@ -15,22 +15,22 @@ const About = ({ bio }) => {
           __html: ReactHtmlParser(showMore ? bio : bio.slice(0, 200)),
         }}></div>
 
-      {bio.length > 200 && (
-        <p
+      {bio.length > 200 ? (
+        <div
           className={classes.showMore}
           onClick={() => {
             setShowMore(!showMore);
           }}>
-          <span>
+          <div>
             {showMore ? (
               <BiSolidUpArrow size={13} />
             ) : (
               <BiSolidDownArrow size={13} />
             )}
-          </span>
+          </div>
           {showMore ? "Read Less" : "Read More"}
-        </p>
-      )}
+        </div>
+      ) : null}
     </>
   );
 };

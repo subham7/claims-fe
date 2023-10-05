@@ -227,6 +227,22 @@ const ERC20 = ({
     }
   };
 
+  const isDepositDisabled = () => {
+    return (
+      !isSigned ||
+      !isW8BenSigned ||
+      (remainingDays >= 0 && remainingTimeInSecs > 0 && isTokenGated
+        ? !isEligibleForTokenGating
+        : remainingDays >= 0 && remainingTimeInSecs > 0
+        ? false
+        : true) ||
+      +clubData?.raiseAmount <= +clubData?.totalAmountRaised ||
+      +remainingClaimAmount <= 0 ||
+      (whitelistUserData?.setWhitelist === true &&
+        whitelistUserData?.proof === null)
+    );
+  };
+
   useEffect(() => {
     fetchDocs();
   }, [daoAddress, depositConfig?.uploadDocId]);
@@ -267,26 +283,17 @@ const ERC20 = ({
             onIsW8BenSignedChange={handleIsW8BenSignedChange}
           />
           <DepositInput
-            clubData={clubData}
-            isTokenGated={isTokenGated}
-            isEligibleForTokenGating={isEligibleForTokenGating}
-            remainingDays={remainingDays}
-            remainingTimeInSecs={remainingTimeInSecs}
-            whitelistUserData={whitelistUserData}
             formik={formik}
             tokenDetails={tokenDetails}
-            remainingClaimAmount={remainingClaimAmount}
-            isSigned={isSigned}
-            isW8BenSigned={isW8BenSigned}
+            isDisabled={isDepositDisabled()}
           />
           <DepositDetails contractData={clubData} tokenDetails={tokenDetails} />
         </div>
-        <SocialButtons isDeposit={true} data={clubInfo} />
+        <SocialButtons data={clubInfo} />
       </section>
 
       <section className={classes.rightContainer}>
         <div className={classes.bannerContainer}>
-          {/* {generalInfo?.imageLinks?.banner ? ( */}
           <div className={classes.imageContainer}>
             <Image
               src={"/assets/images/tempBanner.jpg"}
@@ -294,7 +301,6 @@ const ERC20 = ({
               alt="Banner Image"
             />
           </div>
-          {/* ) : null} */}
         </div>
 
         <DepositProgress clubData={clubData} tokenDetails={tokenDetails} />

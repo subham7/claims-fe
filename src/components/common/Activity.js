@@ -42,28 +42,26 @@ const DepositorActivity = ({ member }) => (
 );
 
 const Activity = ({ activityDetails, tokenDetails, isDeposit = false }) => {
-  const Activities = activityDetails.length ? (
-    isDeposit ? (
-      activityDetails.map((member) => (
-        <DepositorActivity key={member?.userAddress} member={member} />
-      ))
-    ) : (
-      activityDetails.map((activity, index) => (
-        <ClaimerActivity
-          key={index}
-          activity={activity}
-          tokenDetails={tokenDetails}
-        />
-      ))
-    )
-  ) : (
-    <Typography variant="inherit">No activities as of now!</Typography>
-  );
-
   return (
     <div>
       <h3 className={classes.header}>Activity</h3>
-      <div className={classes.activities}>{Activities}</div>
+      <div className={classes.activities}>
+        {activityDetails.length ? (
+          activityDetails.map((activity, index) =>
+            isDeposit ? (
+              <DepositorActivity key={index} member={activity} />
+            ) : (
+              <ClaimerActivity
+                key={index}
+                activity={activity}
+                tokenDetails={tokenDetails}
+              />
+            ),
+          )
+        ) : (
+          <Typography variant="inherit">No activities as of now!</Typography>
+        )}
+      </div>
     </div>
   );
 };

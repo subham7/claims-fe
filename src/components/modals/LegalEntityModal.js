@@ -125,7 +125,7 @@ const LegalEntityModal = ({
 
   return (
     <>
-      <BackdropLoader forLoading={false} isOpen={true}>
+      <BackdropLoader showLoading={false} isOpen={true}>
         <div className={classes.modal}>
           <div className={classes.relative}>
             <h2 className={classes.title}>

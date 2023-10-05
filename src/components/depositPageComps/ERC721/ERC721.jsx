@@ -260,9 +260,7 @@ const ERC721 = ({
           />
         </div>
 
-        <div>
-          <SocialButtons isDeposit={true} data={clubInfo} />
-        </div>
+        <SocialButtons data={clubInfo} />
       </section>
 
       <section className={classes.rightContainer}>

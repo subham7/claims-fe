@@ -78,7 +78,7 @@ const WrongNetworkModal = ({ chainId = "0x89" }) => {
 
   return (
     <>
-      <BackdropLoader isOpen={true} forLoading={false}>
+      <BackdropLoader isOpen={true} showLoading={false}>
         <div className={classes.modal}>
           <p className={classes.text}>
             Oops! Looks like you’re on a different network.
