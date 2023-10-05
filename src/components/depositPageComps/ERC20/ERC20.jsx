@@ -1,15 +1,8 @@
-import About from "@components/common/About";
-import Eligibility from "@components/common/Eligibility";
-import Header from "@components/common/Header";
-import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { queryLatestMembersFromSubgraph } from "utils/stationsSubgraphHelper";
-import classes from "../../../components/claims/Claim.module.scss";
 import dayjs from "dayjs";
-import SocialButtons from "@components/common/SocialButtons";
 import DepositInput from "./DepositInput";
-import DepositPreRequisites from "../DepositPreRequisites";
 import { useFormik } from "formik";
 import {
   convertFromWeiGovernance,
@@ -21,11 +14,29 @@ import useAppContractMethods from "hooks/useAppContractMethods";
 import { useAccount } from "wagmi";
 import { useRouter } from "next/router";
 import DepositDetails from "./DepositDetails";
-import DepositProgress from "./DepositProgress";
-import CustomAlert from "@components/common/CustomAlert";
 import { getDocumentsByClubId } from "api/document";
-import BackdropLoader from "@components/common/BackdropLoader";
-import Activity from "@components/common/Activity";
+import PublicPageLayout from "@components/common/PublicPageLayout";
+import DepositPreRequisites from "../DepositPreRequisites";
+
+const DepositInputComponents = ({
+  formik,
+  tokenDetails,
+  isDepositDisabled,
+  clubData,
+  depositPreRequisitesProps,
+}) => {
+  return (
+    <>
+      <DepositPreRequisites {...depositPreRequisitesProps} />
+      <DepositInput
+        formik={formik}
+        tokenDetails={tokenDetails}
+        isDisabled={isDepositDisabled}
+      />
+      <DepositDetails contractData={clubData} tokenDetails={tokenDetails} />
+    </>
+  );
+};
 
 const ERC20 = ({
   clubInfo,
@@ -266,69 +277,46 @@ const ERC20 = ({
   }, [day2, day1]);
 
   return (
-    <main className={classes.main}>
-      <section className={classes.leftContainer}>
-        <div>
-          <Header
-            contractData={clubData}
-            isActive={active}
-            tokenDetails={tokenDetails}
-            deadline={daoDetails.depositDeadline}
-            isDeposit={true}
-          />
-          <DepositPreRequisites
-            daoAddress={daoAddress}
-            uploadedDocInfo={uploadedDocInfo}
-            onIsSignedChange={handleIsSignedChange}
-            onIsW8BenSignedChange={handleIsW8BenSignedChange}
-          />
-          <DepositInput
-            formik={formik}
-            tokenDetails={tokenDetails}
-            isDisabled={isDepositDisabled()}
-          />
-          <DepositDetails contractData={clubData} tokenDetails={tokenDetails} />
-        </div>
-        <SocialButtons data={clubInfo} />
-      </section>
-
-      <section className={classes.rightContainer}>
-        <div className={classes.bannerContainer}>
-          <div className={classes.imageContainer}>
-            <Image
-              src={"/assets/images/tempBanner.jpg"}
-              fill
-              alt="Banner Image"
-            />
-          </div>
-        </div>
-
-        <DepositProgress clubData={clubData} tokenDetails={tokenDetails} />
-
-        {clubInfo?.bio && <About bio={clubInfo?.bio} />}
-
-        {clubData && (
-          <Eligibility
-            gatedTokenDetails={gatedTokenDetails}
-            isDeposit={true}
-            isTokenGated={isTokenGated}
-            isWhitelist={whitelistUserData?.setWhitelist}
-          />
-        )}
-
-        <Activity
-          isDeposit={true}
-          activityDetails={members}
+    <PublicPageLayout
+      clubData={clubData}
+      tokenDetails={tokenDetails}
+      headerProps={{
+        contractData: clubData,
+        deadline: daoDetails?.depositDeadline,
+        tokenDetails: tokenDetails,
+        isDeposit: true,
+        isActive: active,
+      }}
+      inputComponents={
+        <DepositInputComponents
+          clubData={clubData}
+          formik={formik}
+          isDepositDisabled={isDepositDisabled()}
           tokenDetails={tokenDetails}
+          depositPreRequisitesProps={{
+            uploadedDocInfo: uploadedDocInfo,
+            daoAddress: daoAddress,
+            onIsSignedChange: handleIsSignedChange,
+            onIsW8BenSignedChange: handleIsW8BenSignedChange,
+          }}
         />
-      </section>
-
-      {showMessage ? (
-        <CustomAlert alertMessage={message} severity={depositSuccessfull} />
-      ) : null}
-
-      <BackdropLoader isOpen={loading} />
-    </main>
+      }
+      socialData={clubInfo}
+      imgUrl={"/assets/images/tempBanner.jpg"}
+      isDeposit={true}
+      bio={clubInfo?.bio}
+      eligibilityProps={{
+        gatedTokenDetails: gatedTokenDetails,
+        isDeposit: true,
+        isTokenGated: isTokenGated,
+        isWhitelist: whitelistUserData?.setWhitelist,
+      }}
+      members={members}
+      message={message}
+      isSuccessfull={depositSuccessfull}
+      loading={loading}
+      showMessage={showMessage}
+    />
   );
 };
 

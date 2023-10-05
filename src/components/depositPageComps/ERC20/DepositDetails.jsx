@@ -17,7 +17,7 @@ const Detail = ({
 
   return (
     <div className={classes.detailCard}>
-      <Typography>{renderedValue}</Typography>
+      <Typography variant="inherit">{renderedValue}</Typography>
     </div>
   );
 };

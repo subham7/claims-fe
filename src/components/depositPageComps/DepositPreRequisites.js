@@ -77,9 +77,9 @@ const DepositPreRequisites = ({
 
   if (
     !depositConfig ||
-    depositConfig?.subscriptionDocId === null ||
-    depositConfig?.enableKyc === false ||
-    depositConfig?.uploadDocId === null
+    (depositConfig?.subscriptionDocId === null &&
+      depositConfig?.enableKyc === false &&
+      depositConfig?.uploadDocId === null)
   ) {
     return;
   }
@@ -87,7 +87,7 @@ const DepositPreRequisites = ({
   return (
     <>
       <div className={classes.mainContainer}>
-        <Typography variant="subtitle1">Complete these steps</Typography>
+        <Typography variant="inherit">Complete these steps</Typography>
         {depositConfig?.subscriptionDocId !== null && (
           <div className={classes.stepContainer}>
             {isSigned ? (

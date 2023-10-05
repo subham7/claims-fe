@@ -1,13 +1,6 @@
-import Eligibility from "@components/common/Eligibility";
-import SocialButtons from "@components/common/SocialButtons";
-import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import DepositPreRequisites from "../DepositPreRequisites";
-import DepositProgress from "../ERC20/DepositProgress";
-import classes from "../../../components/claims/Claim.module.scss";
 import { useSelector } from "react-redux";
-import Header from "@components/common/Header";
-import About from "@components/common/About";
 import { getUploadedNFT } from "api/assets";
 import { convertFromWeiGovernance, getImageURL } from "utils/globalFunctions";
 import { queryLatestMembersFromSubgraph } from "utils/stationsSubgraphHelper";
@@ -18,9 +11,16 @@ import { useAccount } from "wagmi";
 import Mint from "./Mint";
 import { useRouter } from "next/router";
 import { getDocumentsByClubId } from "api/document";
-import CustomAlert from "@components/common/CustomAlert";
-import BackdropLoader from "../../common/BackdropLoader";
-import Activity from "@components/common/Activity";
+import PublicPageLayout from "@components/common/PublicPageLayout";
+
+const DepositInputComponents = ({ depositPreRequisitesProps, mintProps }) => {
+  return (
+    <>
+      <DepositPreRequisites {...depositPreRequisitesProps} />
+      <Mint {...mintProps} />
+    </>
+  );
+};
 
 const ERC721 = ({
   daoAddress,
@@ -226,85 +226,57 @@ const ERC721 = ({
   }, [day2, day1, daoDetails?.depositDeadline]);
 
   return (
-    <main className={classes.main}>
-      <section className={classes.leftContainer}>
-        <div>
-          <Header
-            contractData={clubData}
-            deadline={daoDetails?.depositDeadline}
-            tokenDetails={tokenDetails}
-            isDeposit={true}
-            isActive={active}
-          />
-          <DepositPreRequisites
-            uploadedDocInfo={uploadedDocInfo}
-            daoAddress={daoAddress}
-            onIsSignedChange={handleIsSignedChange}
-            onIsW8BenSignedChange={handleIsW8BenSignedChange}
-          />
-
-          <Mint
-            claimNFTHandler={claimNFTHandler}
-            clubData={clubData}
-            count={count}
-            hasClaimed={hasClaimed}
-            remainingDays={remainingDays}
-            remainingTimeInSecs={remainingTimeInSecs}
-            setCount={setCount}
-            balanceOfNft={balanceOfNft}
-            isEligibleForTokenGating={isEligibleForTokenGating}
-            isTokenGated={isTokenGated}
-            whitelistUserData={whitelistUserData}
-            isSigned={isSigned}
-            isW8BenSigned={isW8BenSigned}
-          />
-        </div>
-
-        <SocialButtons data={clubInfo} />
-      </section>
-
-      <section className={classes.rightContainer}>
-        <div className={classes.bannerContainer}>
-          <div className={classes.nftContainer}>
-            <Image
-              src={imgUrl}
-              fill
-              alt="Banner Image"
-              className={classes.nftImage}
-            />
-          </div>
-        </div>
-
-        <DepositProgress
-          nftMinted={daoDetails?.nftMinted}
-          clubData={clubData}
-          tokenDetails={tokenDetails}
+    <PublicPageLayout
+      clubData={clubData}
+      tokenDetails={tokenDetails}
+      headerProps={{
+        contractData: clubData,
+        deadline: daoDetails?.depositDeadline,
+        tokenDetails: tokenDetails,
+        isDeposit: true,
+        isActive: active,
+      }}
+      inputComponents={
+        <DepositInputComponents
+          depositPreRequisitesProps={{
+            uploadedDocInfo: uploadedDocInfo,
+            daoAddress: daoAddress,
+            onIsSignedChange: handleIsSignedChange,
+            onIsW8BenSignedChange: handleIsW8BenSignedChange,
+          }}
+          mintProps={{
+            claimNFTHandler: claimNFTHandler,
+            clubData: clubData,
+            count: count,
+            hasClaimed: hasClaimed,
+            remainingDays: remainingDays,
+            remainingTimeInSecs: remainingTimeInSecs,
+            setCount: setCount,
+            balanceOfNft: balanceOfNft,
+            isEligibleForTokenGating: isEligibleForTokenGating,
+            isTokenGated: isTokenGated,
+            whitelistUserData: whitelistUserData,
+            isSigned: isSigned,
+            isW8BenSigned: isW8BenSigned,
+          }}
         />
-
-        {clubInfo?.bio && <About bio={clubInfo?.bio} />}
-
-        {clubData && (
-          <Eligibility
-            gatedTokenDetails={gatedTokenDetails}
-            isDeposit={true}
-            isTokenGated={isTokenGated}
-            isWhitelist={whitelistUserData?.setWhitelist}
-          />
-        )}
-
-        <Activity
-          isDeposit={true}
-          activityDetails={members}
-          tokenDetails={tokenDetails}
-        />
-      </section>
-
-      {showMessage ? (
-        <CustomAlert alertMessage={message} severity={claimSuccessfull} />
-      ) : null}
-
-      <BackdropLoader isOpen={loading} />
-    </main>
+      }
+      socialData={clubInfo}
+      imgUrl={imgUrl}
+      isDeposit={true}
+      bio={clubInfo?.bio}
+      eligibilityProps={{
+        gatedTokenDetails: gatedTokenDetails,
+        isDeposit: true,
+        isTokenGated: isTokenGated,
+        isWhitelist: whitelistUserData?.setWhitelist,
+      }}
+      members={members}
+      message={message}
+      isSuccessfull={claimSuccessfull}
+      loading={loading}
+      showMessage={showMessage}
+    />
   );
 };
 

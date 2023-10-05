@@ -52,7 +52,7 @@ const Eligibility = ({
 
   const { claimType } = contractData || {};
   const { displayText: defaultDisplayText, description: defaultDescription } =
-    getClaimInfo(claimType, contractData, tokenDetails);
+    !isDeposit && getClaimInfo(claimType, contractData, tokenDetails);
 
   let gatedTokenText = "";
 

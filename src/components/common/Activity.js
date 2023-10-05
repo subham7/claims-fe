@@ -31,11 +31,11 @@ const DepositorActivity = ({ member }) => (
         gap: "8px",
       }}>
       <MetaMaskAvatar address={member?.userAddress} />
-      <Typography>
+      <Typography variant="inherit">
         {shortAddress(member?.userAddress)} joined this station
       </Typography>
     </div>
-    <Typography className={classes.time}>
+    <Typography variant="inherit" className={classes.time}>
       {returnRemainingTime(+member?.timeStamp)} ago
     </Typography>
   </div>

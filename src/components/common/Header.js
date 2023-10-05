@@ -57,9 +57,12 @@ const Header = ({
         <Typography variant="inherit" className={getStatusClassName()}>
           {getStatusText()}
         </Typography>
-        <Typography variant="inherit" className={classes.endTime}>
-          | Closes in {formatEpochTime(deadline)}
-        </Typography>
+
+        {isActive ? (
+          <Typography variant="inherit" className={classes.endTime}>
+            | Closes in {formatEpochTime(deadline)}
+          </Typography>
+        ) : null}
       </div>
     </>
   );

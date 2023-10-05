@@ -15,15 +15,46 @@ import classes from "./Claim.module.scss";
 import useDropsContractMethods from "hooks/useDropsContractMethods";
 import { CircularProgress, Skeleton, Typography } from "@mui/material";
 import { getClaimDetails, getUserProofAndBalance } from "api/claims";
-import Eligibility from "../common/Eligibility";
-import Header from "../common/Header";
 import ClaimInput from "./ClaimInput";
-import Image from "next/image";
-import About from "../common/About";
 import { ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
-import SocialButtons from "../common/SocialButtons";
-import CustomAlert from "@components/common/CustomAlert";
-import Activity from "../common/Activity";
+import PublicPageLayout from "@components/common/PublicPageLayout";
+
+const ClaimInputComponent = ({
+  claimInputProps,
+  buttonProps,
+  claimedPercentage,
+  isClaiming,
+  alreadyClaimed,
+  claimRemaining,
+}) => {
+  return (
+    <>
+      <ClaimInput {...claimInputProps} />
+
+      <Button {...buttonProps}>
+        {isClaiming ? (
+          <CircularProgress size={25} />
+        ) : alreadyClaimed && +claimRemaining === 0 ? (
+          "Claimed"
+        ) : (
+          "Claim"
+        )}
+      </Button>
+
+      <div className={classes.progress}>
+        {+(claimedPercentage >= 0) ? (
+          <Typography variant="inherit">
+            {claimedPercentage.toFixed(3)}% claimed
+          </Typography>
+        ) : (
+          <Skeleton width={300} />
+        )}
+
+        <ProgressBar value={claimedPercentage} />
+      </div>
+    </>
+  );
+};
 
 const Claim = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState();
@@ -412,94 +443,53 @@ const Claim = ({ claimAddress }) => {
   }, [claimAddress, networkId]);
 
   return (
-    <main className={classes.main}>
-      <section className={classes.leftContainer}>
-        <div>
-          <Header
-            contractData={dropsData}
-            hasStarted={hasDropStarted}
-            isActive={isClaimActive}
-            tokenDetails={tokenDetails}
-            deadline={dropsData?.endTime}
-          />
-
-          <ClaimInput
-            inputAmount={claimInput}
-            claimRemaining={claimRemaining}
-            maxClaimableAmount={maxClaimableAmount}
-            maxHandler={maxHandler}
-            setClaimInput={setClaimInput}
-            tokenDetails={tokenDetails}
-            claimsData={claimsData}
-          />
-
-          <Button
-            className={classes.claim}
-            onClick={claimHandler}
-            disabled={isClaimButtonDisabled()}
-            variant="normal">
-            {isClaiming ? (
-              <CircularProgress size={25} />
-            ) : alreadyClaimed && +claimRemaining === 0 ? (
-              "Claimed"
-            ) : (
-              "Claim"
-            )}
-          </Button>
-
-          <div className={classes.progress}>
-            {+(claimedPercentage >= 0) ? (
-              <Typography variant="inherit">
-                {claimedPercentage.toFixed(3)}% claimed
-              </Typography>
-            ) : (
-              <Skeleton width={300} />
-            )}
-
-            <ProgressBar value={claimedPercentage} />
-          </div>
-        </div>
-
-        <SocialButtons data={claimGeneralInfo} />
-      </section>
-
-      <section className={classes.rightContainer}>
-        <div className={classes.bannerContainer}>
-          {claimGeneralInfo?.imageLinks?.banner ? (
-            <div className={classes.imageContainer}>
-              <Image
-                src={claimGeneralInfo?.imageLinks?.banner}
-                fill
-                alt="Banner Image"
-              />
-            </div>
-          ) : null}
-
-          {claimsData ? (
-            <h1>{claimsData?.description}</h1>
-          ) : (
-            <Skeleton height={60} />
-          )}
-        </div>
-
-        {claimGeneralInfo?.description && (
-          <About bio={claimGeneralInfo?.description} />
-        )}
-
-        {claimsData && tokenDetails && (
-          <Eligibility contractData={claimsData} tokenDetails={tokenDetails} />
-        )}
-
-        <Activity
-          activityDetails={activityDetails}
-          tokenDetails={tokenDetails}
+    <PublicPageLayout
+      clubData={dropsData}
+      tokenDetails={tokenDetails}
+      headerProps={{
+        contractData: dropsData,
+        deadline: dropsData?.endTime,
+        tokenDetails: tokenDetails,
+        isActive: isClaimActive,
+        hasStarted: hasDropStarted,
+      }}
+      inputComponents={
+        <ClaimInputComponent
+          claimInputProps={{
+            inputAmount: claimInput,
+            claimRemaining: claimRemaining,
+            maxClaimableAmount: maxClaimableAmount,
+            maxHandler: maxHandler,
+            setClaimInput: setClaimInput,
+            tokenDetails: tokenDetails,
+            claimsData: claimsData,
+          }}
+          alreadyClaimed={alreadyClaimed}
+          buttonProps={{
+            className: classes.claim,
+            onClick: claimHandler,
+            disabled: isClaimButtonDisabled(),
+            variant: "normal",
+          }}
+          claimRemaining={claimRemaining}
+          claimedPercentage={claimedPercentage}
+          isClaiming={isClaiming}
         />
-      </section>
-
-      {showMessage ? (
-        <CustomAlert alertMessage={message} severity={claimed} />
-      ) : null}
-    </main>
+      }
+      socialData={claimGeneralInfo}
+      imgUrl={claimGeneralInfo?.imageLinks?.banner}
+      bio={claimGeneralInfo?.description}
+      eligibilityProps={{
+        contractData: claimsData,
+        tokenDetails: tokenDetails,
+      }}
+      members={activityDetails}
+      message={message}
+      isSuccessfull={claimed}
+      loading={false}
+      showMessage={showMessage}
+      claimDescription={claimsData?.description}
+    />
   );
 };
 

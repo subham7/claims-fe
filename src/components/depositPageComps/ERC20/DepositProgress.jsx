@@ -1,7 +1,19 @@
 import ProgressBar from "@components/progressbar";
 import { Typography } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import React from "react";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
+
+const useStyles = makeStyles({
+  layout: {
+    marginBottom: "20px",
+  },
+  container: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+});
 
 const DepositProgress = ({ clubData, tokenDetails, nftMinted = 0 }) => {
   const {
@@ -11,32 +23,26 @@ const DepositProgress = ({ clubData, tokenDetails, nftMinted = 0 }) => {
     tokenType = "erc20",
   } = clubData;
 
+  const classes = useStyles();
+
   const { tokenDecimal, tokenSymbol } = tokenDetails;
 
   return (
-    <div
-      style={{
-        marginBottom: "20px",
-      }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}>
+    <div className={classes.layout}>
+      <div className={classes.container}>
         {tokenType === "erc721" ? (
-          <Typography>{nftMinted} minted</Typography>
+          <Typography variant="inherit">{nftMinted} minted</Typography>
         ) : (
-          <Typography variant="info" className="tb-mar-1">
+          <Typography variant="inherit" className="tb-mar-1">
             {convertFromWeiGovernance(totalAmountRaised, tokenDecimal)}{" "}
             {tokenSymbol} raised
           </Typography>
         )}
 
         {tokenType === "erc721" ? (
-          <Typography>{distributionAmount} total</Typography>
+          <Typography variant="inherit">{distributionAmount} total</Typography>
         ) : (
-          <Typography>
+          <Typography variant="inherit">
             {convertFromWeiGovernance(raiseAmount, tokenDetails?.tokenDecimal)}{" "}
             {tokenSymbol} total
           </Typography>
