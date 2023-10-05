@@ -7,7 +7,6 @@ import {
   ListItemButton,
   Paper,
   Skeleton,
-  Snackbar,
   Table,
   TableBody,
   TableCell,
@@ -23,7 +22,11 @@ import { useDispatch, useSelector } from "react-redux";
 import CollectionCard from "../../../src/components/cardcontent";
 import { DashboardStyles } from "./DashboardStyles";
 import { useRouter } from "next/router";
-import { getAssetsByDaoAddress, getNFTsByDaoAddress } from "../../api/assets";
+import {
+  getAssetsByDaoAddress,
+  getNFTsByDaoAddress,
+  getUploadedNFT,
+} from "../../api/assets";
 import { getProposalByDaoAddress } from "../../api/proposal";
 import {
   convertFromWeiGovernance,
@@ -68,14 +71,6 @@ const DashboardIndex = ({ daoAddress }) => {
     return state.gnosis.adminUser;
   });
 
-  const SUBGRAPH_URL = useSelector((state) => {
-    return state.gnosis.subgraphUrl;
-  });
-
-  const NETWORK_HEX = useSelector((state) => {
-    return state.gnosis.networkHex;
-  });
-
   const symbol = useSelector((state) => {
     return state.club.clubData.symbol;
   });
@@ -95,11 +90,21 @@ const DashboardIndex = ({ daoAddress }) => {
   const {
     getERC721Balance,
     getNftOwnersCount,
-    getERC20Balance,
+    getDaoBalance,
     getERC20TotalSupply,
   } = useAppContractMethods();
 
-  const { getERC721Symbol } = useCommonContractMethods();
+  const { getTokenSymbol } = useCommonContractMethods();
+
+  const fetchImageUrl = async (daoAddress, clubDataImgUrl) => {
+    let imageUrl = await getUploadedNFT(daoAddress?.toLowerCase());
+
+    if (!imageUrl?.data.length) {
+      imageUrl = await getImageURL(clubDataImgUrl);
+    }
+
+    return imageUrl;
+  };
 
   const fetchClubDetails = useCallback(async () => {
     try {
@@ -110,18 +115,16 @@ const DashboardIndex = ({ daoAddress }) => {
         );
 
         if (clubData && membersData) {
-          if (tokenType === "erc721") {
-            const imageUrl = await getImageURL(clubData?.imgUrl);
+          const clubDetails = {};
 
-            setClubDetails({
-              clubImageUrl: imageUrl,
-              noOfMembers: membersData?.users?.length,
-            });
-          } else {
-            setClubDetails({
-              noOfMembers: membersData?.users?.length,
-            });
+          if (tokenType === "erc721") {
+            const imageUrl = await fetchImageUrl(daoAddress, clubData?.imgUrl);
+            clubDetails.clubImageUrl = imageUrl?.data[0]?.imageUrl;
           }
+
+          clubDetails.noOfMembers = membersData?.users?.length;
+
+          setClubDetails(clubDetails);
         }
       }
     } catch (error) {
@@ -131,10 +134,10 @@ const DashboardIndex = ({ daoAddress }) => {
 
   const fetchAssets = useCallback(async () => {
     try {
-      if (NETWORK_HEX !== "undefined") {
+      if (networkId !== "undefined") {
         const assetsData = await getAssetsByDaoAddress(
           gnosisAddress,
-          NETWORK_HEX,
+          networkId,
         );
         setTokenDetails({
           treasuryAmount: assetsData?.data?.treasuryAmount,
@@ -144,25 +147,17 @@ const DashboardIndex = ({ daoAddress }) => {
     } catch (error) {
       console.log(error);
     }
-  }, [NETWORK_HEX, gnosisAddress]);
+  }, [networkId, gnosisAddress]);
 
   const fetchNfts = useCallback(async () => {
     try {
-      const nftsData = await getNFTsByDaoAddress(
-        factoryData.assetsStoredOnGnosis ? gnosisAddress : daoAddress,
-        NETWORK_HEX,
-      );
+      const nftsData = await getNFTsByDaoAddress(gnosisAddress, networkId);
       setNftData(nftsData.data);
       dispatch(addNftsOwnedByDao(nftsData.data));
     } catch (error) {
       console.log(error);
     }
-  }, [
-    NETWORK_HEX,
-    daoAddress,
-    factoryData.assetsStoredOnGnosis,
-    gnosisAddress,
-  ]);
+  }, [networkId, daoAddress, factoryData.assetsStoredOnGnosis, gnosisAddress]);
 
   const fetchActiveProposals = useCallback(async () => {
     try {
@@ -176,7 +171,7 @@ const DashboardIndex = ({ daoAddress }) => {
   const handleCopy = () => {
     navigator.clipboard.writeText(
       typeof window !== "undefined" && window.location.origin
-        ? `${window.location.origin}/join/${daoAddress}`
+        ? `${window.location.origin}/join/${daoAddress}/${networkId}`
         : null,
     );
   };
@@ -198,18 +193,20 @@ const DashboardIndex = ({ daoAddress }) => {
   };
 
   useEffect(() => {
-    if (NETWORK_HEX) {
+    if (networkId) {
       fetchClubDetails();
       fetchAssets();
-      fetchNfts();
+      if (gnosisAddress) fetchNfts();
+
       fetchActiveProposals();
     }
   }, [
     fetchClubDetails,
     fetchNfts,
     fetchAssets,
-    NETWORK_HEX,
+    networkId,
     fetchActiveProposals,
+    gnosisAddress,
   ]);
 
   useEffect(() => {
@@ -217,9 +214,9 @@ const DashboardIndex = ({ daoAddress }) => {
       if (daoAddress) {
         const loadNftContractData = async () => {
           try {
-            const nftBalance = await getERC721Balance();
+            const nftBalance = await getDaoBalance(daoAddress, true);
             setBalanceOfUser(nftBalance);
-            const symbol = await getERC721Symbol(daoAddress);
+            const symbol = await getTokenSymbol(daoAddress);
             const nftMinted = await getNftOwnersCount();
             setClubTokenMinted(nftMinted);
           } catch (error) {
@@ -229,7 +226,7 @@ const DashboardIndex = ({ daoAddress }) => {
 
         const loadSmartContractData = async () => {
           try {
-            const balance = await getERC20Balance();
+            const balance = await getDaoBalance(daoAddress);
             //KEEP THIS CONSOLE
             setBalanceOfUser(balance);
             const clubTokensMinted = await getERC20TotalSupply();
@@ -258,9 +255,7 @@ const DashboardIndex = ({ daoAddress }) => {
     clubData.tokenType,
     walletAddress,
     getERC721Balance,
-    getERC721Symbol,
     getNftOwnersCount,
-    getERC20Balance,
     getERC20TotalSupply,
   ]);
 
@@ -339,7 +334,7 @@ const DashboardIndex = ({ daoAddress }) => {
                     <Typography variant="heading">
                       $
                       {tokenDetails ? (
-                        tokenDetails.treasuryAmount
+                        Number(tokenDetails.treasuryAmount).toFixed(3)
                       ) : (
                         <Skeleton
                           variant="rectangular"
@@ -755,22 +750,6 @@ const DashboardIndex = ({ daoAddress }) => {
           </Stack>
         </Grid>
       </Grid>
-
-      <Snackbar
-        //   open={openSnackBar}
-        autoHideDuration={6000}
-        //   onClose={handleSnackBarClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
-        {/* {failed ? (
-              <Alert
-              //   onClose={handleSnackBarClose}
-                severity="error"
-                sx={{ width: "100%" }}
-              >
-                Error fetching data!
-              </Alert>
-            ) : null} */}
-      </Snackbar>
     </>
   );
 };

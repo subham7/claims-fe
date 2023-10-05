@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import {
-  Alert,
   Backdrop,
   Button,
   Card,
@@ -10,7 +9,6 @@ import {
   CircularProgress,
   Divider,
   Grid,
-  Snackbar,
   Stack,
   Typography,
 } from "@mui/material";
@@ -54,6 +52,8 @@ import { BsInfoCircleFill } from "react-icons/bs";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 import { ProposalDetailStyles } from "./ProposalDetailStyles";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
+import CustomAlert from "@components/common/CustomAlert";
 
 const ProposalDetail = ({ pid, daoAddress }) => {
   const classes = ProposalDetailStyles();
@@ -85,10 +85,6 @@ const ProposalDetail = ({ pid, daoAddress }) => {
 
   const isAdmin = useSelector((state) => {
     return state.gnosis.adminUser;
-  });
-
-  const NETWORK_HEX = useSelector((state) => {
-    return state.gnosis.networkHex;
   });
 
   const clubData = useSelector((state) => {
@@ -152,8 +148,10 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     return state.club.factoryData;
   });
 
-  const { getNftBalance, getERC20TotalSupply, updateProposalAndExecution } =
+  const { getERC20TotalSupply, updateProposalAndExecution, getNftOwnersCount } =
     useAppContractMethods();
+
+  const { getBalance } = useCommonContractMethods();
 
   const getSafeService = useCallback(async () => {
     const web3 = await web3InstanceEthereum();
@@ -290,7 +288,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       clubId: daoAddress,
       daoAddress: daoAddress,
     };
-    const voteSubmit = castVote(payload, NETWORK_HEX);
+    const voteSubmit = castVote(payload, networkId);
     voteSubmit.then((result) => {
       if (result.status !== 201) {
         setVoted(false);
@@ -361,13 +359,14 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       airDropAmountArray,
     } = await getEncodedData({
       getERC20TotalSupply,
-      getNftBalance,
+      getBalance,
       proposalData,
       daoAddress,
       clubData,
       factoryData,
       contractABI: ABI,
       setMembers,
+      getNftOwnersCount,
       networkId,
       gnosisAddress,
     });
@@ -465,7 +464,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       pid,
       gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
       gnosisAddress,
-      NETWORK_HEX,
+      networkId,
       daoAddress,
       walletAddress,
       networkId,
@@ -679,7 +678,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
 
           {/* Proposal Info and Signators */}
           <Grid container spacing={2} mt={4} mb={3}>
-            {proposalData && factoryData && (
+            {proposalData && factoryData && proposalData.type !== "survey" && (
               <ProposalExecutionInfo
                 proposalData={proposalData}
                 fetched={fetched}
@@ -840,7 +839,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                     ) : proposalData?.status === "passed" ? (
                       isAdmin ? (
                         <Card>
-                          {proposalData?.cancelProposalId === undefined && (
+                          {proposalData?.cancelProposalId === undefined ? (
                             <Button
                               style={{
                                 width: "100%",
@@ -908,8 +907,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                                 ) : null}
                               </Grid>
                             </Button>
-                          )}
-
+                          ) : null}
                           {(signed ||
                             isRejectTxnSigned ||
                             signedOwners.length) &&
@@ -1207,27 +1205,10 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         </Grid>
       </Grid>
 
-      <Snackbar
-        open={openSnackBar}
-        autoHideDuration={6000}
-        onClose={handleSnackBarClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
-        {!failed ? (
-          <Alert
-            onClose={handleSnackBarClose}
-            severity="success"
-            sx={{ width: "100%" }}>
-            {message}
-          </Alert>
-        ) : (
-          <Alert
-            onClose={handleSnackBarClose}
-            severity="error"
-            sx={{ width: "100%" }}>
-            {message}
-          </Alert>
-        )}
-      </Snackbar>
+      {openSnackBar ? (
+        <CustomAlert alertMessage={message} severity={failed} />
+      ) : null}
+
       <Backdrop
         sx={{ color: "#000", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loaderOpen}>

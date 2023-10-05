@@ -1,10 +1,8 @@
 import {
-  Alert,
   CircularProgress,
   Dialog,
   DialogContent,
   Grid,
-  Snackbar,
   Typography,
 } from "@mui/material";
 import { TextField } from "@components/ui";
@@ -21,6 +19,8 @@ import { createClaimDetails, getClaimDetails } from "api/claims";
 import { FIVE_MB } from "utils/constants";
 import Image from "next/image";
 import { editInfo, getClubInfo } from "api/club";
+import { uploadFileToAWS } from "utils/helper";
+import CustomAlert from "@components/common/CustomAlert";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -82,6 +82,7 @@ const EditDetails = ({
   const [loaderOpen, setLoaderOpen] = useState(false);
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [message, setMessage] = useState("");
   const uploadInputRef = useRef(null);
 
   const [selectedFile, setSelectedFile] = useState("");
@@ -97,31 +98,6 @@ const EditDetails = ({
     }
     setOpenSnackBar(false);
     setLoaderOpen(false);
-  };
-
-  const readFile = async () => {
-    return new Promise(async (resolve, reject) => {
-      const reader = new FileReader();
-      let file;
-      reader.addEventListener("loadend", async () => {
-        console.log({
-          filename: selectFile.name,
-          file: new Blob([reader.result], { type: selectFile.type }),
-        });
-        const res = await fetch(
-          `https://k3hu9vqwv4.execute-api.ap-south-1.amazonaws.com/upload?filename=${selectedFile.name}`,
-          {
-            method: "POST",
-            body: new Blob([reader.result], { type: selectFile.type }),
-          },
-        );
-
-        const data = await res.json();
-        resolve(data?.saveFileResponse?.Location);
-      });
-
-      reader.readAsArrayBuffer(selectedFile);
-    });
   };
 
   const fetchBannerDetails = async () => {
@@ -144,7 +120,7 @@ const EditDetails = ({
 
   const readFileAsync = async () => {
     if (selectedFile) {
-      return await readFile();
+      return await uploadFileToAWS(selectedFile);
     }
     return null;
   };
@@ -179,6 +155,7 @@ const EditDetails = ({
   const updateUIAfterSuccess = async () => {
     setOpenSnackBar(true);
     setFailed(false);
+    setMessage("Details Changed Successfully!");
     setOpen(false);
     setLoaderOpen(false);
     if (isClaims) {
@@ -189,6 +166,7 @@ const EditDetails = ({
 
   const updateUIAfterFailure = () => {
     setOpenSnackBar(true);
+    setMessage("Details Change Failed!");
     setFailed(true);
     setLoaderOpen(false);
   };
@@ -314,7 +292,7 @@ const EditDetails = ({
                 </Button>
                 <input
                   name="banner"
-                  accept=".jpg, .png|image/*"
+                  accept="image/*"
                   type="file"
                   id="select-image"
                   style={{ display: "none" }}
@@ -430,27 +408,9 @@ const EditDetails = ({
         </DialogContent>
       </Dialog>
 
-      <Snackbar
-        open={openSnackBar}
-        autoHideDuration={6000}
-        onClose={handleSnackBarClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
-        {!failed ? (
-          <Alert
-            onClose={handleSnackBarClose}
-            severity="success"
-            sx={{ width: "100%" }}>
-            Details Changed Successfully!
-          </Alert>
-        ) : (
-          <Alert
-            onClose={handleSnackBarClose}
-            severity="error"
-            sx={{ width: "100%" }}>
-            Details Change Failed!
-          </Alert>
-        )}
-      </Snackbar>
+      {openSnackBar ? (
+        <CustomAlert alertMessage={message} severity={failed} />
+      ) : null}
     </>
   );
 };

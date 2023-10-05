@@ -7,19 +7,18 @@ import ClaimEligibility from "@components/claimsInsightComps/ClaimEligibility";
 import ClaimEdit from "@components/claimsInsightComps/ClaimEdit";
 import ToggleClaim from "@components/claimsInsightComps/ToggleClaim";
 import ClaimsTransactions from "@components/claimsInsightComps/ClaimsTransactions";
-import { useRouter } from "next/router";
-import { Alert, Backdrop, CircularProgress } from "@mui/material";
+import { Backdrop, CircularProgress } from "@mui/material";
 import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "utils/globalFunctions";
 import { useNetwork } from "wagmi";
-import useClaimSmartContracts from "hooks/useClaimSmartContracts";
-import useDropsContractMethods from "hooks/useDropsContracMethods";
+import useDropsContractMethods from "hooks/useDropsContractMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { queryDropDetailsFromSubgraph } from "utils/dropsSubgraphHelper";
 import { createSnapShot } from "api/claims";
 import dayjs from "dayjs";
+import CustomAlert from "@components/common/CustomAlert";
 
 const ClaimInsight = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState([]);
@@ -34,11 +33,8 @@ const ClaimInsight = ({ claimAddress }) => {
   const [isSuccessFull, setIsSuccessFull] = useState(false);
 
   const classes = ClaimsInsightStyles();
-  const router = useRouter();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
-
-  useClaimSmartContracts(claimAddress);
 
   const { addMoreTokens, rollbackTokens, modifyStartAndEndTime } =
     useDropsContractMethods();
@@ -251,33 +247,9 @@ const ClaimInsight = ({ claimAddress }) => {
         />
       </section>
 
-      {showMessage && isSuccessFull && (
-        <Alert
-          severity="success"
-          sx={{
-            width: "300px",
-            position: "fixed",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          {message}
-        </Alert>
-      )}
-
-      {showMessage && !isSuccessFull && (
-        <Alert
-          severity="error"
-          sx={{
-            width: "300px",
-            position: "fixed",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          {message}
-        </Alert>
-      )}
+      {showMessage ? (
+        <CustomAlert alertMessage={message} severity={isSuccessFull} />
+      ) : null}
 
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

@@ -146,7 +146,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading, networkId }) => {
     <>
       <Typography
         onClick={() => {
-          router.push(`/claims/${networkId}`);
+          router.push(`/claims/`);
         }}
         className={classes.back}>
         <BsArrowLeft /> Back to claims

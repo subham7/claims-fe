@@ -59,13 +59,6 @@ const SettingsInfo = ({
               container
               spacing={2}
               sx={{ display: "flex", justifyContent: "space-between" }}>
-              {/* <Grid item mt={3} ml={3}>
-                  <img
-                    src={daoDetails.daoImage ?? null}
-                    width="100vw"
-                    alt="profile_pic"
-                  />
-                </Grid> */}
               <Grid item ml={2} mt={4}>
                 <Stack spacing={0}>
                   <Typography variant="h4">
@@ -331,7 +324,7 @@ const SettingsInfo = ({
                       <Typography variant="p" className={classes.valuesStyle}>
                         $
                         {treasuryAmount >= 0 ? (
-                          treasuryAmount
+                          treasuryAmount.toFixed(3)
                         ) : (
                           <Skeleton
                             variant="rectangular"
@@ -482,14 +475,7 @@ const SettingsInfo = ({
                                 daoDetails.isTotalSupplyUnlimited ? (
                                   "Unlimited"
                                 ) : (
-                                  convertFromWeiGovernance(
-                                    daoDetails.distributionAmt,
-                                    18,
-                                  ) *
-                                  convertFromWeiGovernance(
-                                    daoDetails.pricePerToken,
-                                    6,
-                                  )
+                                  daoDetails.distributionAmt
                                 )
                               ) : (
                                 <Skeleton
@@ -517,11 +503,7 @@ const SettingsInfo = ({
                     <ProgressBar
                       value={calculateTreasuryTargetShare(
                         daoDetails.nftMinted,
-                        convertFromWeiGovernance(
-                          daoDetails.distributionAmt,
-                          18,
-                        ) *
-                          convertFromWeiGovernance(daoDetails.pricePerToken, 6),
+                        daoDetails.distributionAmt,
                       )}
                     />
                   </>
@@ -590,16 +572,15 @@ const SettingsInfo = ({
                       </Typography>
                       <Typography variant="p" className={classes.valuesStyle}>
                         {walletAddress ? (
-                          (
-                            convertFromWeiGovernance(
-                              daoDetails.clubTokensMinted,
-                              daoDetails.decimals,
-                            ) *
+                          convertFromWeiGovernance(
+                            daoDetails.clubTokensMinted,
+                            daoDetails.decimals,
+                          ) *
                             convertFromWeiGovernance(
                               daoDetails.pricePerToken,
                               erc20TokenDetails.tokenDecimal,
-                            )
-                          ).toFixed(2) + " $USDC"
+                            ) +
+                          " $USDC"
                         ) : (
                           <Skeleton
                             variant="rectangular"
@@ -621,13 +602,11 @@ const SettingsInfo = ({
                   xs
                   sx={{ display: "flex", justifyContent: "flex-end" }}>
                   <Stack spacing={1}>
-                    {daoDetails.isGovernance && (
-                      <Typography variant="settingText">
-                        {tokenType === "erc721"
-                          ? " Total NFT Supply"
-                          : "Total Raise Amount"}
-                      </Typography>
-                    )}
+                    <Typography variant="settingText">
+                      {tokenType === "erc721"
+                        ? "Total NFT Supply"
+                        : "Total Raise Amount"}
+                    </Typography>
 
                     {tokenType === "erc721" ? (
                       <>
@@ -640,14 +619,7 @@ const SettingsInfo = ({
                               daoDetails.isTotalSupplyUnlimited ? (
                                 "Unlimited"
                               ) : (
-                                convertFromWeiGovernance(
-                                  daoDetails.distributionAmt,
-                                  18,
-                                ) *
-                                convertFromWeiGovernance(
-                                  daoDetails.pricePerToken,
-                                  6,
-                                )
+                                daoDetails.distributionAmt
                               )
                             ) : (
                               <Skeleton
@@ -661,8 +633,7 @@ const SettingsInfo = ({
                       </>
                     ) : (
                       <Typography
-                        textAlign="right
-                        "
+                        textAlign="right"
                         variant="p"
                         className={classes.valuesStyle}>
                         {daoDetails.totalSupply ? (
@@ -677,7 +648,7 @@ const SettingsInfo = ({
                             width={100}
                             height={25}
                           />
-                        )}{" "}
+                        )}
                       </Typography>
                     )}
                   </Stack>

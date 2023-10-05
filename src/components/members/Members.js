@@ -64,13 +64,7 @@ const Members = ({ daoAddress }) => {
   const handleAddressClick = (event, address) => {
     event.preventDefault();
     window.open(
-      `https://${
-        networkId === "0x5"
-          ? "goerli.etherscan.io/"
-          : networkId === "0x89"
-          ? "polygonscan.com"
-          : ""
-      }/address/${address}`,
+      `${CHAIN_CONFIG[networkId].blockExplorerUrl}/address/${address}`,
     );
   };
   useEffect(() => {
@@ -81,8 +75,6 @@ const Members = ({ daoAddress }) => {
           daoAddress,
           20,
           0,
-          deployedTime,
-          Date.now(),
           networkId,
         );
 
@@ -125,8 +117,6 @@ const Members = ({ daoAddress }) => {
         daoAddress,
         20,
         newSkip,
-        1685613616,
-        Date.now(),
         networkId,
       );
 
@@ -158,13 +148,7 @@ const Members = ({ daoAddress }) => {
   };
 
   const MembersValidationSchema = yup.object({
-    startDate: yup
-      .date()
-      .min(
-        deployedTime ? dayjs(deployedTime * 1000) : dayjs(Date.now()),
-        "Date-time must be after the station is deployed.",
-      )
-      .required("Start date is required"),
+    startDate: yup.date().required("Start date is required"),
     endDate: yup
       .date()
       .max(dayjs(Date.now()), "Date-time must be less than now.")
@@ -173,12 +157,12 @@ const Members = ({ daoAddress }) => {
 
   const formik = useFormik({
     initialValues: {
-      startDate: deployedTime ? dayjs(deployedTime * 1000) : dayjs(Date.now()),
+      startDate: deployedTime
+        ? dayjs(deployedTime * 1000)
+        : dayjs(Date.now() - 86400000),
       endDate: dayjs(Date.now()),
     },
-
     validationSchema: MembersValidationSchema,
-
     onSubmit: async (values) => {
       setDownloadLoading(true);
       const membersData = await getAllEntities(
@@ -242,7 +226,6 @@ const Members = ({ daoAddress }) => {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   value={formik.values.startDate}
-                  minDateTime={dayjs(deployedTime * 1000)}
                   onChange={(value) => {
                     formik.setFieldValue("startDate", value);
                   }}

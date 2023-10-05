@@ -1,6 +1,10 @@
 import { createPublicClient, createWalletClient, custom, http } from "viem";
 import { polygon, base, arbitrum, bsc } from "viem/chains";
-import { lineaMainnetWalletConnect, mantleMainnetViem } from "utils/constants";
+import {
+  CHAIN_CONFIG,
+  lineaMainnetWalletConnect,
+  mantleMainnetViem,
+} from "utils/constants";
 
 const viemChains = {
   "0x89": polygon,
@@ -14,7 +18,7 @@ const viemChains = {
 export const getPublicClient = (networkId) => {
   const client = createPublicClient({
     chain: viemChains[networkId],
-    transport: http(),
+    transport: http(CHAIN_CONFIG[networkId]?.appRpcUrl),
   });
 
   return client;

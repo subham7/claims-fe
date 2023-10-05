@@ -5,14 +5,16 @@ import {
   setCreateSafeErrorCode,
   setCreateSafeLoading,
 } from "../redux/reducers/gnosis";
-import Router from "next/router";
-import { createClubData } from "../api/club";
+import { useRouter } from "next/router";
+import { createStation } from "../api/club";
 import useAppContractMethods from "./useAppContractMethods";
 import { ZERO_ADDRESS } from "utils/constants";
-// import { uploadNFT } from "api/assets";
+import { uploadNFT } from "api/assets";
+import { uploadFileToAWS } from "utils/helper";
 
 const useSafe = () => {
   const { createERC721DAO, createERC20DAO } = useAppContractMethods();
+  const router = useRouter();
 
   const initiateConnection = async (
     params,
@@ -23,6 +25,7 @@ const useSafe = () => {
     useStationFor,
     email = "",
     networkId,
+    imageFile = null,
   ) => {
     dispatch(setCreateSafeLoading(true));
     dispatch(setCreateDaoAuthorized(false));
@@ -67,25 +70,31 @@ const useSafe = () => {
             ? value.logs[2].address
             : value.logs[0].address;
 
-        await createClubData({
-          daoAddress,
-          clubType: useStationFor,
-          deployerEmail: email,
+        await createStation({
+          depositConfig: {
+            subscriptionDocId: null,
+            enableKyc: false,
+            uploadDocId: null,
+          },
+          name: params.clubName,
+          daoAddress: daoAddress?.toLowerCase(),
+          safeAddress:
+            params.treasuryAddress === ZERO_ADDRESS
+              ? value.logs[0].address
+              : params.treasuryAddress,
+          networkId,
+          tokenType:
+            clubTokenType === "NFT" ? "erc721" : "erc20NonTransferable",
         });
 
-        // if (clubTokenType === "NFT") {
-        //   const formData = new FormData();
-        //   formData.append("file", imgFile);
-        //   formData.append("daoAddress", daoAddress);
-        //   await uploadNFT(formData);
-        // }
-
-        const { pathname } = Router;
-        if (pathname == "/create") {
-          Router.push(`/dashboard/${daoAddress}/${networkId}`, undefined, {
-            shallow: true,
-          });
+        if (clubTokenType === "NFT") {
+          const imageLink = await uploadFileToAWS(imageFile);
+          await uploadNFT(daoAddress?.toLowerCase(), imageLink);
         }
+
+        router.push(`/dashboard/${daoAddress}/${networkId}`, undefined, {
+          shallow: true,
+        });
       } catch (error) {
         dispatch(setCreateDaoAuthorized(false));
         dispatch(setCreateSafeError(true));

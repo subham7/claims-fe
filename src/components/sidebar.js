@@ -193,25 +193,6 @@ const Sidebar = (props) => {
             </ListItemButton>
           </BootstrapTooltip>
 
-          <BootstrapTooltip title="Settings" placement="left">
-            <ListItemButton
-              component="a"
-              onClick={(e) => {
-                router.push(`/settings/${daoAddress}/${networkId}`, undefined, {
-                  shallow: true,
-                });
-              }}>
-              <ListItemIcon
-                className={
-                  page == 5
-                    ? classes.listItemIconSelected
-                    : classes.listItemIcon
-                }>
-                <SettingsRoundedIcon />
-              </ListItemIcon>
-            </ListItemButton>
-          </BootstrapTooltip>
-
           <BootstrapTooltip title="Documents" placement="left">
             <ListItemButton
               component="a"
@@ -231,6 +212,25 @@ const Sidebar = (props) => {
                     : classes.listItemIcon
                 }>
                 <HiDocumentDuplicate size={30} />
+              </ListItemIcon>
+            </ListItemButton>
+          </BootstrapTooltip>
+
+          <BootstrapTooltip title="Settings" placement="left">
+            <ListItemButton
+              component="a"
+              onClick={(e) => {
+                router.push(`/settings/${daoAddress}/${networkId}`, undefined, {
+                  shallow: true,
+                });
+              }}>
+              <ListItemIcon
+                className={
+                  page == 5
+                    ? classes.listItemIconSelected
+                    : classes.listItemIcon
+                }>
+                <SettingsRoundedIcon />
               </ListItemIcon>
             </ListItemButton>
           </BootstrapTooltip>

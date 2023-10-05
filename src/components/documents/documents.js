@@ -96,7 +96,7 @@ const useStyles = makeStyles({
   },
 });
 
-const Documents = ({ daoAddress }) => {
+const Documents = ({ daoAddress, networkId }) => {
   const classes = useStyles();
   const router = useRouter();
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -110,8 +110,12 @@ const Documents = ({ daoAddress }) => {
     return state.legal.documentList;
   });
 
+  const isAdmin = useSelector((state) => {
+    return state.gnosis.adminUser;
+  });
+
   const createDocHandler = () => {
-    router.push(`/documents/${daoAddress}/create`);
+    router.push(`/documents/${daoAddress}/${networkId}/create`);
   };
 
   // closing legal entity modal
@@ -140,9 +144,12 @@ const Documents = ({ daoAddress }) => {
         <div className={classes.leftDiv}>
           <div className={classes.header}>
             <p className={classes.title}>Documents</p>
-            <button onClick={createDocHandler} className={classes.createDoc}>
-              Create new
-            </button>
+
+            {isAdmin && (
+              <button onClick={createDocHandler} className={classes.createDoc}>
+                Create new
+              </button>
+            )}
           </div>
 
           {docsList?.length ? (
@@ -156,6 +163,7 @@ const Documents = ({ daoAddress }) => {
                   index={index + 1}
                   createdBy={document.createdBy}
                   daoAddress={daoAddress}
+                  networkId={networkId}
                 />
               ))}
             </>
@@ -170,6 +178,7 @@ const Documents = ({ daoAddress }) => {
                   index={index + 1}
                   createdBy={document.createdBy}
                   daoAddress={daoAddress}
+                  networkId={networkId}
                 />
               ))}
             </>
@@ -209,7 +218,8 @@ const Documents = ({ daoAddress }) => {
                 Sign documents within your station
               </Typography>
               <Link
-                href="/"
+                href="https://stationxnetwork.gitbook.io/docs"
+                target={"_blank"}
                 sx={{
                   position: "absolute",
                   color: "#0F0F0F",
@@ -232,6 +242,7 @@ const Documents = ({ daoAddress }) => {
             isInvite={true}
             onClose={closeModalHandler}
             daoAddress={daoAddress}
+            networkId={networkId}
           />
         )}
       </div>

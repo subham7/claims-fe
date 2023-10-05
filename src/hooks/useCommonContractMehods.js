@@ -1,10 +1,9 @@
 import Web3 from "web3";
 import { erc20TokenABI } from "abis/usdcTokenContract.js";
-import { erc721TokenABI } from "abis/nft.js";
 import { convertToWeiGovernance } from "utils/globalFunctions";
 import { useAccount, useNetwork } from "wagmi";
 import { CHAIN_CONFIG } from "utils/constants";
-import { writeContractFunction } from "utils/helper";
+import { readContractFunction, writeContractFunction } from "utils/helper";
 
 const useCommonContractMethods = () => {
   const { address: walletAddress } = useAccount();
@@ -13,60 +12,59 @@ const useCommonContractMethods = () => {
 
   const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
 
-  let web3Send;
-  if (typeof window !== "undefined") {
-    web3Send = new Web3(window.ethereum);
-  }
-
-  const getDecimals = async (contractAddress) => {
-    if (contractAddress) {
-      const erc20TokenContractCall = new web3Call.eth.Contract(
-        erc20TokenABI,
-        Web3.utils.toChecksumAddress(contractAddress),
-      );
-      return await erc20TokenContractCall.methods.decimals().call();
-    }
-  };
-
-  const getERC721Symbol = async (contractAddress) => {
-    if (contractAddress) {
-      const erc721TokenContractCall = new web3Call.eth.Contract(
-        erc721TokenABI,
-        contractAddress,
-      );
-      return await erc721TokenContractCall?.methods?.symbol().call();
-    }
-  };
-
-  const getBalance = async (contractAddress, safeAddress = "") => {
-    if (contractAddress) {
-      const erc20TokenContractCall = new web3Call.eth.Contract(
-        erc20TokenABI,
-        contractAddress,
-      );
-      return await erc20TokenContractCall?.methods
-        ?.balanceOf(safeAddress ? safeAddress : walletAddress)
-        .call();
-    }
-  };
-
   const getTokenSymbol = async (contractAddress) => {
     if (contractAddress) {
-      const erc20TokenContractCall = new web3Call.eth.Contract(
-        erc20TokenABI,
-        contractAddress,
-      );
-      return await erc20TokenContractCall?.methods?.symbol().call();
+      const response = await readContractFunction({
+        address: contractAddress,
+        abi: erc20TokenABI,
+        functionName: "symbol",
+        args: [],
+        networkId,
+      });
+
+      return response;
     }
   };
 
   const getTokenName = async (contractAddress) => {
     if (contractAddress) {
-      const erc20TokenContractCall = new web3Call.eth.Contract(
-        erc20TokenABI,
-        contractAddress,
-      );
-      return await erc20TokenContractCall?.methods?.name().call();
+      const response = await readContractFunction({
+        address: contractAddress,
+        abi: erc20TokenABI,
+        functionName: "name",
+        args: [],
+        networkId,
+      });
+
+      return response;
+    }
+  };
+
+  const getDecimals = async (contractAddress) => {
+    if (contractAddress) {
+      const response = await readContractFunction({
+        address: contractAddress,
+        abi: erc20TokenABI,
+        functionName: "decimals",
+        args: [],
+        networkId,
+      });
+
+      return response;
+    }
+  };
+
+  const getBalance = async (contractAddress, safeAddress = "") => {
+    if (contractAddress) {
+      const response = await readContractFunction({
+        address: contractAddress,
+        abi: erc20TokenABI,
+        functionName: "balanceOf",
+        args: [safeAddress ? safeAddress : walletAddress],
+        networkId,
+      });
+
+      return Number(response);
     }
   };
 
@@ -77,18 +75,18 @@ const useCommonContractMethods = () => {
     usdcConvertDecimal,
   ) => {
     if (contractAddress) {
-      const erc20TokenContractCall = new web3Call.eth.Contract(
-        erc20TokenABI,
-        contractAddress,
-      );
       const value = convertToWeiGovernance(
         amount,
         usdcConvertDecimal,
       )?.toString();
 
-      const currentAllowance = await erc20TokenContractCall.methods
-        .allowance(walletAddress, approvalContract)
-        .call();
+      const currentAllowance = await readContractFunction({
+        address: contractAddress,
+        abi: erc20TokenABI,
+        functionName: "allowance",
+        args: [walletAddress, approvalContract],
+        networkId,
+      });
 
       if (Number(currentAllowance) >= Number(value)) {
         return;
@@ -123,7 +121,6 @@ const useCommonContractMethods = () => {
 
   return {
     getDecimals,
-    getERC721Symbol,
     getBalance,
     getTokenSymbol,
     getTokenName,

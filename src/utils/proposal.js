@@ -243,8 +243,9 @@ export const getEncodedData = async ({
   factoryData,
   contractABI,
   setMembers,
-  getNftBalance,
+  getBalance,
   getERC20TotalSupply,
+  getNftOwnersCount,
   networkId,
   gnosisAddress,
 }) => {
@@ -297,8 +298,8 @@ export const getEncodedData = async ({
         const carryFeeAmount = (airDropAmount * airDropCarryFee) / 100;
         airDropAmountArray = await Promise.all(
           membersArray.map(async (member) => {
-            const balance = await getNftBalance(
-              clubData.tokenType,
+            const balance = await getBalance(
+              daoAddress,
               Web3.utils.toChecksumAddress(member),
             );
 
@@ -324,8 +325,8 @@ export const getEncodedData = async ({
       } else {
         airDropAmountArray = await Promise.all(
           membersArray.map(async (member) => {
-            const balance = await getNftBalance(
-              clubData.tokenType,
+            const balance = await getBalance(
+              daoAddress,
               Web3.utils.toChecksumAddress(member),
             );
 

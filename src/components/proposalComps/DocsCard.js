@@ -38,7 +38,8 @@ const DocsCard = () => {
         Create & execute proposals
       </Typography>
       <Link
-        href="/"
+        href="https://stationxnetwork.gitbook.io/docs"
+        target={"_blank"}
         sx={{
           position: "absolute",
           color: "#0F0F0F",

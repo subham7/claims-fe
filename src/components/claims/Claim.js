@@ -12,9 +12,8 @@ import {
 } from "utils/globalFunctions";
 import { useAccount, useNetwork } from "wagmi";
 import classes from "./Claim.module.scss";
-import useDropsContractMethods from "hooks/useDropsContracMethods";
-import { Alert, CircularProgress, Skeleton, Typography } from "@mui/material";
-import useClaimSmartContracts from "hooks/useClaimSmartContracts";
+import useDropsContractMethods from "hooks/useDropsContractMethods";
+import { CircularProgress, Skeleton, Typography } from "@mui/material";
 import { getClaimDetails, getUserProofAndBalance } from "api/claims";
 import ClaimActivity from "./ClaimActivity";
 import Eligibility from "./Eligibility";
@@ -23,7 +22,8 @@ import ClaimInput from "./ClaimInput";
 import Image from "next/image";
 import About from "./About";
 import { ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
-import SocialButtons from "./SocialButtons";
+import SocialButtons from "../common/SocialButtons";
+import CustomAlert from "@components/common/CustomAlert";
 
 const Claim = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState();
@@ -65,8 +65,6 @@ const Claim = ({ claimAddress }) => {
 
   const { claimSettings, claimBalance, claimAmount, claim } =
     useDropsContractMethods();
-
-  useClaimSmartContracts(claimAddress);
 
   const fetchClaimDetails = async () => {
     setLoading(true);
@@ -119,11 +117,11 @@ const Claim = ({ claimAddress }) => {
 
   const fetchContractData = async () => {
     try {
-      const data = await claimSettings();
+      const data = await claimSettings(claimAddress);
       setDropsData(data);
 
       // remaining in contract
-      const remainingBalanceInContract = await claimBalance();
+      const remainingBalanceInContract = await claimBalance(claimAddress);
 
       const remainingBalanceInUSD = convertFromWeiGovernance(
         remainingBalanceInContract,
@@ -162,7 +160,7 @@ const Claim = ({ claimAddress }) => {
       setClaimedPercentage(percentageClaimed);
 
       // claimed by user
-      const claimedAmt = (await claimAmount(walletAddress)) ?? 0;
+      const claimedAmt = (await claimAmount(claimAddress, walletAddress)) ?? 0;
       const isClaimed = +claimedAmt > 0;
       setAlreadyClaimed(isClaimed);
 
@@ -237,7 +235,7 @@ const Claim = ({ claimAddress }) => {
           } else {
             setIsEligibleForTokenGated(false);
           }
-          setMaxClaimableAmount(+dropsData?.claimAmountDetails[0]);
+          setMaxClaimableAmount(+dropsData?.claimAmountDetails.maxClaimable);
           return;
         }
 
@@ -251,7 +249,7 @@ const Claim = ({ claimAddress }) => {
         }
 
         case "2": {
-          setMaxClaimableAmount(+dropsData?.claimAmountDetails[0]);
+          setMaxClaimableAmount(+dropsData?.claimAmountDetails.maxClaimable);
           return;
         }
 
@@ -297,7 +295,7 @@ const Claim = ({ claimAddress }) => {
           encodedLeaf,
         );
 
-        const claimedAmt = await claimAmount(walletAddress);
+        const claimedAmt = await claimAmount(claimAddress, walletAddress);
         setClaimRemaining(maxClaimableAmount - claimedAmt);
         setIsClaiming(false);
         setAlreadyClaimed(true);
@@ -317,7 +315,7 @@ const Claim = ({ claimAddress }) => {
           "",
         );
 
-        const claimedAmt = await claimAmount(walletAddress);
+        const claimedAmt = await claimAmount(claimAddress, walletAddress);
 
         const remainingAmt = +maxClaimableAmount - +claimedAmt;
 
@@ -418,14 +416,15 @@ const Claim = ({ claimAddress }) => {
       <section className={classes.leftContainer}>
         <div>
           <Header
-            dropsData={dropsData}
-            hasDropStarted={hasDropStarted}
-            isClaimActive={isClaimActive}
+            contractData={dropsData}
+            hasStarted={hasDropStarted}
+            isActive={isClaimActive}
             tokenDetails={tokenDetails}
+            deadline={dropsData?.endTime}
           />
 
           <ClaimInput
-            claimInput={claimInput}
+            inputAmount={claimInput}
             claimRemaining={claimRemaining}
             maxClaimableAmount={maxClaimableAmount}
             maxHandler={maxHandler}
@@ -487,7 +486,7 @@ const Claim = ({ claimAddress }) => {
         )}
 
         {claimsData && tokenDetails && (
-          <Eligibility claimsData={claimsData} tokenDetails={tokenDetails} />
+          <Eligibility contractData={claimsData} tokenDetails={tokenDetails} />
         )}
 
         <ClaimActivity
@@ -497,17 +496,7 @@ const Claim = ({ claimAddress }) => {
       </section>
 
       {showMessage ? (
-        <Alert
-          severity={claimed ? "success" : "error"}
-          sx={{
-            width: "250px",
-            position: "fixed",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          {message}
-        </Alert>
+        <CustomAlert alertMessage={message} severity={claimed} />
       ) : null}
     </main>
   );

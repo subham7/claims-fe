@@ -1,5 +1,4 @@
-import { Alert } from "@mui/material";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import classes from "./ERC721.module.scss";
 import { useSelector } from "react-redux";
 import { convertFromWeiGovernance, getImageURL } from "utils/globalFunctions";
@@ -13,6 +12,7 @@ import { useAccount } from "wagmi";
 import { getUploadedNFT } from "api/assets";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useAppContractMethods from "hooks/useAppContractMethods";
+import CustomAlert from "@components/common/CustomAlert";
 
 const ERC721 = ({
   daoAddress,
@@ -38,6 +38,7 @@ const ERC721 = ({
   const [showMessage, setShowMessage] = useState(false);
   const [claimSuccessfull, setClaimSuccessfull] = useState(false);
   const [imgUrl, setImgUrl] = useState("");
+  const [message, setMessage] = useState("");
 
   const day = Math.floor(new Date().getTime() / 1000.0);
   const day1 = dayjs.unix(day);
@@ -66,37 +67,33 @@ const ERC721 = ({
 
   const router = useRouter();
 
-  const fetchTokenDetails = useCallback(async () => {
+  const fetchTokenDetails = async () => {
     try {
-      const balance = await getBalance(daoAddress);
-      setBalanceOfNft(balance);
+      if (Deposit_Token_Address && daoAddress) {
+        const balance = await getBalance(daoAddress);
+        setBalanceOfNft(balance);
 
-      if (+balanceOfNft >= +clubData?.maxTokensPerUser) {
-        setHasClaimed(true);
-      } else {
-        setHasClaimed(false);
+        if (+balance >= +clubData?.maxTokensPerUser) {
+          setHasClaimed(true);
+        } else {
+          setHasClaimed(false);
+        }
+        const decimals = await getDecimals(Deposit_Token_Address);
+        const symbol = await getTokenSymbol(Deposit_Token_Address);
+        const name = await getTokenSymbol(Deposit_Token_Address);
+        const userBalance = await getBalance(Deposit_Token_Address);
+
+        setErc20TokenDetails({
+          tokenSymbol: symbol,
+          tokenName: name,
+          tokenDecimal: decimals,
+          userBalance: convertFromWeiGovernance(userBalance, decimals),
+        });
       }
-      const decimals = await getDecimals(Deposit_Token_Address);
-      const symbol = await getTokenSymbol(Deposit_Token_Address);
-      const name = await getTokenSymbol(Deposit_Token_Address);
-      const userBalance = await getBalance(Deposit_Token_Address);
-
-      setErc20TokenDetails({
-        tokenSymbol: symbol,
-        tokenName: name,
-        tokenDecimal: decimals,
-
-        userBalance: convertFromWeiGovernance(userBalance, decimals),
-      });
     } catch (error) {
       console.log(error);
     }
-  }, [
-    Deposit_Token_Address,
-    balanceOfNft,
-    daoAddress,
-    clubData?.maxTokensPerUser,
-  ]);
+  };
 
   const showMessageHandler = () => {
     setShowMessage(true);
@@ -130,11 +127,13 @@ const ERC721 = ({
       router.push(`/dashboard/${daoAddress}/${networkId}`, undefined, {
         shallow: true,
       });
+      setMessage("Transaction Successful");
       showMessageHandler();
     } catch (error) {
       console.log(error);
       setClaimSuccessfull(false);
       setLoading(false);
+      setMessage("Transaction Failed");
       showMessageHandler();
     }
   };
@@ -142,9 +141,9 @@ const ERC721 = ({
   useEffect(() => {
     const fetchSubgraphData = async () => {
       try {
-        const imageUrl = await getUploadedNFT(daoAddress);
-        if (imageUrl.data.length) {
-          setImgUrl(imageUrl.data[0].imageUrl);
+        const imageUrl = await getUploadedNFT(daoAddress?.toLowerCase());
+        if (imageUrl?.data.length) {
+          setImgUrl(imageUrl?.data[0]?.imageUrl);
         } else {
           const imageUrl = await getImageURL(clubData?.imgUrl);
           setImgUrl(imageUrl);
@@ -161,15 +160,15 @@ const ERC721 = ({
 
   useEffect(() => {
     fetchTokenDetails();
-  }, [fetchTokenDetails]);
+  }, [Deposit_Token_Address, daoAddress]);
 
   useEffect(() => {
-    if (day2 >= day1) {
+    if (new Date(day2).getTime() / 1000 >= new Date(day1).getTime() / 1000) {
       setActive(true);
     } else {
       setActive(false);
     }
-  }, [day2, day1]);
+  }, [day2, day1, daoDetails?.depositDeadline]);
 
   return (
     <div className={classes.pageContainer}>
@@ -206,34 +205,9 @@ const ERC721 = ({
         <About bio={clubInfo?.bio} daoAddress={daoAddress} />
       ) : null}
 
-      {claimSuccessfull && showMessage ? (
-        <Alert
-          severity="success"
-          sx={{
-            width: "250px",
-            position: "fixed",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          Transaction Successfull
-        </Alert>
-      ) : (
-        !claimSuccessfull &&
-        showMessage && (
-          <Alert
-            severity="error"
-            sx={{
-              width: "250px",
-              position: "fixed",
-              bottom: "30px",
-              right: "20px",
-              borderRadius: "8px",
-            }}>
-            Transaction Failed
-          </Alert>
-        )
-      )}
+      {showMessage ? (
+        <CustomAlert severity={claimSuccessfull} alertMessage={message} />
+      ) : null}
     </div>
   );
 };

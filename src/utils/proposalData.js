@@ -260,7 +260,7 @@ export const proposalFormData = ({
           <Typography mt={1} variant="proposalSubHeading">
             Download sample from{" "}
             <span style={{ color: "#3a7afd" }}>
-              <Link href={"/assets/csv/mintGT.csv"}>here</Link>
+              <Link href={"/assets/csv/mintGt.csv"}>here</Link>
             </span>
           </Typography>
         </>

@@ -19,6 +19,7 @@ import {
   queryWalletWiseTransactionsFromSubgraph,
 } from "utils/dropsSubgraphHelper";
 import { shortAddress } from "utils/helper";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const ClaimsTransactions = ({
   claimAddress,
@@ -246,7 +247,7 @@ const ClaimsTransactions = ({
                         <FiExternalLink
                           onClick={() => {
                             window.open(
-                              `https://polygonscan.com/tx/${data.txHash}`,
+                              `${CHAIN_CONFIG[networkId].blockExplorerUrl}/tx/${data.txHash}`,
                               "_blank",
                             );
                           }}

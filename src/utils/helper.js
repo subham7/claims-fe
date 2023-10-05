@@ -10,6 +10,7 @@ import {
   contractNetworks,
 } from "./constants";
 import { getPublicClient, getWalletClient } from "utils/viemConfig";
+import { uploadToAWS } from "api/club";
 
 export const getCustomSafeSdk = async (
   gnosisAddress,
@@ -119,22 +120,15 @@ export function returnRemainingTime(epochTime) {
     : 0;
 }
 
-export const showWrongNetworkModal = (
-  walletAddress,
-  networkId,
-  routeNetworkId,
-) => {
+export const showWrongNetworkModal = (networkId, routeNetworkId) => {
   if (
     routeNetworkId &&
     routeNetworkId !== networkId &&
-    routeNetworkId !== "create"
+    routeNetworkId !== "create" &&
+    routeNetworkId !== "disburse"
   ) {
     return <WrongNetworkModal chainId={routeNetworkId} />;
   }
-
-  return walletAddress && !CHAIN_CONFIG[networkId] ? (
-    <WrongNetworkModal />
-  ) : null;
 };
 
 export const getAllEntities = async (
@@ -199,9 +193,9 @@ export const extractNftAdressAndId = (url) => {
 export const getUserTokenData = async (
   tokenData,
   networkId,
-  isProposal = false,
+  allowNative = false,
 ) => {
-  const filteredData = !isProposal
+  const filteredData = !allowNative
     ? tokenData.filter(
         (token) =>
           token.contract_address !== CHAIN_CONFIG[networkId].nativeToken,
@@ -240,7 +234,6 @@ export const writeContractFunction = async ({
       functionName,
       args,
       account,
-      // gasPrice: await getIncreaseGasPrice(networkId),
     });
 
     const txHash = await walletClient.writeContract(request);
@@ -254,6 +247,27 @@ export const writeContractFunction = async ({
   } catch (error) {
     throw error;
   }
+};
+
+export const readContractFunction = async ({
+  address,
+  abi,
+  functionName,
+  args,
+  account,
+  networkId,
+}) => {
+  const publicClient = getPublicClient(networkId);
+
+  const data = await publicClient.readContract({
+    address,
+    abi,
+    functionName,
+    args,
+    account,
+  });
+
+  return data;
 };
 
 export const csvToObjectForMintGT = (csvString) => {
@@ -270,12 +284,41 @@ export const csvToObjectForMintGT = (csvString) => {
   return { addresses, amounts };
 };
 
-export const shortAddress = (address) => {
+export const shortAddress = (address, length = 6) => {
   if (address) {
     return (
-      address?.substring(0, 6) +
+      address?.substring(0, length) +
       "....." +
       address?.substring(address.length - 4)
     );
   }
+};
+
+export const uploadFileToAWS = async (file) => {
+  return new Promise(async (resolve, reject) => {
+    const reader = new FileReader();
+    reader.addEventListener("loadend", async () => {
+      const path = file?.name.split("/");
+      const fileName = path[path.length - 1];
+      const data = await uploadToAWS(fileName, reader);
+      resolve(data?.saveFileResponse?.Location);
+    });
+
+    reader.readAsArrayBuffer(file);
+  });
+};
+
+export const isValidAddress = (address) => {
+  return /^0x[a-fA-F0-9]{40}$/.test(address);
+};
+
+export const generateRandomString = (length) => {
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * chars.length);
+    result += chars[randomIndex];
+  }
+  return result;
 };

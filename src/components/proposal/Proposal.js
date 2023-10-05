@@ -65,10 +65,6 @@ const Proposal = ({ daoAddress }) => {
   const [tokenData, setTokenData] = useState([]);
   const [proposalList, setProposalList] = useState([]);
 
-  const NETWORK_HEX = useSelector((state) => {
-    return state.gnosis.networkHex;
-  });
-
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
   });
@@ -117,13 +113,13 @@ const Proposal = ({ daoAddress }) => {
 
   const fetchNfts = useCallback(async () => {
     try {
-      const nftsData = await getNFTsByDaoAddress(gnosisAddress, NETWORK_HEX);
+      const nftsData = await getNFTsByDaoAddress(gnosisAddress, networkId);
       setNftData(nftsData.data);
       dispatch(addNftsOwnedByDao(nftsData.data));
     } catch (error) {
       console.log(error);
     }
-  }, [NETWORK_HEX, dispatch, gnosisAddress]);
+  }, [networkId, dispatch, gnosisAddress]);
 
   const fetchTokens = useCallback(async () => {
     if (daoAddress && gnosisAddress && networkId) {

@@ -1,4 +1,4 @@
-import { Alert, Backdrop, CircularProgress, Switch } from "@mui/material";
+import { Backdrop, CircularProgress, Switch } from "@mui/material";
 import { Button } from "@components/ui";
 import React, { useCallback, useEffect, useState } from "react";
 import { TokenGatingStyle } from "./TokenGatingStyles";
@@ -12,6 +12,7 @@ import {
 } from "../../utils/globalFunctions";
 import useAppContractMethods from "../../hooks/useAppContractMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
+import CustomAlert from "@components/common/CustomAlert";
 
 const TokenGating = ({ daoAddress }) => {
   const [showTokenGatingModal, setShowTokenGatingModal] = useState(false);
@@ -35,6 +36,7 @@ const TokenGating = ({ daoAddress }) => {
   const [isTokenGatingSuccessfull, setIsTokenGatingSuccessfull] =
     useState(false);
   const [showMessage, setShowMessage] = useState(false);
+  const [message, setMessage] = useState("");
   const [showEditOptions, setShowEditOptions] = useState(true);
 
   const isAdminUser = useSelector((state) => {
@@ -99,11 +101,13 @@ const TokenGating = ({ daoAddress }) => {
       setLoading(false);
       setIsTokenGatingSuccessfull(true);
       setShowEditOptions(false);
+      setMessage("Token Gating Successfull");
       showMessageHandler();
     } catch (error) {
       console.log(error);
       setLoading(false);
       setIsTokenGatingSuccessfull(false);
+      setMessage("Token Gating Failed");
       showMessageHandler();
     }
   };
@@ -333,33 +337,12 @@ const TokenGating = ({ daoAddress }) => {
         <CircularProgress />
       </Backdrop>
 
-      {showMessage && isTokenGatingSuccessfull && (
-        <Alert
-          severity="success"
-          sx={{
-            width: "250px",
-            position: "fixed",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          Token Gating Successfull
-        </Alert>
-      )}
-
-      {showMessage && !isTokenGatingSuccessfull && (
-        <Alert
-          severity="error"
-          sx={{
-            width: "250px",
-            position: "fixed",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          Token Gating Failed
-        </Alert>
-      )}
+      {showMessage ? (
+        <CustomAlert
+          alertMessage={message}
+          severity={isTokenGatingSuccessfull}
+        />
+      ) : null}
     </div>
   );
 };

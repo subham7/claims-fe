@@ -48,47 +48,6 @@ const useStyles = makeStyles({
     letterSpacing: "0.6px",
     fontSize: "16px",
   },
-  relative: {
-    position: "relative",
-  },
-  icon: {
-    position: "absolute",
-    top: "-23px",
-    right: 0,
-    cursor: "pointer",
-  },
-  inviteLink: {
-    background:
-      "transparent linear-gradient(90deg, #0F0F0F00 0%, #2D55FF 100%) 0% 0% no-repeat padding-box",
-    position: "",
-    display: "block",
-    padding: "0px 20px",
-    overflowX: "scroll",
-    marginTop: "20px",
-    borderRadius: "10px",
-    border: "1px solid gray",
-    color: "#a7a6ba",
-    paddingRight: "20px",
-  },
-  copy: {
-    width: "68px",
-    height: "30px",
-    background: "#2D55FF 0% 0% no-repeat padding-box",
-    borderRadius: "15px",
-  },
-  linkInput: {
-    width: "100%",
-    color: "#dcdcdc",
-    background: "#0F0F0F 0% 0% no-repeat padding-box",
-    border: "1px solid #dcdcdc40",
-    borderRadius: "10px",
-    "&:hover": {
-      boxShadow: "0px 0px 12px #dcdcdc40",
-      border: "1px solid #dcdcdc40",
-      borderRadius: "10px",
-      opacity: 1,
-    },
-  },
 });
 const Backdrop = () => {
   const classes = useStyles();
@@ -101,7 +60,7 @@ const ErrorModal = ({ isSignRejected = false, isError = false }) => {
     <>
       <Backdrop />
       <div className={classes.modal}>
-        <div className={classes.relative}>
+        <div>
           <h2 className={classes.title}>Error</h2>
           <p className={classes.subtitle}>
             {isSignRejected && "Metamask Signature rejected by user"}
