@@ -1,7 +1,5 @@
 import {
-  Backdrop,
   Card,
-  CircularProgress,
   Divider,
   Grid,
   Paper,
@@ -592,13 +590,6 @@ const SettingsInfo = ({
         onClose={handleClose}
         daoAddress={daoAddress}
       />
-
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        //   open={loaderOpen}
-      >
-        <CircularProgress />
-      </Backdrop>
     </>
   );
 };

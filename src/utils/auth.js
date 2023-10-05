@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { Backdrop, Button } from "@mui/material";
+import { Button } from "@mui/material";
 import { fetchConfig } from "../api/config";
 import { updateDynamicAddress } from "../api";
 import Web3 from "web3";
 import { useCallback } from "react";
 import { useAccount } from "wagmi";
+import BackdropLoader from "@components/common/BackdropLoader";
 
 export default function ProtectRoute(Component) {
   const AuthenticatedComponent = () => {
@@ -82,11 +83,9 @@ export default function ProtectRoute(Component) {
     return walletAddress ? (
       <Component wallet={walletAddress} />
     ) : (
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={redirect}>
+      <BackdropLoader isOpen={redirect}>
         <Button>Home</Button>
-      </Backdrop>
+      </BackdropLoader>
     );
   };
   return AuthenticatedComponent;

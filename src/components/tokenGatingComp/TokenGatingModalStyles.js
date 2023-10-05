@@ -15,15 +15,6 @@ export const TokenGatingModalStyles = makeStyles({
     zIndex: "1000",
   },
 
-  backdrop: {
-    position: "fixed",
-    top: "0",
-    left: "0",
-    height: "100vh",
-    width: "100vw",
-    background: "#000",
-    opacity: "60%",
-  },
   form: {
     width: "100%",
     display: "flex",

@@ -6,6 +6,12 @@ export const ZERO_MERKLE_ROOT =
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 export const AWS_API_URL =
   "https://k3hu9vqwv4.execute-api.ap-south-1.amazonaws.com";
+export const OMIT_DAOS = [
+  "0xbd1fab87be86fec9336ae49131998d9fa5a00eb0",
+  "0x2608d54d10527fd4a6a7bab0306dfbf9ca95a1bb",
+  "0x067a544f00840056c8cdb7f9d9d73ac3611d37c9",
+  "0x1ae43fb8283e45ae90d5bd9249cc7227fd6ecc73",
+];
 
 export const CHAIN_CONFIG = {
   "0x89": {

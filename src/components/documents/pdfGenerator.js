@@ -180,8 +180,6 @@ export const PdfFile = ({
   member_witnessName,
   admin_address,
 }) => {
-  console.log("admin", admin_address);
-
   return (
     <Document>
       <Page style={styles.page} wrap>
@@ -1197,8 +1195,6 @@ const PDFView = ({
   if (!client) {
     return null;
   }
-
-  console.log("admin", admin_address);
 
   return (
     <>

@@ -216,7 +216,6 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
 
       const GetMyDoc = (props) => <PdfFile {...props} />;
 
-      // console.log("membersSign", membersSign);
       try {
         const res = await editMembersFormData({
           daoAddress,
