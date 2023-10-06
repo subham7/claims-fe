@@ -349,8 +349,6 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       clubData.tokenType,
     );
 
-    console.log(ABI);
-
     const {
       data,
       approvalData,
@@ -371,91 +369,91 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       gnosisAddress,
     });
 
-    console.log("encoded data", data);
+    const response = updateProposalAndExecution(
+      data,
+      approvalData,
+      daoAddress,
+      Web3.utils.toChecksumAddress(gnosisAddress),
+      txHash,
+      pid,
+      proposalData.commands[0]?.executionId === 0
+        ? proposalData.commands[0]?.airDropToken
+        : proposalData.commands[0]?.executionId === 4
+        ? proposalData.commands[0]?.customToken
+        : proposalData.commands[0]?.executionId === 5
+        ? proposalData.commands[0]?.customNft
+        : proposalData.commands[0]?.executionId === 14
+        ? proposalData.commands[0]?.depositToken
+        : proposalData.commands[0]?.executionId === 15
+        ? proposalData.commands[0]?.withdrawToken
+        : proposalData.commands[0]?.executionId === 19
+        ? proposalData.commands[0]?.swapToken
+        : "",
+      proposalStatus,
+      airdropContractAddress,
+      proposalData.commands[0]?.executionId === 3 ||
+        proposalData.commands[0]?.executionId === 10 ||
+        proposalData.commands[0]?.executionId === 11 ||
+        proposalData?.commands[0]?.executionId === 12 ||
+        proposalData.commands[0]?.executionId === 13 ||
+        proposalData.commands[0]?.executionId === 14
+        ? FACTORY_CONTRACT_ADDRESS
+        : "",
+      GNOSIS_TRANSACTION_URL,
+      proposalData,
+      membersArray,
+      airDropAmountArray,
+      transactionData,
+    );
 
-    //   const response = updateProposalAndExecution(
-    //     data,
-    //     approvalData,
-    //     daoAddress,
-    //     Web3.utils.toChecksumAddress(gnosisAddress),
-    //     txHash,
-    //     pid,
-    //     proposalData.commands[0]?.executionId === 0
-    //       ? proposalData.commands[0]?.airDropToken
-    //       : proposalData.commands[0]?.executionId === 4
-    //       ? proposalData.commands[0]?.customToken
-    //       : proposalData.commands[0]?.executionId === 5
-    //       ? proposalData.commands[0]?.customNft
-    //       : proposalData.commands[0]?.executionId === 14
-    //       ? proposalData.commands[0]?.depositToken
-    //       : proposalData.commands[0]?.executionId === 15
-    //       ? proposalData.commands[0]?.withdrawToken
-    //       : "",
-    //     proposalStatus,
-    //     airdropContractAddress,
-    //     proposalData.commands[0]?.executionId === 3 ||
-    //       proposalData.commands[0]?.executionId === 10 ||
-    //       proposalData.commands[0]?.executionId === 11 ||
-    //       proposalData?.commands[0]?.executionId === 12 ||
-    //       proposalData.commands[0]?.executionId === 13 ||
-    //       proposalData.commands[0]?.executionId === 14
-    //       ? FACTORY_CONTRACT_ADDRESS
-    //       : "",
-    //     GNOSIS_TRANSACTION_URL,
-    //     proposalData,
-    //     membersArray,
-    //     airDropAmountArray,
-    //     transactionData,
-    //   );
-
-    //   if (proposalStatus === "executed") {
-    //     // fetchData()
-    //     response.then(
-    //       (result) => {
-    //         result.promiEvent.on("confirmation", () => {
-    //           const updateStatus = patchProposalExecuted(pid);
-    //           updateStatus.then((result) => {
-    //             if (result.status !== 200) {
-    //               setExecuted(false);
-    //               setOpenSnackBar(true);
-    //               setMessage("execution status update failed!");
-    //               setFailed(true);
-    //               setLoaderOpen(false);
-    //             } else {
-    //               fetchData();
-    //               setExecuted(true);
-    //               setOpenSnackBar(true);
-    //               setMessage("execution successful!");
-    //               setFailed(false);
-    //               setLoaderOpen(false);
-    //             }
-    //           });
-    //         });
-    //       },
-    //       (error) => {
-    //         console.error(error);
-    //         setExecuted(false);
-    //         setOpenSnackBar(true);
-    //         setMessage("execution failed!");
-    //         setFailed(true);
-    //         setLoaderOpen(false);
-    //       },
-    //     );
-    //   } else {
-    //     await response
-    //       .then(async (result) => {
-    //         setSigned(true);
-    //         isOwner();
-    //       })
-    //       .catch((err) => {
-    //         console.error(err);
-    //         setSigned(false);
-    //         setOpenSnackBar(true);
-    //         setMessage("Signature failed!");
-    //         setFailed(true);
-    //         setLoaderOpen(false);
-    //       });
-    //   }
+    if (proposalStatus === "executed") {
+      // fetchData()
+      response.then(
+        (result) => {
+          result.promiEvent.on("confirmation", () => {
+            const updateStatus = patchProposalExecuted(pid);
+            updateStatus.then((result) => {
+              if (result.status !== 200) {
+                setExecuted(false);
+                setOpenSnackBar(true);
+                setMessage("execution status update failed!");
+                setFailed(true);
+                setLoaderOpen(false);
+              } else {
+                fetchData();
+                setExecuted(true);
+                setOpenSnackBar(true);
+                setMessage("execution successful!");
+                setFailed(false);
+                setLoaderOpen(false);
+              }
+            });
+          });
+        },
+        (error) => {
+          console.error(error);
+          setExecuted(false);
+          setOpenSnackBar(true);
+          setMessage("execution failed!");
+          setFailed(true);
+          setLoaderOpen(false);
+        },
+      );
+    } else {
+      await response
+        .then(async (result) => {
+          setSigned(true);
+          isOwner();
+        })
+        .catch((err) => {
+          console.error(err);
+          setSigned(false);
+          setOpenSnackBar(true);
+          setMessage("Signature failed!");
+          setFailed(true);
+          setLoaderOpen(false);
+        });
+    }
   };
 
   const createRejectSafeTransaction = async () => {

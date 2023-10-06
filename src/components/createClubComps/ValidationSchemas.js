@@ -466,7 +466,7 @@ export const getProposalValidationSchema = ({
         "Enter an amount less or equal to treasury balance",
         async (value, context) => {
           const { actionCommand, oneInchSwapToken } = context.parent;
-          if (actionCommand === 17) {
+          if (actionCommand === 19) {
             try {
               const balance = await getBalance(oneInchSwapToken, gnosisAddress);
               const decimals = await getDecimals(oneInchSwapToken);

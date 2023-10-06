@@ -1,7 +1,7 @@
 import axios from "axios";
 import { MAIN_API_URL } from "../index";
 import { getJwtToken } from "../../utils/auth";
-import { CHAIN_CONFIG } from "utils/constants";
+// import { CHAIN_CONFIG } from "utils/constants";
 
 export async function createProposal(data, networkId) {
   // create proposal API
@@ -121,7 +121,7 @@ export async function getProposalByDaoAddress(daoAddress) {
 }
 
 export async function getSwapInfo(swapParams, networkId) {
-  const API_URL = `https://api.1inch.dev/swap/v5.2/${CHAIN_CONFIG[networkId].chainId}/swap`;
+  const API_URL = `https://ga9ufzhze0.execute-api.us-east-1.amazonaws.com/default/one-inch-api`;
   // const PARAMS = {
   //   src: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
   //   dst: "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
@@ -132,11 +132,10 @@ export async function getSwapInfo(swapParams, networkId) {
 
   const HEADERS = {
     accept: "application/json",
-    Authorization: "Bearer YoMsRNILWOzs3XQug5pJ7XbgUPUjsWCm",
   };
 
   axios
-    .get(API_URL, { headers: HEADERS, params: swapParams })
+    .post(API_URL, { headers: HEADERS, params: swapParams })
     .then((response) => {
       console.log(response.data);
     })

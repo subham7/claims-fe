@@ -34,6 +34,8 @@ export const CHAIN_CONFIG = {
     aaveWrappedMaticAddress: "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97",
     blockExplorerUrl: "https://polygonscan.com",
     disburseContractAddress: "0x2F73a97D1be96853AF8E2b8F29E0F2AF332EA9f5",
+    oneInchRouterAddress: " 0x1111111254EEB25477B68fb85Ed929f73A960582",
+    oneInchExecutorAddress: "0xCe9cc1fa6Df298854f77e92042fd2A3e7fb27eFF",
   },
   "0x5": {
     chainName: "Goerli Testnet",

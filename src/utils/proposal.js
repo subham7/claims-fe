@@ -227,10 +227,6 @@ export const fetchABI = async (executionId, tokenType) => {
       return factoryContractABI;
     case 8:
       return seaportABI;
-    case 17:
-      return [
-        "function swap(address,tuple(address,address,address,address,uint256,uint256,uint256,bytes),bytes)",
-      ];
     default:
       return null;
   }
@@ -272,9 +268,6 @@ export const getEncodedData = async ({
     nftLink,
     merkleRoot,
     pricePerToken,
-    swapToken,
-    swapAmount,
-    destinationToken,
   } = proposalData.commands[0];
   let iface;
 
@@ -510,32 +503,7 @@ export const getEncodedData = async ({
         daoAddress,
       ]);
       return { data };
-    case 17:
-      // const swapParams = {
-      //   fromTokenAddress: swapToken,
-      //   toTokenAddress: destinationToken,
-      //   amount: swapAmount,
-      //   fromAddress: daoAddress,
-      //   destReceiver: gnosisAddress,
-      //   slippage: 3,
-      //   disableEstimate: true,
-      //   allowPartialFill: false,
-      // };
 
-      const swapParams = {
-        src: swapToken, // Token address of 1INCH
-        dst: destinationToken, // Token address of DAI
-        amount: swapAmount, // Amount of 1INCH to swap (in wei)
-        from: gnosisAddress,
-        slippage: 3, // Maximum acceptable slippage percentage for the swap (e.g., 1 for 1%)
-        disableEstimate: false, // Set to true to disable estimation of swap details
-        allowPartialFill: false, // Set to true to allow partial filling of the swap order
-      };
-
-      const response = await getSwapInfo(swapParams, networkId);
-      console.log("response", response);
-      data = iface.decodeFunctionData("swap", response.data);
-      return data;
     default:
       return {};
   }
@@ -696,6 +664,9 @@ export const getTransaction = async ({
     customNftToken,
     depositAmount,
     withdrawAmount,
+    swapToken,
+    destinationToken,
+    swapAmount,
   } = proposalData.commands[0];
   let approvalTransaction;
   let transaction;
@@ -943,5 +914,41 @@ export const getTransaction = async ({
 
         return { approvalTransaction, transaction };
       }
+    case 19:
+      const swapParams = {
+        src: swapToken, // Token address of 1INCH
+        dst: destinationToken, // Token address of DAI
+        amount: swapAmount, // Amount of 1INCH to swap (in wei)
+        from: gnosisAddress,
+        // slippage: 3, // Maximum acceptable slippage percentage for the swap (e.g., 1 for 1%)
+        // disableEstimate: false, // Set to true to disable estimation of swap details
+        // allowPartialFill: false, // Set to true to allow partial filling of the swap order
+      };
+
+      const response = await getSwapInfo(swapParams, networkId);
+      console.log("RESPONSE", response);
+    // approvalTransaction = {
+    //   to: Web3.utils.toChecksumAddress(tokenData),
+    //   data: approveDepositWithEncodeABI(
+    //     tokenData,
+    //     CHAIN_CONFIG[networkId].stargateRouterAddress,
+    //     unstakeAmount,
+    //     web3Call,
+    //   ),
+    //   value: "0",
+    // };
+    // transaction = {
+    //   to: Web3.utils.toChecksumAddress(
+    //     CHAIN_CONFIG[networkId].stargateRouterAddress,
+    //   ),
+    //   data: unstakeErc20TokensToStargate(
+    //     tokenData,
+    //     unstakeAmount,
+    //     gnosisAddress,
+    //     web3Call,
+    //     networkId,
+    //   ),
+    //   value: "0",
+    // };
   }
 };
