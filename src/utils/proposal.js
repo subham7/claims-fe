@@ -961,6 +961,7 @@ export const getTransaction = async ({
         ),
         value: "0",
       };
+
       transaction = {
         to: Web3.utils.toChecksumAddress(
           CHAIN_CONFIG[networkId].stargateRouterAddress,
@@ -974,6 +975,7 @@ export const getTransaction = async ({
         ),
         value: "0",
       };
+      return { transaction, approvalTransaction };
     case 18:
       approvalTransaction = {
         to: Web3.utils.toChecksumAddress(tokenData),
