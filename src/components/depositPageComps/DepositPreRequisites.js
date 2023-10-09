@@ -8,6 +8,7 @@ import UploadDocModal from "@components/modals/UploadDocModal";
 import { fetchClubByDaoAddress } from "api/club";
 import { hasUserSigned } from "api/deposit";
 import { useAccount } from "wagmi";
+import { AiFillInfoCircle } from "react-icons/ai";
 
 const DepositPreRequisites = ({
   daoAddress,
@@ -87,7 +88,12 @@ const DepositPreRequisites = ({
   return (
     <>
       <div className={classes.mainContainer}>
-        <Typography variant="inherit">Complete these steps</Typography>
+        <div className={classes.warningContainer}>
+          <AiFillInfoCircle size={20} />
+          <Typography variant="inherit">
+            Complete these steps to join this station
+          </Typography>
+        </div>
         {depositConfig?.subscriptionDocId !== null && (
           <div className={classes.stepContainer}>
             {isSigned ? (

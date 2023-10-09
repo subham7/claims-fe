@@ -4,13 +4,12 @@ import LinearProgress, {
 } from "@mui/material/LinearProgress";
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
-  height: 10,
+  height: 6,
   borderRadius: 4,
   [`&.${linearProgressClasses.colorPrimary}`]: {},
   [`& .${linearProgressClasses.bar}`]: {
-    borderRadius: 4,
-    background:
-      "transparent linear-gradient(270deg, #2D55FF 0%, #75D5FD 100%) 0% 0% no-repeat padding-box",
+    borderRadius: 2,
+    background: "#2D55FF",
   },
 }));
 
@@ -19,6 +18,7 @@ export default function ProgressBar(props) {
     <BorderLinearProgress
       sx={{
         zIndex: props.zIndex ? props.zIndex : 0,
+        background: "#707070",
       }}
       variant="determinate"
       value={props.value}
