@@ -132,6 +132,7 @@ export const getProposalValidationSchema = ({
   factoryData,
   walletAddress,
   daoAddress,
+  getERC20TotalSupply,
 }) => {
   return yup.object({
     proposalDeadline: yup.date().required("Deposit close date is required"),
@@ -168,6 +169,41 @@ export const getProposalValidationSchema = ({
                 Number(value) <=
                   Number(convertFromWeiGovernance(balance, decimals)) &&
                 Number(value) > 0
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
+    mintGTAmounts: yup
+      .array()
+      .test(
+        "invalidMintGTAmount",
+        "Enter an amount less or equal to total supply",
+        async (value, context) => {
+          const { actionCommand } = context.parent;
+          if (actionCommand === 1) {
+            try {
+              const { distributionAmount } = factoryData;
+              const clubTokensMinted = await getERC20TotalSupply();
+              const totalAmount = value.reduce(
+                (partialSum, a) => partialSum + Number(a),
+                0,
+              );
+
+              if (
+                Number(totalAmount) <=
+                  Number(
+                    convertFromWeiGovernance(
+                      distributionAmount - clubTokensMinted,
+                      18,
+                    ),
+                  ) &&
+                Number(totalAmount) > 0
               ) {
                 return true;
               } else return false;
