@@ -1,56 +1,7 @@
 import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
 import { useEffect, useState } from "react";
 import { PDFViewer } from "@react-pdf/renderer";
-
-import Html from "react-pdf-html";
-
-const html = `<style>
-  .alt-graph .parent {
-    margin-top: 150px;
-    padding: 0;
-    width: 441px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .alt-graph .parent .child {
-    margin-left: 50px;
-    position: relative;
-  }
-  .circle {
-    width: 10px;
-    height: 10px;
-    border: 1px solid grey;
-    border-radius: 50%;
-    background: white;
-  }
-  .line {
-    height: 1px;
-    width: 50px;
-    background: grey;
-    position: absolute;
-    left: 100%;
-    top: 50%;
-  }
-  .rectangle {
-    height: 80px;
-    background: blue;
-    width: 10px;
-    position: absolute;
-    bottom: 20%;
-    left: 10%;
-    z-index: -1;
-  }
-  .my-heading4 {
-    background: darkgreen;
-    color: white;
-  }
-  .histogram-wrapper {
-    width: 380px;
-  } 
-  </style>
-
-  `;
+import { addLineBreaks } from "utils/helper";
 
 const styles = StyleSheet.create({
   page: {
@@ -196,8 +147,6 @@ export const PdfFile = ({
   return (
     <Document>
       <Page style={styles.page} wrap>
-        <Html>{html}</Html>
-
         <View>
           <View
             style={{
@@ -1136,7 +1085,8 @@ export const PdfFile = ({
               Wallet Address : {admin_address ?? signedAcc}
             </Text>
             <Text wrap style={styles.eachLine}>
-              Signature : {admin_sign ?? signedHash}
+              Signature :{" "}
+              {addLineBreaks(admin_sign, 60) ?? addLineBreaks(signedHash, 60)}
             </Text>
             <Text style={styles.eachLine}>Name: {admin_name}</Text>
             <Text style={styles.eachLine}>Title: Administrative Member</Text>
@@ -1161,7 +1111,7 @@ export const PdfFile = ({
 
                   <View style={styles.viewFlex}>
                     <Text style={styles.minWidth}>Registered Address: </Text>
-                    <Text wrap={true}>{member_address}</Text>
+                    <Text wrap={true}>{addLineBreaks(member_address, 35)}</Text>
                   </View>
 
                   <View style={styles.viewFlex}>
@@ -1189,19 +1139,14 @@ export const PdfFile = ({
                   </View>
 
                   <View style={styles.viewFlex}>
-                    <Text style={styles.minWidth}>Wallet Address: </Text>
-                    <Text style={{}}>{signedAcc}</Text>
+                    <Text style={styles.minWidth}>Wallet Address:</Text>
+                    <Text>{addLineBreaks(signedAcc, 35)}</Text>
                   </View>
 
                   <View style={styles.viewFlex}>
                     <Text style={styles.minWidth}>Signature: </Text>
-                    <Text
-                      wrap={true}
-                      style={{
-                        maxWidth: "200px",
-                      }}>
-                      {signedHash}
-                    </Text>
+
+                    <Text>{addLineBreaks(signedHash)}</Text>
                   </View>
                 </View>
               </View>
