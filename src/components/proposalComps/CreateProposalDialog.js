@@ -78,6 +78,13 @@ const CreateProposalDialog = ({
   const [failed, setFailed] = useState(false);
   const [message, setMessage] = useState("");
 
+  const showMessageHandler = () => {
+    setOpenSnackBar(true);
+    setTimeout(() => {
+      setOpenSnackBar(false);
+    }, 4000);
+  };
+
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -185,7 +192,8 @@ const CreateProposalDialog = ({
             fetchProposalList();
             setOpenSnackBar(true);
             setMessage("Proposal created successfully!");
-            setFailed(false);
+            setFailed(true);
+            showMessageHandler();
             setOpen(false);
             setLoaderOpen(false);
           }
@@ -194,7 +202,8 @@ const CreateProposalDialog = ({
         setMessage(error.message ?? error);
         setLoaderOpen(false);
         setOpenSnackBar(true);
-        setFailed(true);
+        setFailed(false);
+        showMessageHandler();
       }
     },
   });

@@ -1,18 +1,26 @@
 import React, { useEffect, useState } from "react";
-import classes from "./ERC721.module.scss";
+import DepositPreRequisites from "../DepositPreRequisites";
 import { useSelector } from "react-redux";
-import { convertFromWeiGovernance, getImageURL } from "utils/globalFunctions";
-import dayjs from "dayjs";
-import About from "./About";
-import NFTimg from "./NFTimg";
-import PriceSection from "./PriceSection";
-import Header from "./Header";
-import { useRouter } from "next/router";
-import { useAccount } from "wagmi";
 import { getUploadedNFT } from "api/assets";
+import { convertFromWeiGovernance, getImageURL } from "utils/globalFunctions";
+import { queryLatestMembersFromSubgraph } from "utils/stationsSubgraphHelper";
+import dayjs from "dayjs";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useAppContractMethods from "hooks/useAppContractMethods";
-import CustomAlert from "@components/common/CustomAlert";
+import { useAccount } from "wagmi";
+import Mint from "./Mint";
+import { useRouter } from "next/router";
+import { getDocumentsByClubId } from "api/document";
+import PublicPageLayout from "@components/common/PublicPageLayout";
+
+const DepositInputComponents = ({ depositPreRequisitesProps, mintProps }) => {
+  return (
+    <>
+      <DepositPreRequisites {...depositPreRequisitesProps} />
+      <Mint {...mintProps} />
+    </>
+  );
+};
 
 const ERC721 = ({
   daoAddress,
@@ -22,23 +30,28 @@ const ERC721 = ({
   daoDetails,
   whitelistUserData,
   networkId,
+  gatedTokenDetails,
+  depositConfig,
 }) => {
-  // const [clubData, setClubData] = useState([]);
-  const [count, setCount] = useState(1);
-  const [balanceOfNft, setBalanceOfNft] = useState();
-  const [erc20TokenDetails, setErc20TokenDetails] = useState({
-    tokenSymbol: "",
-    tokenName: "",
-    tokenDecimal: 0,
+  const [tokenDetails, setTokenDetails] = useState({
+    tokenDecimal: 6,
+    tokenSymbol: "USDC",
     userBalance: 0,
+    tokenName: name,
   });
-  const [loading, setLoading] = useState(false);
   const [active, setActive] = useState(false);
-  const [hasClaimed, setHasClaimed] = useState(false);
+  const [members, setMembers] = useState([]);
   const [showMessage, setShowMessage] = useState(false);
-  const [claimSuccessfull, setClaimSuccessfull] = useState(false);
-  const [imgUrl, setImgUrl] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [hasClaimed, setHasClaimed] = useState(false);
+  const [balanceOfNft, setBalanceOfNft] = useState();
   const [message, setMessage] = useState("");
+  const [imgUrl, setImgUrl] = useState("");
+  const [count, setCount] = useState(1);
+  const [claimSuccessfull, setClaimSuccessfull] = useState(false);
+  const [isSigned, setIsSigned] = useState(false);
+  const [isW8BenSigned, setIsW8BenSigned] = useState(false);
+  const [uploadedDocInfo, setUploadedDocInfo] = useState({});
 
   const day = Math.floor(new Date().getTime() / 1000.0);
   const day1 = dayjs.unix(day);
@@ -46,12 +59,13 @@ const ERC721 = ({
   const remainingDays = day2.diff(day1, "day");
   const remainingTimeInSecs = day2.diff(day1, "seconds");
 
+  const { address: walletAddress } = useAccount();
+  const router = useRouter();
+
   const { approveDeposit, getDecimals, getTokenSymbol, getBalance } =
     useCommonContractMethods();
 
   const { buyGovernanceTokenERC721DAO } = useAppContractMethods();
-
-  const { address: walletAddress } = useAccount();
 
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
@@ -65,7 +79,17 @@ const ERC721 = ({
     return state.club.factoryData.depositTokenAddress;
   });
 
-  const router = useRouter();
+  const fetchActivities = async () => {
+    try {
+      const { users } = await queryLatestMembersFromSubgraph(
+        daoAddress,
+        networkId,
+      );
+      if (users) setMembers(users);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const fetchTokenDetails = async () => {
     try {
@@ -83,7 +107,7 @@ const ERC721 = ({
         const name = await getTokenSymbol(Deposit_Token_Address);
         const userBalance = await getBalance(Deposit_Token_Address);
 
-        setErc20TokenDetails({
+        setTokenDetails({
           tokenSymbol: symbol,
           tokenName: name,
           tokenDecimal: decimals,
@@ -110,9 +134,9 @@ const ERC721 = ({
         FACTORY_CONTRACT_ADDRESS,
         convertFromWeiGovernance(
           clubData?.pricePerToken,
-          erc20TokenDetails.tokenDecimal,
+          tokenDetails.tokenDecimal,
         ),
-        erc20TokenDetails.tokenDecimal,
+        tokenDetails.tokenDecimal,
       );
 
       await buyGovernanceTokenERC721DAO(
@@ -138,6 +162,35 @@ const ERC721 = ({
     }
   };
 
+  const handleIsSignedChange = (newValue) => {
+    setIsSigned(newValue);
+  };
+
+  const handleIsW8BenSignedChange = (newValue) => {
+    setIsW8BenSigned(newValue);
+  };
+
+  const fetchDocs = async () => {
+    try {
+      const docList = await getDocumentsByClubId(daoAddress.toLowerCase());
+
+      const document = docList.find(
+        (doc) => doc.docIdentifier === depositConfig?.uploadDocId,
+      );
+      setUploadedDocInfo(document);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDocs();
+  }, [daoAddress, depositConfig?.uploadDocId]);
+
+  useEffect(() => {
+    fetchTokenDetails();
+  }, [Deposit_Token_Address, daoAddress]);
+
   useEffect(() => {
     const fetchSubgraphData = async () => {
       try {
@@ -159,8 +212,10 @@ const ERC721 = ({
   }, [clubData?.imgUrl, daoAddress, networkId]);
 
   useEffect(() => {
-    fetchTokenDetails();
-  }, [Deposit_Token_Address, daoAddress]);
+    if (daoAddress) {
+      fetchActivities();
+    }
+  }, [daoAddress, networkId]);
 
   useEffect(() => {
     if (new Date(day2).getTime() / 1000 >= new Date(day1).getTime() / 1000) {
@@ -171,44 +226,57 @@ const ERC721 = ({
   }, [day2, day1, daoDetails?.depositDeadline]);
 
   return (
-    <div className={classes.pageContainer}>
-      <div className={classes.mainContainer}>
-        <div className={classes.leftContainer}>
-          <Header
-            isErc20={false}
-            active={active}
-            clubData={clubData}
-            clubInfo={clubInfo}
-            deadline={daoDetails.depositDeadline}
-            daoAddress={daoAddress}
-          />
-          <PriceSection
-            claimNFTHandler={claimNFTHandler}
-            clubData={clubData}
-            count={count}
-            hasClaimed={hasClaimed}
-            loading={loading}
-            remainingDays={remainingDays}
-            remainingTimeInSecs={remainingTimeInSecs}
-            setCount={setCount}
-            balanceOfNft={balanceOfNft}
-            isEligibleForTokenGating={isEligibleForTokenGating}
-            isTokenGated={isTokenGated}
-            whitelistUserData={whitelistUserData}
-            nftMinted={daoDetails?.nftMinted}
-          />
-        </div>
-        <NFTimg imgUrl={imgUrl} />
-      </div>
-
-      {clubInfo?.bio ? (
-        <About bio={clubInfo?.bio} daoAddress={daoAddress} />
-      ) : null}
-
-      {showMessage ? (
-        <CustomAlert severity={claimSuccessfull} alertMessage={message} />
-      ) : null}
-    </div>
+    <PublicPageLayout
+      clubData={clubData}
+      tokenDetails={tokenDetails}
+      headerProps={{
+        contractData: clubData,
+        deadline: daoDetails?.depositDeadline,
+        tokenDetails: tokenDetails,
+        isDeposit: true,
+        isActive: active,
+      }}
+      inputComponents={
+        <DepositInputComponents
+          depositPreRequisitesProps={{
+            uploadedDocInfo: uploadedDocInfo,
+            daoAddress: daoAddress,
+            onIsSignedChange: handleIsSignedChange,
+            onIsW8BenSignedChange: handleIsW8BenSignedChange,
+          }}
+          mintProps={{
+            claimNFTHandler: claimNFTHandler,
+            clubData: clubData,
+            count: count,
+            hasClaimed: hasClaimed,
+            remainingDays: remainingDays,
+            remainingTimeInSecs: remainingTimeInSecs,
+            setCount: setCount,
+            balanceOfNft: balanceOfNft,
+            isEligibleForTokenGating: isEligibleForTokenGating,
+            isTokenGated: isTokenGated,
+            whitelistUserData: whitelistUserData,
+            isSigned: isSigned,
+            isW8BenSigned: isW8BenSigned,
+          }}
+        />
+      }
+      socialData={clubInfo}
+      imgUrl={imgUrl}
+      isDeposit={true}
+      bio={clubInfo?.bio}
+      eligibilityProps={{
+        gatedTokenDetails: gatedTokenDetails,
+        isDeposit: true,
+        isTokenGated: isTokenGated,
+        isWhitelist: whitelistUserData?.setWhitelist,
+      }}
+      members={members}
+      message={message}
+      isSuccessfull={claimSuccessfull}
+      loading={loading}
+      showMessage={showMessage}
+    />
   );
 };
 

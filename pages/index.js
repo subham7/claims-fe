@@ -24,6 +24,7 @@ import {
   queryStationListFromSubgraph,
 } from "utils/stationsSubgraphHelper";
 import { shortAddress } from "utils/helper";
+import { OMIT_DAOS } from "utils/constants";
 
 const useStyles = makeStyles({
   container: {
@@ -307,17 +308,7 @@ const App = () => {
                     {walletAddress && clubListData.length ? (
                       clubListData
                         .reverse()
-                        .filter(
-                          (club) =>
-                            club.daoAddress !==
-                              "0xbd1fab87be86fec9336ae49131998d9fa5a00eb0" &&
-                            club.daoAddress !==
-                              "0x2608d54d10527fd4a6a7bab0306dfbf9ca95a1bb" &&
-                            club.daoAddress !==
-                              "0x067a544f00840056c8cdb7f9d9d73ac3611d37c9" &&
-                            club.daoAddress !==
-                              "0x1ae43fb8283e45ae90d5bd9249cc7227fd6ecc73",
-                        )
+                        .filter((club) => !OMIT_DAOS.includes(club.daoAddress))
                         .map((club, key) => {
                           return (
                             <ListItemButton
