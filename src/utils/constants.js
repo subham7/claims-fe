@@ -39,6 +39,29 @@ export const CHAIN_CONFIG = {
     aaveWrappedUsdcAddress: "0x625E7708f30cA75bfd92586e17077590C60eb4cD",
     aaveWrappedMaticAddress: "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97",
     blockExplorerUrl: "https://polygonscan.com",
+    stargateStakingAddresses: [
+      "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+      "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+      "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+      "0xa3fa99a148fa48d14ed51d610c367c61876997f1",
+    ],
+    stargateUnstakingAddresses: [
+      "0x1205f31718499dbf1fca446663b532ef87481fe1",
+      "0x29e38769f23701a2e4a8ef0492e19da4604be62c",
+      "0x1c272232df0bb6225da87f4decd9d37c32f63eea",
+      "0x8736f92646b2542b3e5f3c63590ca7fe313e283b",
+    ],
+    stargateRouterAddress: "0x45A01E4e04F14f7A4a6702c74187c5F6222033cd",
+    stargatePoolIds: {
+      "0x2791bca1f2de4661ed88a30c99a7a9449aa84174": 1,
+      "0xc2132d05d31c914a87c6611c10748aeb04b58e8f": 2,
+      "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063": 3,
+      "0xa3fa99a148fa48d14ed51d610c367c61876997f1": 16,
+      "0x1205f31718499dbf1fca446663b532ef87481fe1": 1,
+      "0x29e38769f23701a2e4a8ef0492e19da4604be62c": 2,
+      "0x1c272232df0bb6225da87f4decd9d37c32f63eea": 3,
+      "0x8736f92646b2542b3e5f3c63590ca7fe313e283b": 16,
+    },
     disburseContractAddress: "0x2F73a97D1be96853AF8E2b8F29E0F2AF332EA9f5",
   },
   "0x5": {
@@ -225,6 +248,8 @@ export const proposalActionCommands = {
   14: "Deposit tokens in AAVE pool",
   15: "Withdraw tokens from AAVE pool",
   16: "Whitelist with lens post's mirror",
+  17: "Stake tokens through stargate",
+  18: "Unstake tokens through stargate",
 };
 
 export const contractNetworks = {

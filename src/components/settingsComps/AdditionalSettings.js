@@ -505,7 +505,6 @@ const AdditionalSettings = ({
             </Grid>
           </Grid>
         </Grid>
-        <Divider />
       </Stack>
 
       <BackdropLoader isOpen={loading} />

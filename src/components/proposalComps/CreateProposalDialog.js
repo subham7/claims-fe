@@ -136,6 +136,10 @@ const CreateProposalDialog = ({
       aaveDepositAmount: 0,
       aaveWithdrawAmount: 0,
       aaveWithdrawToken: tokenData ? tokenData[0]?.address : "",
+      stargateStakeToken: "",
+      stargateStakeAmount: 0,
+      stargateUnstakeToken: "",
+      stargateUnstakeAmount: 0,
     },
     validationSchema: getProposalValidationSchema({
       networkId,
@@ -203,7 +207,6 @@ const CreateProposalDialog = ({
       }
     },
   });
-
   return (
     <>
       <Dialog
