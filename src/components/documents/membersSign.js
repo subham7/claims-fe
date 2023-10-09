@@ -20,7 +20,7 @@ const useStyles = makeStyles({
   title: {
     fontSize: "36px",
     fontWeight: "500",
-    marginBottom: "40px",
+    marginBottom: "8px",
   },
   input: {
     width: "100%",
@@ -44,14 +44,12 @@ const useStyles = makeStyles({
   },
   btn: {
     width: "130px",
-
     fontSize: "16px",
     marginTop: "20px",
   },
   text: {
     color: "#6475A3",
-    fontSize: "14px",
-    marginTop: "8px",
+    fontSize: "16px",
   },
 });
 
@@ -94,7 +92,14 @@ const MembersSign = ({ daoAddress, membersSign, networkId }) => {
   return (
     <>
       <form className={classes.form} onSubmit={formik.handleSubmit}>
-        <Typography className={classes.title}>Sign legal document</Typography>
+        <Typography variant="inherit" className={classes.title}>
+          Sign Subscription Agreement
+        </Typography>
+        <Typography variant="inherit" className={classes.text}>
+          This is the first step of signing your subscription agreement. Please
+          fill out your details correctly & review and sign the subscription
+          agreement in the next step
+        </Typography>
         <Typography className={classes.label}>Member&apos;s Name *</Typography>
         <TextField
           placeholder="Member's full name"
@@ -134,7 +139,6 @@ const MembersSign = ({ daoAddress, membersSign, networkId }) => {
           helperText={formik.touched.phone && formik.errors.phone}
           className={classes.input}
         />
-
         <Typography className={classes.label}>E-mail *</Typography>
         <TextField
           placeholder="Email address"
@@ -180,7 +184,6 @@ const MembersSign = ({ daoAddress, membersSign, networkId }) => {
           helperText={formik.touched.witness_name && formik.errors.witness_name}
           className={classes.input}
         />
-
         <Button type="submit" variant="contained" className={classes.btn}>
           Next
         </Button>

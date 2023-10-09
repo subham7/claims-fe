@@ -1,56 +1,7 @@
 import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
 import { useEffect, useState } from "react";
 import { PDFViewer } from "@react-pdf/renderer";
-
-import Html from "react-pdf-html";
-
-const html = `<style>
-  .alt-graph .parent {
-    margin-top: 150px;
-    padding: 0;
-    width: 441px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .alt-graph .parent .child {
-    margin-left: 50px;
-    position: relative;
-  }
-  .circle {
-    width: 10px;
-    height: 10px;
-    border: 1px solid grey;
-    border-radius: 50%;
-    background: white;
-  }
-  .line {
-    height: 1px;
-    width: 50px;
-    background: grey;
-    position: absolute;
-    left: 100%;
-    top: 50%;
-  }
-  .rectangle {
-    height: 80px;
-    background: blue;
-    width: 10px;
-    position: absolute;
-    bottom: 20%;
-    left: 10%;
-    z-index: -1;
-  }
-  .my-heading4 {
-    background: darkgreen;
-    color: white;
-  }
-  .histogram-wrapper {
-    width: 380px;
-  } 
-  </style>
-
-  `;
+import { addLineBreaks } from "utils/helper";
 
 const styles = StyleSheet.create({
   page: {
@@ -160,6 +111,19 @@ const styles = StyleSheet.create({
     fontSize: "14px",
     letterSpacing: ".6px",
   },
+
+  viewFlex: {
+    display: "flex",
+    flexDirection: "row",
+    width: "100%",
+    marginTop: "10px",
+    fontSize: "14px",
+    letterSpacing: ".6px",
+  },
+
+  minWidth: {
+    width: "150px",
+  },
 });
 
 export const PdfFile = ({
@@ -183,8 +147,6 @@ export const PdfFile = ({
   return (
     <Document>
       <Page style={styles.page} wrap>
-        <Html>{html}</Html>
-
         <View>
           <View
             style={{
@@ -1123,7 +1085,8 @@ export const PdfFile = ({
               Wallet Address : {admin_address ?? signedAcc}
             </Text>
             <Text wrap style={styles.eachLine}>
-              Signature : {admin_sign ?? signedHash}
+              Signature :{" "}
+              {addLineBreaks(admin_sign, 60) ?? addLineBreaks(signedHash, 60)}
             </Text>
             <Text style={styles.eachLine}>Name: {admin_name}</Text>
             <Text style={styles.eachLine}>Title: Administrative Member</Text>
@@ -1133,26 +1096,59 @@ export const PdfFile = ({
                 <Text style={styles.headerLine} break>
                   Subscriber Info{" "}
                 </Text>
-                <Text style={styles.eachLine}>Name: {member_name}</Text>
-                <Text style={styles.eachLine}>Email: {member_email}</Text>
-                <Text style={styles.eachLine}>Address: {member_address} </Text>
-                <Text style={styles.eachLine}>
-                  Contact No. : {member_contactNo ? member_contactNo : "N/A"}
-                </Text>
-                <Text style={styles.eachLine}>
-                  Nomination Name:{" "}
-                  {member_nominationName ? member_nominationName : "N/A"}
-                </Text>
-                <Text style={styles.eachLine}>
-                  Witness Name:{" "}
-                  {member_witnessName ? member_witnessName : "N/A"}
-                </Text>
-                <Text style={styles.eachLine}>
-                  Wallet Address : {signedAcc}
-                </Text>
-                <Text wrap style={styles.eachLine}>
-                  Signature : {signedHash}
-                </Text>
+
+                <View
+                  wrap={true}
+                  style={{
+                    backgroundColor: "#DCDCDC",
+                    padding: "20px",
+                    border: "1px solid #000",
+                  }}>
+                  <View style={styles.viewFlex}>
+                    <Text style={styles.minWidth}>Name of subscriber: </Text>
+                    <Text>{member_name}</Text>
+                  </View>
+
+                  <View style={styles.viewFlex}>
+                    <Text style={styles.minWidth}>Registered Address: </Text>
+                    <Text wrap={true}>{addLineBreaks(member_address, 35)}</Text>
+                  </View>
+
+                  <View style={styles.viewFlex}>
+                    <Text style={styles.minWidth}>Email Address: </Text>
+                    <Text>{member_email}</Text>
+                  </View>
+
+                  <View style={styles.viewFlex}>
+                    <Text style={styles.minWidth}>Contact No: </Text>
+                    <Text>{member_contactNo ? member_contactNo : "N/A"}</Text>
+                  </View>
+
+                  <View style={styles.viewFlex}>
+                    <Text style={styles.minWidth}>Nomination Name: </Text>
+                    <Text>
+                      {member_nominationName ? member_nominationName : "N/A"}
+                    </Text>
+                  </View>
+
+                  <View style={styles.viewFlex}>
+                    <Text style={styles.minWidth}>Witness Name: </Text>
+                    <Text>
+                      {member_witnessName ? member_witnessName : "N/A"}
+                    </Text>
+                  </View>
+
+                  <View style={styles.viewFlex}>
+                    <Text style={styles.minWidth}>Wallet Address:</Text>
+                    <Text>{addLineBreaks(signedAcc, 35)}</Text>
+                  </View>
+
+                  <View style={styles.viewFlex}>
+                    <Text style={styles.minWidth}>Signature: </Text>
+
+                    <Text>{addLineBreaks(signedHash)}</Text>
+                  </View>
+                </View>
               </View>
             )}
           </View>
