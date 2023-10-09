@@ -22,7 +22,7 @@ import { useNetwork } from "wagmi";
 import { CHAIN_CONFIG } from "utils/constants";
 import UploadW8Ben from "./modals/UploadW8Ben";
 import CustomAlert from "@components/common/CustomAlert";
-import { fetchClubByDaoAddress } from "api/club";
+import { createStation, fetchClubByDaoAddress } from "api/club";
 import { editDepositConfig } from "api/deposit";
 import BackdropLoader from "@components/common/BackdropLoader";
 
@@ -109,7 +109,7 @@ const AdditionalSettings = ({
     try {
       const parts = documentLink.split("/");
       const subscriptionId = parts[parts.length - 1];
-
+      debugger;
       if (!clubAlreadyExists) {
         await createStation({
           depositConfig: {
@@ -177,6 +177,8 @@ const AdditionalSettings = ({
           setIsSuccessFull(false);
           setMessage("Subscription link removing failed");
         }
+      } else {
+        handleDocumentLinkChange();
       }
     }
   };
