@@ -1,29 +1,34 @@
 import {
-  Grid,
-  InputAdornment,
   MenuItem,
   OutlinedInput,
   Select,
   Stack,
-  TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
-import { commandTypeList } from "../../data/dashboard";
 import { makeStyles } from "@mui/styles";
+import { useNetwork } from "wagmi";
+import { csvToObjectForMintGT } from "utils/helper";
+import React, { useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import { CHAIN_CONFIG, proposalActionCommands } from "utils/constants";
+import { proposalFormData } from "utils/proposalData";
+import Web3 from "web3";
 
 const useStyles = makeStyles({
   textField: {
     width: "100%",
-    // margin: "16px 0 25px 0",
     marginTop: "0.5rem",
     fontSize: "18px",
-    fontFamily: "Whyte",
   },
 });
 
 const ProposalActionForm = ({ formik, tokenData, nftData }) => {
+  const hiddenFileInput = useRef(null);
+  const [file, setFile] = useState("");
+  const [loadingCsv, setLoadingCsv] = useState(false);
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
+
   const classes = useStyles();
 
   const tokenType = useSelector((state) => {
@@ -41,6 +46,68 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
   const isGovernanceActive =
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
 
+  let filteredTokens = [];
+  tokenData.map((token) => {
+    if (
+      token.address === CHAIN_CONFIG[networkId].nativeToken ||
+      Web3.utils.toChecksumAddress(token.address) ===
+        CHAIN_CONFIG[networkId].usdcAddress
+    ) {
+      filteredTokens.push(token);
+    }
+  });
+
+  let stargateFilteredTokens = [];
+  tokenData.map((token) => {
+    if (
+      CHAIN_CONFIG[networkId].stargateStakingAddresses.includes(token.address)
+    ) {
+      stargateFilteredTokens.push(token);
+    }
+  });
+
+  let stargateUnstakeFilteredTokens = [];
+  tokenData.map((token) => {
+    if (
+      CHAIN_CONFIG[networkId].stargateUnstakingAddresses.includes(token.address)
+    ) {
+      stargateUnstakeFilteredTokens.push(token);
+    }
+  });
+
+  const handleClick = () => {
+    hiddenFileInput.current.click();
+  };
+
+  const handleChange = async (event, isMintGT = false) => {
+    const fileUploaded = event.target.files[0];
+    setLoadingCsv(true);
+    setFile(fileUploaded);
+
+    // new instance of fileReader class
+    const reader = new FileReader();
+
+    if (fileUploaded) {
+      await reader.readAsText(fileUploaded);
+
+      // converting .csv file into array of objects
+      reader.onload = async (event) => {
+        const csvData = event.target.result;
+        if (!isMintGT) {
+          const csvArr = csvData.split("\r\n");
+          // setCSVObject(csvArr);
+          formik.values.csvObject = csvArr;
+          setLoadingCsv(false);
+        } else {
+          const { addresses, amounts } = csvToObjectForMintGT(csvData);
+          formik.values.mintGTAmounts = amounts;
+          formik.values.mintGTAddresses = addresses;
+          setLoadingCsv(false);
+        }
+      };
+    }
+  };
+
   return (
     <Stack sx={{ marginTop: "1rem" }}>
       <Typography variant="proposalBody">
@@ -49,18 +116,23 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
       <Select
         displayEmpty
         value={formik.actionCommand}
-        onChange={(e) => formik.setFieldValue("actionCommand", e.target.value)}
+        onChange={(e) => {
+          const selectedValue = e.target.value;
+          const selectedKey = Object.keys(proposalActionCommands).find(
+            (key) => proposalActionCommands[key] === selectedValue,
+          );
+          formik.setFieldValue("actionCommand", Number(selectedKey));
+        }}
         input={<OutlinedInput />}
         renderValue={(selected) => {
-          //   if (selected.length === 0) {
-          //     return "Select a command";
-          //   }
+          if (!selected) {
+            return "Select a command";
+          }
           return selected;
         }}
-        MenuProps={commandTypeList}
         style={{
           borderRadius: "10px",
-          background: "#111D38 0% 0% no-repeat padding-box",
+          background: "#0F0F0F 0% 0% no-repeat padding-box",
           width: "100%",
           marginTop: "0.5rem",
         }}
@@ -70,587 +142,88 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         helperText={
           formik.touched.actionCommand && formik.errors.actionCommand
         }>
+        <MenuItem key={4} value="Send token to an address">
+          Send Token
+        </MenuItem>
+        <MenuItem key={5} value="Send nft to an address">
+          Send NFT
+        </MenuItem>
         <MenuItem key={0} value="Distribute token to members">
-          Distribute token to members
+          Distribute Token to Members (Pro-rata)
         </MenuItem>
-        {/* {tokenType !== "erc721" ? ( */}
         <MenuItem key={1} value="Mint club token">
-          Mint club token
+          Mint Station Tokens
         </MenuItem>
-        {/* ) : null} */}
+        <MenuItem key={8} value="Buy nft">
+          Buy NFT (OpenSea)
+        </MenuItem>
+        {/* <MenuItem key={9} value="Sell nft">
+          Sell nft
+        </MenuItem> */}
+        <MenuItem key={14} value="Deposit tokens in AAVE pool">
+          AAVE Pool - Deposit
+        </MenuItem>
+        <MenuItem key={15} value="Withdraw tokens from AAVE pool">
+          AAVE Pool - Withdraw
+        </MenuItem>
+        <MenuItem key={10} value="Whitelist deposit">
+          Gate Deposit - CSV
+        </MenuItem>
+        <MenuItem key={11} value="Whitelist with lens followers">
+          Gate Deposit - Lens Followers
+        </MenuItem>
+        <MenuItem key={12} value="Whitelist with lens post's comments">
+          Gate Deposit - Lens Post Comments
+        </MenuItem>
+        <MenuItem key={16} value="Whitelist with lens post's mirror">
+          Gate Deposit - Lens Post Mirror
+        </MenuItem>
+
         {isGovernanceActive ? (
-          <MenuItem key={2} value="Update Governance Settings">
+          <MenuItem key={2} value="Update governance settings">
             Update Governance Settings
           </MenuItem>
         ) : null}
+
+        <MenuItem key={13} value="Update price per token">
+          Update Price per Token
+        </MenuItem>
+        <MenuItem key={6} value="Add signer">
+          Add Station Signer
+        </MenuItem>
+        <MenuItem key={7} value="Remove signer">
+          Remove Station signer
+        </MenuItem>
+
         {tokenType !== "erc721" ? (
           <MenuItem key={3} value="Change total raise amount">
             Change total raise amount
           </MenuItem>
         ) : null}
-
-        <MenuItem key={4} value="Send token to an address">
-          Send token to an address
+        <MenuItem key={17} value="Stake tokens through stargate">
+          Stake tokens through stargate
         </MenuItem>
-        <MenuItem key={5} value="Send nft to an address">
-          Send nft to an address
-        </MenuItem>
-        <MenuItem key={6} value="Add signer">
-          Add Signer
-        </MenuItem>
-        <MenuItem key={7} value="Remove signer">
-          Remove Signer
+        <MenuItem key={18} value="Unstake tokens through stargate">
+          Unstake tokens through stargate
         </MenuItem>
       </Select>
-
-      {formik.values.actionCommand === "Distribute token to members" ? (
-        <>
-          <Grid
-            container
-            direction={"column"}
-            ml={3}
-            mt={2}
-            // mb={}
-            sx={{ marginLeft: "0 !important" }}>
-            <Typography variant="proposalBody">Token to be sent</Typography>
-            <Select
-              sx={{ marginTop: "0.5rem" }}
-              value={formik.values.customToken}
-              onChange={(e) =>
-                formik.setFieldValue(
-                  "airdropToken",
-                  tokenData.find((token) => token.name === e.target.value)
-                    .token_address,
-                )
-              }
-              renderValue={(selected) => {
-                if (selected.length === 0) {
-                  return "Select a command";
-                }
-                return selected;
-              }}
-              inputProps={{ "aria-label": "Without label" }}
-              name="airdropToken"
-              id="airdropToken"
-              error={
-                formik.touched.customToken && Boolean(formik.errors.customToken)
-              }
-              helperText={
-                formik.touched.customToken && formik.errors.customToken
-              }>
-              {tokenData.map((token) => (
-                <MenuItem key={token.name} value={token.name}>
-                  {token.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </Grid>
-          <Grid
-            container
-            direction={"column"}
-            ml={3}
-            mt={2}
-            sx={{ marginLeft: "0 !important" }}>
-            <Typography variant="proposalBody">Amount of Tokens *</Typography>
-            <TextField
-              variant="outlined"
-              className={classes.textField}
-              placeholder="0"
-              type="number"
-              name="amountToAirdrop"
-              id="amountToAirdrop"
-              value={formik.values.amountToAirdrop}
-              onChange={formik.handleChange}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment style={{ color: "#6475A3" }} position="end">
-                    Balance:{" "}
-                    {formik.values.airdropToken
-                      ? tokenData.find((token) => {
-                          return (
-                            token.token_address === formik.values.airdropToken
-                          );
-                        }).balance /
-                        10 **
-                          tokenData.find((token) => {
-                            return (
-                              token.token_address === formik.values.airdropToken
-                            );
-                          }).decimals
-                      : "0"}
-                  </InputAdornment>
-                ),
-              }}
-              error={
-                formik.touched.amountToAirdrop &&
-                Boolean(formik.errors.amountToAirdrop)
-              }
-              helperText={
-                formik.touched.amountToAirdrop && formik.errors.amountToAirdrop
-              }
-              onWheel={(event) => event.target.blur()}
-            />
-          </Grid>
-          <Grid
-            container
-            direction={"column"}
-            ml={3}
-            mt={2}
-            sx={{ marginLeft: "0 !important" }}>
-            <Typography variant="proposalBody">Carry Fee</Typography>
-            <TextField
-              variant="outlined"
-              className={classes.textField}
-              placeholder="0"
-              type="number"
-              name="carryFee"
-              id="carryFee"
-              value={formik.values.carryFee}
-              onChange={formik.handleChange}
-              error={formik.touched.carryFee && Boolean(formik.errors.carryFee)}
-              helperText={formik.touched.carryFee && formik.errors.carryFee}
-              onWheel={(event) => event.target.blur()}
-            />
-          </Grid>
-        </>
-      ) : formik.values.actionCommand === "Mint club token" ? (
-        <>
-          <Grid
-            container
-            direction={"column"}
-            ml={3}
-            mt={2}
-            sx={{ marginLeft: "0 !important" }}>
-            <Typography variant="proposalBody">User Address *</Typography>
-            <TextField
-              variant="outlined"
-              className={classes.textField}
-              placeholder="0x00"
-              name="userAddress"
-              id="userAddress"
-              value={formik.values.userAddress}
-              onChange={formik.handleChange}
-              error={
-                formik.touched.userAddress && Boolean(formik.errors.userAddress)
-              }
-              helperText={
-                formik.touched.userAddress && formik.errors.userAddress
-              }
-            />
-          </Grid>
-
-          <Grid
-            container
-            direction={"column"}
-            ml={3}
-            mt={2}
-            sx={{ marginLeft: "0 !important" }}>
-            <Typography variant="proposalBody">Amount of Tokens *</Typography>
-            {console.log(formik)}
-
-            <TextField
-              variant="outlined"
-              className={classes.textField}
-              placeholder="Enter amount of tokens"
-              type="number"
-              name="amountOfTokens"
-              id="amountOfTokens"
-              value={formik.values.amountOfTokens}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={
-                formik.touched.amountOfTokens &&
-                Boolean(formik.errors.amountOfTokens)
-              }
-              helperText={
-                formik.touched.amountOfTokens && formik.errors.amountOfTokens
-              }
-              onWheel={(event) => event.target.blur()}
-            />
-          </Grid>
-        </>
-      ) : formik.values.actionCommand === "Update Governance Settings" ? (
-        <>
-          <Grid
-            container
-            direction={"column"}
-            ml={3}
-            mt={2}
-            sx={{ marginLeft: "0 !important" }}>
-            <Typography variant="proposalBody">Quorum (in %)</Typography>
-            <TextField
-              variant="outlined"
-              className={classes.textField}
-              placeholder="0"
-              type="number"
-              name="quorum"
-              id="quorum"
-              value={formik.values.quorum}
-              onChange={formik.handleChange}
-              error={formik.touched.quorum && Boolean(formik.errors.quorum)}
-              helperText={formik.touched.quorum && formik.errors.quorum}
-              onWheel={(event) => event.target.blur()}
-            />
-          </Grid>
-
-          <Grid
-            container
-            direction={"column"}
-            ml={3}
-            mt={2}
-            sx={{ marginLeft: "0 !important" }}>
-            <Typography variant="proposalBody"> Threshold (in %)</Typography>
-            <TextField
-              variant="outlined"
-              className={classes.textField}
-              placeholder="0"
-              type="number"
-              name="threshold"
-              id="threshold"
-              value={formik.values.threshold}
-              onChange={formik.handleChange}
-              error={
-                formik.touched.threshold && Boolean(formik.errors.threshold)
-              }
-              helperText={formik.touched.threshold && formik.errors.threshold}
-              onWheel={(event) => event.target.blur()}
-            />
-          </Grid>
-        </>
-      ) : formik.values.actionCommand === "Change total raise amount" ? (
-        <Grid
-          container
-          direction={"column"}
-          ml={3}
-          mt={2}
-          sx={{ marginLeft: "0 !important" }}>
-          <Typography variant="proposalBody">Total deposit</Typography>
-          <TextField
-            variant="outlined"
-            className={classes.textField}
-            placeholder="0"
-            type="number"
-            name="totalDeposit"
-            id="totalDeposit"
-            value={formik.values.totalDeposit}
-            onChange={formik.handleChange}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment style={{ color: "#6475A3" }} position="end">
-                  USDC
-                </InputAdornment>
-              ),
-            }}
-            error={
-              formik.touched.totalDeposit && Boolean(formik.errors.totalDeposit)
-            }
-            helperText={
-              formik.touched.totalDeposit && formik.errors.totalDeposit
-            }
-            onWheel={(event) => event.target.blur()}
-          />
-        </Grid>
-      ) : formik.values.actionCommand === "Send token to an address" ? (
-        <>
-          <Grid
-            container
-            direction={"column"}
-            ml={3}
-            mt={2}
-            sx={{ marginLeft: "0 !important" }}>
-            <Typography variant="proposalBody">Token to be sent</Typography>
-            <Select
-              sx={{ marginTop: "0.5rem" }}
-              value={formik.values.customToken}
-              onChange={(e) =>
-                formik.setFieldValue(
-                  "customToken",
-                  tokenData.find((token) => token.name === e.target.value)
-                    .token_address,
-                )
-              }
-              renderValue={(selected) => {
-                if (selected.length === 0) {
-                  return "Select a command";
-                }
-
-                return selected;
-              }}
-              inputProps={{ "aria-label": "Without label" }}
-              name="customToken"
-              id="customToken"
-              error={
-                formik.touched.customToken && Boolean(formik.errors.customToken)
-              }
-              helperText={
-                formik.touched.customToken && formik.errors.customToken
-              }>
-              {tokenData.map((token) => (
-                <MenuItem key={token.name} value={token.name}>
-                  {token.name}
-                </MenuItem>
-              ))}
-            </Select>
-            <Typography mt={2} variant="proposalBody">
-              Receiver&apos;s wallet address *
-            </Typography>
-            <TextField
-              variant="outlined"
-              className={classes.textField}
-              placeholder="0x00"
-              name="recieverAddress"
-              id="recieverAddress"
-              value={formik.values.recieverAddress}
-              onChange={formik.handleChange}
-              error={
-                formik.touched.recieverAddress &&
-                Boolean(formik.errors.recieverAddress)
-              }
-              helperText={
-                formik.touched.recieverAddress && formik.errors.recieverAddress
-              }
-            />
-          </Grid>
-
-          <Grid
-            container
-            direction={"column"}
-            ml={3}
-            mt={2}
-            sx={{ marginLeft: "0 !important" }}>
-            <Typography variant="proposalBody"> Amount to be sent *</Typography>
-            <TextField
-              variant="outlined"
-              className={classes.textField}
-              placeholder="0"
-              type="number"
-              name="amountToSend"
-              id="amountToSend"
-              value={formik.values.amountToSend}
-              onChange={formik.handleChange}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment style={{ color: "#6475A3" }} position="end">
-                    Balance:{" "}
-                    {formik.values.customToken
-                      ? tokenData.find((token) => {
-                          return (
-                            token.token_address === formik.values.customToken
-                          );
-                        }).balance /
-                        10 **
-                          tokenData.find((token) => {
-                            return (
-                              token.token_address === formik.values.customToken
-                            );
-                          }).decimals
-                      : "0"}
-                  </InputAdornment>
-                ),
-              }}
-              error={
-                formik.touched.amountToSend &&
-                Boolean(formik.errors.amountToSend)
-              }
-              helperText={
-                formik.touched.amountToSend && formik.errors.amountToSend
-              }
-              onWheel={(event) => event.target.blur()}
-            />
-          </Grid>
-        </>
-      ) : formik.values.actionCommand === "Send nft to an address" ? (
-        <>
-          {console.log(formik)}
-          <Grid
-            container
-            direction={"column"}
-            ml={3}
-            mt={2}
-            sx={{ marginLeft: "0 !important" }}>
-            <Typography variant="proposalBody">Nft to be sent</Typography>
-            <Select
-              sx={{ marginTop: "0.5rem" }}
-              value={formik.values.customToken}
-              onChange={(e) =>
-                formik.setFieldValue(
-                  "customNft",
-                  nftData.find(
-                    (token) => token.token_address === e.target.value,
-                  ).token_address,
-                )
-              }
-              renderValue={(selected) => {
-                if (selected.length === 0) {
-                  return "Select a command";
-                }
-
-                return selected;
-              }}
-              inputProps={{ "aria-label": "Without label" }}
-              name="customToken"
-              id="customToken"
-              error={
-                formik.touched.customToken && Boolean(formik.errors.customToken)
-              }
-              helperText={
-                formik.touched.customToken && formik.errors.customToken
-              }>
-              {nftData
-                .filter((item, index, self) => {
-                  return (
-                    index ===
-                    self.findIndex(
-                      (t) => t.token_address === item.token_address,
-                    )
-                  );
-                })
-                .map((nft) => (
-                  <MenuItem key={nft.token_hash} value={nft.token_address}>
-                    {nft.token_address}
-                  </MenuItem>
-                ))}
-            </Select>
-            <Typography mt={2} variant="proposalBody">
-              Token ID
-            </Typography>
-            <Select
-              sx={{ marginTop: "0.5rem" }}
-              value={formik.values.customToken}
-              onChange={(e) =>
-                formik.setFieldValue("customNftToken", e.target.value)
-              }
-              renderValue={(selected) => {
-                if (selected.length === 0) {
-                  return "Select a command";
-                }
-
-                return selected;
-              }}
-              inputProps={{ "aria-label": "Without label" }}
-              name="customNftToken"
-              id="customNftToken"
-              error={
-                formik.touched.customNftToken &&
-                Boolean(formik.errors.customNftToken)
-              }
-              helperText={
-                formik.touched.customNftToken && formik.errors.customNftToken
-              }>
-              {nftData
-                .filter((nft) => nft.token_address === formik.values.customNft)
-                .map((nft) => (
-                  <MenuItem key={nft.token_hash} value={nft.token_id}>
-                    {nft.token_id}
-                  </MenuItem>
-                ))}
-              {/* {nftData?.map((nft) => (
-                <MenuItem key={nft.token_hash} value={nft.token_address}>
-                  {nft.token_address}
-                </MenuItem>
-              ))} */}
-            </Select>
-            <Typography mt={2} variant="proposalBody">
-              Receiver&apos;s wallet address *
-            </Typography>
-            <TextField
-              variant="outlined"
-              className={classes.textField}
-              placeholder="0x00"
-              name="recieverAddress"
-              id="recieverAddress"
-              value={formik.values.recieverAddress}
-              onChange={formik.handleChange}
-              error={
-                formik.touched.recieverAddress &&
-                Boolean(formik.errors.recieverAddress)
-              }
-              helperText={
-                formik.touched.recieverAddress && formik.errors.recieverAddress
-              }
-            />
-          </Grid>
-        </>
-      ) : formik.values.actionCommand === "Add signer" ? (
-        <>
-          <Grid
-            container
-            direction={"column"}
-            ml={3}
-            mt={2}
-            sx={{ marginLeft: "0 !important" }}>
-            <Typography mt={2} variant="proposalBody">
-              Wallet Address *
-            </Typography>
-            <TextField
-              variant="outlined"
-              className={classes.textField}
-              placeholder="0x00"
-              name="ownerAddress"
-              id="ownerAddress"
-              value={formik.values.ownerAddress}
-              onChange={formik.handleChange}
-              error={
-                formik.touched.ownerAddress &&
-                Boolean(formik.errors.ownerAddress)
-              }
-              helperText={
-                formik.touched.ownerAddress && formik.errors.ownerAddress
-              }
-            />
-          </Grid>
-        </>
-      ) : formik.values.actionCommand === "Remove signer" ? (
-        <>
-          <Grid
-            container
-            direction={"column"}
-            ml={3}
-            mt={2}
-            sx={{ marginLeft: "0 !important" }}>
-            <Typography mt={2} variant="proposalBody">
-              Wallet address *
-            </Typography>
-            <TextField
-              variant="outlined"
-              className={classes.textField}
-              placeholder="0x00"
-              name="ownerAddress"
-              id="ownerAddress"
-              value={formik.values.ownerAddress}
-              onChange={formik.handleChange}
-              error={
-                formik.touched.ownerAddress &&
-                Boolean(formik.errors.ownerAddress)
-              }
-              helperText={
-                formik.touched.ownerAddress && formik.errors.ownerAddress
-              }
-            />
-
-            <Typography mt={2} variant="proposalBody">
-              Threshold of safe
-            </Typography>
-            <TextField
-              variant="outlined"
-              className={classes.textField}
-              type="number"
-              placeholder="0x00"
-              name="safeThreshold"
-              id="safeThreshold"
-              value={formik.values.safeThreshold}
-              onChange={formik.handleChange}
-              error={
-                formik.touched.safeThreshold &&
-                Boolean(formik.errors.safeThreshold)
-              }
-              helperText={
-                formik.touched.safeThreshold && formik.errors.safeThreshold
-              }
-            />
-          </Grid>
-        </>
-      ) : null}
+      {proposalFormData({
+        formik,
+        tokenData,
+        networkId,
+        classes,
+        handleChange,
+        handleClick,
+        hiddenFileInput,
+        file,
+        nftData,
+        filteredTokens:
+          formik.values.actionCommand === 17
+            ? stargateFilteredTokens
+            : formik.values.actionCommand === 18
+            ? stargateUnstakeFilteredTokens
+            : filteredTokens,
+      })}
     </Stack>
   );
 };

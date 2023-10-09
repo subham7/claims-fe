@@ -5,51 +5,46 @@ export const SettingsInfoStlyes = makeStyles({
     marginRight: "0.5rem",
   },
   valuesStyle: {
-    fontSize: "21px",
+    fontSize: "20px",
     fontWeight: "normal",
-    fontFamily: "Whyte",
   },
   valuesDimStyle: {
     fontSize: "22px",
-    color: "#C1D3FF",
-    fontFamily: "Whyte",
+    color: "#dcdcdc",
   },
   cardRegular: {
     borderRadius: "10px",
     opacity: 1,
   },
   dimColor: {
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   connectWalletButton: {
-    backgroundColor: "#3B7AFD",
-    fontSize: "21px",
-    fontFamily: "Whyte",
+    backgroundColor: "#2D55FF",
+    fontSize: "20px",
   },
   depositButton: {
-    backgroundColor: "#3B7AFD",
+    backgroundColor: "#2D55FF",
     width: "208px",
     height: "60px",
-    fontSize: "21px",
-    fontFamily: "Whyte",
+    fontSize: "20px",
   },
   cardSmall: {
-    backgroundColor: "#111D38",
+    backgroundColor: "#0F0F0F",
     borderRadius: "20px",
     opacity: 1,
   },
   cardSmallFont: {
-    fontFamily: "Whyte",
     fontSize: "18px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   cardLargeFont: {
     width: "150px",
     fontSize: "38px",
     fontWeight: "bold",
-    fontFamily: "Whyte",
+
     color: "#F5F5F5",
-    borderColor: "#142243",
+    borderColor: "#151515",
     borderRadius: "0px",
     "& input[type=number]": {
       "-moz-appearance": "textfield",
@@ -72,7 +67,6 @@ export const SettingsInfoStlyes = makeStyles({
     textAlign: "left",
     color: "#FFB74D",
     fontSize: "14px",
-    fontFamily: "Whyte",
   },
   maxTag: {
     borderRadius: "17px",
@@ -83,9 +77,8 @@ export const SettingsInfoStlyes = makeStyles({
     justifyContent: "center",
     display: "flex",
     alignItems: "center",
-    backgroundColor: " #3B7AFD",
+    backgroundColor: " #2D55FF",
     fontSize: "20px",
-    fontFamily: "Whyte",
   },
   openTag: {
     width: "60px",
@@ -104,7 +97,6 @@ export const SettingsInfoStlyes = makeStyles({
     textTransform: "uppercase",
     color: "#0ABB92",
     opacity: "1",
-    fontFamily: "Whyte",
   },
   closeTag: {
     width: "60px",
@@ -125,10 +117,10 @@ export const SettingsInfoStlyes = makeStyles({
     opacity: "1",
   },
   iconColor: {
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   activityLink: {
-    color: "#3B7AFD",
+    color: "#2D55FF",
     textDecoration: "none",
     "&:hover": {
       textDecoration: "none",
@@ -140,11 +132,11 @@ export const SettingsInfoStlyes = makeStyles({
   },
   modalStyle: {
     width: "792px",
-    backgroundColor: "#19274B",
+    backgroundColor: "#151515",
   },
   datePicker: {
     borderRadius: "10px",
-    backgroundColor: "#111D38",
+    backgroundColor: "#0F0F0F",
     width: "95%",
   },
 });

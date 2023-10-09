@@ -1,8 +1,8 @@
-import { Alert } from "@mui/material";
+import CustomAlert from "@components/common/CustomAlert";
 import { makeStyles } from "@mui/styles";
-import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { BsLink45Deg } from "react-icons/bs";
+import { shortAddress } from "utils/helper";
 
 const useStyles = makeStyles({
   container: {
@@ -27,12 +27,12 @@ const useStyles = makeStyles({
   createdBy: {
     fontWeight: "300",
     margin: 0,
-    fontSize: "15px",
+    fontSize: "14px",
     color: "#6475A3",
     // letterSpacing: '0.5px'
   },
   span: {
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     // textDecoration: 'underline'
   },
   icons: {
@@ -61,12 +61,18 @@ const useStyles = makeStyles({
   },
 });
 
-const DocumentCard = ({ legalDocLink, date, fileName, index, createdBy }) => {
+const DocumentCard = ({
+  legalDocLink,
+  date,
+  fileName,
+  index,
+  createdBy,
+  daoAddress,
+  networkId,
+}) => {
   const [isCopied, setIsCopied] = useState(false);
 
   const classes = useStyles();
-  const router = useRouter();
-  const { clubId: daoAddress } = router.query;
   const convertedDate = new Date(date).toLocaleDateString();
 
   return (
@@ -74,11 +80,8 @@ const DocumentCard = ({ legalDocLink, date, fileName, index, createdBy }) => {
       <div className={classes.topLine}>
         <h4 className={classes.createdBy}>
           Created by{" "}
-          <span className={classes.span}>
-            {createdBy?.slice(0, 5)}....
-            {createdBy?.slice(createdBy?.length - 4)}
-          </span>{" "}
-          on <span className={classes.span}>{convertedDate}</span>
+          <span className={classes.span}>{shortAddress(createdBy)}</span> on{" "}
+          <span className={classes.span}>{convertedDate}</span>
         </h4>
 
         <div className={classes.iconContainer}>
@@ -86,10 +89,9 @@ const DocumentCard = ({ legalDocLink, date, fileName, index, createdBy }) => {
             onClick={(e) => {
               e.stopPropagation();
               navigator.clipboard.writeText(
-                `${window.location.origin}/dashboard/${daoAddress}/documents/sign/${legalDocLink}`,
+                `${window.location.origin}/documents/${daoAddress}/${networkId}/sign/${legalDocLink}`,
               );
               setIsCopied(true);
-
               setTimeout(() => {
                 setIsCopied(false);
               }, 3000);
@@ -105,19 +107,7 @@ const DocumentCard = ({ legalDocLink, date, fileName, index, createdBy }) => {
         {fileName}
       </h2>
 
-      {isCopied && (
-        <Alert
-          severity="success"
-          sx={{
-            width: "150px",
-            position: "absolute",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          {"Copied"}
-        </Alert>
-      )}
+      {isCopied && <CustomAlert alertMessage={"Copied"} severity={true} />}
     </div>
   );
 };

@@ -2,16 +2,6 @@ import axios from "axios";
 import { MAIN_API_URL } from "../index";
 import { getJwtToken } from "../../utils/auth";
 
-// fetch treasury balance, tokens and nfts associated with a particular club
-export async function getAssets(clubId) {
-  return await axios.get(MAIN_API_URL + `assets/${clubId}`, {
-    headers: {
-      Authorization: "Bearer " + getJwtToken(),
-      "Content-Type": "application/json",
-    },
-  });
-}
-
 export async function getAssetsByDaoAddress(daoAddress, networkId) {
   try {
     return await axios.get(
@@ -46,15 +36,6 @@ export async function fetchTokenMetaData(tokenAddress, networkId) {
   }
 }
 
-export async function getNFTs(clubId) {
-  return await axios.get(MAIN_API_URL + `assets/${clubId}/nft`, {
-    headers: {
-      Authorization: "Bearer " + getJwtToken(),
-      "Content-Type": "application/json",
-    },
-  });
-}
-
 export async function getNFTsByDaoAddress(daoAddress, networkId) {
   try {
     return await axios.get(
@@ -69,4 +50,68 @@ export async function getNFTsByDaoAddress(daoAddress, networkId) {
   } catch (error) {
     console.log(error);
   }
+}
+
+export async function retrieveNftListing(chain, contractAddress, tokenId) {
+  try {
+    return await axios.get(
+      `https://api.opensea.io/v2/orders/${chain}/seaport/listings?asset_contract_address=${contractAddress}&token_ids=${tokenId}&order_by=created_date&order_direction=desc`,
+      {
+        headers: {
+          accept: "application/json",
+          "X-API-KEY": "168c1d23e73c46318518d8f9eedc89dd",
+        },
+      },
+    );
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function fulfillOrder(offer, fulfiller, consideration) {
+  const options = {
+    method: "POST",
+    headers: {
+      "X-API-KEY": "168c1d23e73c46318518d8f9eedc89dd",
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      offer: offer,
+      fulfiller: fulfiller,
+      consideration: consideration,
+    }),
+  };
+
+  const res = await fetch(
+    "https://api.opensea.io/v2/offers/fulfillment_data",
+    options,
+  );
+  return res.json();
+}
+
+export async function uploadNFT(daoAddress, imageLink) {
+  // upload nft to corresponding DAO address
+  return await axios.post(
+    MAIN_API_URL + `club/file`,
+    {
+      daoAddress,
+      imageUrl: imageLink,
+    },
+    {
+      headers: {
+        Authorization: "Bearer " + getJwtToken(),
+        "Content-Type": "application/json",
+      },
+    },
+  );
+}
+
+export async function getUploadedNFT(daoAddress) {
+  // get uploaded nft to corresponding DAO address
+  return await axios.get(MAIN_API_URL + `club/${daoAddress}/file `, {
+    headers: {
+      Authorization: "Bearer " + getJwtToken(),
+      "Content-Type": "application/json",
+    },
+  });
 }

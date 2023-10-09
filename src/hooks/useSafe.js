@@ -1,26 +1,31 @@
-import useSmartContractMethods from "./useSmartContractMethods";
-import { addClubData, addDaoAddress } from "../redux/reducers/club";
+import { addClubData } from "../redux/reducers/club";
 import {
   setCreateDaoAuthorized,
   setCreateSafeError,
   setCreateSafeErrorCode,
   setCreateSafeLoading,
 } from "../redux/reducers/gnosis";
-import Router from "next/router";
-import { createClubData } from "../api/club";
+import { useRouter } from "next/router";
+import { createStation } from "../api/club";
+import useAppContractMethods from "./useAppContractMethods";
+import { ZERO_ADDRESS } from "utils/constants";
+import { uploadNFT } from "api/assets";
+import { uploadFileToAWS } from "utils/helper";
 
 const useSafe = () => {
-  const { createERC721DAO, createERC20DAO } = useSmartContractMethods();
+  const { createERC721DAO, createERC20DAO } = useAppContractMethods();
+  const router = useRouter();
 
   const initiateConnection = async (
     params,
     dispatch,
     addressList,
     clubTokenType,
-    tokenURI = "",
     metadataURL = "",
     useStationFor,
     email = "",
+    networkId,
+    imageFile = null,
   ) => {
     dispatch(setCreateSafeLoading(true));
     dispatch(setCreateDaoAuthorized(false));
@@ -33,58 +38,24 @@ const useSafe = () => {
 
       let value;
       if (clubTokenType === "NFT") {
-        value = await createERC721DAO(
-          params.clubName,
-          params.clubSymbol,
+        value = await createERC721DAO({
+          ...params,
           metadataURL,
-          params.ownerFeePerDepositPercent,
-          params.depositClose,
-          params.quorum,
-          params.threshold,
-          params.safeThreshold,
-          params.depositTokenAddress,
-          params.treasuryAddress,
           addressList,
-          params.maxTokensPerUser,
-          params.distributeAmount,
-          params.pricePerToken,
-          params.isNftTransferable,
-          params.isNftTotalSupplyUnlimited,
-          params.isGovernanceActive,
-          params.allowWhiteList,
-          params.storeAssetsOnGnosis,
-          params.merkleRoot,
-        );
+        });
       } else {
-        value = await createERC20DAO(
-          params.clubName,
-          params.clubSymbol,
-          params.distributeAmount,
-          params.pricePerToken,
-          params.minDepositPerUser,
-          params.maxDepositPerUser,
-          params.ownerFeePerDepositPercent,
-          params.depositClose,
-          params.quorum,
-          params.threshold,
-          params.safeThreshold,
-          params.depositTokenAddress,
-          params.treasuryAddress,
+        value = await createERC20DAO({
+          ...params,
           addressList,
-          params.isGovernanceActive,
-          params.isGtTransferable,
-          params.allowWhiteList,
-          params.storeAssetsOnGnosis,
-          params.merkleRoot,
-        );
+        });
       }
+
       try {
         dispatch(
           addClubData({
             gnosisAddress:
-              params.treasuryAddress ===
-              "0x0000000000000000000000000000000000000000"
-                ? value.events[0].address
+              params.treasuryAddress === ZERO_ADDRESS
+                ? value.logs[0].address
                 : params.treasuryAddress,
             isGtTransferable: params.isGtTransferable,
             name: params.clubName,
@@ -95,24 +66,35 @@ const useSafe = () => {
         );
 
         daoAddress =
-          params.treasuryAddress ===
-          "0x0000000000000000000000000000000000000000"
-            ? value.events[2].address
-            : value.events[0].address;
-        dispatch(addDaoAddress(daoAddress));
+          params.treasuryAddress === ZERO_ADDRESS
+            ? value.logs[2].address
+            : value.logs[0].address;
 
-        await createClubData({
-          daoAddress,
-          clubType: useStationFor,
-          deployerEmail: email,
+        await createStation({
+          depositConfig: {
+            subscriptionDocId: null,
+            enableKyc: false,
+            uploadDocId: null,
+          },
+          name: params.clubName,
+          daoAddress: daoAddress?.toLowerCase(),
+          safeAddress:
+            params.treasuryAddress === ZERO_ADDRESS
+              ? value.logs[0].address
+              : params.treasuryAddress,
+          networkId,
+          tokenType:
+            clubTokenType === "NFT" ? "erc721" : "erc20NonTransferable",
         });
 
-        const { pathname } = Router;
-        if (pathname == "/create") {
-          Router.push(`/dashboard/${daoAddress}?clubCreate=true`, undefined, {
-            shallow: true,
-          });
+        if (clubTokenType === "NFT") {
+          const imageLink = await uploadFileToAWS(imageFile);
+          await uploadNFT(daoAddress?.toLowerCase(), imageLink);
         }
+
+        router.push(`/dashboard/${daoAddress}/${networkId}`, undefined, {
+          shallow: true,
+        });
       } catch (error) {
         dispatch(setCreateDaoAuthorized(false));
         dispatch(setCreateSafeError(true));

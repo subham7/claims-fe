@@ -9,14 +9,11 @@ import "react-quill/dist/quill.snow.css";
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "fit-content !important",
-    "max-height": "20vh !important",
+    borderRadius: "12px",
     "& .root": {
       height: "fit-content",
     },
     "& .ql-toolbar": {
-      //   "borderLeft": "none",
-      //   "borderTop": "none",
-      //   "borderRight": "none",
       border: `1px solid ${theme.palette.divider}`,
       borderTopRightRadius: "12px",
       borderTopLeftRadius: "12px",
@@ -84,7 +81,6 @@ const useStyles = makeStyles((theme) => ({
     "& .ql-container": {
       height: "16vh",
       //   "border": "none",
-
       border: `1px solid #d32f2f`,
       borderBottomRightRadius: "12px",
       borderBottomLeftRadius: "12px",

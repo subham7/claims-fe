@@ -3,7 +3,6 @@ import { createSlice } from "@reduxjs/toolkit";
 export const slice = createSlice({
   name: "club",
   initialState: {
-    daoAddress: null,
     clubData: {
       gnosisAddress: null,
       isGtTransferable: null,
@@ -11,6 +10,19 @@ export const slice = createSlice({
       ownerAddress: null,
       symbol: null,
       tokenType: null,
+      membersCount: null,
+      deployedTime: null,
+      imgUrl: null,
+      minDepositAmount: null,
+      maxDepositAmount: null,
+      pricePerToken: null,
+      isGovernanceActive: null,
+      quorum: null,
+      threshold: null,
+      raiseAmount: null,
+      totalAmountRaised: null,
+      distributionAmount: null,
+      maxTokensPerUser: null,
     },
     erc20ClubDetails: {
       quorum: null,
@@ -30,7 +42,6 @@ export const slice = createSlice({
       onlyAllowWhitelist: null,
       deployerAddress: null,
     },
-    clubNetworkId: null,
     factoryData: {
       assetsStoredOnGnosis: null,
       depositCloseTime: null,
@@ -48,9 +59,6 @@ export const slice = createSlice({
     nftsOwnedByDao: null,
   },
   reducers: {
-    addDaoAddress: (state, action) => {
-      state.daoAddress = action.payload;
-    },
     addClubData: (state, action) => {
       state.clubData.gnosisAddress = action.payload.gnosisAddress;
       state.clubData.isGtTransferable = action.payload.isGtTransferable;
@@ -58,6 +66,19 @@ export const slice = createSlice({
       state.clubData.ownerAddress = action.payload.ownerAddress;
       state.clubData.symbol = action.payload.symbol;
       state.clubData.tokenType = action.payload.tokenType;
+      state.clubData.membersCount = action.payload.membersCount;
+      state.clubData.deployedTime = action.payload.deployedTime;
+      state.clubData.minDepositAmount = action.payload.minDepositAmount;
+      state.clubData.maxDepositAmount = action.payload.maxDepositAmount;
+      state.clubData.pricePerToken = action.payload.pricePerToken;
+      state.clubData.threshold = action.payload.threshold;
+      state.clubData.isGovernanceActive = action.payload.isGovernanceActive;
+      state.clubData.raiseAmount = action.payload.raiseAmount;
+      state.clubData.maxTokensPerUser = action.payload.maxTokensPerUser;
+      state.clubData.distributionAmount = action.payload.distributionAmount;
+      state.clubData.totalAmountRaised = action.payload.totalAmountRaised;
+      state.clubData.quorum = action.payload.quorum;
+      state.clubData.imgUrl = action.payload.imgUrl;
     },
     addErc20ClubDetails: (state, action) => {
       state.erc20ClubDetails.quorum = action.payload.quorum;
@@ -82,9 +103,6 @@ export const slice = createSlice({
       state.erc721ClubDetails.onlyAllowWhitelist =
         action.payload.onlyAllowWhitelist;
       state.erc721ClubDetails.deployerAddress = action.payload.deployerAddress;
-    },
-    setClubNetworkId: (state, action) => {
-      state.clubNetworkId = action.payload;
     },
     addFactoryData: (state, action) => {
       state.factoryData.assetsStoredOnGnosis =
@@ -113,11 +131,9 @@ export const slice = createSlice({
 });
 
 export const {
-  addDaoAddress,
   addClubData,
   addErc20ClubDetails,
   addErc721ClubDetails,
-  setClubNetworkId,
   addFactoryData,
   addNftsOwnedByDao,
 } = slice.actions;

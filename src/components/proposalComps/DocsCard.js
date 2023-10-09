@@ -31,17 +31,18 @@ const DocsCard = () => {
           position: "absolute",
           left: 20,
           top: 40,
-          color: "#111D38",
+          color: "#0F0F0F",
           fontWeight: "normal",
           width: "70%",
         }}>
         Create & execute proposals
       </Typography>
       <Link
-        href="/"
+        href="https://stationxnetwork.gitbook.io/docs"
+        target={"_blank"}
         sx={{
           position: "absolute",
-          color: "#111D38",
+          color: "#0F0F0F",
           fontWeight: "normal",
           width: "70%",
           textDecoration: "underline",

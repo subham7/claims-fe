@@ -1,4 +1,5 @@
-import { Button, TextField, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
+import { Button, TextField } from "@components/ui";
 import { useFormik } from "formik";
 import React from "react";
 import { ClaimModalStyles } from "./ClaimModalStyles";
@@ -34,7 +35,6 @@ const RollbackTokenModal = ({ onClose, rollbackTokensHandler }) => {
         </Typography>
         <TextField
           variant="outlined"
-          className={classes.input}
           name="rollbackAddress"
           id="rollbackAddress"
           placeholder="Paste address here"
@@ -72,27 +72,13 @@ const RollbackTokenModal = ({ onClose, rollbackTokensHandler }) => {
         />
 
         <div className={classes.buttonContainers}>
+          <Button onClick={onClose}>Cancel</Button>
           <Button
-            onClick={onClose}
-            sx={{
-              fontSize: "18px",
-              background: "#fff",
-              color: "#3A7AFD",
-            }}
-            variant="primary">
-            Cancel
-          </Button>
-          <Button
-            sx={{
-              fontSize: "18px",
-              width: "130px",
-            }}
             onClick={formik.handleSubmit}
             disabled={
               !formik.values.rollbackAddress ||
               formik.values.rollbackAmount <= 0
-            }
-            variant="primary">
+            }>
             Claim
           </Button>
         </div>

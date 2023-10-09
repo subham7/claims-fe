@@ -1,19 +1,21 @@
-import { Alert, Backdrop, CircularProgress, Switch } from "@mui/material";
+import { Switch } from "@mui/material";
+import { Button } from "@components/ui";
 import React, { useCallback, useEffect, useState } from "react";
 import { TokenGatingStyle } from "./TokenGatingStyles";
 import { MdDelete } from "react-icons/md";
 import TokenGatingModal from "./TokenGatingModal";
 import { useSelector } from "react-redux";
 import SingleToken from "./SingleToken";
-import { useRouter } from "next/router";
 import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "../../utils/globalFunctions";
-import useSmartContractMethods from "../../hooks/useSmartContractMethods";
-import ClubFetch from "../../utils/clubFetch";
+import useAppContractMethods from "../../hooks/useAppContractMethods";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
+import CustomAlert from "@components/common/CustomAlert";
+import BackdropLoader from "@components/common/BackdropLoader";
 
-const TokenGating = () => {
+const TokenGating = ({ daoAddress }) => {
   const [showTokenGatingModal, setShowTokenGatingModal] = useState(false);
   const [checked, setChecked] = useState(false);
   const [fetchedDetails, setFetchedDetails] = useState({
@@ -35,23 +37,23 @@ const TokenGating = () => {
   const [isTokenGatingSuccessfull, setIsTokenGatingSuccessfull] =
     useState(false);
   const [showMessage, setShowMessage] = useState(false);
+  const [message, setMessage] = useState("");
   const [showEditOptions, setShowEditOptions] = useState(true);
 
   const isAdminUser = useSelector((state) => {
     return state.gnosis.adminUser;
   });
 
-  const router = useRouter();
   const classes = TokenGatingStyle();
-  const { clubId: daoAddress } = router.query;
 
   const {
     getTokenGatingDetails,
     setupTokenGating,
-    getTokenSymbol,
-    getDecimals,
+
     disableTokenGating,
-  } = useSmartContractMethods();
+  } = useAppContractMethods();
+
+  const { getTokenSymbol, getDecimals } = useCommonContractMethods();
 
   const addTokensHandler = () => {
     setShowTokenGatingModal(true);
@@ -72,29 +74,41 @@ const TokenGating = () => {
         checked ? 1 : 0, // Operator for token checks (0 for AND and 1 for OR)
         0, // 0 for Greater, 1 for Below and 2 for Equal,
         [
-          convertToWeiGovernance(
-            tokensList[0].tokenAmount,
-            tokensList[0].tokenDecimal,
-          ),
-          convertToWeiGovernance(
-            tokensList[1]?.tokenAmount
+          tokensList[0].tokenDecimal === 0
+            ? tokensList[0].tokenAmount
+            : convertToWeiGovernance(
+                tokensList[0].tokenAmount,
+                tokensList[0].tokenDecimal,
+              ),
+
+          // only if second token added
+          tokensList[1]?.tokenAmount > 0
+            ? tokensList[1]?.tokenAmount && tokensList[1]?.tokenDecimal === 0
               ? tokensList[1]?.tokenAmount
-              : tokensList[0]?.tokenAmount,
-            tokensList[1]?.tokenDecimal
-              ? tokensList[1]?.tokenDecimal
-              : tokensList[0].tokenDecimal,
-          ),
+              : convertToWeiGovernance(
+                  tokensList[1]?.tokenAmount,
+                  tokensList[1]?.tokenDecimal,
+                )
+            : tokensList[0]?.tokenDecimal === 0
+            ? tokensList[0]?.tokenAmount
+            : convertToWeiGovernance(
+                tokensList[0]?.tokenAmount,
+                tokensList[0]?.tokenDecimal,
+              ),
         ], // Minimum user balance of tokenA & tokenB
         daoAddress,
       );
+      fetchTokenGatingDetails();
       setLoading(false);
       setIsTokenGatingSuccessfull(true);
       setShowEditOptions(false);
+      setMessage("Token Gating Successfull");
       showMessageHandler();
     } catch (error) {
       console.log(error);
       setLoading(false);
       setIsTokenGatingSuccessfull(false);
+      setMessage("Token Gating Failed");
       showMessageHandler();
     }
   };
@@ -110,6 +124,7 @@ const TokenGating = () => {
     try {
       setLoading(true);
       const tokenGatingDetails = await getTokenGatingDetails(daoAddress);
+
       setFetchedDetails({
         tokenA: tokenGatingDetails[0]?.tokenA,
         tokenB: tokenGatingDetails[0]?.tokenB,
@@ -126,6 +141,11 @@ const TokenGating = () => {
 
       try {
         tokenADecimal = await getDecimals(tokenGatingDetails[0]?.tokenA);
+      } catch (error) {
+        console.log(error);
+      }
+
+      try {
         tokenBDecimal = await getDecimals(tokenGatingDetails[0]?.tokenB);
       } catch (error) {
         console.log(error);
@@ -153,7 +173,7 @@ const TokenGating = () => {
       <div className={classes.heading}>
         <p className={classes.title}>Token Gating</p>
 
-        {isAdminUser && (
+        {isAdminUser && fetchedDetails?.tokenA?.length ? (
           <div
             onClick={async () => {
               try {
@@ -176,7 +196,7 @@ const TokenGating = () => {
             className={classes.icon}>
             <MdDelete size={20} />
           </div>
-        )}
+        ) : null}
       </div>
 
       <div className={classes.conditions}>
@@ -207,10 +227,14 @@ const TokenGating = () => {
                   <SingleToken
                     tokenAddress={fetchedDetails.tokenA}
                     tokenSymbol={displayTokenDetails.tokenASymbol}
-                    tokenAmount={convertFromWeiGovernance(
-                      fetchedDetails.tokenAAmt,
-                      displayTokenDetails.tokenADecimal,
-                    )}
+                    tokenAmount={
+                      displayTokenDetails?.tokenADecimal === 0
+                        ? fetchedDetails.tokenAAmt
+                        : convertFromWeiGovernance(
+                            fetchedDetails.tokenAAmt,
+                            displayTokenDetails.tokenADecimal,
+                          )
+                    }
                   />
                 </>
               ) : (
@@ -284,31 +308,19 @@ const TokenGating = () => {
               checkedIcon={
                 <div
                   style={{
-                    background: "#3A7AFD",
+                    background: "#2D55FF",
                     height: "25px",
                     width: "25px",
                     borderRadius: "100px",
                   }}></div>
               }
             />
-            <p>any</p>
+            <p>any condition(s)</p>
           </div>
-
-          <p>condition(s)</p>
+          <Button disabled={!tokensList.length} onClick={tokenGatingHandler}>
+            Save changes
+          </Button>
         </div>
-      ) : (
-        ""
-      )}
-
-      {isAdminUser &&
-      (fetchedDetails.tokenA === "" || fetchedDetails.tokenA === undefined) &&
-      showEditOptions ? (
-        <button
-          className={classes.saveBtn}
-          disabled={!tokensList.length}
-          onClick={tokenGatingHandler}>
-          Save changes
-        </button>
       ) : (
         ""
       )}
@@ -322,39 +334,16 @@ const TokenGating = () => {
         />
       )}
 
-      <Backdrop sx={{ color: "#fff", zIndex: 1000 }} open={loading}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <BackdropLoader isOpen={loading} />
 
-      {showMessage && isTokenGatingSuccessfull && (
-        <Alert
-          severity="success"
-          sx={{
-            width: "250px",
-            position: "fixed",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          Token Gating Successfull
-        </Alert>
-      )}
-
-      {showMessage && !isTokenGatingSuccessfull && (
-        <Alert
-          severity="error"
-          sx={{
-            width: "250px",
-            position: "fixed",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          Token Gating Failed
-        </Alert>
-      )}
+      {showMessage ? (
+        <CustomAlert
+          alertMessage={message}
+          severity={isTokenGatingSuccessfull}
+        />
+      ) : null}
     </div>
   );
 };
 
-export default ClubFetch(TokenGating);
+export default TokenGating;

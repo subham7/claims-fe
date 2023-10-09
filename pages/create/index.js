@@ -1,4 +1,5 @@
-import { Box, Button, Grid, Step, StepButton, Stepper } from "@mui/material";
+import { Box, Grid, Step, StepButton, Stepper } from "@mui/material";
+import Button from "@components/ui/button/Button";
 import ProtectRoute from "../../src/utils/auth";
 import { Fragment, useRef, useState } from "react";
 import Step1 from "../../src/components/createClubComps/Step1";
@@ -21,14 +22,13 @@ import {
 import { setUploadNFTLoading } from "../../src/redux/reducers/gnosis";
 import { NFTStorage } from "nft.storage";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
-import { useConnectWallet } from "@web3-onboard/react";
 // import Step4 from "../../src/components/createClubComps/Step4";
 // import Web3 from "web3";
 // import { fetchClubOwners } from "../../src/api/club";
 import useSafe from "../../src/hooks/useSafe";
-import useSmartContract from "../../src/hooks/useSmartContract";
-import Layout1 from "../../src/components/layouts/layout1";
-import { showWrongNetworkModal } from "../../src/utils/helper";
+import Layout from "../../src/components/layouts/layout";
+import { useAccount, useNetwork } from "wagmi";
+import { CHAIN_CONFIG, ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 
 const Create = () => {
   const steps = [
@@ -39,21 +39,20 @@ const Create = () => {
   ];
   const dispatch = useDispatch();
   const uploadInputRef = useRef(null);
-  const [{ wallet }] = useConnectWallet();
-  useSmartContract();
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
+
+  const { address: walletAddress } = useAccount();
 
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const [open, setOpen] = useState(false);
-  const [ownersCheck, setOwnersCheck] = useState(false);
-  const [ownerHelperText, setOwnerHelperText] = useState("");
 
   const { initiateConnection } = useSafe();
 
   const GNOSIS_DATA = useSelector((state) => {
     return state.gnosis;
   });
-  const networkId = wallet?.chains[0]?.id;
 
   const handleStep = (step) => () => {
     setActiveStep(step);
@@ -129,7 +128,7 @@ const Create = () => {
       maxTokensPerUser: "",
       isNftTotalSupplylimited: false,
       totalTokenSupply: "",
-      depositClose: dayjs(Date.now() + 300000),
+      depositClose: dayjs(Date.now() + 3600 * 1000 * 24),
     },
 
     validationSchema: ERC721Step2ValidationSchema,
@@ -142,12 +141,12 @@ const Create = () => {
     initialValues: {
       deploySafe: "newSafe",
       safeAddress: "",
-      governance: "governance",
+      governance: "non-governance",
       quorum: 1,
       threshold: 51,
-      addressList: [wallet.accounts[0].address],
+      addressList: [walletAddress],
       safeThreshold: 1,
-      storeAssetsOnGnosis: true,
+      assetsStoredOnGnosis: true,
     },
     validationSchema: step3ValidationSchema,
     onSubmit: async (values) => {
@@ -175,18 +174,14 @@ const Create = () => {
             quorum: formikStep3.values.quorum * 100,
             threshold: formikStep3.values.threshold * 100,
             safeThreshold: formikStep3.values.safeThreshold ?? 0,
-            depositTokenAddress: GNOSIS_DATA.usdcContractAddress,
+            depositTokenAddress: CHAIN_CONFIG[networkId].usdcAddress,
             treasuryAddress:
               formikStep3.values.safeAddress.length > 0
                 ? formikStep3.values.safeAddress
-                : "0x0000000000000000000000000000000000000000",
+                : ZERO_ADDRESS,
             maxTokensPerUser: formikERC721Step2.values.maxTokensPerUser,
             distributeAmount: formikERC721Step2.values.isNftTotalSupplylimited
-              ? convertToWeiGovernance(
-                  formikERC721Step2.values.totalTokenSupply /
-                    formikERC721Step2.values.pricePerToken,
-                  18,
-                )
+              ? formikERC721Step2.values.totalTokenSupply
               : 0,
             pricePerToken: convertToWeiGovernance(
               formikERC721Step2.values.pricePerToken,
@@ -197,10 +192,9 @@ const Create = () => {
               !formikERC721Step2.values.isNftTotalSupplylimited,
             isGovernanceActive:
               formikStep3.values.governance === "governance" ? true : false,
-            storeAssetsOnGnosis: formikStep3.values.storeAssetsOnGnosis,
+            assetsStoredOnGnosis: formikStep3.values.assetsStoredOnGnosis,
             allowWhiteList: false,
-            merkleRoot:
-              "0x0000000000000000000000000000000000000000000000000000000000000001",
+            merkleRoot: ZERO_MERKLE_ROOT,
           };
 
           initiateConnection(
@@ -208,10 +202,11 @@ const Create = () => {
             dispatch,
             formikStep3.values.addressList,
             formikStep1.values.clubTokenType,
-            metadata.data.image.pathname,
             metadata.url,
             formikStep1.values.useStationFor,
             formikStep1.values.email,
+            networkId,
+            formikERC721Step2.values.nftImage,
           );
         } catch (error) {
           console.error(error);
@@ -243,18 +238,17 @@ const Create = () => {
             quorum: formikStep3.values.quorum * 100,
             threshold: formikStep3.values.threshold * 100,
             safeThreshold: formikStep3.values.safeThreshold ?? 0,
-            depositTokenAddress: GNOSIS_DATA.usdcContractAddress,
+            depositTokenAddress: CHAIN_CONFIG[networkId].usdcAddress,
             treasuryAddress:
               formikStep3.values.safeAddress.length > 0
                 ? formikStep3.values.safeAddress
-                : "0x0000000000000000000000000000000000000000",
+                : ZERO_ADDRESS,
             isGovernanceActive:
               formikStep3.values.governance === "governance" ? true : false,
             isGtTransferable: false,
             allowWhiteList: false,
-            merkleRoot:
-              "0x0000000000000000000000000000000000000000000000000000000000000001",
-            storeAssetsOnGnosis: formikStep3.values.storeAssetsOnGnosis,
+            merkleRoot: ZERO_MERKLE_ROOT,
+            assetsStoredOnGnosis: formikStep3.values.assetsStoredOnGnosis,
           };
 
           initiateConnection(
@@ -263,9 +257,9 @@ const Create = () => {
             formikStep3.values.addressList,
             formikStep1.values.clubTokenType,
             "",
-            "",
             formikStep1.values.useStationFor,
             formikStep1.values.email,
+            networkId,
           );
         } catch (error) {
           console.error(error);
@@ -333,73 +327,7 @@ const Create = () => {
   //             "0x0000000000000000000000000000000000000000000000000000000000000001",
   //         };
 
-  //         initiateConnection(
-  //           params,
-  //           dispatch,
-  //           GNOSIS_DATA.transactionUrl,
-  //           formikStep3.values.addressList,
-  //           formikStep1.values.clubTokenType,
-  //           GNOSIS_DATA.factoryContractAddress,
-  //           metadata.data.image.pathname,
-  //           metadata.url,
-  //         );
-  //       } catch (error) {
-  //         console.error(error);
-  //       }
-  //     } else {
-  //       try {
-  //         const walletAddress = wallet.accounts[0].address;
-
-  //         formikStep3.values.addressList.unshift(walletAddress);
-  //         const params = {
-  //           clubName: formikStep1.values.clubName,
-  //           clubSymbol: formikStep1.values.clubSymbol,
-  //           distributeAmount: convertToWeiGovernance(
-  //             formikERC20Step2.values.totalRaiseAmount /
-  //               formikERC20Step2.values.pricePerToken,
-  //             18,
-  //           ),
-  //           pricePerToken: convertToWeiGovernance(
-  //             formikERC20Step2.values.pricePerToken,
-  //             6,
-  //           ),
-  //           minDepositPerUser: convertToWeiGovernance(
-  //             formikERC20Step2.values.minDepositPerUser,
-  //             6,
-  //           ),
-  //           maxDepositPerUser: convertToWeiGovernance(
-  //             formikERC20Step2.values.maxDepositPerUser,
-  //             6,
-  //           ),
-  //           ownerFeePerDepositPercent: 0 * 100,
-  //           depositClose: dayjs(formikERC20Step2.values.depositClose).unix(),
-  //           quorum: formikStep3.values.quorum * 100,
-  //           threshold: formikStep3.values.threshold * 100,
-  //           safeThreshold: formikStep3.values.safeThreshold,
-  //           depositTokenAddress: GNOSIS_DATA.usdcContractAddress,
-  //           treasuryAddress: formikStep4.values.safeAddress
-  //             ? formikStep4.values.safeAddress
-  //             : "0x0000000000000000000000000000000000000000",
-  //           isGovernanceActive: formikStep3.values.governance,
-  //           isGtTransferable: true,
-  //           allowWhiteList: false,
-  //           merkleRoot:
-  //             "0x0000000000000000000000000000000000000000000000000000000000000001",
-  //         };
-  //         initiateConnection(
-  //           params,
-  //           dispatch,
-  //           GNOSIS_DATA.transactionUrl,
-  //           formikStep3.values.addressList,
-  //           formikStep1.values.clubTokenType,
-  //           GNOSIS_DATA.factoryContractAddress,
-  //         );
-  //       } catch (error) {
-  //         console.error(error);
-  //       }
-  //     }
-  //   },
-  // });
+  <Button onClick={handlePrev}>Prev</Button>;
 
   const handleSubmit = () => {
     switch (activeStep) {
@@ -489,17 +417,14 @@ const Create = () => {
   // ]);
 
   return (
-    <Layout1 showSidebar={false}>
+    <Layout showSidebar={false}>
       <Grid
         container
         item
-        paddingLeft={{ xs: 5, sm: 5, md: 10, lg: 45 }}
-        paddingRight={{ xs: 5, sm: 5, md: 10, lg: 45 }}
+        paddingX={24}
         justifyContent="center"
         alignItems="center">
-        <Box
-          width={{ xs: "60%", sm: "70%", md: "80%", lg: "100%" }}
-          paddingTop={10}>
+        <Box width={{ xs: "60%", sm: "70%", md: "80%", lg: "100%" }}>
           <form noValidate autoComplete="off">
             <Stepper activeStep={activeStep}>
               {steps.map((label, index) => {
@@ -549,61 +474,41 @@ const Create = () => {
                 <Grid
                   container
                   direction="row"
-                  justifyContent="flex-end"
+                  justifyContent="center"
                   alignItems="center"
-                  mt={2}>
+                  mt={2}
+                  mb={8}>
                   {getStepContent(activeStep)}
-                  {!activeStep == 0 && activeStep !== steps.length - 1 && (
-                    <Button
-                      variant="wideButton"
-                      sx={{
-                        marginTop: "2rem",
-                        marginBottom: "6rem",
-                        marginRight: "1rem",
-                      }}
-                      onClick={handlePrev}>
-                      Prev
-                    </Button>
-                  )}
-                  {activeStep === steps.length - 1 ? (
-                    <>
-                      <Button
-                        variant="wideButton"
-                        sx={{
-                          marginTop: "2rem",
-                          marginRight: "1rem",
-                        }}
-                        onClick={handlePrev}>
-                        Prev
-                      </Button>
-                      <Button
-                        variant="wideButton"
-                        sx={{ marginTop: "2rem" }}
-                        onClick={handleSubmit}
-                        // disabled={
-                        //   !formikStep4.values.deploySafe && !ownersCheck
-                        // }
-                      >
-                        Finish
-                      </Button>
-                    </>
-                  ) : (
-                    <Button
-                      variant="wideButton"
-                      sx={{ marginTop: "2rem", marginBottom: "6rem" }}
-                      onClick={handleSubmit}>
-                      Next
-                    </Button>
-                  )}
+                  <div className="step-buttons">
+                    {!activeStep == 0 && activeStep !== steps.length - 1 && (
+                      <div
+                        style={{
+                          marginTop: "12px",
+                        }}>
+                        <Button onClick={handlePrev}>Prev</Button>
+                      </div>
+                    )}
+                    {activeStep === steps.length - 1 ? (
+                      <>
+                        <Button onClick={handlePrev}>Prev</Button>
+                        <Button onClick={handleSubmit}>Finish</Button>
+                      </>
+                    ) : (
+                      <div
+                        style={{
+                          marginTop: "12px",
+                        }}>
+                        <Button onClick={handleSubmit}>Next</Button>
+                      </div>
+                    )}
+                  </div>
                 </Grid>
               </Fragment>
             )}
           </form>
         </Box>
       </Grid>
-
-      {showWrongNetworkModal(wallet, networkId)}
-    </Layout1>
+    </Layout>
   );
 };
 export default ProtectRoute(Create);

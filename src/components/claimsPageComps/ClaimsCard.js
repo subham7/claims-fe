@@ -5,10 +5,9 @@ import { AiFillCalendar } from "react-icons/ai";
 import { FaCoins } from "react-icons/fa";
 import { useRouter } from "next/router";
 import Countdown from "react-countdown";
-import { Alert } from "@mui/material";
-import { useConnectWallet } from "@web3-onboard/react";
-import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
+import CustomAlert from "@components/common/CustomAlert";
 
 const useStyles = makeStyles({
   container: {
@@ -27,19 +26,16 @@ const useStyles = makeStyles({
     justifyContent: "space-between",
     margin: 0,
     alignItems: "center",
-    // fontWeight: '400'
   },
 
   createdBy: {
     fontWeight: "300",
     margin: 0,
-    fontSize: "15px",
+    fontSize: "14px",
     color: "#6475A3",
-    // letterSpacing: '0.5px'
   },
   span: {
-    color: "#C1D3FF",
-    // textDecoration: 'underline'
+    color: "#dcdcdc",
   },
   icons: {
     padding: 4,
@@ -98,6 +94,7 @@ const ClaimsCard = ({
   claimContract,
   createdBy,
   isActive: active,
+  claimsNetwork,
 }) => {
   const classes = useStyles();
   const router = useRouter();
@@ -108,8 +105,7 @@ const ClaimsCard = ({
   const [symbol, setSymbol] = useState("");
   const [decimals, setDecimals] = useState(0);
 
-  const [{ wallet }] = useConnectWallet();
-  const { getDecimals, getTokenSymbol } = useSmartContractMethods();
+  const { getDecimals, getTokenSymbol } = useCommonContractMethods();
 
   const startingTime = new Date(+startDate * 1000);
   const endingTime = new Date(+endDate * 1000);
@@ -125,8 +121,6 @@ const ClaimsCard = ({
 
   const convertedDate = new Date(updatedDate * 1000).toLocaleDateString();
   const currentTime = Date.now() / 1000;
-
-  const { claimSettings } = useSmartContractMethods();
 
   useEffect(() => {
     if (+startDate > currentTime) {
@@ -158,19 +152,8 @@ const ClaimsCard = ({
     fetchContractDetails();
   });
 
-  const claimContractData = {
-    description,
-    // airdropTokenSymbol,
-    totalAmount,
-    claimContract,
-    createdBy,
-    endDate,
-  };
-
-  // dispatch(addClaimContractData(claimContractData));
-
   const claimHandler = () => {
-    router.push(`/claims/insights/${claimContract}`);
+    router.push(`/claims/${claimsNetwork}/${claimContract}`);
   };
 
   return (
@@ -203,7 +186,7 @@ const ClaimsCard = ({
             onClick={(e) => {
               e.stopPropagation();
               navigator.clipboard.writeText(
-                `${window.location.origin}/claims/${claimContract}`,
+                `${window.location.origin}/claim/${claimContract}/${claimsNetwork}`,
               );
               setIsCopied(true);
 
@@ -246,19 +229,7 @@ const ClaimsCard = ({
         </div>
       </div>
 
-      {isCopied && (
-        <Alert
-          severity="success"
-          sx={{
-            width: "150px",
-            position: "absolute",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          {"Copied"}
-        </Alert>
-      )}
+      {isCopied && <CustomAlert alertMessage={"Copied"} severity={true} />}
     </div>
   );
 };

@@ -1,28 +1,15 @@
+import BackdropLoader from "@components/common/BackdropLoader";
 import { makeStyles } from "@mui/styles";
 import Image from "next/image";
 import React from "react";
-import Web3 from "web3";
+import { CHAIN_CONFIG } from "utils/constants";
+import { requestEthereumChain } from "utils/helper";
 import img from "../../../public/assets/images/wrongNetwork.png";
 
-const Backdrop = () => {
-  const classes = useStyles();
-  return <div className={classes.backdrop}></div>;
-};
-
 const useStyles = makeStyles({
-  backdrop: {
-    position: "fixed",
-    height: "100vh",
-    width: "100vw",
-    top: 0,
-    left: 0,
-    background: "#000000",
-    opacity: 0.85,
-    zIndex: 2000,
-  },
   modal: {
     width: "450px",
-    background: "#111D38",
+    background: "#0F0F0F",
     // border: "1px solid #6475A3",
     position: "fixed",
     top: "50%",
@@ -59,37 +46,30 @@ const useStyles = makeStyles({
   },
 });
 
-const WrongNetworkModal = ({ chainId = 137 }) => {
+const WrongNetworkModal = ({ chainId = "0x89" }) => {
   const classes = useStyles();
 
   const switchNetworkHandler = async () => {
     if (typeof window !== "undefined") {
       if (window.ethereum.networkVersion !== chainId) {
         try {
-          await window.ethereum.request({
-            method: "wallet_switchEthereumChain",
-            params: [{ chainId: Web3.utils.toHex(chainId) }],
-          });
+          await requestEthereumChain("wallet_switchEthereumChain", [
+            { chainId: chainId },
+          ]);
         } catch (err) {
           // This error code indicates that the chain has not been added to MetaMask
-          if (err.code === 4902) {
-            if (chainId === 137) {
-              await window.ethereum.request({
-                method: "wallet_addEthereumChain",
-                params: [
-                  {
-                    chainName: "Polygon Mainnet",
-                    chainId: Web3.utils.toHex(chainId),
-                    nativeCurrency: {
-                      name: "MATIC",
-                      decimals: 18,
-                      symbol: "MATIC",
-                    },
-                    rpcUrls: ["https://polygon-rpc.com/"],
-                  },
-                ],
-              });
-            }
+          if (err.code === 4902 && CHAIN_CONFIG[chainId]) {
+            const chainConfig = CHAIN_CONFIG[chainId];
+            await window.ethereum.request({
+              method: "wallet_addEthereumChain",
+              params: [
+                {
+                  chainId,
+                  chainName: chainConfig.chainName,
+                  rpcUrls: chainConfig.rpcUrls,
+                },
+              ],
+            });
           }
         }
       }
@@ -98,17 +78,18 @@ const WrongNetworkModal = ({ chainId = 137 }) => {
 
   return (
     <>
-      <Backdrop />
-      <div className={classes.modal}>
-        <p className={classes.text}>
-          Oops! Looks like you’re on a different network.
-        </p>
-        <Image src={img} alt="Wrong network" height={136} width={160} />
+      <BackdropLoader isOpen={true} showLoading={false}>
+        <div className={classes.modal}>
+          <p className={classes.text}>
+            Oops! Looks like you’re on a different network.
+          </p>
+          <Image src={img} alt="Wrong network" height={136} width={160} />
 
-        <button className={classes.btn} onClick={switchNetworkHandler}>
-          Switch to {chainId === 137 ? "Polygon" : chainId === 5 && "Goerli"}
-        </button>
-      </div>
+          <button className={classes.btn} onClick={switchNetworkHandler}>
+            Switch to {CHAIN_CONFIG[chainId]?.shortName}
+          </button>
+        </div>
+      </BackdropLoader>
     </>
   );
 };

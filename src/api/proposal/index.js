@@ -16,6 +16,20 @@ export async function createProposal(data, networkId) {
   );
 }
 
+export async function createCancelProposal(data, networkId) {
+  // create proposal API
+  return await axios.post(
+    MAIN_API_URL + `proposal/create/cancel?networkId=${networkId}`,
+    data,
+    {
+      headers: {
+        Authorization: "Bearer " + getJwtToken(),
+        "Content-Type": "application/json",
+      },
+    },
+  );
+}
+
 export async function getProposal(clubId, filter) {
   // get proposals by club id API
   if (filter) {
@@ -54,20 +68,6 @@ export async function castVote(data, networkId) {
   return await axios.post(
     MAIN_API_URL + `proposal/vote2?networkId=${networkId}`,
     data,
-    {
-      headers: {
-        Authorization: "Bearer " + getJwtToken(),
-        "Content-Type": "application/json",
-      },
-    },
-  );
-}
-
-export async function patchProposalStatus(proposalId) {
-  // update proposal status API
-  return await axios.patch(
-    MAIN_API_URL + "proposal/result",
-    { proposalId: proposalId },
     {
       headers: {
         Authorization: "Bearer " + getJwtToken(),

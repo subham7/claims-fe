@@ -4,8 +4,7 @@ import { makeStyles } from "@mui/styles";
 
 const useStyles = makeStyles({
   netamount: {
-    fontFamily: "Whyte",
-    fontSize: "21px",
+    fontSize: "20px",
     color: "#0ABB92",
   },
 });
@@ -15,6 +14,7 @@ export default function CollectionCard(props) {
   const { metadata, tokenName, tokenSymbol, nftData } = props;
   const [imageUrl, setImageUrl] = useState();
   // const json_metadata = JSON.parse(props.token_uri);
+  const tokenData = JSON.parse(metadata);
 
   let jsonData;
 
@@ -31,6 +31,7 @@ export default function CollectionCard(props) {
           ) {
             let imgUrl = tokenURI?.split("//");
             modifiedTokenURI = `https://${imgUrl[1]}.ipfs.dweb.link/${imgUrl[2]}`;
+
             setImageUrl(modifiedTokenURI);
           } else {
             let imgUrl = tokenURI?.split("/");
@@ -63,13 +64,17 @@ export default function CollectionCard(props) {
   return (
     <>
       <Card sx={{ maxWidth: "350px", maxHeight: "519px", padding: 0 }}>
-        <CardMedia
-          variant="collectionImage"
-          component="img"
-          alt="green iguana"
-          sx={{ width: "340px", height: "320px" }}
-          image={imageUrl}
-        />
+        {imageUrl?.substring(imageUrl?.lastIndexOf(".")) === ".mp4" ? (
+          <video controls src={imageUrl} width="340" height="320" />
+        ) : (
+          <CardMedia
+            variant="collectionImage"
+            component="img"
+            alt="green iguana"
+            sx={{ width: "340px", height: "320px" }}
+            image={imageUrl ? imageUrl : "/assets/NFT_IMAGES/0.png"}
+          />
+        )}
 
         <CardContent>
           <Typography
@@ -77,7 +82,7 @@ export default function CollectionCard(props) {
             gutterBottom
             component="div"
             variant="cardFont1">
-            {tokenName}
+            {nftData.name}
           </Typography>
           <Grid container spacing={4}></Grid>
         </CardContent>

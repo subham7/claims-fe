@@ -6,14 +6,14 @@ import ProgressBar from "../progressbar";
 const useStyles = makeStyles({
   listFont: {
     fontSize: "20px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
   listFont2: {
-    fontSize: "19px",
-    color: "#C1D3FF",
+    fontSize: "18px",
+    color: "#dcdcdc",
   },
   listFont2Colourless: {
-    fontSize: "19px",
+    fontSize: "18px",
     color: "#FFFFFF",
     fontWeight: "bold",
   },

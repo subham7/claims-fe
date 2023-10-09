@@ -1,35 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
-import { Backdrop, Button } from "@mui/material";
+import { Button } from "@mui/material";
 import { fetchConfig } from "../api/config";
 import { updateDynamicAddress } from "../api";
 import Web3 from "web3";
-import { useConnectWallet } from "@web3-onboard/react";
 import { useCallback } from "react";
+import { useAccount } from "wagmi";
+import BackdropLoader from "@components/common/BackdropLoader";
 
 export default function ProtectRoute(Component) {
   const AuthenticatedComponent = () => {
-    const router = useRouter();
     const dispatch = useDispatch();
-    const [{ wallet }] = useConnectWallet();
-    // const [walletAddress, setWalletAddress] = useState(null);
 
     const [redirect, setRedirect] = useState(false);
     const [networks, setNetworks] = useState([]);
     const [networksFetched, setNetworksFetched] = useState(false);
 
-    const walletAddress = Web3.utils.toChecksumAddress(
-      wallet?.accounts[0].address,
-    );
+    const { address: walletAddress } = useAccount();
 
-    if (wallet) {
+    if (walletAddress) {
       localStorage.setItem("wallet", walletAddress);
     }
-
-    const handleRedirectClick = () => {
-      // router.push("/");
-    };
 
     const fetchNetworks = () => {
       try {
@@ -48,14 +39,13 @@ export default function ProtectRoute(Component) {
     };
 
     const handleMount = useCallback(async () => {
-      if (!wallet) {
+      if (!walletAddress) {
         setRedirect(true);
       }
       if (redirect) {
-        // router.push("/");
         setRedirect(false);
       }
-    }, [redirect, wallet]);
+    }, [redirect, walletAddress]);
 
     useEffect(() => {
       handleMount();
@@ -90,14 +80,12 @@ export default function ProtectRoute(Component) {
       }
     }, [networksFetched, networks, dispatch]);
 
-    return wallet ? (
+    return walletAddress ? (
       <Component wallet={walletAddress} />
     ) : (
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={redirect}>
-        <Button onClick={handleRedirectClick}>Home</Button>
-      </Backdrop>
+      <BackdropLoader isOpen={redirect}>
+        <Button>Home</Button>
+      </BackdropLoader>
     );
   };
   return AuthenticatedComponent;

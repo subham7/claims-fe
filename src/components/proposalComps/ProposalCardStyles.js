@@ -1,101 +1,42 @@
 import { makeStyles } from "@mui/styles";
 
 export const ProposalCardStyles = makeStyles({
+  proposalHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "1rem",
+  },
   clubAssets: {
-    fontFamily: "Whyte",
     fontSize: "48px",
     color: "#FFFFFF",
   },
-  addButton: {
-    width: "11vw",
-    height: "60px",
-    background: "#3B7AFD 0% 0% no-repeat padding-box",
-    borderRadius: "10px",
-  },
-  addButton2: {
-    width: "242px",
-    height: "60px",
-    background: "#3B7AFD 0% 0% no-repeat padding-box",
-    borderRadius: "10px",
-    fontSize: "22px",
-    fontFamily: "Whyte",
-  },
-  searchField: {
-    width: "28.5vw",
-    height: "55px",
-    color: "#C1D3FF",
-    background: "#111D38 0% 0% no-repeat padding-box",
-    border: "1px solid #C1D3FF40",
-    borderRadius: "10px",
-    "&:hover": {
-      boxShadow: "0px 0px 12px #C1D3FF40",
-      border: "1px solid #C1D3FF40",
-      borderRadius: "10px",
-      opacity: 1,
-    },
-  },
-  allIllustration: {
-    width: "12px",
-    height: "12px",
-    marginRight: "15px",
-    backgroundColor: "#3B7AFD",
-    borderRadius: "50%",
-  },
-  activeIllustration: {
-    height: "12px",
-    width: "12px",
-    backgroundColor: "#0ABB92",
-    borderRadius: "50%",
-    marginRight: "15px",
-  },
-  passedIllustration: {
-    height: "12px",
-    width: "12px",
-    backgroundColor: "#FFB74D",
-    borderRadius: "50%",
-    marginRight: "15px",
-  },
-  executedIllustration: {
-    height: "12px",
-    width: "12px",
-    backgroundColor: "#F75F71",
-    borderRadius: "50%",
-    marginRight: "15px",
-  },
-  failedIllustration: {
-    height: "12px",
-    width: "12px",
-    backgroundColor: "#D55438",
-    borderRadius: "50%",
-    marginRight: "15px",
-  },
   listFont: {
     fontSize: "22px",
-    color: "#C1D3FF",
-    fontFamily: "Whyte",
+    color: "#dcdcdc",
   },
   cardFont: {
     fontSize: "18px",
-    color: "#C1D3FF",
-    fontFamily: "Whyte",
+    color: "#dcdcdc",
   },
   cardFont1: {
     fontSize: "24px",
     color: "#EFEFEF",
-    fontFamily: "Whyte",
   },
   actionChip: {
     border: "1px solid #0ABB92",
     background: "transparent",
     textTransform: "capitalize",
+    paddingLeft: "8px",
   },
   surveyChip: {
     border: "1px solid #6C63FF",
     background: "transparent",
     textTransform: "capitalize",
+    paddingLeft: "8px",
   },
   timeLeftChip: {
-    background: "#111D38",
+    background: "#0F0F0F",
     borderRadius: "5px",
   },
   cardFontActive: {
@@ -119,7 +60,6 @@ export const ProposalCardStyles = makeStyles({
     padding: "5px 5px 5px 5px",
   },
   dialogBox: {
-    fontFamily: "Whyte",
     fontSize: "38px",
     color: "#FFFFFF",
     opacity: 1,
@@ -129,33 +69,31 @@ export const ProposalCardStyles = makeStyles({
     width: "340px",
   },
   cardTextBox: {
-    color: "#C1D3FF",
-    background: "#111D38 0% 0% no-repeat padding-box",
-    border: "1px solid #C1D3FF40",
+    color: "#dcdcdc",
+    background: "#0F0F0F 0% 0% no-repeat padding-box",
+    border: "1px solid #dcdcdc40",
     borderRadius: "10px",
   },
   modalStyle: {
     width: "792px",
-    backgroundColor: "#19274B",
+    backgroundColor: "#151515",
   },
   proposalCard: {
-    backgroundColor: "#142243",
+    backgroundColor: "#151515",
     padding: 0,
     margin: 0,
   },
   mainCard: {
     borderRadius: "10px",
-    border: "1px solid #C1D3FF40",
-    backgroundColor: "#142243",
+    backgroundColor: "#151515",
   },
   daysFont: {
-    fontFamily: "Whyte",
-    fontSize: "21px",
+    fontSize: "20px",
     color: "#FFFFFF",
   },
   datePicker: {
     borderRadius: "10px",
-    backgroundColor: "#111D38",
+    backgroundColor: "#0F0F0F",
     width: "90%",
   },
   banner: {
@@ -164,5 +102,6 @@ export const ProposalCardStyles = makeStyles({
   flexContainer: {
     display: "flex",
     alignItems: "center",
+    justifyContent: "center",
   },
 });

@@ -1,5 +1,4 @@
 import {
-  Button,
   CircularProgress,
   FormControl,
   FormControlLabel,
@@ -7,24 +6,21 @@ import {
   Radio,
   RadioGroup,
   Select,
-  TextField,
   Typography,
 } from "@mui/material";
+import { Button, TextField } from "@components/ui";
 import { BsArrowLeft } from "react-icons/bs";
 import { makeStyles } from "@mui/styles";
 import React, { useRef, useState } from "react";
-import { useConnectWallet } from "@web3-onboard/react";
-import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { showWrongNetworkModal } from "../../utils/helper";
 
 const useStyles = makeStyles({
   form: {
     display: "flex-col",
     alignItems: "center",
     justifyContent: "center",
-    margin: "170px auto",
+    margin: "20px auto",
     width: "550px",
     color: "white",
   },
@@ -58,30 +54,29 @@ const useStyles = makeStyles({
   },
   btn: {
     width: "130px",
-    fontFamily: "sans-serif",
+
     fontSize: "16px",
     marginTop: "20px",
   },
   text: {
     color: "#6475A3",
-    fontSize: "15px",
+    fontSize: "14px",
     marginTop: "8px",
   },
   error: {
     color: "red",
-    fontSize: "15px",
+    fontSize: "14px",
     marginTop: "8px",
     fontWeight: "400",
   },
 
   back: {
-    marginTop: "30px",
     fontWeight: "300",
     marginBottom: "4px",
     display: "flex",
     alignItems: "center",
     gap: "5px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     position: "absolute",
     left: "10%",
     top: "110px",
@@ -96,7 +91,7 @@ const useStyles = makeStyles({
     display: "flex",
     alignItems: "center",
     gap: "5px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     position: "absolute",
     left: "33.5%",
     top: "110px",
@@ -111,7 +106,7 @@ const useStyles = makeStyles({
 
   finish: {
     width: "200px",
-    fontFamily: "sans-serif",
+
     fontSize: "16px",
     marginTop: "20px",
   },
@@ -125,9 +120,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
   const [loadingCsv, setLoadingCsv] = useState(false);
 
   const classes = useStyles();
-  const [{ wallet }] = useConnectWallet();
-  const networkId = wallet?.chains[0].id;
-  const dispatch = useDispatch();
 
   const hiddenFileInput = useRef(null);
 
@@ -139,16 +131,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
   if (values.eligible === "everyone") {
     values.maximumClaim = "custom";
   }
-
-  // const helper = async (csvArr) => {
-  //   let encodedListOfLeaves = [];
-  //   csvArr.map((data) => {
-  //     const res = encode(data.address, data.amount);
-  //     encodedListOfLeaves.push(keccak256(res));
-  //   });
-
-  //   return encodedListOfLeaves;
-  // };
 
   const handleChange = async (event) => {
     const fileUploaded = event.target.files[0];
@@ -190,6 +172,18 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
         setLoadingCsv(false);
       };
     }
+  };
+
+  const isButtonDisabled = () => {
+    return csvError ||
+      (values.eligible === "everyone" &&
+        (values.customAmount <= 0 || !values.customAmount)) ||
+      (values.eligible === "token" &&
+        values.maximumClaim === "custom" &&
+        values.customAmount <= 0) ||
+      (values.eligible === "csv" && values.csvObject.length === 0)
+      ? true
+      : false;
   };
 
   return (
@@ -245,7 +239,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
                   name="daoTokenAddress"
                   id="daoTokenAddress"
                   variant="outlined"
-                  className={classes.input}
                 />
 
                 {values.maximumClaim !== "proRata" && (
@@ -267,7 +260,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
                       name="tokenGatingAmt"
                       id="tokenGatingAmt"
                       variant="outlined"
-                      className={classes.input}
                     />
                   </>
                 )}
@@ -329,7 +321,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
                 </Typography>
                 <TextField
                   variant="outlined"
-                  className={classes.input}
                   name="blockNumber"
                   id="blockNumber"
                   value={formik.values.blockNumber}
@@ -351,8 +342,6 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
               <>
                 <Typography className={classes.label}>Enter Amount</Typography>
                 <TextField
-                  // error={userData?.numberOfTokens < customAmount}
-                  className={classes.input}
                   value={values.customAmount}
                   onChange={formik.handleChange}
                   error={
@@ -384,7 +373,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
                 disabled
                 value={file?.name}
               />
-              <Button onClick={handleClick} className={classes.uploadBtn}>
+              <Button onClick={handleClick} variant="normal">
                 Upload
               </Button>
               <input
@@ -411,12 +400,10 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
           </>
         )}
 
-        {/* Next */}
         {finish ? (
           <Button
-            type="button"
             onClick={() => {
-              router.push("/claims");
+              router.push(`/claims/`);
             }}
             variant="contained"
             className={classes.finish}>
@@ -424,32 +411,12 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
           </Button>
         ) : (
           <Button
-            disabled={
-              csvError ||
-              (values.eligible === "everyone" &&
-                (values.customAmount <= 0 || !values.customAmount)) ||
-              (values.eligible === "token" &&
-                values.maximumClaim === "custom" &&
-                values.customAmount <= 0) ||
-              (values.eligible === "csv" && values.csvObject.length === 0)
-                ? true
-                : false
-            }
+            disabled={isButtonDisabled()}
             onClick={formik.handleSubmit}
-            variant="contained"
             className={classes.btn}>
             {loading || loadingCsv ? <CircularProgress /> : "Finish"}
           </Button>
         )}
-
-        {/* <Button
-          variant="contained"
-          onClick={formik.handleSubmit}
-          className={classes.finish}
-        >
-          Finish
-        </Button> */}
-        {showWrongNetworkModal(wallet, networkId)}
       </form>
     </>
   );

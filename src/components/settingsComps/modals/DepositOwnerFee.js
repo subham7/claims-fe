@@ -1,17 +1,19 @@
-import { Button, Grid, TextField, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
+import { TextField } from "@components/ui";
+import Button from "@components/ui/button/Button";
 import { makeStyles } from "@mui/styles";
 import { useFormik } from "formik";
 import * as yup from "yup";
 
 import React from "react";
+import BackdropLoader from "@components/common/BackdropLoader";
 
 const useStyles = makeStyles({
   container: {
-    background: "#19274A",
+    background: "#151515",
     width: "650px",
     borderRadius: "20px",
     padding: "80px 50px",
-    border: "0.5px solid #6475A3",
     display: "flex",
     flexDirection: "column",
     position: "fixed",
@@ -20,23 +22,7 @@ const useStyles = makeStyles({
     transform: "translateX(-50%) translateY(-50%)",
     zIndex: "2000",
   },
-  backdrop: {
-    position: "fixed",
-    top: "0",
-    left: "0",
-    height: "100vh",
-    width: "100vw",
-    background: "#000",
-    opacity: "70%",
-    zIndex: "2000",
-  },
 });
-
-const CustomBackdrop = ({ onClick }) => {
-  const classes = useStyles();
-
-  return <div onClick={onClick} className={classes.backdrop}></div>;
-};
 
 const DepositOwnerFee = ({ updateOwnerFeesHandler, onClose, loading }) => {
   const classes = useStyles();
@@ -60,45 +46,38 @@ const DepositOwnerFee = ({ updateOwnerFeesHandler, onClose, loading }) => {
 
   return (
     <>
-      <CustomBackdrop onClick={onClose} />
-      <div className={classes.container}>
-        <Typography
-          sx={{ textAlign: "left", fontSize: "24px", marginBottom: "8px" }}>
-          Update Owner Fees (%){" "}
-        </Typography>
-        <form style={{ width: "100%" }}>
-          <TextField
-            sx={{ width: "100%" }}
-            type="number"
-            placeholder="Enter owner fees in percentage"
-            name="ownerFee"
-            id="ownerFee"
-            value={formik.values.ownerFee}
-            onChange={formik.handleChange}
-            error={formik.touched.ownerFee && Boolean(formik.errors.ownerFee)}
-            helperText={formik.touched.ownerFee && formik.errors.ownerFee}
-            onWheel={(event) => event.target.blur()}
-          />
+      <BackdropLoader isOpen={true} showLoading={false}>
+        <div className={classes.container}>
+          <Typography
+            sx={{ textAlign: "left", fontSize: "24px", marginBottom: "8px" }}>
+            Update Owner Fees (%){" "}
+          </Typography>
+          <form style={{ width: "100%" }}>
+            <TextField
+              type="number"
+              placeholder="Enter owner fees in percentage"
+              name="ownerFee"
+              id="ownerFee"
+              value={formik.values.ownerFee}
+              onChange={formik.handleChange}
+              error={formik.touched.ownerFee && Boolean(formik.errors.ownerFee)}
+              helperText={formik.touched.ownerFee && formik.errors.ownerFee}
+              onWheel={(event) => event.target.blur()}
+            />
 
-          <Grid
-            sx={{
-              justifyContent: "center",
-              display: "flex",
-              gap: "30px",
-              marginTop: "20px",
-            }}>
-            <Button
-              type="submit"
-              onClick={formik.handleSubmit}
-              variant="primary">
-              Update
-            </Button>
-            <Button onClick={onClose} variant="primary">
-              Cancel
-            </Button>
-          </Grid>
-        </form>
-      </div>
+            <Grid
+              sx={{
+                justifyContent: "center",
+                display: "flex",
+                gap: "30px",
+                marginTop: "20px",
+              }}>
+              <Button onClick={formik.handleSubmit}>Update</Button>
+              <Button onClick={onClose}>Cancel</Button>
+            </Grid>
+          </form>
+        </div>
+      </BackdropLoader>
     </>
   );
 };

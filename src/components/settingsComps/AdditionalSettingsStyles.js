@@ -2,11 +2,10 @@ import { makeStyles } from "@mui/styles";
 
 export const AdditionalSettingsStyles = makeStyles({
   container: {
-    background: "#142243",
-    marginLeft: "130px",
-    width: "65%",
+    background: "#151515",
+    width: "70%",
     borderRadius: "12px",
-    padding: "50px 30px",
+    padding: "32px",
     display: "flex",
     flexDirection: "column",
     marginBottom: "40px",
@@ -14,20 +13,18 @@ export const AdditionalSettingsStyles = makeStyles({
   heading: {
     fontSize: "30px",
     marginBottom: "30px",
-    marginLeft: "20px",
   },
   iconColor: {
     fontSize: "18px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
   },
 
   valuesStyle: {
-    fontSize: "21px",
+    fontSize: "20px",
     fontWeight: "normal",
-    fontFamily: "Whyte",
   },
   link: {
-    color: "#3B7AFD",
+    color: "#2D55FF",
     textDecoration: "none",
     "&:hover": {
       textDecoration: "none",
@@ -35,8 +32,7 @@ export const AdditionalSettingsStyles = makeStyles({
     },
   },
   text: {
-    fontSize: "21px",
+    fontSize: "20px",
     fontWeight: "normal",
-    fontFamily: "Whyte",
   },
 });

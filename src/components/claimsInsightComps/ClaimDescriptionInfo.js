@@ -2,8 +2,11 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { AiFillCopy } from "react-icons/ai";
 import { BsArrowLeftShort, BsLink45Deg } from "react-icons/bs";
+import { AiOutlineEdit } from "react-icons/ai";
 import { FiExternalLink } from "react-icons/fi";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
+import { useNetwork } from "wagmi";
+import EditDetails from "@components/settingsComps/modals/EditDetails";
 
 const ClaimDescriptionInfo = ({
   description,
@@ -11,16 +14,27 @@ const ClaimDescriptionInfo = ({
   startTime,
   claimAddress,
   isActive,
+  claimsNetwork,
 }) => {
   const [claimActive, setClaimActive] = useState(false);
   const [isClaimStarted, setIsClaimStarted] = useState(false);
   const [claimEnabled, setClaimEnabled] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
+
+  const handleClose = (event, reason) => {
+    if (reason !== "backdropClick" && reason !== "escapeKeyDown") {
+      setOpen(false);
+    }
+  };
 
   const router = useRouter();
   const classes = ClaimsInsightStyles();
   const copyHandler = () => {
     navigator.clipboard.writeText(
-      `${window.location.origin}/claims/${claimAddress}`,
+      `${window.location.origin}/claims/${networkId}/${claimAddress}`,
     );
   };
 
@@ -50,23 +64,23 @@ const ClaimDescriptionInfo = ({
             cursor: "pointer",
           }}
           onClick={() => {
-            router.push("/claims");
+            router.push(`/claims/`);
           }}
           className={classes.gapContainer}>
           <BsArrowLeftShort size={25} />
           <p>Back</p>
         </div>
         <div className={classes.gapContainer}>
+          <AiOutlineEdit
+            onClick={() => setOpen(true)}
+            className={classes.icon}
+            size={25}
+          />
           <BsLink45Deg
             onClick={() => {
-              router.push(`/claims/${claimAddress}`);
+              router.push(`/claim/${claimAddress}/${claimsNetwork}`);
             }}
-            style={{
-              border: "0.5px solid #6475A3",
-              padding: "3px",
-              borderRadius: "5px",
-              cursor: "pointer",
-            }}
+            className={classes.icon}
             size={25}
           />
           <p
@@ -98,30 +112,34 @@ const ClaimDescriptionInfo = ({
           <AiFillCopy
             onClick={copyHandler}
             style={{
-              border: "0.5px solid #6475A3",
-              padding: "4px",
-              borderRadius: "5px",
-              cursor: "pointer",
+              background: "#151515",
             }}
+            className={classes.icon}
             size={25}
           />
           <FiExternalLink
             onClick={() => {
               window.open(
-                `https://polygonscan.com/address/${claimAddress}`,
+                `${CHAIN_CONFIG[networkId].blockExplorerUrl}/address/${claimAddress}`,
                 "_blank",
               );
             }}
             style={{
-              border: "0.5px solid #6475A3",
-              padding: "4px",
-              borderRadius: "5px",
-              cursor: "pointer",
+              background: "#151515",
             }}
+            className={classes.icon}
             size={25}
           />
         </div>
       </div>
+      <EditDetails
+        isClaims={true}
+        claimAddress={claimAddress}
+        open={open}
+        setOpen={setOpen}
+        onClose={handleClose}
+        networkId={networkId}
+      />
     </div>
   );
 };

@@ -1,13 +1,12 @@
 import {
-  Button,
   FormControl,
   InputAdornment,
   MenuItem,
-  TextField,
   Typography,
   ToggleButtonGroup,
   ToggleButton,
 } from "@mui/material";
+import { Button, TextField } from "@components/ui";
 import { BsArrowLeft } from "react-icons/bs";
 import { makeStyles } from "@mui/styles";
 import React, { useEffect } from "react";
@@ -25,7 +24,7 @@ const useStyles = makeStyles({
     display: "flex-col",
     alignItems: "center",
     justifyContent: "center",
-    margin: "170px auto",
+    margin: "40px auto",
     width: "600px",
     color: "white",
   },
@@ -35,23 +34,6 @@ const useStyles = makeStyles({
     fontWeight: "400",
     marginBottom: "40px",
   },
-  input: {
-    width: "100%",
-    marginTop: "6px",
-    color: "#6475A3",
-    borderRadius: "8px",
-    "& input[type=number]": {
-      "-moz-appearance": "textfield",
-    },
-    "& input[type=number]::-webkit-outer-spin-button": {
-      "-webkit-appearance": "none",
-      margin: 0,
-    },
-    "& input[type=number]::-webkit-inner-spin-button": {
-      "-webkit-appearance": "none",
-      margin: 0,
-    },
-  },
   label: {
     marginTop: "30px",
     fontWeight: "300",
@@ -59,24 +41,23 @@ const useStyles = makeStyles({
   },
   btn: {
     width: "130px",
-    fontFamily: "sans-serif",
+
     fontSize: "16px",
     marginTop: "20px",
   },
   text: {
     color: "#6475A3",
-    fontSize: "15px",
+    fontSize: "14px",
     marginTop: "8px",
   },
 
   back: {
-    marginTop: "30px",
     fontWeight: "300",
     marginBottom: "4px",
     display: "flex",
     alignItems: "center",
     gap: "5px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     position: "absolute",
     left: "10%",
     top: "110px",
@@ -118,7 +99,7 @@ const useStyles = makeStyles({
     justifyContent: "center",
     flexDirection: "column",
     cursor: "pointer",
-    border: "1px solid #3B7AFD",
+    border: "1px solid #2D55FF",
     borderRadius: "10px",
   },
 
@@ -129,7 +110,7 @@ const useStyles = makeStyles({
     display: "flex",
     alignItems: "center",
     gap: "5px",
-    color: "#C1D3FF",
+    color: "#dcdcdc",
     position: "absolute",
     left: "33.5%",
     top: "110px",
@@ -153,20 +134,19 @@ const useStyles = makeStyles({
   },
 });
 
-const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
+const ClaimStep1 = ({ formik, tokensInWallet, isLoading, networkId }) => {
   const classes = useStyles();
   const router = useRouter();
 
   useEffect(() => {
-    formik.values.airdropTokenAddress =
-      formik.values.selectedToken.token_address;
+    formik.values.airdropTokenAddress = formik.values.selectedToken.address;
   }, [formik.values]);
 
   return (
     <>
       <Typography
         onClick={() => {
-          router.push("/claims");
+          router.push(`/claims/`);
         }}
         className={classes.back}>
         <BsArrowLeft /> Back to claims
@@ -183,7 +163,6 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
         </Typography>
         <TextField
           variant="outlined"
-          className={classes.input}
           name="description"
           id="description"
           value={formik.values.description}
@@ -212,23 +191,40 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
             name="airdropFrom"
             value="contract"
             id="airdropFrom">
-            <BsFillSendFill size={20} />
-            <p className={classes.label}>Claim Contract</p>
-            <p className={classes.smallText}>
-              Users will claim tokens from custom claim contract{" "}
-              <span>(recommended)</span>
-            </p>
+            <div
+              onClick={() => {
+                formik.setFieldValue("airdropFrom", "contract");
+              }}>
+              <BsFillSendFill size={20} />
+              <p className={classes.label}>Claim Contract</p>
+              <p className={classes.smallText}>
+                Users will claim tokens from custom claim contract{" "}
+                <span> (recommended)</span>
+              </p>
+            </div>
           </ToggleButton>
+
           <ToggleButton
             className={classes.leftContainer}
             name="airdropFrom"
             id="airdropFrom"
             value="wallet">
-            <IoWalletSharp size={20} />
-            <p className={classes.label}>My Wallet</p>
-            <p className={classes.smallText}>
-              Users will claim tokens from your wallet
-            </p>
+            <div
+              onClick={() => {
+                formik.setFieldValue("airdropFrom", "wallet");
+              }}>
+              <IoWalletSharp size={20} />
+              <p
+                className={classes.label}
+                onClick={(event) => {
+                  event.stopPropagation(); // Prevent event propagation
+                }}>
+                My Wallet
+              </p>
+              <p className={classes.smallText}>
+                Users will claim tokens from your wallet
+              </p>
+            </div>
           </ToggleButton>
         </ToggleButtonGroup>
 
@@ -266,15 +262,10 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
         </Typography>
         <FormControl sx={{ width: "100%" }}>
           {isLoading ? (
-            <TextField
-              className={classes.text}
-              disabled
-              placeholder="Loading tokens..."
-            />
+            <TextField disabled placeholder="Loading tokens..." />
           ) : (
             <TextField
               variant="outlined"
-              className={classes.input}
               name="selectedToken"
               id="selectedToken"
               value={formik.values.selectedToken}
@@ -303,7 +294,6 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
         {/* Number of Tokens */}
         <Typography className={classes.label}>Number of Tokens *</Typography>
         <TextField
-          className={classes.input}
           type="number"
           InputProps={{
             endAdornment: (
@@ -344,15 +334,16 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
 
         <div
           style={{
+            width: "100%",
             display: "flex",
-            gap: "30px",
             alignItems: "center",
             justifyContent: "space-between",
             width: "100%",
+            marginBottom: "40px",
           }}>
           {/* Claim Start */}
 
-          <div style={{ width: "100%" }}>
+          <div>
             <Typography className={classes.label}>Claims start on</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
@@ -367,7 +358,7 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
 
           {/* Claim End */}
 
-          <div style={{ width: "100%" }}>
+          <div>
             <Typography className={classes.label}>Claims end on</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
@@ -399,13 +390,8 @@ const ClaimStep1 = ({ formik, tokensInWallet, isLoading }) => {
         </FormControl> */}
 
         {/* {/* Next */}
-        <Button
-          onClick={formik.handleSubmit}
-          type="submit"
-          variant="contained"
-          className={classes.btn}>
-          Next
-        </Button>
+
+        <Button onClick={formik.handleSubmit}>Next</Button>
       </form>
     </>
   );

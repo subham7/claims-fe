@@ -1,11 +1,11 @@
-import { Button } from "@mui/material";
+import { Button } from "@components/ui";
 import React, { useEffect, useState } from "react";
 import { ClaimModalStyles } from "./ClaimModalStyles";
 import ModalCard from "./ModalCard";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import useSmartContractMethods from "../../hooks/useSmartContractMethods";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
 
 const AddMoreTokenModal = ({
   onClose,
@@ -13,7 +13,7 @@ const AddMoreTokenModal = ({
   addMoreTokensHandler,
 }) => {
   const [balance, setBalance] = useState(0);
-  const { getBalance } = useSmartContractMethods();
+  const { getBalance } = useCommonContractMethods();
 
   const formik = useFormik({
     initialValues: {
@@ -91,24 +91,13 @@ const AddMoreTokenModal = ({
       </div>
 
       <div className={classes.buttonContainers}>
-        <Button
-          onClick={onClose}
-          sx={{
-            fontSize: "18px",
-            background: "#fff",
-            color: "#3A7AFD",
-          }}
-          variant="primary">
+        <Button onClick={onClose} variant="pill">
           Cancel
         </Button>
         <Button
-          sx={{
-            fontSize: "18px",
-            width: "130px",
-          }}
           disabled={formik.values.noOfTokens <= 0}
           onClick={formik.handleSubmit}
-          variant="primary">
+          variant="pill">
           Add
         </Button>
       </div>
