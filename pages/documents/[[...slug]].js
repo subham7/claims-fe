@@ -17,7 +17,11 @@ const DocumentsPage = () => {
   }
 
   return (
-    <Layout daoAddress={daoAddress} networkId={networkId} page={7}>
+    <Layout
+      showSidebar={flow === "create" || flow === undefined ? true : false}
+      daoAddress={daoAddress}
+      networkId={networkId}
+      page={7}>
       {flow === undefined ? (
         <Documents daoAddress={daoAddress} networkId={networkId} />
       ) : flow === "create" ? (

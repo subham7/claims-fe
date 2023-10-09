@@ -160,6 +160,19 @@ const styles = StyleSheet.create({
     fontSize: "14px",
     letterSpacing: ".6px",
   },
+
+  viewFlex: {
+    display: "flex",
+    flexDirection: "row",
+    width: "100%",
+    marginTop: "10px",
+    fontSize: "14px",
+    letterSpacing: ".6px",
+  },
+
+  minWidth: {
+    width: "150px",
+  },
 });
 
 export const PdfFile = ({
@@ -1133,26 +1146,64 @@ export const PdfFile = ({
                 <Text style={styles.headerLine} break>
                   Subscriber Info{" "}
                 </Text>
-                <Text style={styles.eachLine}>Name: {member_name}</Text>
-                <Text style={styles.eachLine}>Email: {member_email}</Text>
-                <Text style={styles.eachLine}>Address: {member_address} </Text>
-                <Text style={styles.eachLine}>
-                  Contact No. : {member_contactNo ? member_contactNo : "N/A"}
-                </Text>
-                <Text style={styles.eachLine}>
-                  Nomination Name:{" "}
-                  {member_nominationName ? member_nominationName : "N/A"}
-                </Text>
-                <Text style={styles.eachLine}>
-                  Witness Name:{" "}
-                  {member_witnessName ? member_witnessName : "N/A"}
-                </Text>
-                <Text style={styles.eachLine}>
-                  Wallet Address : {signedAcc}
-                </Text>
-                <Text wrap style={styles.eachLine}>
-                  Signature : {signedHash}
-                </Text>
+
+                <View
+                  wrap={true}
+                  style={{
+                    backgroundColor: "#DCDCDC",
+                    padding: "20px",
+                    border: "1px solid #000",
+                  }}>
+                  <View style={styles.viewFlex}>
+                    <Text style={styles.minWidth}>Name of subscriber: </Text>
+                    <Text>{member_name}</Text>
+                  </View>
+
+                  <View style={styles.viewFlex}>
+                    <Text style={styles.minWidth}>Registered Address: </Text>
+                    <Text wrap={true}>{member_address}</Text>
+                  </View>
+
+                  <View style={styles.viewFlex}>
+                    <Text style={styles.minWidth}>Email Address: </Text>
+                    <Text>{member_email}</Text>
+                  </View>
+
+                  <View style={styles.viewFlex}>
+                    <Text style={styles.minWidth}>Contact No: </Text>
+                    <Text>{member_contactNo ? member_contactNo : "N/A"}</Text>
+                  </View>
+
+                  <View style={styles.viewFlex}>
+                    <Text style={styles.minWidth}>Nomination Name: </Text>
+                    <Text>
+                      {member_nominationName ? member_nominationName : "N/A"}
+                    </Text>
+                  </View>
+
+                  <View style={styles.viewFlex}>
+                    <Text style={styles.minWidth}>Witness Name: </Text>
+                    <Text>
+                      {member_witnessName ? member_witnessName : "N/A"}
+                    </Text>
+                  </View>
+
+                  <View style={styles.viewFlex}>
+                    <Text style={styles.minWidth}>Wallet Address: </Text>
+                    <Text style={{}}>{signedAcc}</Text>
+                  </View>
+
+                  <View style={styles.viewFlex}>
+                    <Text style={styles.minWidth}>Signature: </Text>
+                    <Text
+                      wrap={true}
+                      style={{
+                        maxWidth: "200px",
+                      }}>
+                      {signedHash}
+                    </Text>
+                  </View>
+                </View>
               </View>
             )}
           </View>
