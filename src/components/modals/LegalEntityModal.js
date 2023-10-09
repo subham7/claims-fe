@@ -5,18 +5,9 @@ import React, { useState } from "react";
 import { TwitterShareButton } from "react-twitter-embed";
 import { IoMdClose } from "react-icons/io";
 import LensterShareButton from "../LensterShareButton";
+import BackdropLoader from "@components/common/BackdropLoader";
 
 const useStyles = makeStyles({
-  backdrop: {
-    position: "fixed",
-    height: "100vh",
-    width: "100vw",
-    top: 0,
-    left: 0,
-    background: "#000000",
-    opacity: 0.6,
-    zIndex: 2000,
-  },
   modal: {
     width: "570px",
     background: "#0F0F0F",
@@ -94,11 +85,6 @@ const useStyles = makeStyles({
   },
 });
 
-const Backdrop = ({ onClose }) => {
-  const classes = useStyles();
-  return <div onClick={onClose} className={classes.backdrop}></div>;
-};
-
 const LegalEntityModal = ({
   onClose,
   isCreating = false,
@@ -139,94 +125,97 @@ const LegalEntityModal = ({
 
   return (
     <>
-      <Backdrop onClose={onClose} />
-      <div className={classes.modal}>
-        <div className={classes.relative}>
-          <h2 className={classes.title}>
-            {isCreating && "Create a legal entity"}{" "}
-            {isInvite && "Invite members to sign"} {isSuccess && "Success"}
-          </h2>
-          <p className={classes.subtitle}>
-            {isCreating &&
-              "Create a legal entity for this Station & invite members to sign the document by sharing a private link. (Sharing publicly may violate security laws)"}{" "}
-            {isInvite &&
-              "Share this link privately with members who should sign the legal document of the Station (Sharing publicly may violate security laws)"}{" "}
-            {isSuccess &&
-              "You’ve successfully signed the legal doc inside your Station & have been added as a member in the agreement."}
-            {isTwitter &&
-              "You’ve successfully created a station. Let other people know and join your station through twitter"}
-          </p>
-          {isInvite && (
-            <Grid container>
-              <Grid item md={12} mt={2} ml={1} mr={1}>
-                <TextField
-                  className={classes.linkInput}
-                  disabled
-                  value={
-                    typeof window !== "undefined" && window.location.origin
-                      ? `${window.location.origin}/documents/${daoAddress}/${networkId}/sign/${encryptedLink}`
-                      : null
-                  }
-                  InputProps={{
-                    endAdornment: (
-                      <Button
-                        variant="contained"
-                        className={classes.copy}
-                        onClick={copyHandler}>
-                        {isCopy ? "Copied" : "Copy"}
-                      </Button>
-                    ),
-                  }}
-                />
-              </Grid>
-            </Grid>
-          )}
-          {isTwitter && (
-            <Grid
-              item
-              // xs={12}
-              // md={3}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-              mt={5}>
-              {/* enter your code here */}
-
-              <div>
-                <div>
-                  <TwitterShareButton
-                    onLoad={function noRefCheck() {}}
-                    options={{
-                      size: "large",
-                      text: `Just created a Station on `,
-                      via: "stationxnetwork",
+      <BackdropLoader showLoading={false} isOpen={true}>
+        <div className={classes.modal}>
+          <div className={classes.relative}>
+            <h2 className={classes.title}>
+              {isCreating && "Create a legal entity"}{" "}
+              {isInvite && "Invite members to sign"} {isSuccess && "Success"}
+            </h2>
+            <p className={classes.subtitle}>
+              {isCreating &&
+                "Create a legal entity for this Station & invite members to sign the document by sharing a private link. (Sharing publicly may violate security laws)"}{" "}
+              {isInvite &&
+                "Share this link privately with members who should sign the legal document of the Station (Sharing publicly may violate security laws)"}{" "}
+              {isSuccess &&
+                "You’ve successfully signed the legal doc inside your Station & have been added as a member in the agreement."}
+              {isTwitter &&
+                "You’ve successfully created a station. Let other people know and join your station through twitter"}
+            </p>
+            {isInvite && (
+              <Grid container>
+                <Grid item md={12} mt={2} ml={1} mr={1}>
+                  <TextField
+                    className={classes.linkInput}
+                    disabled
+                    value={
+                      typeof window !== "undefined" && window.location.origin
+                        ? `${window.location.origin}/documents/${daoAddress}/${networkId}/sign/${encryptedLink}`
+                        : null
+                    }
+                    InputProps={{
+                      endAdornment: (
+                        <Button
+                          variant="contained"
+                          className={classes.copy}
+                          onClick={copyHandler}>
+                          {isCopy ? "Copied" : "Copy"}
+                        </Button>
+                      ),
                     }}
-                    url={`${window.location.origin}/join/${daoAddress}`}
                   />
+                </Grid>
+              </Grid>
+            )}
+            {isTwitter && (
+              <Grid
+                item
+                // xs={12}
+                // md={3}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+                mt={5}>
+                {/* enter your code here */}
 
-                  <LensterShareButton
-                    daoAddress={daoAddress}
-                    message="Just created a Station on StationX"
-                  />
+                <div>
+                  <div>
+                    <TwitterShareButton
+                      onLoad={function noRefCheck() {}}
+                      options={{
+                        size: "large",
+                        text: `Just created a Station on `,
+                        via: "stationxnetwork",
+                      }}
+                      url={`${window.location.origin}/join/${daoAddress}`}
+                    />
+
+                    <LensterShareButton
+                      daoAddress={daoAddress}
+                      message="Just created a Station on StationX"
+                    />
+                  </div>
                 </div>
-              </div>
-            </Grid>
-          )}
-          {isCreating && (
-            <button onClick={createLegalEntityHandler} className={classes.btn}>
-              Let&apos;s Start
-            </button>
-          )}
-          {isSuccess && (
-            <button onClick={dashboardHandler} className={classes.btn}>
-              Dashboard
-            </button>
-          )}
-          <IoMdClose onClick={onClose} className={classes.icon} size={20} />
+              </Grid>
+            )}
+            {isCreating && (
+              <button
+                onClick={createLegalEntityHandler}
+                className={classes.btn}>
+                Let&apos;s Start
+              </button>
+            )}
+            {isSuccess && (
+              <button onClick={dashboardHandler} className={classes.btn}>
+                Dashboard
+              </button>
+            )}
+            <IoMdClose onClick={onClose} className={classes.icon} size={20} />
+          </div>
         </div>
-      </div>
+      </BackdropLoader>
     </>
   );
 };

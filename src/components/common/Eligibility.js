@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import React from "react";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
-import classes from "./Claim.module.scss";
+import classes from "../claims/Claim.module.scss";
 
 const Eligibility = ({
   contractData,
@@ -52,9 +52,10 @@ const Eligibility = ({
 
   const { claimType } = contractData || {};
   const { displayText: defaultDisplayText, description: defaultDescription } =
-    getClaimInfo(claimType, contractData, tokenDetails);
+    !isDeposit && getClaimInfo(claimType, contractData, tokenDetails);
 
   let gatedTokenText = "";
+
   const getGatedTokenValue = (amount, decimal) => {
     return decimal > 0 ? convertFromWeiGovernance(amount, decimal) : amount;
   };
@@ -87,6 +88,7 @@ const Eligibility = ({
       ? gatedTokenText
       : "Everyone can join"
     : defaultDisplayText;
+
   const description = isDeposit
     ? isWhitelist
       ? "Only allowlisted users by the creator can join this station."

@@ -17,13 +17,10 @@ const Detail = ({
 
   return (
     <div className={classes.detailCard}>
-      <Typography>{renderedValue}</Typography>
+      <Typography variant="inherit">{renderedValue}</Typography>
     </div>
   );
 };
-
-const convertValue = (value, decimal) =>
-  convertFromWeiGovernance(value, decimal);
 
 const DepositDetails = ({ contractData = {}, tokenDetails = {} }) => {
   const {
@@ -45,17 +42,17 @@ const DepositDetails = ({ contractData = {}, tokenDetails = {} }) => {
       <div className={classes.detailContainer}>
         <Detail
           title="Min"
-          value={convertValue(minDepositAmount, tokenDecimal)}
+          value={convertFromWeiGovernance(minDepositAmount, tokenDecimal)}
           isAmount
         />
         <Detail
           title="Max"
-          value={convertValue(maxDepositAmount, tokenDecimal)}
+          value={convertFromWeiGovernance(maxDepositAmount, tokenDecimal)}
           isAmount
         />
         <Detail
           title={symbol}
-          value={convertValue(pricePerToken, tokenDecimal)}
+          value={convertFromWeiGovernance(pricePerToken, tokenDecimal)}
           tokenName={tokenSymbol}
           isPricePerToken
         />

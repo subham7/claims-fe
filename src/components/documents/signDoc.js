@@ -169,7 +169,7 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
 
       createDocument({
         daoAddress,
-        fileName: "Legal Doc - " + adminFormData.LLC_name,
+        fileName: adminFormData.LLC_name,
         docIdentifier: replacedEncrytedLink,
         isTokenForSign: true,
         isSignable: true,
@@ -183,7 +183,7 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
         createdBy: signedAcc,
         updateDate: new Date().toISOString(),
         docIdentifier: replacedEncrytedLink,
-        fileName: "Legal Doc - " + adminFormData.LLC_name,
+        fileName: adminFormData.LLC_name,
       });
 
       dispatch(addDocumentList(docsList.reverse()));
@@ -216,7 +216,6 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
 
       const GetMyDoc = (props) => <PdfFile {...props} />;
 
-      // console.log("membersSign", membersSign);
       try {
         const res = await editMembersFormData({
           daoAddress,

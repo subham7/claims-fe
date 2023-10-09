@@ -1,6 +1,4 @@
 import {
-  Backdrop,
-  CircularProgress,
   Divider,
   Grid,
   IconButton,
@@ -25,6 +23,8 @@ import { CHAIN_CONFIG } from "utils/constants";
 import UploadW8Ben from "./modals/UploadW8Ben";
 import CustomAlert from "@components/common/CustomAlert";
 import { fetchClubByDaoAddress } from "api/club";
+import { editDepositConfig } from "api/deposit";
+import BackdropLoader from "@components/common/BackdropLoader";
 
 const AdditionalSettings = ({
   tokenType,
@@ -507,9 +507,7 @@ const AdditionalSettings = ({
         </Grid>
       </Stack>
 
-      <Backdrop sx={{ color: "#000", zIndex: 10000000 }} open={loading}>
-        <CircularProgress />
-      </Backdrop>
+      <BackdropLoader isOpen={loading} />
 
       {showOwnerFeesModal && (
         <DepositOwnerFee
