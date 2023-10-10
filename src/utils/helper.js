@@ -325,8 +325,8 @@ export const generateRandomString = (length) => {
 
 export const addLineBreaks = (inputString, breakAfter = 40) => {
   let result = "";
-  for (let i = 0; i < inputString.length; i += breakAfter) {
-    result += inputString.substr(i, breakAfter) + "\n";
+  for (let i = 0; i < inputString?.length; i += breakAfter) {
+    result += inputString?.substr(i, breakAfter) + "\n";
   }
   return result;
 };

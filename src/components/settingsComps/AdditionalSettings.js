@@ -109,7 +109,6 @@ const AdditionalSettings = ({
     try {
       const parts = documentLink.split("/");
       const subscriptionId = parts[parts.length - 1];
-      debugger;
       if (!clubAlreadyExists) {
         await createStation({
           depositConfig: {
