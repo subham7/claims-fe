@@ -1086,7 +1086,9 @@ export const PdfFile = ({
             </Text>
             <Text wrap style={styles.eachLine}>
               Signature :{" "}
-              {addLineBreaks(admin_sign, 60) ?? addLineBreaks(signedHash, 60)}
+              {admin_sign
+                ? addLineBreaks(admin_sign, 60)
+                : addLineBreaks(signedHash, 60)}
             </Text>
             <Text style={styles.eachLine}>Name: {admin_name}</Text>
             <Text style={styles.eachLine}>Title: Administrative Member</Text>
