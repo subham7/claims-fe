@@ -8,6 +8,8 @@ import { useAccount } from "wagmi";
 import * as yup from "yup";
 import BackdropLoader from "@components/common/BackdropLoader";
 import { AiOutlineClose } from "react-icons/ai";
+import { useSelector } from "react-redux";
+import { sentFileByEmail } from "api/document";
 
 const UploadDocModal = ({
   daoAddress,
@@ -15,6 +17,10 @@ const UploadDocModal = ({
   uploadDocIdentifier,
   downloadUrl,
 }) => {
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
+  });
+
   const { address: walletAddress } = useAccount();
 
   const hiddenFileInput = useRef(null);
@@ -51,6 +57,32 @@ const UploadDocModal = ({
           formData: [],
         };
         const response = await editMembersFormData(data);
+
+        // For sending file to email
+
+        const file = new File([values?.pdfFile], "document.pdf", {
+          type: "application/pdf",
+        });
+
+        const uploadFormData = new FormData();
+        uploadFormData.append("file", file);
+        uploadFormData.append("email", values?.email);
+        uploadFormData.append(
+          "subject",
+          `${clubData?.name} - Here's your signed copy of W8-BEN document.`,
+        );
+        uploadFormData.append(
+          "body",
+          `
+Hello,
+
+Here's a signed copy of the W8-BEN document - ${clubData?.name}. StationX does not store a copy of these agreements, so please download and save it for your records.
+
+Cheers,
+StationX`,
+        );
+
+        sentFileByEmail(uploadFormData);
         onClose(response?.docIdentifier);
       } catch (error) {
         console.log(error);

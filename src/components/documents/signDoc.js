@@ -70,6 +70,10 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
     return state.legal.encryptedLink;
   });
 
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
+  });
+
   // signDocument
   const signDocumentHandler = async () => {
     try {
@@ -158,6 +162,20 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("email", adminFormData.email);
+      formData.append(
+        "subject",
+        `${clubData?.name} - Here's your signed copy of Subscription Agreement.`,
+      );
+      formData.append(
+        "body",
+        `
+Hello ${adminFormData?.admin_name},
+
+Here's a signed copy of the Subscription Agreement for ${adminFormData?.LLC_name} - ${clubData?.name}. StationX does not store a copy of these agreements, so please download and save it for your records.
+
+Cheers,
+StationX`,
+      );
 
       // ----- API CALL ------
       sentFileByEmail(formData);
@@ -235,10 +253,38 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
           const adminFormData = new FormData();
           adminFormData.append("file", file);
           adminFormData.append("email", decryptedDataObj.email);
+          adminFormData.append(
+            "subject",
+            `${clubData?.name} - ${membersData?.member_name} has signed Subscription Agreement.`,
+          );
+          adminFormData.append(
+            "body",
+            `
+Hello ${decryptedDataObj?.admin_name},
+
+Here's a signed copy of the Subscription Agreement for ${decryptedDataObj?.LLC_name} - ${clubData?.name} for ${membersData?.member_name}. StationX does not store a copy of these agreements, so please download and save it for your records.
+
+Cheers,
+StationX`,
+          );
 
           const memberFormData = new FormData();
           memberFormData.append("file", file);
           memberFormData.append("email", membersData.member_email);
+          memberFormData.append(
+            "subject",
+            `${clubData?.name} - Here's your signed copy of Subscription Agreement.`,
+          );
+          memberFormData.append(
+            "body",
+            `
+Hello ${membersData?.member_name},
+
+Here's a signed copy of the Subscription Agreement for ${decryptedDataObj?.LLC_name} - ${clubData?.name}. StationX does not store a copy of these agreements, so please download and save it for your records.
+
+Cheers,
+StationX`,
+          );
 
           // ----- API CALL ------
           sentFileByEmail(adminFormData);
