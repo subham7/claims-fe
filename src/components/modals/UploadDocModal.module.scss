@@ -46,6 +46,12 @@
       margin: 12px 0;
       border: 1px dashed #7d7d7d;
       border-radius: 12px;
+
+      .fileName {
+        width: 300px;
+        overflow: hidden;
+        text-align: center;
+      }
     }
   }
 }

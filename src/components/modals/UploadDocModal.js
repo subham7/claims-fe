@@ -98,13 +98,7 @@ const UploadDocModal = ({
               <Typography className={classes.label}>
                 Upload signed copy
               </Typography>
-              <TextField
-                disabled
-                onClick={handleClick}
-                onChange={handleChange}
-                value={formik.values?.pdfFile?.name}
-                className={classes.inputs}
-              />
+
               <input
                 type="file"
                 accept=".pdf"
@@ -118,8 +112,8 @@ const UploadDocModal = ({
               <Button variant="contained" onClick={handleClick}>
                 Browse
               </Button>
-              <Typography variant="inherit" mt={1}>
-                Or drag & drop here
+              <Typography variant="inherit" mt={1} className={classes.fileName}>
+                {formik.values?.pdfFile?.name}
               </Typography>
             </div>
 
