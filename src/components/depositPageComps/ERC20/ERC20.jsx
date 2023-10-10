@@ -302,7 +302,7 @@ const ERC20 = ({
         />
       }
       socialData={clubInfo}
-      imgUrl={"/assets/images/tempBanner.jpg"}
+      imgUrl={"/assets/images/depositBanner2.png"}
       isDeposit={true}
       bio={clubInfo?.bio}
       eligibilityProps={{
