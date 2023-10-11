@@ -57,6 +57,24 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
     }
   });
 
+  let stargateFilteredTokens = [];
+  tokenData.map((token) => {
+    if (
+      CHAIN_CONFIG[networkId].stargateStakingAddresses.includes(token.address)
+    ) {
+      stargateFilteredTokens.push(token);
+    }
+  });
+
+  let stargateUnstakeFilteredTokens = [];
+  tokenData.map((token) => {
+    if (
+      CHAIN_CONFIG[networkId].stargateUnstakingAddresses.includes(token.address)
+    ) {
+      stargateUnstakeFilteredTokens.push(token);
+    }
+  });
+
   const handleClick = () => {
     hiddenFileInput.current.click();
   };
@@ -185,6 +203,12 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
             Change total raise amount
           </MenuItem>
         ) : null}
+        <MenuItem key={17} value="Stake tokens through stargate">
+          Stake tokens through stargate
+        </MenuItem>
+        <MenuItem key={18} value="Unstake tokens through stargate">
+          Unstake tokens through stargate
+        </MenuItem>
       </Select>
       {proposalFormData({
         formik,
@@ -196,7 +220,12 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         hiddenFileInput,
         file,
         nftData,
-        filteredTokens,
+        filteredTokens:
+          formik.values.actionCommand === 17
+            ? stargateFilteredTokens
+            : formik.values.actionCommand === 18
+            ? stargateUnstakeFilteredTokens
+            : filteredTokens,
       })}
     </Stack>
   );

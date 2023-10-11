@@ -1,12 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import {
-  Backdrop,
   Button,
   Card,
   CardActionArea,
   Chip,
-  CircularProgress,
   Divider,
   Grid,
   Stack,
@@ -54,6 +52,7 @@ import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 import { ProposalDetailStyles } from "./ProposalDetailStyles";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import CustomAlert from "@components/common/CustomAlert";
+import BackdropLoader from "@components/common/BackdropLoader";
 
 const ProposalDetail = ({ pid, daoAddress }) => {
   const classes = ProposalDetailStyles();
@@ -388,6 +387,10 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         ? proposalData.commands[0]?.withdrawToken
         : proposalData.commands[0]?.executionId === 19
         ? proposalData.commands[0]?.swapToken
+        : proposalData.commands[0]?.executionId === 17
+        ? proposalData.commands[0]?.stakeToken
+        : proposalData.commands[0]?.executionId === 18
+        ? proposalData.commands[0]?.unstakeToken
         : "",
       proposalStatus,
       airdropContractAddress,
@@ -1207,11 +1210,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         <CustomAlert alertMessage={message} severity={failed} />
       ) : null}
 
-      <Backdrop
-        sx={{ color: "#000", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loaderOpen}>
-        <CircularProgress />
-      </Backdrop>
+      <BackdropLoader isOpen={loaderOpen} />
     </>
   );
 };

@@ -8,8 +8,6 @@ import { makeStyles } from "@mui/styles";
 import { convertToWeiGovernance } from "utils/globalFunctions";
 import { createClaimCsv, createSnapShot } from "api/claims";
 import { useRouter } from "next/router";
-import Moralis from "moralis";
-import { EvmChain } from "@moralisweb3/common-evm-utils";
 import {
   claimStep1ValidationSchema,
   claimStep2ValidationSchema,
@@ -21,6 +19,7 @@ import { CHAIN_CONFIG, ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useDropsContractMethods from "hooks/useDropsContractMethods";
 import CustomAlert from "@components/common/CustomAlert";
+import { getPublicClient } from "utils/viemConfig";
 
 const useStyles = makeStyles({
   container: {
@@ -83,31 +82,21 @@ const CreateClaim = () => {
   }, [walletAddress, networkId]);
 
   const fetchLatestBlockNumber = async (tokenGatedNetwork) => {
-    try {
-      if (!Moralis.Core.isStarted) {
-        await Moralis.start({
-          apiKey: process.env.NEXT_PUBLIC_MORALIS_API_KEY,
-        });
-      }
+    const networkToIdMap = {
+      "eth-mainnet": "0x1",
+      "matic-mainnet": "0x89",
+      "bsc-mainnet": "0x38",
+    };
 
-      let chain;
-      if (tokenGatedNetwork === "eth-mainnet") {
-        chain = EvmChain.ETHEREUM;
-      } else if (tokenGatedNetwork === "matic-mainnet") {
-        chain = EvmChain.POLYGON;
-      } else if (tokenGatedNetwork === "bsc-mainnet") {
-        chain = EvmChain.BSC;
-      }
+    const network = networkToIdMap[tokenGatedNetwork];
 
-      const response = await Moralis.EvmApi.block.getDateToBlock({
-        date: Date.now(),
-        chain,
-      });
-
-      return response.toJSON();
-    } catch (error) {
-      console.error("Error:", error);
+    if (!network) {
+      console.error(`Unknown network: ${tokenGatedNetwork}`);
+      return null;
     }
+    const publicClient = getPublicClient(network);
+
+    return publicClient.getBlockNumber();
   };
 
   const formikStep1 = useFormik({
@@ -182,11 +171,14 @@ const CreateClaim = () => {
 
       if (data.maximumClaim === "proRata") {
         try {
-          const blockData = await fetchLatestBlockNumber(
+          const latestBlockNumber = await fetchLatestBlockNumber(
             data?.tokenGatedNetwork,
           );
 
-          if (data.blockNumber > 0 && data.blockNumber > blockData.block) {
+          if (
+            data.blockNumber > 0 &&
+            data.blockNumber > Number(latestBlockNumber)
+          ) {
             showMessageHandler(setShowError);
             setMessage("Invalid block number!");
             setLoading(false);
@@ -194,7 +186,7 @@ const CreateClaim = () => {
           }
 
           blockNumber =
-            data.blockNumber > 0 ? data.blockNumber : blockData.block;
+            data.blockNumber > 0 ? data.blockNumber : Number(latestBlockNumber);
 
           snapshotData = await createSnapShot(
             convertToWeiGovernance(data.numberOfTokens, decimals),

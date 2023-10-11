@@ -61,11 +61,22 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
     usdcTokenSymbol,
     whitelistAddresses,
     airDropCarryFee,
+    stakeToken,
+    stakeAmount,
+    unstakeToken,
+    unstakeAmount,
   } = proposalData?.commands[0];
 
   const fetchAirDropContractDetails = useCallback(async () => {
     try {
-      if (airDropToken || customToken || depositToken || withdrawToken) {
+      if (
+        airDropToken ||
+        customToken ||
+        depositToken ||
+        withdrawToken ||
+        stakeToken ||
+        unstakeToken
+      ) {
         const decimal = await getDecimals(
           airDropToken
             ? airDropToken
@@ -73,7 +84,11 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
             ? customToken
             : depositToken
             ? depositToken
-            : withdrawToken,
+            : withdrawToken
+            ? withdrawToken
+            : stakeToken
+            ? stakeToken
+            : unstakeToken,
         );
         const symbol = await getTokenSymbol(
           airDropToken
@@ -82,11 +97,21 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
             ? customToken
             : depositToken
             ? depositToken
-            : withdrawToken,
+            : withdrawToken
+            ? withdrawToken
+            : stakeToken
+            ? stakeToken
+            : unstakeToken,
         );
 
         const amount = convertFromWeiGovernance(
-          depositAmount ? depositAmount : withdrawAmount,
+          depositAmount
+            ? depositAmount
+            : withdrawAmount
+            ? withdrawAmount
+            : stakeAmount
+            ? stakeAmount
+            : unstakeAmount,
           decimal,
         );
 
@@ -106,6 +131,10 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
     depositToken,
     withdrawAmount,
     withdrawToken,
+    stakeToken,
+    stakeAmount,
+    unstakeToken,
+    unstakeAmount,
   ]);
 
   useEffect(() => {
@@ -449,6 +478,37 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                     {executionId === 14
                       ? "Deposit tokens in AAVE pool"
                       : "Withdraw tokens from AAVE pool"}
+                  </Typography>
+                </Grid>
+                <Divider />
+                <Grid container mt={1}>
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={4}>
+                      <Typography className={classes.listFont2}>
+                        Token
+                      </Typography>
+                      <Typography className={classes.listFont2Colourless}>
+                        {fetched ? tokenDetails.symbol : null}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <Typography className={classes.listFont2}>
+                        Amount
+                      </Typography>
+                      <Typography className={classes.listFont2Colourless}>
+                        {fetched ? tokenDetails.amount : null}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </>
+            ) : executionId === 17 || executionId === 18 ? (
+              <>
+                <Grid container item mb={1}>
+                  <Typography className={classes.listFont2Colourless}>
+                    {executionId === 17
+                      ? "Stake tokens through stargate pool"
+                      : "Unstake tokens through stargate pool"}
                   </Typography>
                 </Grid>
                 <Divider />

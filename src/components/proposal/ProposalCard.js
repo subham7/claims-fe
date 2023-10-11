@@ -41,8 +41,9 @@ const ProposalCard = ({ proposal, daoAddress }) => {
           depositToken,
           withdrawToken,
           swapToken,
+          stakeToken,
+          unstakeToken,
         } = proposal?.commands[0];
-
         if (tokenType === "erc20" || executionId !== 1) {
           decimal = await getDecimals(
             executionId === 0
@@ -56,6 +57,10 @@ const ProposalCard = ({ proposal, daoAddress }) => {
               : executionId === 15
               ? withdrawToken
               : executionId === 17
+              ? stakeToken
+              : executionId === 18
+              ? unstakeToken
+              : executionId === 19
               ? swapToken
               : "",
           );
@@ -73,6 +78,10 @@ const ProposalCard = ({ proposal, daoAddress }) => {
             : executionId === 15
             ? withdrawToken
             : executionId === 17
+            ? stakeToken
+            : executionId === 18
+            ? unstakeToken
+            : executionId === 19
             ? swapToken
             : "",
         );

@@ -132,6 +132,7 @@ export const getProposalValidationSchema = ({
   factoryData,
   walletAddress,
   daoAddress,
+  getERC20TotalSupply,
 }) => {
   return yup.object({
     proposalDeadline: yup.date().required("Deposit close date is required"),
@@ -168,6 +169,41 @@ export const getProposalValidationSchema = ({
                 Number(value) <=
                   Number(convertFromWeiGovernance(balance, decimals)) &&
                 Number(value) > 0
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
+    mintGTAmounts: yup
+      .array()
+      .test(
+        "invalidMintGTAmount",
+        "Enter an amount less or equal to total supply",
+        async (value, context) => {
+          const { actionCommand } = context.parent;
+          if (actionCommand === 1) {
+            try {
+              const { distributionAmount } = factoryData;
+              const clubTokensMinted = await getERC20TotalSupply();
+              const totalAmount = value.reduce(
+                (partialSum, a) => partialSum + Number(a),
+                0,
+              );
+
+              if (
+                Number(totalAmount) <=
+                  Number(
+                    convertFromWeiGovernance(
+                      distributionAmount - clubTokensMinted,
+                      18,
+                    ),
+                  ) &&
+                Number(totalAmount) > 0
               ) {
                 return true;
               } else return false;
@@ -445,7 +481,7 @@ export const getProposalValidationSchema = ({
         "Reciever chain address should be same as sender chain",
         async (value, context) => {
           const { actionCommand } = context.parent;
-          if (actionCommand === 17) {
+          if (actionCommand === 19) {
             try {
               const decimals = await getDecimals(value);
               if (decimals) {
@@ -458,7 +494,6 @@ export const getProposalValidationSchema = ({
           return true;
         },
       ),
-
     oneInchSwapAmount: yup
       .number("Please enter amount")
       .test(
@@ -470,6 +505,76 @@ export const getProposalValidationSchema = ({
             try {
               const balance = await getBalance(oneInchSwapToken, gnosisAddress);
               const decimals = await getDecimals(oneInchSwapToken);
+              if (
+                Number(value) <=
+                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                Number(value) > 0
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
+
+    stargateStakeAmount: yup
+      .number("Please enter amount")
+      .test(
+        "invalidStargateStakeAmt",
+        "Enter an amount less or equal to treasury balance",
+        async (value, context) => {
+          const { actionCommand, stargateStakeToken } = context.parent;
+
+          if (actionCommand === 17) {
+            try {
+              const balance = await getBalance(
+                stargateStakeToken,
+                gnosisAddress,
+              );
+              const decimals = await getDecimals(stargateStakeToken);
+              if (
+                Number(value) <=
+                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                Number(value) > 0
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
+
+    stargateUnstakeToken: yup
+      .string("Enter stargate unstaking token")
+      .when("actionCommand", {
+        is: 18,
+        then: () =>
+          yup
+            .string("Enter stargate unstaking token")
+            .required("Token is required"),
+      }),
+    stargateUnstakeAmount: yup
+      .number("Please enter amount")
+      .test(
+        "invalidStargateUnstakeAmt",
+        "Enter an amount less or equal to treasury balance",
+        async (value, context) => {
+          const { actionCommand, stargateUnstakeToken } = context.parent;
+
+          if (actionCommand === 18) {
+            try {
+              const balance = await getBalance(
+                stargateUnstakeToken,
+                gnosisAddress,
+              );
+              const decimals = await getDecimals(stargateUnstakeToken);
+
               if (
                 Number(value) <=
                   Number(convertFromWeiGovernance(balance, decimals)) &&

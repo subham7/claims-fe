@@ -202,7 +202,7 @@ export const getUserTokenData = async (
       )
     : tokenData;
 
-  return filteredData.map((token) => {
+  return filteredData?.map((token) => {
     return {
       balance: token.balance,
       address: token.contract_address,
@@ -319,6 +319,14 @@ export const generateRandomString = (length) => {
   for (let i = 0; i < length; i++) {
     const randomIndex = Math.floor(Math.random() * chars.length);
     result += chars[randomIndex];
+  }
+  return result;
+};
+
+export const addLineBreaks = (inputString, breakAfter = 40) => {
+  let result = "";
+  for (let i = 0; i < inputString?.length; i += breakAfter) {
+    result += inputString?.substr(i, breakAfter) + "\n";
   }
   return result;
 };

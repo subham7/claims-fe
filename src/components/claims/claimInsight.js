@@ -7,7 +7,6 @@ import ClaimEligibility from "@components/claimsInsightComps/ClaimEligibility";
 import ClaimEdit from "@components/claimsInsightComps/ClaimEdit";
 import ToggleClaim from "@components/claimsInsightComps/ToggleClaim";
 import ClaimsTransactions from "@components/claimsInsightComps/ClaimsTransactions";
-import { Backdrop, CircularProgress } from "@mui/material";
 import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
@@ -19,6 +18,7 @@ import { queryDropDetailsFromSubgraph } from "utils/dropsSubgraphHelper";
 import { createSnapShot } from "api/claims";
 import dayjs from "dayjs";
 import CustomAlert from "@components/common/CustomAlert";
+import BackdropLoader from "@components/common/BackdropLoader";
 
 const ClaimInsight = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState([]);
@@ -251,11 +251,7 @@ const ClaimInsight = ({ claimAddress }) => {
         <CustomAlert alertMessage={message} severity={isSuccessFull} />
       ) : null}
 
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}>
-        <CircularProgress />
-      </Backdrop>
+      <BackdropLoader isOpen={loading} />
     </>
   );
 };

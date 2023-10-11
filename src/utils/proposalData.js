@@ -37,6 +37,8 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
     swapToken,
     swapAmount,
     destinationToken,
+    stakeAmount,
+    unstakeAmount,
   } = data ?? {};
 
   switch (executionId) {
@@ -109,6 +111,16 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
         "Swap token": shortAddress(swapToken),
         "Swap amt": convertFromWeiGovernance(swapAmount, decimals),
         "Destination token": shortAddress(destinationToken),
+      };
+    case 17:
+      return {
+        "Stake token": symbol,
+        "Stake amount": convertFromWeiGovernance(stakeAmount, decimals),
+      };
+    case 18:
+      return {
+        "Unstake token": symbol,
+        "Unstake amount": convertFromWeiGovernance(unstakeAmount, decimals),
       };
     default:
       return {};
@@ -242,6 +254,13 @@ export const proposalFormData = ({
               }}
               disabled
               value={file?.name}
+              error={
+                formik.touched.mintGTAmounts &&
+                Boolean(formik.errors.mintGTAmounts)
+              }
+              helperText={
+                formik.touched.mintGTAmounts && formik.errors.mintGTAmounts
+              }
             />
             <Button onClick={handleClick} variant="normal">
               Upload
@@ -894,6 +913,142 @@ export const proposalFormData = ({
           </Grid>
         </>
       );
+    case 17:
+      return (
+        <>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            // mb={}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography variant="proposalBody">Token to be staked</Typography>
+            <Select
+              sx={{ marginTop: "0.5rem" }}
+              value={formik.values.stargateStakeToken}
+              onChange={(e) =>
+                formik.setFieldValue(
+                  "stargateStakeToken",
+                  filteredTokens.find(
+                    (token) => token.symbol === e.target.value,
+                  ).address,
+                )
+              }
+              renderValue={(selected) => {
+                if (selected.length === 0) {
+                  return "Select a command";
+                }
+                return selected;
+              }}
+              inputProps={{ "aria-label": "Without label" }}
+              name="stargateStakeToken"
+              id="stargateStakeToken">
+              {filteredTokens.map((token) => (
+                <MenuItem key={token.symbol} value={token.symbol}>
+                  {token.symbol}
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography variant="proposalBody">Amount of Tokens *</Typography>
+            <TextField
+              variant="outlined"
+              className={classes.textField}
+              placeholder="0"
+              type="number"
+              name="stargateStakeAmount"
+              id="stargateStakeAmount"
+              value={formik.values.stargateStakeAmount}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.stargateStakeAmount &&
+                Boolean(formik.errors.stargateStakeAmount)
+              }
+              helperText={
+                formik.touched.stargateStakeAmount &&
+                formik.errors.stargateStakeAmount
+              }
+              onWheel={(event) => event.target.blur()}
+            />
+          </Grid>
+        </>
+      );
+    case 18:
+      return (
+        <>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            // mb={}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography variant="proposalBody">
+              Token to be un-staked
+            </Typography>
+            <Select
+              sx={{ marginTop: "0.5rem" }}
+              value={formik.values.stargateUnstakeToken}
+              onChange={(e) =>
+                formik.setFieldValue(
+                  "stargateUnstakeToken",
+                  filteredTokens.find(
+                    (token) => token.symbol === e.target.value,
+                  ).address,
+                )
+              }
+              renderValue={(selected) => {
+                if (selected.length === 0) {
+                  return "Select a command";
+                }
+                return selected;
+              }}
+              inputProps={{ "aria-label": "Without label" }}
+              name="stargateUnstakeToken"
+              id="stargateUnstakeToken">
+              {filteredTokens.map((token) => (
+                <MenuItem key={token.symbol} value={token.symbol}>
+                  {token.symbol}
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography variant="proposalBody">Amount of Tokens *</Typography>
+            <TextField
+              variant="outlined"
+              className={classes.textField}
+              placeholder="0"
+              type="number"
+              name="stargateUnstakeAmount"
+              id="stargateUnstakeAmount"
+              value={formik.values.stargateUnstakeAmount}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.stargateUnstakeAmount &&
+                Boolean(formik.errors.stargateUnstakeAmount)
+              }
+              helperText={
+                formik.touched.stargateUnstakeAmount &&
+                formik.errors.stargateUnstakeAmount
+              }
+              onWheel={(event) => event.target.blur()}
+            />
+          </Grid>
+        </>
+      );
     case 19:
       return (
         <>
@@ -1180,6 +1335,28 @@ export const getProposalCommands = async ({
           tokenDecimal,
         ),
         destinationToken: values.oneInchRecieverToken,
+      };
+    case 17:
+      tokenDecimal = tokenData.find(
+        (token) => token.address === values.stargateStakeToken,
+      ).decimals;
+      return {
+        stakeToken: values.stargateStakeToken,
+        stakeAmount: convertToWeiGovernance(
+          values.stargateStakeAmount,
+          tokenDecimal,
+        ),
+      };
+    case 18:
+      tokenDecimal = tokenData.find(
+        (token) => token.address === values.stargateUnstakeToken,
+      ).decimals;
+      return {
+        unstakeToken: values.stargateUnstakeToken,
+        unstakeAmount: convertToWeiGovernance(
+          values.stargateUnstakeAmount,
+          tokenDecimal,
+        ),
       };
   }
 };

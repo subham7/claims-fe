@@ -21,6 +21,7 @@ import {
 import { erc20TokenABI } from "abis/usdcTokenContract.js";
 import { actionContractABI } from "abis/actionContract";
 import { erc20AaveABI } from "abis/erc20AaveABI";
+import { stargateStakeABI } from "abis/stargateStakeABI";
 import { maticAaveABI } from "abis/MaticAaveABI";
 
 export const fetchProposals = async (clubId, type) => {
@@ -588,6 +589,47 @@ const depositErc20TokensToAavePool = (
     .encodeABI();
 };
 
+const stakeErc20TokensToStargate = (
+  stakeTokenAddress,
+  stakeAmount,
+  gnosisAddress,
+  web3Call,
+  networkId,
+) => {
+  const stakeInStargate = new web3Call.eth.Contract(
+    stargateStakeABI,
+    CHAIN_CONFIG[networkId].stargateRouterAddress,
+  );
+  return stakeInStargate.methods
+    .addLiquidity(
+      CHAIN_CONFIG[networkId].stargatePoolIds[stakeTokenAddress],
+      stakeAmount,
+      gnosisAddress,
+    )
+    .encodeABI();
+};
+
+const unstakeErc20TokensToStargate = (
+  unstakeTokenAddress,
+  unstakeAmount,
+  gnosisAddress,
+  web3Call,
+  networkId,
+) => {
+  const stakeInStargate = new web3Call.eth.Contract(
+    stargateStakeABI,
+    CHAIN_CONFIG[networkId].stargateRouterAddress,
+  );
+
+  return stakeInStargate.methods
+    .instantRedeemLocal(
+      CHAIN_CONFIG[networkId].stargatePoolIds[unstakeTokenAddress],
+      unstakeAmount,
+      gnosisAddress,
+    )
+    .encodeABI();
+};
+
 const depositEthMethodEncoded = (
   poolAddress,
   addressWhereAssetsStored,
@@ -667,6 +709,8 @@ export const getTransaction = async ({
     swapToken,
     destinationToken,
     swapAmount,
+    stakeAmount,
+    unstakeAmount,
   } = proposalData.commands[0];
   let approvalTransaction;
   let transaction;
@@ -808,111 +852,106 @@ export const getTransaction = async ({
       };
       return { transaction, approvalTransaction };
     case 14:
-      if (isAssetsStoredOnGnosis) {
-        if (tokenData === CHAIN_CONFIG[networkId].nativeToken) {
-          transaction = {
-            to: Web3.utils.toChecksumAddress(
-              CHAIN_CONFIG[networkId].aaveMaticPoolAddress,
-            ),
-            data: depositEthMethodEncoded(
-              CHAIN_CONFIG[networkId]?.aavePoolAddress,
-              gnosisAddress,
-              0,
-              web3Call,
-              networkId,
-            ),
-            value: depositAmount.toString(),
-          };
+      if (tokenData === CHAIN_CONFIG[networkId].nativeToken) {
+        transaction = {
+          to: Web3.utils.toChecksumAddress(
+            CHAIN_CONFIG[networkId].aaveMaticPoolAddress,
+          ),
+          data: depositEthMethodEncoded(
+            CHAIN_CONFIG[networkId]?.aavePoolAddress,
+            gnosisAddress,
+            0,
+            web3Call,
+            networkId,
+          ),
+          value: depositAmount.toString(),
+        };
 
-          return { transaction };
-        } else {
-          approvalTransaction = {
-            to: Web3.utils.toChecksumAddress(tokenData),
-            data: approveDepositWithEncodeABI(
-              tokenData,
-              CHAIN_CONFIG[networkId].aavePoolAddress,
-              depositAmount,
-              web3Call,
-            ),
-            value: "0",
-          };
-          transaction = {
-            to: Web3.utils.toChecksumAddress(
-              CHAIN_CONFIG[networkId].aavePoolAddress,
-            ),
-            data: depositErc20TokensToAavePool(
-              tokenData,
-              depositAmount,
-              gnosisAddress,
-              0,
-              web3Call,
-              networkId,
-            ),
-            value: "0",
-          };
+        return { transaction };
+      } else {
+        approvalTransaction = {
+          to: Web3.utils.toChecksumAddress(tokenData),
+          data: approveDepositWithEncodeABI(
+            tokenData,
+            CHAIN_CONFIG[networkId].aavePoolAddress,
+            depositAmount,
+            web3Call,
+          ),
+          value: "0",
+        };
+        transaction = {
+          to: Web3.utils.toChecksumAddress(
+            CHAIN_CONFIG[networkId].aavePoolAddress,
+          ),
+          data: depositErc20TokensToAavePool(
+            tokenData,
+            depositAmount,
+            gnosisAddress,
+            0,
+            web3Call,
+            networkId,
+          ),
+          value: "0",
+        };
 
-          return { transaction, approvalTransaction };
-        }
+        return { transaction, approvalTransaction };
       }
+
     case 15:
-      if (isAssetsStoredOnGnosis) {
-        if (tokenData === CHAIN_CONFIG[networkId].nativeToken) {
-          approvalTransaction = {
-            to: Web3.utils.toChecksumAddress(
-              CHAIN_CONFIG[networkId].aaveWrappedMaticAddress,
-            ),
-            data: approveDepositWithEncodeABI(
-              CHAIN_CONFIG[networkId].aaveWrappedMaticAddress,
-              CHAIN_CONFIG[networkId].aaveMaticPoolAddress,
-              withdrawAmount,
-              web3Call,
-            ),
-            value: "0",
-          };
+      if (tokenData === CHAIN_CONFIG[networkId].nativeToken) {
+        approvalTransaction = {
+          to: Web3.utils.toChecksumAddress(
+            CHAIN_CONFIG[networkId].aaveWrappedMaticAddress,
+          ),
+          data: approveDepositWithEncodeABI(
+            CHAIN_CONFIG[networkId].aaveWrappedMaticAddress,
+            CHAIN_CONFIG[networkId].aaveMaticPoolAddress,
+            withdrawAmount,
+            web3Call,
+          ),
+          value: "0",
+        };
 
-          transaction = {
-            to: Web3.utils.toChecksumAddress(
-              CHAIN_CONFIG[networkId].aaveMaticPoolAddress,
-            ),
-            data: withdrawEthMethodEncoded(
-              CHAIN_CONFIG[networkId].aavePoolAddress,
-              withdrawAmount,
-              gnosisAddress,
-              web3Call,
-              networkId,
-            ),
-            value: "0",
-          };
-        } else {
-          approvalTransaction = {
-            to: Web3.utils.toChecksumAddress(
-              CHAIN_CONFIG[networkId].aaveWrappedUsdcAddress,
-            ),
-            data: approveDepositWithEncodeABI(
-              CHAIN_CONFIG[networkId].aaveWrappedUsdcAddress,
-              CHAIN_CONFIG[networkId].aavePoolAddress,
-              withdrawAmount,
-              web3Call,
-            ),
-            value: "0",
-          };
+        transaction = {
+          to: Web3.utils.toChecksumAddress(
+            CHAIN_CONFIG[networkId].aaveMaticPoolAddress,
+          ),
+          data: withdrawEthMethodEncoded(
+            CHAIN_CONFIG[networkId].aavePoolAddress,
+            withdrawAmount,
+            gnosisAddress,
+            web3Call,
+            networkId,
+          ),
+          value: "0",
+        };
+      } else {
+        approvalTransaction = {
+          to: Web3.utils.toChecksumAddress(
+            CHAIN_CONFIG[networkId].aaveWrappedUsdcAddress,
+          ),
+          data: approveDepositWithEncodeABI(
+            CHAIN_CONFIG[networkId].aaveWrappedUsdcAddress,
+            CHAIN_CONFIG[networkId].aavePoolAddress,
+            withdrawAmount,
+            web3Call,
+          ),
+          value: "0",
+        };
 
-          transaction = {
-            to: Web3.utils.toChecksumAddress(
-              CHAIN_CONFIG[networkId].aavePoolAddress,
-            ),
-            data: withdrawErc20MethodEncoded(
-              Web3.utils.toChecksumAddress(tokenData),
-              withdrawAmount,
-              gnosisAddress,
-              web3Call,
-              networkId,
-            ),
-            value: "0",
-          };
-        }
-
-        return { approvalTransaction, transaction };
+        transaction = {
+          to: Web3.utils.toChecksumAddress(
+            CHAIN_CONFIG[networkId].aavePoolAddress,
+          ),
+          data: withdrawErc20MethodEncoded(
+            Web3.utils.toChecksumAddress(tokenData),
+            withdrawAmount,
+            gnosisAddress,
+            web3Call,
+            networkId,
+          ),
+          value: "0",
+        };
       }
     case 19:
       const swapParams = {
@@ -927,28 +966,82 @@ export const getTransaction = async ({
 
       const response = await getSwapInfo(swapParams, networkId);
       console.log("RESPONSE", response);
-    // approvalTransaction = {
-    //   to: Web3.utils.toChecksumAddress(tokenData),
-    //   data: approveDepositWithEncodeABI(
-    //     tokenData,
-    //     CHAIN_CONFIG[networkId].stargateRouterAddress,
-    //     unstakeAmount,
-    //     web3Call,
-    //   ),
-    //   value: "0",
-    // };
-    // transaction = {
-    //   to: Web3.utils.toChecksumAddress(
-    //     CHAIN_CONFIG[networkId].stargateRouterAddress,
-    //   ),
-    //   data: unstakeErc20TokensToStargate(
-    //     tokenData,
-    //     unstakeAmount,
-    //     gnosisAddress,
-    //     web3Call,
-    //     networkId,
-    //   ),
-    //   value: "0",
-    // };
+      // approvalTransaction = {
+      //   to: Web3.utils.toChecksumAddress(tokenData),
+      //   data: approveDepositWithEncodeABI(
+      //     tokenData,
+      //     CHAIN_CONFIG[networkId].stargateRouterAddress,
+      //     unstakeAmount,
+      //     web3Call,
+      //   ),
+      //   value: "0",
+      // };
+      // transaction = {
+      //   to: Web3.utils.toChecksumAddress(
+      //     CHAIN_CONFIG[networkId].stargateRouterAddress,
+      //   ),
+      //   data: unstakeErc20TokensToStargate(
+      //     tokenData,
+      //     unstakeAmount,
+      //     gnosisAddress,
+      //     web3Call,
+      //     networkId,
+      //   ),
+      //   value: "0",
+      // };
+
+      return { approvalTransaction, transaction };
+    case 17:
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(tokenData),
+        data: approveDepositWithEncodeABI(
+          tokenData,
+          CHAIN_CONFIG[networkId].stargateRouterAddress,
+          stakeAmount,
+          web3Call,
+        ),
+        value: "0",
+      };
+
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].stargateRouterAddress,
+        ),
+        data: stakeErc20TokensToStargate(
+          tokenData,
+          stakeAmount,
+          gnosisAddress,
+          web3Call,
+          networkId,
+        ),
+        value: "0",
+      };
+      return { transaction, approvalTransaction };
+    case 18:
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(tokenData),
+        data: approveDepositWithEncodeABI(
+          tokenData,
+          CHAIN_CONFIG[networkId].stargateRouterAddress,
+          unstakeAmount,
+          web3Call,
+        ),
+        value: "0",
+      };
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].stargateRouterAddress,
+        ),
+        data: unstakeErc20TokensToStargate(
+          tokenData,
+          unstakeAmount,
+          gnosisAddress,
+          web3Call,
+          networkId,
+        ),
+        value: "0",
+      };
+
+      return { transaction, approvalTransaction };
   }
 };

@@ -1,6 +1,4 @@
 import {
-  Backdrop,
-  CircularProgress,
   Divider,
   Grid,
   IconButton,
@@ -24,6 +22,9 @@ import { useNetwork } from "wagmi";
 import { CHAIN_CONFIG } from "utils/constants";
 import UploadW8Ben from "./modals/UploadW8Ben";
 import CustomAlert from "@components/common/CustomAlert";
+import { createStation, fetchClubByDaoAddress } from "api/club";
+import { editDepositConfig } from "api/deposit";
+import BackdropLoader from "@components/common/BackdropLoader";
 
 const AdditionalSettings = ({
   tokenType,
@@ -108,7 +109,6 @@ const AdditionalSettings = ({
     try {
       const parts = documentLink.split("/");
       const subscriptionId = parts[parts.length - 1];
-
       if (!clubAlreadyExists) {
         await createStation({
           depositConfig: {
@@ -176,6 +176,8 @@ const AdditionalSettings = ({
           setIsSuccessFull(false);
           setMessage("Subscription link removing failed");
         }
+      } else {
+        handleDocumentLinkChange();
       }
     }
   };
@@ -504,12 +506,9 @@ const AdditionalSettings = ({
             </Grid>
           </Grid>
         </Grid>
-        <Divider />
       </Stack>
 
-      <Backdrop sx={{ color: "#000", zIndex: 10000000 }} open={loading}>
-        <CircularProgress />
-      </Backdrop>
+      <BackdropLoader isOpen={loading} />
 
       {showOwnerFeesModal && (
         <DepositOwnerFee

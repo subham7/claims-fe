@@ -29,6 +29,7 @@ import { getProposalCommands } from "utils/proposalData";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { getProposalValidationSchema } from "@components/createClubComps/ValidationSchemas";
 import CustomAlert from "@components/common/CustomAlert";
+import useAppContractMethods from "hooks/useAppContractMethods";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -73,10 +74,19 @@ const CreateProposalDialog = ({
     return state.club.clubData;
   });
 
+  const { getERC20TotalSupply } = useAppContractMethods();
+
   const [loaderOpen, setLoaderOpen] = useState(false);
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [failed, setFailed] = useState(false);
   const [message, setMessage] = useState("");
+
+  const showMessageHandler = () => {
+    setOpenSnackBar(true);
+    setTimeout(() => {
+      setOpenSnackBar(false);
+    }, 4000);
+  };
 
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -94,7 +104,6 @@ const CreateProposalDialog = ({
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
-
   const proposal = useFormik({
     initialValues: {
       tokenType: tokenType,
@@ -132,6 +141,10 @@ const CreateProposalDialog = ({
       oneInchSwapToken: tokenData ? tokenData[0]?.address : "",
       oneInchRecieverToken: "",
       oneInchSwapAmount: 0,
+      stargateStakeToken: "",
+      stargateStakeAmount: 0,
+      stargateUnstakeToken: "",
+      stargateUnstakeAmount: 0,
     },
     validationSchema: getProposalValidationSchema({
       networkId,
@@ -141,6 +154,7 @@ const CreateProposalDialog = ({
       factoryData,
       walletAddress,
       daoAddress,
+      getERC20TotalSupply,
     }),
     onSubmit: async (values) => {
       try {
@@ -184,7 +198,8 @@ const CreateProposalDialog = ({
             fetchProposalList();
             setOpenSnackBar(true);
             setMessage("Proposal created successfully!");
-            setFailed(false);
+            setFailed(true);
+            showMessageHandler();
             setOpen(false);
             setLoaderOpen(false);
           }
@@ -193,7 +208,8 @@ const CreateProposalDialog = ({
         setMessage(error.message ?? error);
         setLoaderOpen(false);
         setOpenSnackBar(true);
-        setFailed(true);
+        setFailed(false);
+        showMessageHandler();
       }
     },
   });

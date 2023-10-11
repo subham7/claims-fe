@@ -8,6 +8,7 @@ import UploadDocModal from "@components/modals/UploadDocModal";
 import { fetchClubByDaoAddress } from "api/club";
 import { hasUserSigned } from "api/deposit";
 import { useAccount } from "wagmi";
+import { AiFillInfoCircle } from "react-icons/ai";
 
 const DepositPreRequisites = ({
   daoAddress,
@@ -75,68 +76,77 @@ const DepositPreRequisites = ({
     walletAddress,
   ]);
 
+  if (
+    !depositConfig ||
+    (depositConfig?.subscriptionDocId === null &&
+      depositConfig?.enableKyc === false &&
+      depositConfig?.uploadDocId === null)
+  ) {
+    return;
+  }
+
   return (
     <>
-      {depositConfig &&
-        (depositConfig?.subscriptionDocId !== null ||
-          depositConfig?.enableKyc === true ||
-          depositConfig?.uploadDocId !== null) && (
-          <div className={classes.mainContainer}>
-            <Typography variant="subtitle1">Complete these steps</Typography>
-            {depositConfig?.subscriptionDocId !== null && (
-              <div className={classes.stepContainer}>
-                {isSigned ? (
-                  <DoneIcon className={classes.tickIcon} />
-                ) : (
-                  <RadioButtonUncheckedIcon className={classes.icons} />
-                )}
-
-                <div
-                  className={classes.signTextDiv}
-                  onClick={() => {
-                    !isSigned &&
-                      window.open(
-                        `/documents/${daoAddress}/0x89/sign/${depositConfig?.subscriptionDocId}`,
-                        "_blank",
-                      );
-                  }}>
-                  <div style={{ marginRight: "0.5rem" }}>
-                    Sign subscription agreement
-                  </div>
-                  <OpenInNewIcon className={classes.icons} />
-                </div>
-              </div>
+      <div className={classes.mainContainer}>
+        <div className={classes.warningContainer}>
+          <AiFillInfoCircle size={20} />
+          <Typography variant="inherit">
+            Complete these steps to join this station
+          </Typography>
+        </div>
+        {depositConfig?.subscriptionDocId !== null && (
+          <div className={classes.stepContainer}>
+            {isSigned ? (
+              <DoneIcon className={classes.tickIcon} />
+            ) : (
+              <RadioButtonUncheckedIcon className={classes.icons} />
             )}
 
-            {depositConfig && depositConfig?.uploadDocId !== null && (
-              <div
-                className={classes.signTextDiv}
-                onClick={() => {
-                  {
-                    !isW8BenSigned && setShowUploadDocModal(true);
-                  }
-                }}>
-                {isW8BenSigned ? (
-                  <DoneIcon className={classes.tickIcon} />
-                ) : (
-                  <RadioButtonUncheckedIcon className={classes.icons} />
-                )}
-                <div style={{ marginRight: "0.5rem" }}>Upload w8ben</div>
-                <OpenInNewIcon className={classes.icons} />
+            <div
+              className={classes.signTextDiv}
+              onClick={() => {
+                !isSigned &&
+                  window.open(
+                    `/documents/${daoAddress}/0x89/sign/${depositConfig?.subscriptionDocId}`,
+                    "_blank",
+                  );
+              }}>
+              <div style={{ marginRight: "0.5rem" }}>
+                Sign subscription agreement
               </div>
-            )}
-
-            {depositConfig && depositConfig?.enableKyc ? (
-              <div className={classes.stepContainer}>
-                <DoneIcon className={classes.tickIcon} />
-                <div style={{ marginRight: "0.5rem" }}>Complete KYC</div>
-                <OpenInNewIcon className={classes.icons} />
-              </div>
-            ) : null}
+              <OpenInNewIcon className={classes.icons} />
+            </div>
           </div>
         )}
 
-      {showUploadDocModal && (
+        {depositConfig && depositConfig?.uploadDocId !== null && (
+          <div
+            className={classes.signTextDiv}
+            onClick={() => {
+              {
+                !isW8BenSigned && setShowUploadDocModal(true);
+              }
+            }}>
+            {isW8BenSigned ? (
+              <DoneIcon className={classes.tickIcon} />
+            ) : (
+              <RadioButtonUncheckedIcon className={classes.icons} />
+            )}
+            <div style={{ marginRight: "0.5rem" }}>Upload w8ben</div>
+            <OpenInNewIcon className={classes.icons} />
+          </div>
+        )}
+
+        {depositConfig && depositConfig?.enableKyc ? (
+          <div className={classes.stepContainer}>
+            <DoneIcon className={classes.tickIcon} />
+            <div style={{ marginRight: "0.5rem" }}>Complete KYC</div>
+            <OpenInNewIcon className={classes.icons} />
+          </div>
+        ) : null}
+      </div>
+
+      {showUploadDocModal ? (
         <UploadDocModal
           uploadDocIdentifier={uploadedDocInfo?.docIdentifier}
           onClose={(docId) => {
@@ -146,7 +156,7 @@ const DepositPreRequisites = ({
           downloadUrl={uploadedDocInfo?.docLink}
           daoAddress={daoAddress}
         />
-      )}
+      ) : null}
     </>
   );
 };
