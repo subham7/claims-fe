@@ -436,8 +436,90 @@ export const getProposalValidationSchema = ({
           return true;
         },
       ),
+    stargateStakeToken: yup
+      .string("Enter stargate staking token")
+      .when("actionCommand", {
+        is: 17,
+        then: () =>
+          yup
+            .string("Enter stargate staking token")
+            .required("Token is required"),
+      }),
+    stargateStakeAmount: yup
+      .number("Please enter amount")
+      .test(
+        "invalidStargateStakeAmt",
+        "Enter an amount less or equal to treasury balance",
+        async (value, context) => {
+          const { actionCommand, stargateStakeToken } = context.parent;
+
+          if (actionCommand === 17) {
+            try {
+              const balance = await getBalance(
+                stargateStakeToken,
+                gnosisAddress,
+              );
+              const decimals = await getDecimals(stargateStakeToken);
+              if (
+                Number(value) <=
+                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                Number(value) > 0
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
+    stargateUnstakeToken: yup
+      .string("Enter stargate unstaking token")
+      .when("actionCommand", {
+        is: 18,
+        then: () =>
+          yup
+            .string("Enter stargate unstaking token")
+            .required("Token is required"),
+      }),
+    stargateUnstakeAmount: yup
+      .number("Please enter amount")
+      .test(
+        "invalidStargateUnstakeAmt",
+        "Enter an amount less or equal to treasury balance",
+        async (value, context) => {
+          const { actionCommand, stargateUnstakeToken } = context.parent;
+
+          if (actionCommand === 18) {
+            try {
+              const balance = await getBalance(
+                stargateUnstakeToken,
+                gnosisAddress,
+              );
+              const decimals = await getDecimals(stargateUnstakeToken);
+
+              if (
+                Number(value) <=
+                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                Number(value) > 0
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
   });
 };
+
+export const disburseFormValidation = yup.object({
+  selectedToken: yup.object({}).required("Token is required"),
+  disburseList: yup.string().required("Disburse info required"),
+});
 
 export const claimStep1ValidationSchema = yup.object({
   description: yup

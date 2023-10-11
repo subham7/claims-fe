@@ -5,7 +5,7 @@ import classes from "./Claim.module.scss";
 import { AiFillInfoCircle } from "react-icons/ai";
 
 const ClaimInput = ({
-  claimInput,
+  inputAmount,
   setClaimInput,
   tokenDetails,
   maxClaimableAmount,
@@ -31,7 +31,7 @@ const ClaimInput = ({
             sx={{
               "& fieldset": { border: "none" },
             }}
-            value={claimInput}
+            value={inputAmount}
             name="tokenInput"
             id="tokenInput"
             onChange={(event) => {

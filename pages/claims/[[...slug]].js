@@ -4,6 +4,7 @@ import Layout from "@components/layouts/layout";
 import ClaimInsight from "@components/claims/claimInsight";
 import ListClaims from "@components/claims/listClaims";
 import CreateClaim from "@components/claims/create";
+import CreateDisburse from "@components/claims/disburse";
 
 const ClaimsPage = () => {
   const router = useRouter();
@@ -15,10 +16,12 @@ const ClaimsPage = () => {
       showSidebar={false}
       claimAddress={claimAddress}
       networkId={networkId}>
-      {claimAddress === undefined && networkId !== "create" ? (
+      {!claimAddress && !networkId ? (
         <ListClaims />
       ) : networkId === "create" ? (
         <CreateClaim />
+      ) : networkId === "disburse" ? (
+        <CreateDisburse />
       ) : (
         <ClaimInsight claimAddress={claimAddress} />
       )}

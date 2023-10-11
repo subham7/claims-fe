@@ -6,6 +6,12 @@ export const ZERO_MERKLE_ROOT =
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 export const AWS_API_URL =
   "https://k3hu9vqwv4.execute-api.ap-south-1.amazonaws.com";
+export const OMIT_DAOS = [
+  "0xbd1fab87be86fec9336ae49131998d9fa5a00eb0",
+  "0x2608d54d10527fd4a6a7bab0306dfbf9ca95a1bb",
+  "0x067a544f00840056c8cdb7f9d9d73ac3611d37c9",
+  "0x1ae43fb8283e45ae90d5bd9249cc7227fd6ecc73",
+];
 
 export const CHAIN_CONFIG = {
   "0x89": {
@@ -32,6 +38,31 @@ export const CHAIN_CONFIG = {
     aaveMaticPoolAddress: "0x1e4b7A6b903680eab0c5dAbcb8fD429cD2a9598c",
     aaveWrappedUsdcAddress: "0x625E7708f30cA75bfd92586e17077590C60eb4cD",
     aaveWrappedMaticAddress: "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97",
+    blockExplorerUrl: "https://polygonscan.com",
+    stargateStakingAddresses: [
+      "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+      "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+      "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+      "0xa3fa99a148fa48d14ed51d610c367c61876997f1",
+    ],
+    stargateUnstakingAddresses: [
+      "0x1205f31718499dbf1fca446663b532ef87481fe1",
+      "0x29e38769f23701a2e4a8ef0492e19da4604be62c",
+      "0x1c272232df0bb6225da87f4decd9d37c32f63eea",
+      "0x8736f92646b2542b3e5f3c63590ca7fe313e283b",
+    ],
+    stargateRouterAddress: "0x45A01E4e04F14f7A4a6702c74187c5F6222033cd",
+    stargatePoolIds: {
+      "0x2791bca1f2de4661ed88a30c99a7a9449aa84174": 1,
+      "0xc2132d05d31c914a87c6611c10748aeb04b58e8f": 2,
+      "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063": 3,
+      "0xa3fa99a148fa48d14ed51d610c367c61876997f1": 16,
+      "0x1205f31718499dbf1fca446663b532ef87481fe1": 1,
+      "0x29e38769f23701a2e4a8ef0492e19da4604be62c": 2,
+      "0x1c272232df0bb6225da87f4decd9d37c32f63eea": 3,
+      "0x8736f92646b2542b3e5f3c63590ca7fe313e283b": 16,
+    },
+    disburseContractAddress: "0x2F73a97D1be96853AF8E2b8F29E0F2AF332EA9f5",
   },
   "0x5": {
     chainName: "Goerli Testnet",
@@ -49,6 +80,7 @@ export const CHAIN_CONFIG = {
       "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim",
     covalentNetworkName: "goerli-testnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    blockExplorerUrl: "https://goerli.etherscan.io",
   },
   "0x2105": {
     chainName: "Base Mainnet",
@@ -70,6 +102,7 @@ export const CHAIN_CONFIG = {
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
     airdropContractAddress: "0x9aeF8F840FED23502506CC988c0057F24638C00E",
+    blockExplorerUrl: "https://explorer.base.org",
   },
   "0xa4b1": {
     chainName: "Arbitrum One",
@@ -87,6 +120,7 @@ export const CHAIN_CONFIG = {
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-arbitrum/prod/gn",
     covalentNetworkName: "arbitrum-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    blockExplorerUrl: "https://arbiscan.io",
   },
   "0xe708": {
     chainName: "Linea Mainnet",
@@ -106,6 +140,7 @@ export const CHAIN_CONFIG = {
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-linea/0.0.1/gn",
     covalentNetworkName: "linea-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    blockExplorerUrl: "https://lineascan.build",
   },
   "0x38": {
     chainName: "BNB Smart Chain",
@@ -123,6 +158,7 @@ export const CHAIN_CONFIG = {
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-bsc/prod/gn",
     covalentNetworkName: "bsc-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    blockExplorerUrl: "https://bscscan.com",
   },
   "0x1388": {
     chainName: "Mantle Mainnet",
@@ -140,6 +176,7 @@ export const CHAIN_CONFIG = {
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-mantle/0.0.2/gn",
     covalentNetworkName: "mantle-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    blockExplorerUrl: "https://explorer.mantle.xyz",
   },
 };
 
@@ -211,6 +248,8 @@ export const proposalActionCommands = {
   14: "Deposit tokens in AAVE pool",
   15: "Withdraw tokens from AAVE pool",
   16: "Whitelist with lens post's mirror",
+  17: "Stake tokens through stargate",
+  18: "Unstake tokens through stargate",
 };
 
 export const contractNetworks = {

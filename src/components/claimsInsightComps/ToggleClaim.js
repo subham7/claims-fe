@@ -1,11 +1,7 @@
-import {
-  Alert,
-  Backdrop,
-  CircularProgress,
-  FormControlLabel,
-  Switch,
-} from "@mui/material";
-import useDropsContractMethods from "hooks/useDropsContracMethods";
+import BackdropLoader from "@components/common/BackdropLoader";
+import CustomAlert from "@components/common/CustomAlert";
+import { FormControlLabel, Switch } from "@mui/material";
+import useDropsContractMethods from "hooks/useDropsContractMethods";
 import React, { useEffect, useState } from "react";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
 
@@ -13,6 +9,7 @@ const ToggleClaim = ({ claimAddress, isActive }) => {
   const [loading, setLoading] = useState(false);
   const [isEnabled, setIsEnabled] = useState(true);
   const [showMessage, setShowMessage] = useState(null);
+  const [message, setMessage] = useState("");
 
   const { toggleClaim } = useDropsContractMethods();
 
@@ -25,10 +22,12 @@ const ToggleClaim = ({ claimAddress, isActive }) => {
       await toggleClaim(claimAddress);
       setLoading(false);
       setIsEnabled(!isEnabled);
+      setMessage("Claims turned on");
       showMessageHandler();
     } catch (error) {
       console.log(error);
       setLoading(false);
+      setMessage("Claims turned off");
       showMessageHandler();
     }
   };
@@ -68,41 +67,11 @@ const ToggleClaim = ({ claimAddress, isActive }) => {
         }
       />
 
-      {showMessage && !isEnabled && (
-        <Alert
-          severity="error"
-          sx={{
-            width: "350px",
-            position: "fixed",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-            zIndex: 1000000,
-          }}>
-          {"Claims turned Off"}
-        </Alert>
-      )}
+      {showMessage ? (
+        <CustomAlert severity={isEnabled} alertMessage={message} />
+      ) : null}
 
-      {showMessage && isEnabled && (
-        <Alert
-          severity="success"
-          sx={{
-            width: "350px",
-            position: "fixed",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-            zIndex: 1000000,
-          }}>
-          {"Claims turned On"}
-        </Alert>
-      )}
-
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}>
-        <CircularProgress />
-      </Backdrop>
+      <BackdropLoader isOpen={loading} />
     </div>
   );
 };

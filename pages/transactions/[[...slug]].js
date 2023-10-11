@@ -14,7 +14,7 @@ const TransactionsPage = () => {
 
   return (
     <Layout daoAddress={daoAddress} networkId={networkId} page={6}>
-      <Transactions />
+      <Transactions networkId={networkId} />
     </Layout>
   );
 };

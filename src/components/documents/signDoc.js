@@ -14,6 +14,7 @@ import { addDocumentList, addLegalDocLink } from "redux/reducers/legal";
 import { PdfFile } from "./pdfGenerator";
 import LegalEntityModal from "@components/modals/LegalEntityModal";
 import { web3InstanceEthereum } from "utils/helper";
+import { editMembersFormData } from "api/deposit";
 
 const DocumentPDF = dynamic(() => import("./pdfGenerator"), {
   ssr: false,
@@ -69,6 +70,10 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
     return state.legal.encryptedLink;
   });
 
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
+  });
+
   // signDocument
   const signDocumentHandler = async () => {
     try {
@@ -78,8 +83,34 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
       const accounts = await web3.eth.getAccounts();
       const currentAccount = accounts[0];
 
-      const originalMessage =
-        "Proceed to Sign the Subscription Document on StationX.network.";
+      let originalMessage;
+
+      if (isAdmin) {
+        originalMessage = JSON.stringify({
+          LLC_name: adminFormData.LLC_name,
+          admin_name: adminFormData.admin_name,
+          email: adminFormData.email,
+          location: adminFormData.location,
+          general_purpose: adminFormData.general_purpose,
+        });
+      } else {
+        originalMessage = JSON.stringify({
+          LLC_name: decryptedDataObj.LLC_name,
+          admin_name: decryptedDataObj.admin_name,
+          email: decryptedDataObj.email,
+          location: decryptedDataObj.location,
+          general_purpose: decryptedDataObj.general_purpose,
+          member_name: membersData.member_name,
+          member_email: membersData.member_email,
+          admin_sign: decryptedDataObj.signedAcc,
+          signedAcc: signedAcc,
+          signedHash: signedHash,
+          member_address: membersData.address,
+          member_contactNo: membersData.phone,
+          member_nominationName: membersData.nomination_name,
+          member_witnessName: membersData.witness_name,
+        });
+      }
 
       // Signed message
       const signedMessage = await web3.eth.personal.sign(
@@ -106,7 +137,7 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
         email: adminFormData.email,
         location: adminFormData.location,
         general_purpose: adminFormData.general_purpose,
-        signedAcc: signedAcc,
+        admin_address: signedAcc,
         signedMessage: signedHash,
       });
 
@@ -118,7 +149,7 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
         location: adminFormData.location,
         general_purpose: adminFormData.general_purpose,
         signedAcc: signedAcc,
-        signedHash: signedHash,
+        admin_sign: signedHash,
       };
 
       const GetMyDoc = (props) => <PdfFile {...props} />;
@@ -131,6 +162,20 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("email", adminFormData.email);
+      formData.append(
+        "subject",
+        `${clubData?.name} - Here's your signed copy of Subscription Agreement.`,
+      );
+      formData.append(
+        "body",
+        `
+Hello ${adminFormData?.admin_name},
+
+Here's a signed copy of the Subscription Agreement for ${adminFormData?.LLC_name} - ${clubData?.name}. StationX does not store a copy of these agreements, so please download and save it for your records.
+
+Cheers,
+StationX`,
+      );
 
       // ----- API CALL ------
       sentFileByEmail(formData);
@@ -142,19 +187,21 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
 
       createDocument({
         daoAddress,
-        createdBy: signedAcc,
-        fileName: "Legal Doc",
-        isPublic: false,
-        isSignable: true,
-        isTokenForSign: true,
+        fileName: adminFormData.LLC_name,
         docIdentifier: replacedEncrytedLink,
+        isTokenForSign: true,
+        isSignable: true,
+        isPublic: false,
+        createdBy: signedAcc,
+        isDocUploaded: "false",
+        docLink: "",
       });
 
       docsList.push({
         createdBy: signedAcc,
         updateDate: new Date().toISOString(),
         docIdentifier: replacedEncrytedLink,
-        fileName: "Legal Doc",
+        fileName: adminFormData.LLC_name,
       });
 
       dispatch(addDocumentList(docsList.reverse()));
@@ -174,32 +221,79 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
         location: decryptedDataObj.location,
         general_purpose: decryptedDataObj.general_purpose,
         member_name: membersData.member_name,
-        amount: membersData.amount,
         member_email: membersData.member_email,
-        admin_sign: decryptedDataObj.signedAcc,
+        admin_sign: decryptedDataObj.signedMessage,
+        admin_address: decryptedDataObj.signedAcc,
         signedAcc: signedAcc,
         signedHash: signedHash,
+        member_address: membersData.address,
+        member_contactNo: membersData.phone,
+        member_nominationName: membersData.nomination_name,
+        member_witnessName: membersData.witness_name,
       };
 
       const GetMyDoc = (props) => <PdfFile {...props} />;
 
-      const blob = await pdf(GetMyDoc(props)).toBlob();
-      const file = new File([blob], "document.pdf", {
-        type: "application/pdf",
-      });
+      try {
+        const res = await editMembersFormData({
+          daoAddress,
+          userAddress: signedAcc,
+          email: membersData.member_email,
+          docIdentifier: encryptedData,
+          docLink: "",
+          signature: signedHash,
+          formData: [membersData],
+        });
+        if (res) {
+          const blob = await pdf(GetMyDoc(props)).toBlob();
+          const file = new File([blob], "document.pdf", {
+            type: "application/pdf",
+          });
 
-      const adminFormData = new FormData();
-      adminFormData.append("file", file);
-      adminFormData.append("email", decryptedDataObj.email);
+          const adminFormData = new FormData();
+          adminFormData.append("file", file);
+          adminFormData.append("email", decryptedDataObj.email);
+          adminFormData.append(
+            "subject",
+            `${clubData?.name} - ${membersData?.member_name} has signed Subscription Agreement.`,
+          );
+          adminFormData.append(
+            "body",
+            `
+Hello ${decryptedDataObj?.admin_name},
 
-      const memberFormData = new FormData();
-      memberFormData.append("file", file);
-      memberFormData.append("email", membersData.member_email);
+Here's a signed copy of the Subscription Agreement for ${decryptedDataObj?.LLC_name} - ${clubData?.name} for ${membersData?.member_name}. StationX does not store a copy of these agreements, so please download and save it for your records.
 
-      // ----- API CALL ------
-      sentFileByEmail(adminFormData);
-      sentFileByEmail(memberFormData);
-      setShowModal(true);
+Cheers,
+StationX`,
+          );
+
+          const memberFormData = new FormData();
+          memberFormData.append("file", file);
+          memberFormData.append("email", membersData.member_email);
+          memberFormData.append(
+            "subject",
+            `${clubData?.name} - Here's your signed copy of Subscription Agreement.`,
+          );
+          memberFormData.append(
+            "body",
+            `
+Hello ${membersData?.member_name},
+
+Here's a signed copy of the Subscription Agreement for ${decryptedDataObj?.LLC_name} - ${clubData?.name}. StationX does not store a copy of these agreements, so please download and save it for your records.
+
+Cheers,
+StationX`,
+          );
+
+          // ----- API CALL ------
+          sentFileByEmail(adminFormData);
+          sentFileByEmail(memberFormData);
+          router.push(`/join/${daoAddress}/${networkId}`);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -237,6 +331,7 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
     fetchDocs();
   });
 
+  console.log("admin", decryptedDataObj);
   return (
     <div>
       <div className={classes.container}>
@@ -265,15 +360,19 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
           <DocumentPDF
             signedAcc={signedAcc}
             signedHash={signedHash}
-            LLC_name={decryptedDataObj.LLC_name}
-            admin_name={decryptedDataObj.admin_name}
-            email={decryptedDataObj.email}
-            location={decryptedDataObj.location}
-            general_purpose={decryptedDataObj.general_purpose}
-            member_name={membersData.member_name}
-            amount={membersData.amount}
-            member_email={membersData.member_email}
-            admin_sign={decryptedDataObj.signedAcc}
+            LLC_name={decryptedDataObj?.LLC_name}
+            admin_name={decryptedDataObj?.admin_name}
+            email={decryptedDataObj?.email}
+            location={decryptedDataObj?.location}
+            general_purpose={decryptedDataObj?.general_purpose}
+            member_name={membersData?.member_name}
+            member_email={membersData?.member_email}
+            admin_sign={decryptedDataObj?.signedMessage}
+            admin_address={decryptedDataObj?.admin_address}
+            member_address={membersData?.address}
+            member_contactNo={membersData?.phone}
+            member_nominationName={membersData?.nomination_name}
+            member_witnessName={membersData?.witness_name}
           />
         ) : (
           <DocumentPDF
@@ -287,64 +386,6 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
           />
         )}
       </div>
-      {/* <button>
-        <PDFDownloadLink
-          document={<MyDocument title="personal doc" data={formData || {}} />}
-          fileName="formDataabc.pdf"
-          style={{
-            textDecoration: "none",
-            padding: "10px",
-            color: "#4a4a4a",
-            backgroundColor: "#f2f2f2",
-            border: "1px solid #4a4a4a",
-          }}
-        >
-          {({ blob, url, loading, error }) =>
-            loading ? "Loading document..." : "Download Pdf"
-          }
-        </PDFDownloadLink>
-        Download
-      </button> */}
-      {/* <button
-        onClick={() => {
-          htmltoImage().then((imgSrcArr) => {
-            import("./PdfGenerator")
-              .then(async (module) => {
-                const PdfFile = module.default;
-                const doc = (
-                  <PdfFile
-                    title="Personal Doc"
-                    data={formData}
-                    srcArr={imgSrcArr}
-                  />
-                );
-                const blob = await pdf(doc).toBlob();
-                saveAs(blob, "pdfdoc.pdf");
-              })
-              .catch((error) => console.log("error====>", error));
-          });
-        }}
-      >
-        Download PDF
-      </button> */}
-      {/* {checkForEmptyFields() && (
-        <PDFDownloadLink
-          document={<PdfFile data={formData} />}
-          fileName="formDataabc.pdf"
-          style={{
-            textDecoration: "none",
-            padding: "10px",
-            color: "#4a4a4a",
-            backgroundColor: "#f2f2f2",
-            border: "1px solid #4a4a4a"
-          }}
-        >
-          {({ blob, url, loading, error }) =>
-            loading ? "Loading document..." : "Download Pdf"
-          }
-        </PDFDownloadLink>
-      )} */}
-      {/* <LineGraph /> */}
 
       {showModal && (
         <LegalEntityModal

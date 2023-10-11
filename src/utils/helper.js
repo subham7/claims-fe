@@ -120,22 +120,15 @@ export function returnRemainingTime(epochTime) {
     : 0;
 }
 
-export const showWrongNetworkModal = (
-  walletAddress,
-  networkId,
-  routeNetworkId,
-) => {
+export const showWrongNetworkModal = (networkId, routeNetworkId) => {
   if (
     routeNetworkId &&
     routeNetworkId !== networkId &&
-    routeNetworkId !== "create"
+    routeNetworkId !== "create" &&
+    routeNetworkId !== "disburse"
   ) {
     return <WrongNetworkModal chainId={routeNetworkId} />;
   }
-
-  return walletAddress && !CHAIN_CONFIG[networkId] ? (
-    <WrongNetworkModal />
-  ) : null;
 };
 
 export const getAllEntities = async (
@@ -200,16 +193,16 @@ export const extractNftAdressAndId = (url) => {
 export const getUserTokenData = async (
   tokenData,
   networkId,
-  isProposal = false,
+  allowNative = false,
 ) => {
-  const filteredData = !isProposal
+  const filteredData = !allowNative
     ? tokenData.filter(
         (token) =>
           token.contract_address !== CHAIN_CONFIG[networkId].nativeToken,
       )
     : tokenData;
 
-  return filteredData.map((token) => {
+  return filteredData?.map((token) => {
     return {
       balance: token.balance,
       address: token.contract_address,
@@ -291,10 +284,10 @@ export const csvToObjectForMintGT = (csvString) => {
   return { addresses, amounts };
 };
 
-export const shortAddress = (address) => {
+export const shortAddress = (address, length = 6) => {
   if (address) {
     return (
-      address?.substring(0, 6) +
+      address?.substring(0, length) +
       "....." +
       address?.substring(address.length - 4)
     );
@@ -313,4 +306,27 @@ export const uploadFileToAWS = async (file) => {
 
     reader.readAsArrayBuffer(file);
   });
+};
+
+export const isValidAddress = (address) => {
+  return /^0x[a-fA-F0-9]{40}$/.test(address);
+};
+
+export const generateRandomString = (length) => {
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * chars.length);
+    result += chars[randomIndex];
+  }
+  return result;
+};
+
+export const addLineBreaks = (inputString, breakAfter = 40) => {
+  let result = "";
+  for (let i = 0; i < inputString?.length; i += breakAfter) {
+    result += inputString?.substr(i, breakAfter) + "\n";
+  }
+  return result;
 };

@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { useSelector } from "react-redux";
-import { Backdrop, CircularProgress } from "@mui/material";
-import { getClubInfo } from "api/club";
-import ERC721 from "@components/depositPageComps/ERC721/ERC721";
-import ERC20 from "@components/depositPageComps/ERC20/ERC20";
+import { fetchClubByDaoAddress, getClubInfo } from "api/club";
 import useAppContract from "hooks/useAppContract";
 import { getWhitelistMerkleProof } from "api/whitelist";
 import { useAccount, useNetwork } from "wagmi";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
+import ERC20 from "@components/depositPageComps/ERC20/ERC20";
+import BackdropLoader from "@components/common/BackdropLoader";
+import ERC721 from "@components/depositPageComps/ERC721/ERC721";
 
 const Join = ({ daoAddress }) => {
   const [daoDetails, setDaoDetails] = useState({
@@ -26,19 +26,17 @@ const Join = ({ daoAddress }) => {
   const [loading, setLoading] = useState(false);
   const [remainingClaimAmount, setRemainingClaimAmount] = useState();
   const [whitelistUserData, setWhitelistUserData] = useState();
-  const [fetchedDetails, setFetchedDetails] = useState({
-    tokenA: "",
-    tokenB: "",
-    tokenAAmt: 0,
-    tokenBAmt: 0,
-    operator: 0,
-    comparator: 0,
-  });
-  const [displayTokenDetails, setDisplayTokenDetails] = useState({
+  const [depositConfig, setDepositConfig] = useState({});
+
+  const [gatedTokenDetails, setGatedTokenDetails] = useState({
     tokenASymbol: "",
     tokenBSymbol: "",
     tokenADecimal: 0,
     tokenBDecimal: 0,
+    tokenAAmt: 0,
+    tokenBAmt: 0,
+    operator: 0,
+    comparator: 0,
   });
   const [clubInfo, setClubInfo] = useState();
 
@@ -116,15 +114,6 @@ const Join = ({ daoAddress }) => {
       const tokenGatingDetails = await getTokenGatingDetails(daoAddress);
 
       if (tokenGatingDetails) {
-        setFetchedDetails({
-          tokenA: tokenGatingDetails[0]?.tokenA,
-          tokenB: tokenGatingDetails[0]?.tokenB,
-          tokenAAmt: tokenGatingDetails[0]?.value[0],
-          tokenBAmt: tokenGatingDetails[0]?.value[1],
-          operator: tokenGatingDetails[0]?.operator,
-          comparator: tokenGatingDetails[0]?.comparator,
-        });
-
         const tokenASymbol = await getTokenSymbol(
           tokenGatingDetails[0]?.tokenA,
         );
@@ -146,11 +135,15 @@ const Join = ({ daoAddress }) => {
           console.log(error);
         }
 
-        setDisplayTokenDetails({
+        setGatedTokenDetails({
           tokenASymbol: tokenASymbol,
           tokenBSymbol: tokenBSymbol,
           tokenADecimal: tokenADecimal ? tokenADecimal : 0,
           tokenBDecimal: tokenBDecimal ? tokenBDecimal : 0,
+          tokenAAmt: tokenGatingDetails[0]?.value[0],
+          tokenBAmt: tokenGatingDetails[0]?.value[1],
+          operator: tokenGatingDetails[0]?.operator,
+          comparator: tokenGatingDetails[0]?.comparator,
         });
 
         if (tokenGatingDetails?.length) {
@@ -192,6 +185,15 @@ const Join = ({ daoAddress }) => {
       setLoading(false);
     }
   };
+
+  const getDepositPreRequisites = async (daoAddress) => {
+    const res = await fetchClubByDaoAddress(daoAddress?.toLowerCase());
+    setDepositConfig(res?.data?.depositConfig);
+  };
+
+  useEffect(() => {
+    if (daoAddress) getDepositPreRequisites(daoAddress);
+  }, [daoAddress, walletAddress]);
 
   useEffect(() => {
     if (walletAddress && daoAddress && FACTORY_CONTRACT_ADDRESS) {
@@ -281,6 +283,8 @@ const Join = ({ daoAddress }) => {
           isEligibleForTokenGating={isEligibleForTokenGating}
           whitelistUserData={whitelistUserData}
           networkId={networkId}
+          gatedTokenDetails={gatedTokenDetails}
+          depositConfig={depositConfig}
         />
       ) : TOKEN_TYPE === "erc721" ? (
         <ERC721
@@ -291,14 +295,12 @@ const Join = ({ daoAddress }) => {
           isEligibleForTokenGating={isEligibleForTokenGating}
           whitelistUserData={whitelistUserData}
           networkId={networkId}
+          gatedTokenDetails={gatedTokenDetails}
+          depositConfig={depositConfig}
         />
       ) : null}
 
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}>
-        <CircularProgress />
-      </Backdrop>
+      <BackdropLoader isOpen={loading} />
     </>
   );
 };

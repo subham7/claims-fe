@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
-import { Grid, FormHelperText, Alert } from "@mui/material";
+import { Grid, FormHelperText } from "@mui/material";
 import ClaimStep1 from "../claimsPageComps/ClaimStep1";
 import ClaimStep2 from "../claimsPageComps/ClaimStep2";
 import dayjs from "dayjs";
@@ -8,8 +8,6 @@ import { makeStyles } from "@mui/styles";
 import { convertToWeiGovernance } from "utils/globalFunctions";
 import { createClaimCsv, createSnapShot } from "api/claims";
 import { useRouter } from "next/router";
-import Moralis from "moralis";
-import { EvmChain } from "@moralisweb3/common-evm-utils";
 import {
   claimStep1ValidationSchema,
   claimStep2ValidationSchema,
@@ -19,7 +17,9 @@ import { getTokensList } from "api/token";
 import { getUserTokenData } from "utils/helper";
 import { CHAIN_CONFIG, ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
-import useDropsContractMethods from "hooks/useDropsContracMethods";
+import useDropsContractMethods from "hooks/useDropsContractMethods";
+import CustomAlert from "@components/common/CustomAlert";
+import { getPublicClient } from "utils/viemConfig";
 
 const useStyles = makeStyles({
   container: {
@@ -36,7 +36,7 @@ const CreateClaim = () => {
   const [showError, setShowError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [finish, setFinish] = useState(false);
-  const [errMsg, setErrMsg] = useState("");
+  const [message, setMessage] = useState("");
   const [loadingTokens, setLoadingTokens] = useState(false);
   const [snapshotMerkleData, setSnapshotMerkleData] = useState([]);
 
@@ -82,31 +82,21 @@ const CreateClaim = () => {
   }, [walletAddress, networkId]);
 
   const fetchLatestBlockNumber = async (tokenGatedNetwork) => {
-    try {
-      if (!Moralis.Core.isStarted) {
-        await Moralis.start({
-          apiKey: process.env.NEXT_PUBLIC_MORALIS_API_KEY,
-        });
-      }
+    const networkToIdMap = {
+      "eth-mainnet": "0x1",
+      "matic-mainnet": "0x89",
+      "bsc-mainnet": "0x38",
+    };
 
-      let chain;
-      if (tokenGatedNetwork === "eth-mainnet") {
-        chain = EvmChain.ETHEREUM;
-      } else if (tokenGatedNetwork === "matic-mainnet") {
-        chain = EvmChain.POLYGON;
-      } else if (tokenGatedNetwork === "bsc-mainnet") {
-        chain = EvmChain.BSC;
-      }
+    const network = networkToIdMap[tokenGatedNetwork];
 
-      const response = await Moralis.EvmApi.block.getDateToBlock({
-        date: Date.now(),
-        chain,
-      });
-
-      return response.toJSON();
-    } catch (error) {
-      console.error("Error:", error);
+    if (!network) {
+      console.error(`Unknown network: ${tokenGatedNetwork}`);
+      return null;
     }
+    const publicClient = getPublicClient(network);
+
+    return publicClient.getBlockNumber();
   };
 
   const formikStep1 = useFormik({
@@ -181,19 +171,22 @@ const CreateClaim = () => {
 
       if (data.maximumClaim === "proRata") {
         try {
-          const blockData = await fetchLatestBlockNumber(
+          const latestBlockNumber = await fetchLatestBlockNumber(
             data?.tokenGatedNetwork,
           );
 
-          if (data.blockNumber > 0 && data.blockNumber > blockData.block) {
+          if (
+            data.blockNumber > 0 &&
+            data.blockNumber > Number(latestBlockNumber)
+          ) {
             showMessageHandler(setShowError);
-            setErrMsg("Invalid block number!");
+            setMessage("Invalid block number!");
             setLoading(false);
             return;
           }
 
           blockNumber =
-            data.blockNumber > 0 ? data.blockNumber : blockData.block;
+            data.blockNumber > 0 ? data.blockNumber : Number(latestBlockNumber);
 
           snapshotData = await createSnapShot(
             convertToWeiGovernance(data.numberOfTokens, decimals),
@@ -207,7 +200,7 @@ const CreateClaim = () => {
           setSnapshotMerkleData(snapshotData);
         } catch (error) {
           console.log(error);
-          setErrMsg("Unable to fetch snapshot data");
+          setMessage("Unable to fetch snapshot data");
           showMessageHandler(setShowError);
           setLoading(false);
         }
@@ -334,13 +327,13 @@ const CreateClaim = () => {
             setFinish(true);
             showMessageHandler(setFinish);
             setTimeout(() => {
-              router.push(`/claims/${networkId}`);
-            }, 3000);
+              router.push(`/claims/`);
+            }, 1000);
           } catch (err) {
             console.log(err);
             setLoading(false);
             showMessageHandler(setShowError);
-            setErrMsg(err.message);
+            setMessage(err.message);
           }
         };
 
@@ -437,13 +430,13 @@ const CreateClaim = () => {
             setFinish(true);
             showMessageHandler(setFinish);
             setTimeout(() => {
-              router.push(`/claims/${networkId}`);
+              router.push(`/claims/`);
             }, 3000);
           } catch (err) {
             console.log(err);
             setLoading(false);
             showMessageHandler(setShowError);
-            setErrMsg(err.message);
+            setMessage(err.message);
           }
         };
         loadClaimsContractFactoryData_CSV();
@@ -501,33 +494,16 @@ const CreateClaim = () => {
           )}
         </Grid>
 
-        {showError && (
-          <Alert
-            severity="error"
-            sx={{
-              width: "350px",
-              position: "fixed",
-              bottom: "30px",
-              right: "20px",
-              borderRadius: "8px",
-            }}>
-            {errMsg}
-          </Alert>
-        )}
+        {showError ? (
+          <CustomAlert severity={false} alertMessage={message} />
+        ) : null}
 
-        {finish && (
-          <Alert
-            severity="success"
-            sx={{
-              width: "350px",
-              position: "fixed",
-              bottom: "30px",
-              right: "20px",
-              borderRadius: "8px",
-            }}>
-            {"Airdrop created successfully"}
-          </Alert>
-        )}
+        {finish ? (
+          <CustomAlert
+            severity={true}
+            alertMessage={"Airdrop created successfully"}
+          />
+        ) : null}
       </div>
     </>
   );

@@ -1,12 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  Backdrop,
-  CircularProgress,
-  Grid,
-  MenuItem,
-  OutlinedInput,
-  Select,
-} from "@mui/material";
+import { Grid, MenuItem, OutlinedInput, Select } from "@mui/material";
 import { Button, Typography } from "@components/ui";
 import { proposalDisplayOptions } from "data/dashboard";
 import DocsCard from "@components/proposalComps/DocsCard";
@@ -26,6 +19,7 @@ import { addNftsOwnedByDao } from "redux/reducers/club";
 import { getTokensList } from "api/token";
 import { CHAIN_CONFIG } from "utils/constants";
 import { useNetwork } from "wagmi";
+import BackdropLoader from "@components/common/BackdropLoader";
 
 const useStyles = makeStyles({
   noProposal_heading: {
@@ -350,11 +344,7 @@ const Proposal = ({ daoAddress }) => {
         daoAddress={daoAddress}
         fetchProposalList={fetchProposalList}
       />
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loaderOpen}>
-        <CircularProgress />
-      </Backdrop>
+      <BackdropLoader isOpen={open} />
     </>
   );
 };

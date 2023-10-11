@@ -3,6 +3,7 @@ import { useAccount, useNetwork } from "wagmi";
 import { claimContractABI } from "abis/claimContract.js";
 import { claimFactoryABI } from "abis/claimFactory.js";
 import { CHAIN_CONFIG } from "utils/constants";
+import { disburseContractABI } from "abis/disburseContract";
 
 const useDropsContractMethods = () => {
   const { address: walletAddress } = useAccount();
@@ -177,6 +178,22 @@ const useDropsContractMethods = () => {
     }
   };
 
+  const disburse = async (isNative, tokenAddress, walletList, amountList) => {
+    try {
+      const res = await writeContractFunction({
+        address: CHAIN_CONFIG[networkId].disburseContractAddress,
+        abi: disburseContractABI,
+        functionName: isNative ? "disburseNative" : "disburseERC20",
+        args: [tokenAddress, walletList, amountList],
+        account: walletAddress,
+        networkId,
+      });
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   return {
     claimAmount,
     claim,
@@ -187,6 +204,7 @@ const useDropsContractMethods = () => {
     claimContract,
     addMoreTokens,
     modifyStartAndEndTime,
+    disburse,
   };
 };
 

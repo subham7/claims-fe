@@ -1,16 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import {
-  Alert,
-  Backdrop,
   Button,
   Card,
   CardActionArea,
   Chip,
-  CircularProgress,
   Divider,
   Grid,
-  Snackbar,
   Stack,
   Typography,
 } from "@mui/material";
@@ -55,6 +51,8 @@ import useAppContractMethods from "hooks/useAppContractMethods";
 import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 import { ProposalDetailStyles } from "./ProposalDetailStyles";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
+import CustomAlert from "@components/common/CustomAlert";
+import BackdropLoader from "@components/common/BackdropLoader";
 
 const ProposalDetail = ({ pid, daoAddress }) => {
   const classes = ProposalDetailStyles();
@@ -386,6 +384,10 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         ? proposalData.commands[0]?.depositToken
         : proposalData.commands[0]?.executionId === 15
         ? proposalData.commands[0]?.withdrawToken
+        : proposalData.commands[0]?.executionId === 17
+        ? proposalData.commands[0]?.stakeToken
+        : proposalData.commands[0]?.executionId === 18
+        ? proposalData.commands[0]?.unstakeToken
         : "",
       proposalStatus,
       airdropContractAddress,
@@ -1202,32 +1204,11 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         </Grid>
       </Grid>
 
-      <Snackbar
-        open={openSnackBar}
-        autoHideDuration={6000}
-        onClose={handleSnackBarClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
-        {!failed ? (
-          <Alert
-            onClose={handleSnackBarClose}
-            severity="success"
-            sx={{ width: "100%" }}>
-            {message}
-          </Alert>
-        ) : (
-          <Alert
-            onClose={handleSnackBarClose}
-            severity="error"
-            sx={{ width: "100%" }}>
-            {message}
-          </Alert>
-        )}
-      </Snackbar>
-      <Backdrop
-        sx={{ color: "#000", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loaderOpen}>
-        <CircularProgress />
-      </Backdrop>
+      {openSnackBar ? (
+        <CustomAlert alertMessage={message} severity={failed} />
+      ) : null}
+
+      <BackdropLoader isOpen={loaderOpen} />
     </>
   );
 };
