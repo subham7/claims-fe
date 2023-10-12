@@ -1,7 +1,6 @@
 import axios from "axios";
 import { MAIN_API_URL } from "../index";
 import { getJwtToken } from "../../utils/auth";
-// import { CHAIN_CONFIG } from "utils/constants";
 
 export async function createProposal(data, networkId) {
   // create proposal API
