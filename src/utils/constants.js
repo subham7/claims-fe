@@ -178,6 +178,25 @@ export const CHAIN_CONFIG = {
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     blockExplorerUrl: "https://explorer.mantle.xyz",
   },
+  "0x64": {
+    chainName: "Gnosis Chain",
+    shortName: "Gnosis",
+    chainId: 100,
+    nativeCurrency: {
+      name: "xDai",
+      decimals: 18,
+      symbol: "xDai",
+    },
+    rpcUrls: ["https://rpc.gnosischain.com"],
+    appRpcUrl: `https://late-wandering-brook.xdai.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_GNOSIS_API_KEY}/`,
+    stationSubgraphUrl:
+      "https://api.thegraph.com/subgraphs/name/subham7/stnx-be-gnosis",
+    covalentNetworkName: "gnosis-mainnet",
+    nativeToken: "0x9c58bacc331c9aa871afd802db6379a98e80cedb",
+    usdcAddress: "0xddafbb505ad214d7b80b1f830fccc89b60fb7a83",
+    airdropContractAddress: "0x45a27ea11D159A86AacE1eC24d3ba3d103642D9f",
+    blockExplorerUrl: "https://gnosisscan.io/",
+  },
 };
 
 export const lineaMainnetWalletConnect = {
