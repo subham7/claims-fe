@@ -194,8 +194,8 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         <MenuItem key={7} value="Remove signer">
           Remove Station signer
         </MenuItem>
-        <MenuItem key={19} value="Swap tokens through 1inch">
-          Swap tokens through 1inch
+        <MenuItem key={19} value="Swap tokens through uniswap">
+          Swap tokens through uniswap
         </MenuItem>
 
         {tokenType !== "erc721" ? (

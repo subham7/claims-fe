@@ -1,4 +1,4 @@
-import { getProposal, getSwapInfo } from "../api/proposal";
+import { getProposal } from "../api/proposal";
 import SafeApiKit from "@safe-global/api-kit";
 import { Web3Adapter } from "@safe-global/protocol-kit";
 import { createCancelProposal, getProposalTxHash } from "api/proposal";
@@ -23,6 +23,7 @@ import { actionContractABI } from "abis/actionContract";
 import { erc20AaveABI } from "abis/erc20AaveABI";
 import { stargateStakeABI } from "abis/stargateStakeABI";
 import { maticAaveABI } from "abis/MaticAaveABI";
+import { uniswapABI } from "abis/uniswapABI";
 
 export const fetchProposals = async (clubId, type) => {
   let proposalData;
@@ -630,6 +631,35 @@ const unstakeErc20TokensToStargate = (
     .encodeABI();
 };
 
+const swapWithUniswap = (
+  swapToken,
+  destinationToken,
+
+  gnosisAddress,
+
+  swapAmount,
+  web3Call,
+  networkId,
+) => {
+  const uniswapContract = new web3Call.eth.Contract(
+    uniswapABI,
+    CHAIN_CONFIG[networkId].uniswapRouterAddress,
+  );
+
+  return uniswapContract.methods
+    .exactInputSingle([
+      swapToken,
+      destinationToken,
+      500,
+      gnosisAddress,
+      Date.now() + 120,
+      swapAmount,
+      0,
+      0,
+    ])
+    .encodeABI();
+};
+
 const depositEthMethodEncoded = (
   poolAddress,
   addressWhereAssetsStored,
@@ -954,42 +984,30 @@ export const getTransaction = async ({
         };
       }
     case 19:
-      const swapParams = {
-        src: swapToken, // Token address of 1INCH
-        dst: destinationToken, // Token address of DAI
-        amount: swapAmount, // Amount of 1INCH to swap (in wei)
-        from: gnosisAddress,
-        // slippage: 3, // Maximum acceptable slippage percentage for the swap (e.g., 1 for 1%)
-        // disableEstimate: false, // Set to true to disable estimation of swap details
-        // allowPartialFill: false, // Set to true to allow partial filling of the swap order
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(tokenData),
+        data: approveDepositWithEncodeABI(
+          tokenData,
+          CHAIN_CONFIG[networkId].uniswapRouterAddress,
+          swapAmount,
+          web3Call,
+        ),
+        value: "0",
       };
-
-      const response = await getSwapInfo(swapParams, networkId);
-      console.log("RESPONSE", response);
-      // approvalTransaction = {
-      //   to: Web3.utils.toChecksumAddress(tokenData),
-      //   data: approveDepositWithEncodeABI(
-      //     tokenData,
-      //     CHAIN_CONFIG[networkId].stargateRouterAddress,
-      //     unstakeAmount,
-      //     web3Call,
-      //   ),
-      //   value: "0",
-      // };
-      // transaction = {
-      //   to: Web3.utils.toChecksumAddress(
-      //     CHAIN_CONFIG[networkId].stargateRouterAddress,
-      //   ),
-      //   data: unstakeErc20TokensToStargate(
-      //     tokenData,
-      //     unstakeAmount,
-      //     gnosisAddress,
-      //     web3Call,
-      //     networkId,
-      //   ),
-      //   value: "0",
-      // };
-
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].uniswapRouterAddress,
+        ),
+        data: swapWithUniswap(
+          swapToken,
+          destinationToken,
+          gnosisAddress,
+          swapAmount,
+          web3Call,
+          networkId,
+        ),
+        value: "0",
+      };
       return { approvalTransaction, transaction };
     case 17:
       approvalTransaction = {

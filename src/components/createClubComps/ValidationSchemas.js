@@ -473,11 +473,11 @@ export const getProposalValidationSchema = ({
         },
       ),
 
-    oneInchRecieverToken: yup
+    uniswapRecieverToken: yup
       .string("Please enter token address")
       .required("Destination address is required")
       .test(
-        "invalidOneInchRecieverToken",
+        "invaliduniswapRecieverToken",
         "Reciever chain address should be same as sender chain",
         async (value, context) => {
           const { actionCommand } = context.parent;
@@ -494,17 +494,17 @@ export const getProposalValidationSchema = ({
           return true;
         },
       ),
-    oneInchSwapAmount: yup
+    uniswapSwapAmount: yup
       .number("Please enter amount")
       .test(
-        "invalidOneInchSwapAmount",
+        "invalidUniswapSwapAmount",
         "Enter an amount less or equal to treasury balance",
         async (value, context) => {
-          const { actionCommand, oneInchSwapToken } = context.parent;
+          const { actionCommand, uniswapSwapToken } = context.parent;
           if (actionCommand === 19) {
             try {
-              const balance = await getBalance(oneInchSwapToken, gnosisAddress);
-              const decimals = await getDecimals(oneInchSwapToken);
+              const balance = await getBalance(uniswapSwapToken, gnosisAddress);
+              const decimals = await getDecimals(uniswapSwapToken);
               if (
                 Number(value) <=
                   Number(convertFromWeiGovernance(balance, decimals)) &&

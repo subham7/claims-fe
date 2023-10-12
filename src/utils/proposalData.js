@@ -1062,10 +1062,10 @@ export const proposalFormData = ({
             <Typography variant="proposalBody">Token to swap</Typography>
             <Select
               sx={{ marginTop: "0.5rem" }}
-              value={formik.values.oneInchSwapToken}
+              value={formik.values.uniswapSwapToken}
               onChange={(e) =>
                 formik.setFieldValue(
-                  "oneInchSwapToken",
+                  "uniswapSwapToken",
                   filteredTokens.find(
                     (token) => token.symbol === e.target.value,
                   ).address,
@@ -1078,8 +1078,8 @@ export const proposalFormData = ({
                 return selected;
               }}
               inputProps={{ "aria-label": "Without label" }}
-              name="oneInchSwapToken"
-              id="oneInchSwapToken">
+              name="uniswapSwapToken"
+              id="uniswapSwapToken">
               {filteredTokens.map((token) => (
                 <MenuItem key={token.symbol} value={token.symbol}>
                   {token.symbol}
@@ -1100,17 +1100,17 @@ export const proposalFormData = ({
               variant="outlined"
               className={classes.textField}
               placeholder="0x00"
-              name="oneInchRecieverToken"
-              id="oneInchRecieverToken"
-              value={formik.values.oneInchRecieverToken}
+              name="uniswapRecieverToken"
+              id="uniswapRecieverToken"
+              value={formik.values.uniswapRecieverToken}
               onChange={formik.handleChange}
               error={
-                formik.touched.oneInchRecieverToken &&
-                Boolean(formik.errors.oneInchRecieverToken)
+                formik.touched.uniswapRecieverToken &&
+                Boolean(formik.errors.uniswapRecieverToken)
               }
               helperText={
-                formik.touched.oneInchRecieverToken &&
-                formik.errors.oneInchRecieverToken
+                formik.touched.uniswapRecieverToken &&
+                formik.errors.uniswapRecieverToken
               }
             />
           </Grid>
@@ -1128,17 +1128,17 @@ export const proposalFormData = ({
               className={classes.textField}
               placeholder="0"
               type="number"
-              name="oneInchSwapAmount"
-              id="oneInchSwapAmount"
-              value={formik.values.oneInchSwapAmount}
+              name="uniswapSwapAmount"
+              id="uniswapSwapAmount"
+              value={formik.values.uniswapSwapAmount}
               onChange={formik.handleChange}
               error={
-                formik.touched.oneInchSwapAmount &&
-                Boolean(formik.errors.oneInchSwapAmount)
+                formik.touched.uniswapSwapAmount &&
+                Boolean(formik.errors.uniswapSwapAmount)
               }
               helperText={
-                formik.touched.oneInchSwapAmount &&
-                formik.errors.oneInchSwapAmount
+                formik.touched.uniswapSwapAmount &&
+                formik.errors.uniswapSwapAmount
               }
               onWheel={(event) => event.target.blur()}
             />
@@ -1325,16 +1325,16 @@ export const getProposalCommands = async ({
       };
     case 19:
       tokenDecimal = tokenData.find(
-        (token) => token.address === values.oneInchSwapToken,
+        (token) => token.address === values.uniswapSwapToken,
       ).decimals;
 
       return {
-        swapToken: values.oneInchSwapToken,
+        swapToken: values.uniswapSwapToken,
         swapAmount: convertToWeiGovernance(
-          values.oneInchSwapAmount,
+          values.uniswapSwapAmount,
           tokenDecimal,
         ),
-        destinationToken: values.oneInchRecieverToken,
+        destinationToken: values.uniswapRecieverToken,
       };
     case 17:
       tokenDecimal = tokenData.find(
