@@ -166,9 +166,6 @@ export const CHAIN_CONFIG = {
     },
     rpcUrls: ["https://rpc.gnosischain.com"],
     appRpcUrl: `https://late-wandering-brook.xdai.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_GNOSIS_API_KEY}/`,
-    // claimFactoryAddress: "0x50702Fd9086BAbDB0A3A576bFe22D4dD47b09937",
-    // claimsSubgraphUrl:
-    //   "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-base/prod/gn",
     stationSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/subham7/stnx-be-gnosis",
     covalentNetworkName: "gnosis-mainnet",
