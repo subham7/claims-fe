@@ -40,6 +40,7 @@ const ProposalCard = ({ proposal, daoAddress }) => {
           customToken,
           depositToken,
           withdrawToken,
+          swapToken,
           stakeToken,
           unstakeToken,
         } = proposal?.commands[0];
@@ -59,6 +60,8 @@ const ProposalCard = ({ proposal, daoAddress }) => {
               ? stakeToken
               : executionId === 18
               ? unstakeToken
+              : executionId === 19
+              ? swapToken
               : "",
           );
         }
@@ -78,6 +81,8 @@ const ProposalCard = ({ proposal, daoAddress }) => {
             ? stakeToken
             : executionId === 18
             ? unstakeToken
+            : executionId === 19
+            ? swapToken
             : "",
         );
 

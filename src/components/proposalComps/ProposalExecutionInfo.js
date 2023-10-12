@@ -65,6 +65,9 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
     stakeAmount,
     unstakeToken,
     unstakeAmount,
+    swapToken,
+    swapAmount,
+    destinationToken,
   } = proposalData?.commands[0];
 
   const fetchAirDropContractDetails = useCallback(async () => {
@@ -75,7 +78,8 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
         depositToken ||
         withdrawToken ||
         stakeToken ||
-        unstakeToken
+        unstakeToken ||
+        swapToken
       ) {
         const decimal = await getDecimals(
           airDropToken
@@ -88,7 +92,9 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
             ? withdrawToken
             : stakeToken
             ? stakeToken
-            : unstakeToken,
+            : unstakeToken
+            ? unstakeToken
+            : swapToken,
         );
         const symbol = await getTokenSymbol(
           airDropToken
@@ -101,7 +107,9 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
             ? withdrawToken
             : stakeToken
             ? stakeToken
-            : unstakeToken,
+            : unstakeToken
+            ? unstakeToken
+            : swapToken,
         );
 
         const amount = convertFromWeiGovernance(
@@ -111,10 +119,12 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
             ? withdrawAmount
             : stakeAmount
             ? stakeAmount
-            : unstakeAmount,
+            : unstakeAmount
+            ? unstakeAmount
+            : swapAmount,
           decimal,
         );
-
+        console.log("xxx", decimal, symbol, amount);
         setTokenDetails({
           decimals: decimal,
           symbol: symbol,
@@ -135,6 +145,7 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
     stakeAmount,
     unstakeToken,
     unstakeAmount,
+    swapToken,
   ]);
 
   useEffect(() => {
@@ -528,6 +539,43 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
                       </Typography>
                       <Typography className={classes.listFont2Colourless}>
                         {fetched ? tokenDetails.amount : null}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </>
+            ) : executionId === 19 ? (
+              <>
+                <Grid container item mb={1}>
+                  <Typography className={classes.listFont2Colourless}>
+                    Swap tokens through uniswap
+                  </Typography>
+                </Grid>
+                <Divider />
+                <Grid container mt={1}>
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={4}>
+                      <Typography className={classes.listFont2}>
+                        Token
+                      </Typography>
+                      <Typography className={classes.listFont2Colourless}>
+                        {fetched ? tokenDetails.symbol : null}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <Typography className={classes.listFont2}>
+                        Amount
+                      </Typography>
+                      <Typography className={classes.listFont2Colourless}>
+                        {fetched ? tokenDetails.amount : null}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <Typography className={classes.listFont2}>
+                        Destination Token
+                      </Typography>
+                      <Typography className={classes.listFont2Colourless}>
+                        {fetched ? shortAddress(destinationToken) : null}
                       </Typography>
                     </Grid>
                   </Grid>

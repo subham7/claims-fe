@@ -365,6 +365,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       setMembers,
       getNftOwnersCount,
       networkId,
+      gnosisAddress,
     });
 
     const response = updateProposalAndExecution(
@@ -384,6 +385,8 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         ? proposalData.commands[0]?.depositToken
         : proposalData.commands[0]?.executionId === 15
         ? proposalData.commands[0]?.withdrawToken
+        : proposalData.commands[0]?.executionId === 19
+        ? proposalData.commands[0]?.swapToken
         : proposalData.commands[0]?.executionId === 17
         ? proposalData.commands[0]?.stakeToken
         : proposalData.commands[0]?.executionId === 18
@@ -396,8 +399,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         proposalData.commands[0]?.executionId === 11 ||
         proposalData?.commands[0]?.executionId === 12 ||
         proposalData.commands[0]?.executionId === 13 ||
-        proposalData.commands[0]?.executionId === 14 ||
-        proposalData.commands[0]?.executionId === 16
+        proposalData.commands[0]?.executionId === 14
         ? FACTORY_CONTRACT_ADDRESS
         : "",
       GNOSIS_TRANSACTION_URL,

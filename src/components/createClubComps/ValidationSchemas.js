@@ -472,15 +472,54 @@ export const getProposalValidationSchema = ({
           return true;
         },
       ),
-    stargateStakeToken: yup
-      .string("Enter stargate staking token")
-      .when("actionCommand", {
-        is: 17,
-        then: () =>
-          yup
-            .string("Enter stargate staking token")
-            .required("Token is required"),
-      }),
+
+    uniswapRecieverToken: yup
+      .string("Please enter token address")
+      .required("Destination address is required")
+      .test(
+        "invaliduniswapRecieverToken",
+        "Reciever chain address should be same as sender chain",
+        async (value, context) => {
+          const { actionCommand } = context.parent;
+          if (actionCommand === 19) {
+            try {
+              const decimals = await getDecimals(value);
+              if (decimals) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
+    uniswapSwapAmount: yup
+      .number("Please enter amount")
+      .test(
+        "invalidUniswapSwapAmount",
+        "Enter an amount less or equal to treasury balance",
+        async (value, context) => {
+          const { actionCommand, uniswapSwapToken } = context.parent;
+          if (actionCommand === 19) {
+            try {
+              const balance = await getBalance(uniswapSwapToken, gnosisAddress);
+              const decimals = await getDecimals(uniswapSwapToken);
+              if (
+                Number(value) <=
+                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                Number(value) > 0
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
+
     stargateStakeAmount: yup
       .number("Please enter amount")
       .test(
@@ -510,6 +549,7 @@ export const getProposalValidationSchema = ({
           return true;
         },
       ),
+
     stargateUnstakeToken: yup
       .string("Enter stargate unstaking token")
       .when("actionCommand", {

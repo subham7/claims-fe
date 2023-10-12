@@ -63,6 +63,7 @@ export const CHAIN_CONFIG = {
       "0x8736f92646b2542b3e5f3c63590ca7fe313e283b": 16,
     },
     disburseContractAddress: "0x2F73a97D1be96853AF8E2b8F29E0F2AF332EA9f5",
+    uniswapRouterAddress: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
   },
   "0x5": {
     chainName: "Goerli Testnet",
@@ -269,6 +270,7 @@ export const proposalActionCommands = {
   16: "Whitelist with lens post's mirror",
   17: "Stake tokens through stargate",
   18: "Unstake tokens through stargate",
+  19: "Swap tokens through uniswap",
 };
 
 export const contractNetworks = {

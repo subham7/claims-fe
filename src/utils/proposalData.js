@@ -34,6 +34,9 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
     pricePerToken,
     depositAmount,
     withdrawAmount,
+    swapToken,
+    swapAmount,
+    destinationToken,
     stakeAmount,
     unstakeAmount,
   } = data ?? {};
@@ -102,6 +105,12 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
       return {
         "Withdraw token": symbol,
         "Withdraw amount": convertFromWeiGovernance(withdrawAmount, decimals),
+      };
+    case 19:
+      return {
+        "Swap token": shortAddress(swapToken),
+        "Swap amt": convertFromWeiGovernance(swapAmount, decimals),
+        "Destination token": shortAddress(destinationToken),
       };
     case 17:
       return {
@@ -1040,6 +1049,102 @@ export const proposalFormData = ({
           </Grid>
         </>
       );
+    case 19:
+      return (
+        <>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            // mb={}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography variant="proposalBody">Token to swap</Typography>
+            <Select
+              sx={{ marginTop: "0.5rem" }}
+              value={formik.values.uniswapSwapToken}
+              onChange={(e) =>
+                formik.setFieldValue(
+                  "uniswapSwapToken",
+                  filteredTokens.find(
+                    (token) => token.symbol === e.target.value,
+                  ).address,
+                )
+              }
+              renderValue={(selected) => {
+                if (selected.length === 0) {
+                  return "Select a command";
+                }
+                return selected;
+              }}
+              inputProps={{ "aria-label": "Without label" }}
+              name="uniswapSwapToken"
+              id="uniswapSwapToken">
+              {filteredTokens.map((token) => (
+                <MenuItem key={token.symbol} value={token.symbol}>
+                  {token.symbol}
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography mt={2} variant="proposalBody">
+              Swap tokens to *
+            </Typography>
+            <TextField
+              variant="outlined"
+              className={classes.textField}
+              placeholder="0x00"
+              name="uniswapRecieverToken"
+              id="uniswapRecieverToken"
+              value={formik.values.uniswapRecieverToken}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.uniswapRecieverToken &&
+                Boolean(formik.errors.uniswapRecieverToken)
+              }
+              helperText={
+                formik.touched.uniswapRecieverToken &&
+                formik.errors.uniswapRecieverToken
+              }
+            />
+          </Grid>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography variant="proposalBody">
+              Amount of tokens to swap *
+            </Typography>
+            <TextField
+              variant="outlined"
+              className={classes.textField}
+              placeholder="0"
+              type="number"
+              name="uniswapSwapAmount"
+              id="uniswapSwapAmount"
+              value={formik.values.uniswapSwapAmount}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.uniswapSwapAmount &&
+                Boolean(formik.errors.uniswapSwapAmount)
+              }
+              helperText={
+                formik.touched.uniswapSwapAmount &&
+                formik.errors.uniswapSwapAmount
+              }
+              onWheel={(event) => event.target.blur()}
+            />
+          </Grid>
+        </>
+      );
   }
 };
 
@@ -1217,6 +1322,19 @@ export const getProposalCommands = async ({
         lensPostLink: values.lensPostLink,
         whitelistAddresses: mirrorAddresses,
         allowWhitelisting: true,
+      };
+    case 19:
+      tokenDecimal = tokenData.find(
+        (token) => token.address === values.uniswapSwapToken,
+      ).decimals;
+
+      return {
+        swapToken: values.uniswapSwapToken,
+        swapAmount: convertToWeiGovernance(
+          values.uniswapSwapAmount,
+          tokenDecimal,
+        ),
+        destinationToken: values.uniswapRecieverToken,
       };
     case 17:
       tokenDecimal = tokenData.find(
