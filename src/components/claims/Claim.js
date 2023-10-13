@@ -42,7 +42,7 @@ const ClaimInputComponent = ({
       </Button>
 
       <div className={classes.progress}>
-        {+(claimedPercentage >= 0) ? (
+        {+claimedPercentage >= 0 ? (
           <Typography variant="inherit">
             {claimedPercentage.toFixed(3)}% claimed
           </Typography>
@@ -113,9 +113,10 @@ const Claim = ({ claimAddress }) => {
       let whitelistTokenSymbol;
       let whitelistTokenDecimal = 1;
       try {
-        if (claims[0].whitelistToken !== ZERO_ADDRESS)
+        if (claims[0].whitelistToken !== ZERO_ADDRESS) {
           whitelistTokenSymbol = await getTokenSymbol(claims[0].whitelistToken);
-        whitelistTokenDecimal = await getDecimals(claims[0].whitelistToken);
+          whitelistTokenDecimal = await getDecimals(claims[0].whitelistToken);
+        }
       } catch (error) {
         console.log(error);
       }
