@@ -49,9 +49,11 @@ const PublicPageLayout = ({
               />
             </div>
           ) : (
-            <div className={classes.imageContainer}>
-              <Image src={imgUrl} fill alt="Banner Image" />
-            </div>
+            imgUrl && (
+              <div className={classes.imageContainer}>
+                <Image src={imgUrl} fill alt="Banner Image" />
+              </div>
+            )
           )}
 
           {!isDeposit ? <h1>{claimDescription}</h1> : null}
