@@ -21,10 +21,15 @@ const useStyles = makeStyles({
   title: {
     fontSize: "28px",
   },
+  img: {
+    display: "flex",
+    justifyContent: "center",
+    margin: "20px",
+  },
   subtitle: {
     color: "#dcdcdc",
-    fontSize: "16px",
-    marginBottom: "6px",
+    fontSize: "20px",
+    textAlign: "center",
   },
   relative: {
     position: "relative",
@@ -51,6 +56,9 @@ const TwitterSharingModal = ({ onClose, message, shareText }) => {
     <BackdropLoader showLoading={false} isOpen={true}>
       <div className={classes.modal}>
         <div className={classes.relative}>
+          <div className={classes.img}>
+            <img src="/assets/images/astronaut_hurray.png" width="50%" />
+          </div>
           <div className={classes.subtitle}>{message}</div>
           <Grid
             className={classes.shareBtns}
@@ -60,17 +68,15 @@ const TwitterSharingModal = ({ onClose, message, shareText }) => {
               alignItems: "center",
               justifyContent: "center",
             }}
-            mt={5}
+            mt={2}
             gap={2}>
             Share
             <TwitterShareButton
-              placeholder="Loading..."
               options={{
                 size: "large",
                 text: `${shareText}`,
                 via: "stationxnetwork",
               }}
-              url=""
             />
           </Grid>
           <IoMdClose onClick={onClose} className={classes.icon} size={20} />

@@ -71,7 +71,7 @@ const Claim = ({ claimAddress }) => {
     claimedAmt: "",
     address: "",
   });
-  const [showTwitterShareModal, setShowTwitterShareModal] = useState(true);
+  const [showTwitterShareModal, setShowTwitterShareModal] = useState(false);
   const [isClaimActive, setIsClaimActive] = useState(false);
   const [hasDropStarted, setHasDropStarted] = useState(false);
   const [alreadyClaimed, setAlreadyClaimed] = useState(false);
@@ -370,6 +370,7 @@ const Claim = ({ claimAddress }) => {
 
         showMessageHandler();
         setMessage("Successfully Claimed!");
+        setShowTwitterShareModal(true);
       }
     } catch (err) {
       console.log(err);
@@ -495,13 +496,13 @@ const Claim = ({ claimAddress }) => {
         showMessage={showMessage}
         claimDescription={claimsData?.description}
       />
-      {showTwitterShareModal && claimAddress && claimsData ? (
+      {showTwitterShareModal && claimAddress && claimsData && tokenDetails ? (
         <TwitterSharingModal
           message="Hurray! You've successfully claimed from this drop, let your friends know for good karma."
-          shareText={`Mission accomplished! I've successfully become an ARBonaut by claiming from ${claimsData?.description} on Arbitrum here:
+          shareText={`Mission accomplished! I've successfully become an ARBonaut by claiming $${tokenDetails?.tokenSymbol} from ${claimsData?.description} on Arbitrum here:
           ${window.location.origin}/claim/${claimAddress}
 
-          WTF is an ARBonaut: https://tinyurl.com/538w4sb7`}
+WTF is an ARBonaut: https://tinyurl.com/538w4sb7`}
           onClose={() => setShowTwitterShareModal(false)}
         />
       ) : null}
