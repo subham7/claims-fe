@@ -18,6 +18,7 @@ import { getClaimDetails, getUserProofAndBalance } from "api/claims";
 import ClaimInput from "./ClaimInput";
 import { ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import PublicPageLayout from "@components/common/PublicPageLayout";
+import TwitterSharingModal from "@components/modals/TwitterSharingModal";
 
 const ClaimInputComponent = ({
   claimInputProps,
@@ -70,6 +71,7 @@ const Claim = ({ claimAddress }) => {
     claimedAmt: "",
     address: "",
   });
+  const [showTwitterShareModal, setShowTwitterShareModal] = useState(true);
   const [isClaimActive, setIsClaimActive] = useState(false);
   const [hasDropStarted, setHasDropStarted] = useState(false);
   const [alreadyClaimed, setAlreadyClaimed] = useState(false);
@@ -335,6 +337,7 @@ const Claim = ({ claimAddress }) => {
         setClaimInput(0);
         showMessageHandler();
         setMessage("Successfully Claimed!");
+        setShowTwitterShareModal(true);
       } else {
         await claim(
           claimAddress,
@@ -444,53 +447,65 @@ const Claim = ({ claimAddress }) => {
   }, [claimAddress, networkId]);
 
   return (
-    <PublicPageLayout
-      clubData={dropsData}
-      tokenDetails={tokenDetails}
-      headerProps={{
-        contractData: dropsData,
-        deadline: dropsData?.endTime,
-        tokenDetails: tokenDetails,
-        isActive: isClaimActive,
-        hasStarted: hasDropStarted,
-      }}
-      inputComponents={
-        <ClaimInputComponent
-          claimInputProps={{
-            inputAmount: claimInput,
-            claimRemaining: claimRemaining,
-            maxClaimableAmount: maxClaimableAmount,
-            maxHandler: maxHandler,
-            setClaimInput: setClaimInput,
-            tokenDetails: tokenDetails,
-            claimsData: claimsData,
-          }}
-          alreadyClaimed={alreadyClaimed}
-          buttonProps={{
-            className: classes.claim,
-            onClick: claimHandler,
-            disabled: isClaimButtonDisabled(),
-            variant: "normal",
-          }}
-          claimRemaining={claimRemaining}
-          claimedPercentage={claimedPercentage}
-          isClaiming={isClaiming}
+    <>
+      <PublicPageLayout
+        clubData={dropsData}
+        tokenDetails={tokenDetails}
+        headerProps={{
+          contractData: dropsData,
+          deadline: dropsData?.endTime,
+          tokenDetails: tokenDetails,
+          isActive: isClaimActive,
+          hasStarted: hasDropStarted,
+        }}
+        inputComponents={
+          <ClaimInputComponent
+            claimInputProps={{
+              inputAmount: claimInput,
+              claimRemaining: claimRemaining,
+              maxClaimableAmount: maxClaimableAmount,
+              maxHandler: maxHandler,
+              setClaimInput: setClaimInput,
+              tokenDetails: tokenDetails,
+              claimsData: claimsData,
+            }}
+            alreadyClaimed={alreadyClaimed}
+            buttonProps={{
+              className: classes.claim,
+              onClick: claimHandler,
+              disabled: isClaimButtonDisabled(),
+              variant: "normal",
+            }}
+            claimRemaining={claimRemaining}
+            claimedPercentage={claimedPercentage}
+            isClaiming={isClaiming}
+          />
+        }
+        socialData={claimGeneralInfo}
+        imgUrl={claimGeneralInfo?.imageLinks?.banner}
+        bio={claimGeneralInfo?.description}
+        eligibilityProps={{
+          contractData: claimsData,
+          tokenDetails: tokenDetails,
+        }}
+        members={activityDetails}
+        message={message}
+        isSuccessfull={claimed}
+        loading={false}
+        showMessage={showMessage}
+        claimDescription={claimsData?.description}
+      />
+      {showTwitterShareModal && claimAddress && claimsData ? (
+        <TwitterSharingModal
+          message="Hurray! You've successfully claimed from this drop, let your friends know for good karma."
+          shareText={`Mission accomplished! I've successfully become an ARBonaut by claiming from ${claimsData?.description} on Arbitrum here:
+          ${window.location.origin}/claim/${claimAddress}
+
+          WTF is an ARBonaut: https://tinyurl.com/538w4sb7`}
+          onClose={() => setShowTwitterShareModal(false)}
         />
-      }
-      socialData={claimGeneralInfo}
-      imgUrl={claimGeneralInfo?.imageLinks?.banner}
-      bio={claimGeneralInfo?.description}
-      eligibilityProps={{
-        contractData: claimsData,
-        tokenDetails: tokenDetails,
-      }}
-      members={activityDetails}
-      message={message}
-      isSuccessfull={claimed}
-      loading={false}
-      showMessage={showMessage}
-      claimDescription={claimsData?.description}
-    />
+      ) : null}
+    </>
   );
 };
 
