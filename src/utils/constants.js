@@ -1,10 +1,13 @@
-import { createCallAbi } from "abis/createCallAbi";
-import { fallbackHandlerAbi } from "abis/fallbackHandlerAbi";
-import { safeMasterCopyAbi } from "abis/safeMasterCopyAbi";
-import { safeProxyFactoryAbi } from "abis/safeProxyFactoryAbi";
-import { multiSendAbi, multiSendCallOnlyAbi } from "abis/safeSendAbi";
-import { signMessageLibAbi } from "abis/signMessageLibAbi";
-import { simulateTxAccessorAbi } from "abis/simulateTxAccessorAbi";
+import { createCallAbi } from "abis/gnosis-abis/createCallAbi";
+import { fallbackHandlerAbi } from "abis/gnosis-abis/fallbackHandlerAbi";
+import { safeMasterCopyAbi } from "abis/gnosis-abis/safeMasterCopyAbi";
+import { safeProxyFactoryAbi } from "abis/gnosis-abis/safeProxyFactoryAbi";
+import {
+  multiSendAbi,
+  multiSendCallOnlyAbi,
+} from "abis/gnosis-abis/safeSendAbi";
+import { signMessageLibAbi } from "abis/gnosis-abis/signMessageLibAbi";
+import { simulateTxAccessorAbi } from "abis/gnosis-abis/simulateTxAccessorAbi";
 
 export const BLOCK_CONFIRMATIONS = 4;
 export const BLOCK_TIMEOUT = 120000;

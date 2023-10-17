@@ -231,11 +231,9 @@ const CreateProposalDialog = ({
 
             {/* proposal forms */}
             {proposal.values.typeOfProposal === "survey" ? (
-              <>
-                <Stack mt={1}>
-                  <SurveyProposalForm proposal={proposal} />
-                </Stack>
-              </>
+              <Stack mt={1}>
+                <SurveyProposalForm proposal={proposal} />
+              </Stack>
             ) : (
               <Stack>
                 <ProposalActionForm

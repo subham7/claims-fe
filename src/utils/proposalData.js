@@ -15,6 +15,7 @@ import { extractNftAdressAndId, shortAddress } from "./helper";
 import Link from "next/link";
 import { getWhiteListMerkleRoot } from "api/whitelist";
 import { fetchLensActionAddresses, handleFetchFollowers } from "./lensHelper";
+import { proposalActionCommands } from "./proposalConstants";
 
 export const proposalData = ({ data, decimals, factoryData, symbol }) => {
   const {
@@ -1395,136 +1396,117 @@ export const proposalDetailsData = ({
     airDropCarryFee,
   } = data ?? {};
 
+  let responseData = {
+    title: proposalActionCommands[executionId],
+  };
+
   switch (executionId) {
     case 0:
-      return {
-        title: "Distribute tokens to a wallet",
-        data: {
-          Amount: convertFromWeiGovernance(airDropAmount, decimals),
-          " Carry fee": airDropCarryFee,
-        },
+      responseData.data = {
+        Amount: convertFromWeiGovernance(airDropAmount, decimals),
+        " Carry fee": airDropCarryFee,
       };
+      return responseData;
     case 1:
-      return {
-        title: " Mint governance tokens to a wallet",
-        data: { "No of recipients :": mintGTAddresses },
-      };
+      responseData.data = { "No of recipients :": mintGTAddresses };
+      return responseData;
     case 2:
-      return {
-        title: "Update governance settings of the club",
-        data: { Quorum: quorum, Threshold: threshold },
-      };
+      responseData.data = { Quorum: quorum, Threshold: threshold };
+      return responseData;
+
     case 3:
-      return {
-        title: "Update total raise amount",
-        data: {
-          "Raise Amount :":
-            (convertToWeiGovernance(
-              convertToWeiGovernance(totalDeposits, 6) /
-                factoryData?.pricePerToken,
-              18,
-            ) /
-              10 ** 18) *
-            convertFromWeiGovernance(factoryData?.pricePerToken, 6),
-        },
+      responseData.data = {
+        "Raise Amount :":
+          (convertToWeiGovernance(
+            convertToWeiGovernance(totalDeposits, 6) /
+              factoryData?.pricePerToken,
+            18,
+          ) /
+            10 ** 18) *
+          convertFromWeiGovernance(factoryData?.pricePerToken, 6),
       };
+      return responseData;
+
     case 4:
-      return {
-        title: "Transfer token to a wallet",
-        data: {
-          Amount: customTokenAmounts[0] / 10 ** decimals,
-          Recipient: shortAddress(customTokenAddresses[0]),
-        },
+      responseData.data = {
+        Amount: customTokenAmounts[0] / 10 ** decimals,
+        Recipient: shortAddress(customTokenAddresses[0]),
       };
+      return responseData;
+
     case 5:
-      return {
-        title: " Send Nft to an address",
-        data: {
-          "NFT address": shortAddress(customNft),
-          "Nft Token Id": customNftToken,
-          Recipient: shortAddress(customTokenAddresses[0]),
-        },
+      responseData.data = {
+        "NFT address": shortAddress(customNft),
+        "Nft Token Id": customNftToken,
+        Recipient: shortAddress(customTokenAddresses[0]),
       };
+      return responseData;
+
     case 6:
     case 7:
-      return {
-        title: executionId === 6 ? "Add Signer" : "Remove Signer",
-        data: { "Owner address": shortAddress(ownerAddress) },
-      };
+      responseData.data = { "Owner address": shortAddress(ownerAddress) };
+      return responseData;
+
     case 8:
     case 9:
-      return {
-        title:
-          executionId == 8 ? "Buy NFT from Opensea" : "Sell NFT from Opensea",
-        data: {
-          "NFT address": shortAddress(
-            extractNftAdressAndId(nftLink).nftAddress,
-          ),
-          "Token Id": `${extractNftAdressAndId(nftLink).tokenId}`,
-        },
+      responseData.data = {
+        "NFT address": shortAddress(extractNftAdressAndId(nftLink).nftAddress),
+        "Token Id": `${extractNftAdressAndId(nftLink).tokenId}`,
       };
+      return responseData;
+
     case 10:
-      return {
-        title: "Enable whitelist for deposit",
-        data: { "Enable whitelisting": whitelistAddresses },
-      };
+      responseData.data = { "Enable whitelisting": whitelistAddresses };
+      return responseData;
+
     case 11:
-      return {
-        title: "Whitelist through lens id",
-        data: { "Lens profile id": lensId },
-      };
+      responseData.data = { "Lens profile id": lensId };
+      return responseData;
+
     case 12:
     case 16:
-      return {
-        title: "Whitelist through lens profile",
-        data: { "Lens profile link": lensPostLink },
-      };
+      responseData.data = { "Lens profile link": lensPostLink };
+      return responseData;
+
     case 13:
-      return {
-        title: "Update price per token",
-        data: { "Price per token": `${pricePerToken} USDC` },
-      };
+      responseData.data = { "Price per token": `${pricePerToken} USDC` };
+      return responseData;
+
     case 14:
-      return {
-        title: "Deposit tokens in AAVE pool",
-        data: {
-          "Deposit token": symbol,
-          "Deposit amount": convertFromWeiGovernance(depositAmount, decimals),
-        },
+      responseData.data = {
+        "Deposit token": symbol,
+        "Deposit amount": convertFromWeiGovernance(depositAmount, decimals),
       };
+      return responseData;
+
     case 15:
-      return {
-        title: "Withdraw tokens from AAVE pool",
-        data: {
-          "Withdraw token": symbol,
-          "Withdraw amount": convertFromWeiGovernance(withdrawAmount, decimals),
-        },
+      responseData.data = {
+        "Withdraw token": symbol,
+        "Withdraw amount": convertFromWeiGovernance(withdrawAmount, decimals),
       };
+      return responseData;
+
     case 19:
-      return {
-        title: "Swap tokens through uniswap",
-        data: {
-          Token: symbol,
-          Amount: convertFromWeiGovernance(swapAmount, decimals),
-          "Destination token": shortAddress(destinationToken),
-        },
+      responseData.data = {
+        Token: symbol,
+        Amount: convertFromWeiGovernance(swapAmount, decimals),
+        "Destination token": shortAddress(destinationToken),
       };
+      return responseData;
     case 17:
-      return {
-        title: "Stake tokens through stargate pool",
-        data: {
-          "Stake token": symbol,
-          "Stake amount": convertFromWeiGovernance(stakeAmount, decimals),
-        },
+      responseData.data = {
+        "Stake token": symbol,
+        "Stake amount": convertFromWeiGovernance(stakeAmount, decimals),
       };
+      return responseData;
+
     case 18:
-      return {
-        title: "Unstake tokens through stargate pool",
-        data: {
-          "Unstake token": symbol,
-          "Unstake amount": convertFromWeiGovernance(unstakeAmount, decimals),
-        },
+      responseData.data = {
+        "Unstake token": symbol,
+        "Unstake amount": convertFromWeiGovernance(unstakeAmount, decimals),
       };
+      return responseData;
+
     default:
       return {};
   }
