@@ -498,11 +498,9 @@ const Claim = ({ claimAddress }) => {
       />
       {showTwitterShareModal && claimAddress && claimsData && tokenDetails ? (
         <TwitterSharingModal
-          message="Hurray! You've successfully claimed from this drop, let your friends know for good karma."
-          shareText={`Mission accomplished! I've successfully become an ARBonaut by claiming $${tokenDetails?.tokenSymbol} from ${claimsData?.description} on Arbitrum here:
-          ${window.location.origin}/claim/${claimAddress}
-
-WTF is an ARBonaut: https://tinyurl.com/538w4sb7`}
+          tokenSymbol={tokenDetails?.tokenSymbol}
+          claimAddress={claimAddress}
+          description={claimsData?.description}
           onClose={() => setShowTwitterShareModal(false)}
         />
       ) : null}
