@@ -276,6 +276,7 @@ const ERC721 = ({
       isSuccessfull={claimSuccessfull}
       loading={loading}
       showMessage={showMessage}
+      nftMinted={daoDetails?.nftMinted}
     />
   );
 };

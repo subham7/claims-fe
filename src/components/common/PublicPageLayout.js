@@ -26,6 +26,7 @@ const PublicPageLayout = ({
   imgUrl,
   claimDescription,
   members,
+  nftMinted,
 }) => {
   return (
     <div className={classes.main}>
@@ -41,12 +42,28 @@ const PublicPageLayout = ({
         <div className={classes.bannerContainer}>
           {isDeposit && clubData.tokenType === "erc721" ? (
             <div className={classes.nftContainer}>
-              <Image
-                src={imgUrl}
-                fill
-                alt="Banner Image"
-                className={classes.nftImage}
-              />
+              {(imgUrl && imgUrl.includes(".mp4")) ||
+              imgUrl.includes(".MP4") ? (
+                <video
+                  style={{
+                    height: "100%",
+                    width: "100%",
+                    objectFit: "cover",
+                  }}
+                  loop
+                  autoPlay
+                  muted>
+                  <source src={imgUrl} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              ) : (
+                <Image
+                  src={imgUrl}
+                  fill
+                  alt="Banner Image"
+                  className={classes.nftImage}
+                />
+              )}
             </div>
           ) : (
             <div className={classes.imageContainer}>
@@ -58,7 +75,11 @@ const PublicPageLayout = ({
         </div>
 
         {isDeposit ? (
-          <DepositProgress clubData={clubData} tokenDetails={tokenDetails} />
+          <DepositProgress
+            clubData={clubData}
+            tokenDetails={tokenDetails}
+            nftMinted={nftMinted}
+          />
         ) : null}
 
         {bio && <About bio={bio} />}
