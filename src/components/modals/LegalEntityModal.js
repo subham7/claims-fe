@@ -170,16 +170,12 @@ const LegalEntityModal = ({
             {isTwitter && (
               <Grid
                 item
-                // xs={12}
-                // md={3}
                 sx={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
                 mt={5}>
-                {/* enter your code here */}
-
                 <div>
                   <div>
                     <TwitterShareButton
