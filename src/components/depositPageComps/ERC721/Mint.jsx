@@ -19,6 +19,29 @@ const Mint = ({
   isSigned,
   isW8BenSigned,
 }) => {
+  const isButtonDisabled = () => {
+    if (
+      typeof isSigned !== "undefined" &&
+      typeof isW8BenSigned !== "undefined"
+    ) {
+      if (!isSigned) return true;
+      if (!isW8BenSigned) return true;
+    }
+    if (remainingDays <= 0 && remainingTimeInSecs < 0) return true;
+    if (hasClaimed) return true;
+    if (
+      whitelistUserData?.setWhitelist === true &&
+      whitelistUserData?.proof === null
+    )
+      return true;
+
+    if (isTokenGated) {
+      return !isEligibleForTokenGating;
+    }
+
+    return false;
+  };
+
   return (
     <div className={classes.mintContainer}>
       <Typography variant="inherit">Price per piece</Typography>
@@ -49,18 +72,7 @@ const Mint = ({
           sx={{
             width: "130px",
           }}
-          disabled={
-            !isSigned ||
-            !isW8BenSigned ||
-            (remainingDays <= 0 && remainingTimeInSecs < 0) ||
-            hasClaimed ||
-            (whitelistUserData?.setWhitelist === true &&
-              whitelistUserData?.proof === null)
-              ? true
-              : isTokenGated
-              ? !isEligibleForTokenGating
-              : false
-          }
+          disabled={isButtonDisabled()}
           variant="contained">
           {hasClaimed ? "Minted" : "Mint"}
         </Button>

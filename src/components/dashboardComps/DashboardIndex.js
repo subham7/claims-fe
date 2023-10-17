@@ -119,7 +119,10 @@ const DashboardIndex = ({ daoAddress }) => {
 
           if (tokenType === "erc721") {
             const imageUrl = await fetchImageUrl(daoAddress, clubData?.imgUrl);
-            clubDetails.clubImageUrl = imageUrl?.data[0]?.imageUrl;
+
+            clubDetails.clubImageUrl = imageUrl?.data
+              ? imageUrl?.data[0]?.imageUrl
+              : imageUrl;
           }
 
           clubDetails.noOfMembers = membersData?.users?.length;
@@ -290,8 +293,9 @@ const DashboardIndex = ({ daoAddress }) => {
                   mt={2}>
                   <video
                     style={{
-                      width: "110px",
-                      height: "110px",
+                      width: "80px",
+                      height: "80px",
+                      borderRadius: "50%",
                     }}
                     loop
                     autoPlay
@@ -320,7 +324,7 @@ const DashboardIndex = ({ daoAddress }) => {
                   </Typography>
                   <Grid container item direction="row" paddingBottom={2}>
                     <Typography variant="info" className="text-blue">
-                      {clubDetails.noOfMembers} Members
+                      {clubDetails?.noOfMembers} Members
                     </Typography>
                   </Grid>
                 </Stack>

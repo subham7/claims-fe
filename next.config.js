@@ -7,6 +7,7 @@ const nextConfig = {
       "clubprofilepics.s3.ap-south-1.amazonaws.com",
       "safe-transaction-assets.safe.global",
       "./public/*",
+      "cloudflare-ipfs.com",
     ],
   },
   webpack: (config, { isServer }) => {
