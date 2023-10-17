@@ -498,6 +498,7 @@ const Claim = ({ claimAddress }) => {
       />
       {showTwitterShareModal && claimAddress && claimsData && tokenDetails ? (
         <TwitterSharingModal
+          message="Hurray! You've successfully claimed from this drop, let your friends know for good karma."
           tokenSymbol={tokenDetails?.tokenSymbol}
           claimAddress={claimAddress}
           description={claimsData?.description}
