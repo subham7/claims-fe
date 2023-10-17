@@ -459,29 +459,6 @@ export const mantleMainnetViem = {
   },
 };
 
-export const proposalActionCommands = {
-  0: "Distribute token to members",
-  1: "Mint club token",
-  2: "Update governance settings",
-  3: "Change total raise amount",
-  4: "Send token to an address",
-  5: "Send nft to an address",
-  6: "Add signer",
-  7: "Remove signer",
-  8: "Buy nft",
-  9: "Sell nft",
-  10: "Whitelist deposit",
-  11: "Whitelist with lens followers",
-  12: "Whitelist with lens post's comments",
-  13: "Update price per token",
-  14: "Deposit tokens in AAVE pool",
-  15: "Withdraw tokens from AAVE pool",
-  16: "Whitelist with lens post's mirror",
-  17: "Stake tokens through stargate",
-  18: "Unstake tokens through stargate",
-  19: "Swap tokens through uniswap",
-};
-
 export const contractNetworks = {
   [8453]: {
     safeMasterCopyAddress: "0x69f4D1788e39c87893C980c06EdF4b7f686e2938",
