@@ -4,10 +4,9 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
   convertFromWeiGovernance,
-  convertToWeiGovernance,
 } from "../../utils/globalFunctions";
-import { extractNftAdressAndId, shortAddress } from "utils/helper";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
+import { proposalDetailsData } from "utils/proposalData";
 
 const useStyles = makeStyles({
   listFont2: {
@@ -29,6 +28,12 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
   });
+
+  const factoryData = useSelector((state) => {
+    return state.club.factoryData;
+  });
+
+  const [proposalDetails, setProposalDetails] = useState({});
 
   const [tokenDetails, setTokenDetails] = useState({
     decimals: 0,
@@ -134,454 +139,56 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
     } catch (error) {
       console.log(error);
     }
-  }, [
-    airDropToken,
-    customToken,
-    depositAmount,
-    depositToken,
-    withdrawAmount,
-    withdrawToken,
-    stakeToken,
-    stakeAmount,
-    unstakeToken,
-    unstakeAmount,
-    swapToken,
-  ]);
+  }, [proposalData, tokenType, daoDetails]);
 
   useEffect(() => {
     fetchAirDropContractDetails();
   }, [fetchAirDropContractDetails]);
+
+  const getProposalDetailsData = () => {
+    debugger;
+    const response = proposalDetailsData({
+      data: proposalData?.commands[0],
+      decimals: tokenDetails.decimals,
+      symbol: tokenDetails.symbol,
+      factoryData,
+    });
+    setProposalDetails(response);
+  };
+
+  useEffect(() => {
+    getProposalDetailsData();
+  }, [proposalData, tokenDetails.decimals, tokenDetails.symbol]);
 
   return (
     <Grid item md={9}>
       {proposalData?.commands.length && executionId ? (
         <Card>
           <>
-            {executionId == 0 ? (
+            {proposalDetails.data && (
               <>
                 <Grid container item mb={1}>
                   <Typography className={classes.listFont2Colourless}>
-                    Distribute tokens to a wallet
+                    {proposalDetails.title}
                   </Typography>
                 </Grid>
                 <Divider />
                 <Grid container mt={1}>
                   <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Token
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {tokenDetails.symbol}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Amount
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched
-                          ? convertFromWeiGovernance(
-                              airDropAmount,
-                              tokenDetails.decimals,
-                            )
-                          : null}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Carry fee
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched ? airDropCarryFee : null}%
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </>
-            ) : executionId == 1 ? (
-              <>
-                <Grid container item>
-                  <Typography className={classes.listFont2Colourless}>
-                    Mint governance tokens to a wallet
-                  </Typography>
-                </Grid>
-                <Grid container>
-                  <Grid item>
-                    <Typography className={classes.listFont2}>
-                      Amount
-                    </Typography>
-                  </Grid>
-                  <Grid
-                    item
-                    xs
-                    sx={{
-                      display: "flex",
-                      justifyContent: "flex-end",
-                    }}>
-                    <Typography className={classes.listFont2Colourless}>
-                      {fetched
-                        ? tokenType === "erc721"
-                          ? mintGTAmounts[0]
-                          : mintGTAmounts[0] /
-                            Math.pow(10, parseInt(usdcGovernanceTokenDecimal))
-                        : null}
-                    </Typography>
-                  </Grid>
-                </Grid>
-                <Grid container>
-                  <Grid item>
-                    <Typography className={classes.listFont2}>
-                      Recipient
-                    </Typography>
-                  </Grid>
-                  <Grid
-                    item
-                    xs
-                    sx={{
-                      display: "flex",
-                      justifyContent: "flex-end",
-                    }}>
-                    <Typography className={classes.listFont2Colourless}>
-                      {fetched ? shortAddress(mintGTAddresses[0]) : null}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </>
-            ) : executionId == 2 ? (
-              <>
-                <Grid container item mb={1}>
-                  <Typography className={classes.listFont2Colourless}>
-                    Update governance settings of the club
-                  </Typography>
-                </Grid>
-                <Divider />
-                <Grid container mt={1}>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Quorum
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched ? quorum : null}%
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Threshold
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched ? threshold : null}%
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </>
-            ) : executionId == 3 ? (
-              <>
-                <Grid container item mb={1}>
-                  <Typography className={classes.listFont2Colourless}>
-                    Update total raise amount
-                  </Typography>
-                </Grid>
-                <Divider />
-                <Grid container mt={1}>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Total amount
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched
-                          ? (convertToWeiGovernance(
-                              convertToWeiGovernance(totalDeposits, 6) /
-                                daoDetails?.pricePerToken,
-                              18,
-                            ) /
-                              10 ** 18) *
-                            convertFromWeiGovernance(
-                              daoDetails?.pricePerToken,
-                              6,
-                            )
-                          : null}{" "}
-                        {usdcTokenSymbol}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </>
-            ) : executionId == 4 ? (
-              <>
-                <Grid container item mb={1}>
-                  <Typography className={classes.listFont2Colourless}>
-                    Transfer token to a wallet
-                  </Typography>
-                </Grid>
-                <Divider />
-                <Grid container mt={1}>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Amount
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched
-                          ? customTokenAmounts[0] /
-                            Math.pow(10, parseInt(tokenDetails.decimals))
-                          : null}{" "}
-                        {tokenDetails.symbol}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Recipient
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched ? shortAddress(customTokenAddresses[0]) : null}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </>
-            ) : executionId == 5 ? (
-              <>
-                <Grid container item mb={1}>
-                  <Typography className={classes.listFont2Colourless}>
-                    Send Nft to an address
-                  </Typography>
-                </Grid>
-                <Divider />
-                <Grid container mt={1}>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Nft Address
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched ? shortAddress(customNft) : null}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Nft Token Id
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched ? customNftToken : null}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Recipient
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched ? shortAddress(customTokenAddresses[0]) : null}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </>
-            ) : executionId == 6 || executionId == 7 ? (
-              <>
-                <Grid container item mb={1}>
-                  <Typography className={classes.listFont2Colourless}>
-                    {executionId == 6 ? "Add Signer" : "Remove Signer"}
-                  </Typography>
-                </Grid>
-                <Divider />
-                <Grid container mt={1}>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Owner Address
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched ? shortAddress(ownerAddress) : null}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </>
-            ) : executionId == 10 ||
-              executionId == 11 ||
-              executionId == 12 ||
-              executionId == 16 ? (
-              <>
-                <Grid container item mb={1}>
-                  <Typography className={classes.listFont2Colourless}>
-                    Enable whitelist for deposit
-                  </Typography>
-                </Grid>
-                <Divider />
-                <Grid container mt={1} maxHeight={"300px"} overflow="auto">
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
-                      <Typography mb={1} className={classes.listFont2}>
-                        Whitelisted addresses
-                      </Typography>
-
-                      {whitelistAddresses.map((address, index) => (
-                        <Typography key={index} mb={0.5}>
-                          {address}
+                    {Object.keys(proposalDetails?.data).map((key, index) => (
+                      <Grid item xs={12} md={4} key={index}>
+                        <Typography className={classes.listFont2}>
+                          {key}
                         </Typography>
-                      ))}
-                    </Grid>
+                        <Typography className={classes.listFont2Colourless}>
+                          {proposalDetails.data[key]}
+                        </Typography>
+                      </Grid>
+                    ))}
                   </Grid>
                 </Grid>
               </>
-            ) : executionId == 8 || executionId == 9 ? (
-              <>
-                <Grid container item mb={1}>
-                  <Typography className={classes.listFont2Colourless}>
-                    {executionId == 8
-                      ? "Buy NFT from Opensea"
-                      : "Sell NFT from Opensea"}
-                  </Typography>
-                </Grid>
-                <Divider />
-                <Grid container mt={1}>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        NFT Address
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {shortAddress(
-                          extractNftAdressAndId(nftLink).nftAddress,
-                        )}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Token Id
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {extractNftAdressAndId(nftLink).tokenId}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </>
-            ) : executionId === 13 ? (
-              <>
-                <Grid container item mb={1}>
-                  <Typography className={classes.listFont2Colourless}>
-                    Update price per token
-                  </Typography>
-                </Grid>
-                <Divider />
-                <Grid container mt={1}>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Price per token
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched ? pricePerToken : ""} {usdcTokenSymbol}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </>
-            ) : executionId === 14 || executionId === 15 ? (
-              <>
-                <Grid container item mb={1}>
-                  <Typography className={classes.listFont2Colourless}>
-                    {executionId === 14
-                      ? "Deposit tokens in AAVE pool"
-                      : "Withdraw tokens from AAVE pool"}
-                  </Typography>
-                </Grid>
-                <Divider />
-                <Grid container mt={1}>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Token
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched ? tokenDetails.symbol : null}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Amount
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched ? tokenDetails.amount : null}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </>
-            ) : executionId === 17 || executionId === 18 ? (
-              <>
-                <Grid container item mb={1}>
-                  <Typography className={classes.listFont2Colourless}>
-                    {executionId === 17
-                      ? "Stake tokens through stargate pool"
-                      : "Unstake tokens through stargate pool"}
-                  </Typography>
-                </Grid>
-                <Divider />
-                <Grid container mt={1}>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Token
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched ? tokenDetails.symbol : null}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Amount
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched ? tokenDetails.amount : null}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </>
-            ) : executionId === 19 ? (
-              <>
-                <Grid container item mb={1}>
-                  <Typography className={classes.listFont2Colourless}>
-                    Swap tokens through uniswap
-                  </Typography>
-                </Grid>
-                <Divider />
-                <Grid container mt={1}>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Token
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched ? tokenDetails.symbol : null}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Amount
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched ? tokenDetails.amount : null}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <Typography className={classes.listFont2}>
-                        Destination Token
-                      </Typography>
-                      <Typography className={classes.listFont2Colourless}>
-                        {fetched ? shortAddress(destinationToken) : null}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </>
-            ) : null}
+            )}
           </>
         </Card>
       ) : null}
