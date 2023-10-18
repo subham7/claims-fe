@@ -80,9 +80,9 @@ const EditDetails = ({
   const classes = useStyles();
 
   const [loaderOpen, setLoaderOpen] = useState(false);
-  const [openSnackBar, setOpenSnackBar] = useState(false);
-  const [failed, setFailed] = useState(false);
+  const [isSuccessfull, setIsSuccessfull] = useState(false);
   const [message, setMessage] = useState("");
+  const [showMessage, setShowMessage] = useState(false);
   const uploadInputRef = useRef(null);
 
   const [selectedFile, setSelectedFile] = useState("");
@@ -92,12 +92,11 @@ const EditDetails = ({
     setSelectedFile(event.target.files[0]);
   };
 
-  const handleSnackBarClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnackBar(false);
-    setLoaderOpen(false);
+  const showMessageHandler = () => {
+    setShowMessage(true);
+    setTimeout(() => {
+      setShowMessage(false);
+    }, 4000);
   };
 
   const fetchBannerDetails = async () => {
@@ -153,11 +152,10 @@ const EditDetails = ({
   };
 
   const updateUIAfterSuccess = async () => {
-    setOpenSnackBar(true);
-    setFailed(false);
-    setMessage("Details Changed Successfully!");
-    setOpen(false);
     setLoaderOpen(false);
+    showMessageHandler();
+    setIsSuccessfull(true);
+    setMessage("Details Changed Successfully!");
     if (isClaims) {
       await getClubInfo();
     }
@@ -165,10 +163,10 @@ const EditDetails = ({
   };
 
   const updateUIAfterFailure = () => {
-    setOpenSnackBar(true);
-    setMessage("Details Change Failed!");
-    setFailed(true);
     setLoaderOpen(false);
+    showMessageHandler();
+    setIsSuccessfull(false);
+    setMessage("Details changing failed!");
   };
 
   const formik = useFormik({
@@ -187,7 +185,7 @@ const EditDetails = ({
           fileLink = await readFileAsync();
         }
         const res = await sendRequest(values, fileLink);
-        await updateUIAfterSuccess();
+        updateUIAfterSuccess();
       } catch (error) {
         updateUIAfterFailure();
       }
@@ -408,8 +406,8 @@ const EditDetails = ({
         </DialogContent>
       </Dialog>
 
-      {openSnackBar ? (
-        <CustomAlert alertMessage={message} severity={failed} />
+      {showMessage ? (
+        <CustomAlert alertMessage={message} severity={isSuccessfull} />
       ) : null}
     </>
   );
