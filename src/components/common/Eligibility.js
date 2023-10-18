@@ -45,7 +45,7 @@ const Eligibility = ({
       default:
         return {
           displayText: "Pro-rata",
-          description: "This drop is pro-rata gated",
+          description: "Token will be distributed on pro-rata basis",
         };
     }
   };
