@@ -108,8 +108,8 @@ const Proposal = ({ daoAddress }) => {
   const fetchNfts = useCallback(async () => {
     try {
       const nftsData = await getNFTsByDaoAddress(gnosisAddress, networkId);
-      setNftData(nftsData.data);
-      dispatch(addNftsOwnedByDao(nftsData.data));
+      setNftData(nftsData?.data);
+      dispatch(addNftsOwnedByDao(nftsData?.data));
     } catch (error) {
       console.log(error);
     }
