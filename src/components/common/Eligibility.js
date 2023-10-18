@@ -19,7 +19,7 @@ const Eligibility = ({
           tokenDetails?.whitelistTokenDecimal,
         );
         return {
-          displayText: `${minValue} ${tokenDetails.whitelistToken}`,
+          displayText: `${minValue} ${tokenDetails?.whitelistTokenSymbol}`,
           description: "Hold these token(s) to participate in this drop.",
         };
 

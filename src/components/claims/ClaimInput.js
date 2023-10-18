@@ -44,7 +44,7 @@ const ClaimInput = ({
           />
         </div>
 
-        {maxClaimableAmount && tokenDetails?.tokenDecimal ? (
+        {tokenDetails?.tokenDecimal ? (
           <div className={classes.tokenContainer}>
             <Typography variant="inherit" className={classes.token}>
               {tokenDetails?.tokenSymbol}
