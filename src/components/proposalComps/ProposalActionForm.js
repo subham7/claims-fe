@@ -146,13 +146,13 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         helperText={
           formik.touched.actionCommand && formik.errors.actionCommand
         }>
-        {PROPOSAL_MENU_ITEMS.filter(
-          (item) => !item.condition || item.condition(),
-        ).map((item) => (
-          <MenuItem key={item.key} value={item.value}>
-            {item.text}
-          </MenuItem>
-        ))}
+        {PROPOSAL_MENU_ITEMS(isGovernanceActive, tokenType)
+          .filter((item) => !item.condition || item.condition())
+          .map((item) => (
+            <MenuItem key={item.key} value={item.value}>
+              {item.text}
+            </MenuItem>
+          ))}
       </Select>
       {proposalFormData({
         formik,
