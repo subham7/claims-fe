@@ -19,6 +19,7 @@ import ClaimInput from "./ClaimInput";
 import { ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import PublicPageLayout from "@components/common/PublicPageLayout";
 import TwitterSharingModal from "@components/modals/TwitterSharingModal";
+import { processAmount } from "utils/helper";
 
 const ClaimInputComponent = ({
   claimInputProps,
@@ -168,16 +169,23 @@ const Claim = ({ claimAddress }) => {
         tokenDetails.tokenDecimal,
       );
 
+      const processedTotalClaimAmount = processAmount(
+        data?.claimAmountDetails?.totalClaimAmount + "",
+      );
+      const processedRemainingBalanceInContract = processAmount(
+        remainingBalanceInContract + "",
+      );
+
       const totalAmountClaimed =
         Number(
           convertFromWeiGovernance(
-            data?.claimAmountDetails?.totalClaimAmount,
+            processedTotalClaimAmount,
             tokenDetails?.tokenDecimal,
           ),
         ) -
         Number(
           convertFromWeiGovernance(
-            remainingBalanceInContract,
+            processedRemainingBalanceInContract,
             tokenDetails?.tokenDecimal,
           ),
         );
@@ -186,11 +194,12 @@ const Claim = ({ claimAddress }) => {
         (totalAmountClaimed /
           Number(
             convertFromWeiGovernance(
-              data?.claimAmountDetails?.totalClaimAmount,
+              processedTotalClaimAmount,
               tokenDetails?.tokenDecimal,
             ),
           )) *
         100;
+
       setClaimedPercentage(percentageClaimed);
 
       // claimed by user
@@ -446,6 +455,8 @@ const Claim = ({ claimAddress }) => {
   useEffect(() => {
     if (claimAddress) fetchBannerDetails();
   }, [claimAddress, networkId]);
+
+  console.log("xxxL", claimedPercentage);
 
   return (
     <>

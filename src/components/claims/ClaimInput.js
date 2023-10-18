@@ -24,7 +24,7 @@ const ClaimInput = ({
 
   return (
     <div className={classes.claimInputContainer}>
-      <Typography variant="inherit">How much do you want to claim?</Typography>
+      <h3>How much do you want to claim?</h3>
       <div className={classes.inputContainer}>
         <div>
           <TextField
