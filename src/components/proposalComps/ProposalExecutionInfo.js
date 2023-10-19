@@ -2,9 +2,7 @@ import { Card, Divider, Grid, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import {
-  convertFromWeiGovernance,
-} from "../../utils/globalFunctions";
+import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { proposalDetailsData } from "utils/proposalData";
 
@@ -129,7 +127,6 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
             : swapAmount,
           decimal,
         );
-        console.log("xxx", decimal, symbol, amount);
         setTokenDetails({
           decimals: decimal,
           symbol: symbol,
