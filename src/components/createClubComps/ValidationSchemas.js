@@ -347,7 +347,7 @@ export const getProposalValidationSchema = ({
         yup
           .number("Enter threshold")
           .required("Safe Threshold is required")
-          .moreThan(1, "Safe Threshold should be greater than 1"),
+          .moreThan(0, "Safe threshold can't be less than 1"),
     }),
     ownerAddress: yup
       .string()

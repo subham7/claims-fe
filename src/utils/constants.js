@@ -10,7 +10,7 @@ import { signMessageLibAbi } from "abis/gnosis-abis/signMessageLibAbi";
 import { simulateTxAccessorAbi } from "abis/gnosis-abis/simulateTxAccessorAbi";
 
 export const BLOCK_CONFIRMATIONS = 4;
-export const BLOCK_TIMEOUT = 120000;
+export const BLOCK_TIMEOUT = 240000;
 export const FIVE_MB = 5242880;
 export const ZERO_MERKLE_ROOT =
   "0x0000000000000000000000000000000000000000000000000000000000000001";
