@@ -475,16 +475,16 @@ export const getProposalValidationSchema = ({
 
     uniswapRecieverToken: yup
       .string("Please enter token address")
-      .required("Destination address is required")
       .test(
-        "invaliduniswapRecieverToken",
-        "Reciever chain address should be same as sender chain",
+        "invalidUniswapRecieverToken",
+        "Reciever chain address should be same as sender chain ",
         async (value, context) => {
           const { actionCommand } = context.parent;
+
           if (actionCommand === 19) {
             try {
               const decimals = await getDecimals(value);
-              if (decimals) {
+              if (decimals > 0) {
                 return true;
               } else return false;
             } catch (error) {
@@ -494,6 +494,7 @@ export const getProposalValidationSchema = ({
           return true;
         },
       ),
+
     uniswapSwapAmount: yup
       .number("Please enter amount")
       .test(
