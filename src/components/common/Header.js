@@ -47,7 +47,9 @@ const Header = ({
 
   return (
     <>
-      <h1>{isDeposit ? contractData?.name : tokenDetails?.tokenSymbol}</h1>
+      <h1>
+        {isDeposit ? contractData?.name : `$${tokenDetails?.tokenSymbol}`}
+      </h1>
       <div
         style={{
           display: "flex",

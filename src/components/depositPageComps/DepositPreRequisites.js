@@ -17,7 +17,7 @@ const DepositPreRequisites = ({
   onIsW8BenSignedChange,
 }) => {
   const [showUploadDocModal, setShowUploadDocModal] = useState(false);
-  const [isSigned, setIsSigned] = useState(false);
+  const [isSigned, setIsSigned] = useState();
   const [isW8BenSigned, setIsW8BenSigned] = useState(false);
   const [depositConfig, setDepositConfig] = useState(null);
 
@@ -35,7 +35,7 @@ const DepositPreRequisites = ({
   ) => {
     if (!isUploadDoc) {
       const res = await hasUserSigned(docIdentifier, walletAddress);
-      setIsSigned(res?.signature);
+      setIsSigned(res?.signature ? res?.signature : false);
     } else {
       const res = await hasUserSigned(docIdentifier, walletAddress, true);
 

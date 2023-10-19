@@ -177,7 +177,7 @@ const ERC20 = ({
         await approveDeposit(
           Deposit_Token_Address,
           FACTORY_CONTRACT_ADDRESS,
-          inputValue,
+          values.tokenInput,
           tokenDetails?.tokenDecimal,
         );
 
@@ -239,19 +239,25 @@ const ERC20 = ({
   };
 
   const isDepositDisabled = () => {
-    return (
-      !isSigned ||
-      !isW8BenSigned ||
-      (remainingDays >= 0 && remainingTimeInSecs > 0 && isTokenGated
-        ? !isEligibleForTokenGating
-        : remainingDays >= 0 && remainingTimeInSecs > 0
-        ? false
-        : true) ||
-      +clubData?.raiseAmount <= +clubData?.totalAmountRaised ||
-      +remainingClaimAmount <= 0 ||
-      (whitelistUserData?.setWhitelist === true &&
-        whitelistUserData?.proof === null)
-    );
+    if (
+      typeof isSigned !== "undefined" &&
+      typeof isW8BenSigned !== "undefined"
+    ) {
+      if (!isSigned) return true;
+      if (!isW8BenSigned) return true;
+    }
+    const isRemainingTimeInvalid =
+      remainingDays < 0 || remainingTimeInSecs <= 0;
+    if (isRemainingTimeInvalid) return true;
+    if (isTokenGated && !isEligibleForTokenGating) return true;
+    if (+clubData?.raiseAmount <= +clubData?.totalAmountRaised) return true;
+    if (+remainingClaimAmount <= 0) return true;
+    if (
+      whitelistUserData?.setWhitelist === true &&
+      whitelistUserData?.proof === null
+    )
+      return true;
+    return false;
   };
 
   useEffect(() => {

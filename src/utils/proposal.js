@@ -23,6 +23,7 @@ import { actionContractABI } from "abis/actionContract";
 import { erc20AaveABI } from "abis/erc20AaveABI";
 import { stargateStakeABI } from "abis/stargateStakeABI";
 import { maticAaveABI } from "abis/MaticAaveABI";
+import { uniswapABI } from "abis/uniswapABI";
 
 export const fetchProposals = async (clubId, type) => {
   let proposalData;
@@ -244,6 +245,7 @@ export const getEncodedData = async ({
   getERC20TotalSupply,
   getNftOwnersCount,
   networkId,
+  gnosisAddress,
 }) => {
   let membersArray = [];
   let airDropAmountArray = [];
@@ -503,6 +505,7 @@ export const getEncodedData = async ({
         daoAddress,
       ]);
       return { data };
+
     default:
       return {};
   }
@@ -628,6 +631,35 @@ const unstakeErc20TokensToStargate = (
     .encodeABI();
 };
 
+const swapWithUniswap = (
+  swapToken,
+  destinationToken,
+
+  gnosisAddress,
+
+  swapAmount,
+  web3Call,
+  networkId,
+) => {
+  const uniswapContract = new web3Call.eth.Contract(
+    uniswapABI,
+    CHAIN_CONFIG[networkId].uniswapRouterAddress,
+  );
+
+  return uniswapContract.methods
+    .exactInputSingle([
+      swapToken,
+      destinationToken,
+      500,
+      gnosisAddress,
+      Date.now() + 120,
+      swapAmount,
+      0,
+      0,
+    ])
+    .encodeABI();
+};
+
 const depositEthMethodEncoded = (
   poolAddress,
   addressWhereAssetsStored,
@@ -704,6 +736,9 @@ export const getTransaction = async ({
     customNftToken,
     depositAmount,
     withdrawAmount,
+    swapToken,
+    destinationToken,
+    swapAmount,
     stakeAmount,
     unstakeAmount,
   } = proposalData.commands[0];
@@ -948,7 +983,31 @@ export const getTransaction = async ({
           value: "0",
         };
       }
-
+    case 19:
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(tokenData),
+        data: approveDepositWithEncodeABI(
+          tokenData,
+          CHAIN_CONFIG[networkId].uniswapRouterAddress,
+          swapAmount,
+          web3Call,
+        ),
+        value: "0",
+      };
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].uniswapRouterAddress,
+        ),
+        data: swapWithUniswap(
+          swapToken,
+          destinationToken,
+          gnosisAddress,
+          swapAmount,
+          web3Call,
+          networkId,
+        ),
+        value: "0",
+      };
       return { approvalTransaction, transaction };
     case 17:
       approvalTransaction = {
