@@ -231,7 +231,8 @@ export const CHAIN_CONFIG = process.env.NEXT_IS_DEV
         stationSubgraphUrl: "",
         covalentNetworkName: "scroll-mainnet",
         claimFactoryAddress: "0x563993D2c56628cfBBdec3FC3B3fb94744BbA9A6",
-        claimsSubgraphUrl: "",
+        claimsSubgraphUrl:
+          "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-scroll/0.0.1/gn",
         nativeToken: "",
         usdcAddress: "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
         airdropContractAddress: "",
@@ -252,7 +253,8 @@ export const CHAIN_CONFIG = process.env.NEXT_IS_DEV
         stationSubgraphUrl: "",
         covalentNetworkName: "manta-mainnet",
         claimFactoryAddress: "0x50702Fd9086BAbDB0A3A576bFe22D4dD47b09937",
-        claimsSubgraphUrl: "",
+        claimsSubgraphUrl:
+          "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-manta/0.0.1/gn",
         nativeToken: "",
         usdcAddress: "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
         airdropContractAddress: "",
@@ -260,8 +262,8 @@ export const CHAIN_CONFIG = process.env.NEXT_IS_DEV
         disburseContractAddress: "0x3DA9Fb55Ab77b10F99C1C1f52C150280dbd5a611",
       },
       "0x82750": {
-        chainName: "Scroll",
-        shortName: "Scroll",
+        chainName: "Taiko",
+        shortName: "Taiko",
         chainId: 534352,
         nativeCurrency: {
           name: "ETH",
@@ -274,7 +276,7 @@ export const CHAIN_CONFIG = process.env.NEXT_IS_DEV
         covalentNetworkName: "scroll-mainnet",
         claimFactoryAddress: "0x563993D2c56628cfBBdec3FC3B3fb94744BbA9A6",
         claimsSubgraphUrl:
-          "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-bsc/prod/gn",
+          "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-taiko-tn/0.0.1/gn",
         nativeToken: "",
         usdcAddress: "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
         airdropContractAddress: "",
