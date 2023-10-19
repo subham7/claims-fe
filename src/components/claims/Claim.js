@@ -263,7 +263,6 @@ const Claim = ({ claimAddress }) => {
   };
 
   const setClaimAmountByType = async (permission) => {
-    console.log("permission", permission);
     try {
       switch (permission) {
         case "0": {
@@ -295,13 +294,12 @@ const Claim = ({ claimAddress }) => {
           // const whitelistTokenBalance = await getBalance(dropsData?.daoToken);
           // setIsEligibleForTokenGated(whitelistTokenBalance > 0);
 
-          console.log("xxxx", dropsData?.merkleRoot, walletAddress);
           const { amount } = await getUserProofAndBalance(
             dropsData?.merkleRoot,
             walletAddress.toLowerCase(),
           );
 
-          console.log("xxx", amount);
+          setIsEligibleForTokenGated(amount > 0);
 
           setMaxClaimableAmount(+amount);
           return;
