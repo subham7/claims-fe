@@ -330,3 +330,50 @@ export const addLineBreaks = (inputString, breakAfter = 40) => {
   }
   return result;
 };
+
+export const convertToFullNumber = (expNotation) => {
+  let [base, exponent] = expNotation?.split("e");
+  let [whole, fractional] = base?.split(".");
+
+  if (exponent.includes("+")) {
+    let positiveExponent = parseInt(exponent?.replace("+", ""), 10);
+    if (fractional) {
+      let adjustedWhole =
+        whole +
+        fractional?.substring(
+          0,
+          Math.min(positiveExponent, fractional?.length),
+        );
+      let remainingExponent = positiveExponent - fractional?.length;
+      return adjustedWhole + "0".repeat(Math.max(0, remainingExponent));
+    } else {
+      return whole + "0".repeat(positiveExponent);
+    }
+  } else if (exponent?.includes("-")) {
+    let negativeExponent = parseInt(exponent?.replace("-", ""), 10);
+    if (negativeExponent >= whole?.length) {
+      return (
+        "0." +
+        "0".repeat(negativeExponent - whole?.length) +
+        whole +
+        (fractional || "")
+      );
+    } else {
+      let decimalPlace = whole?.length - negativeExponent;
+      return (
+        whole?.substring(0, decimalPlace) +
+        "." +
+        whole?.substring(decimalPlace) +
+        (fractional || "")
+      );
+    }
+  }
+  return expNotation;
+};
+
+export const processAmount = (amount) => {
+  if (typeof amount === "string" && amount?.includes("e")) {
+    return convertToFullNumber(amount);
+  }
+  return amount;
+};

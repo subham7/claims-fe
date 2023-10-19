@@ -10,9 +10,13 @@ import { useNetwork } from "wagmi";
 import { csvToObjectForMintGT } from "utils/helper";
 import React, { useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { CHAIN_CONFIG, proposalActionCommands } from "utils/constants";
+import { CHAIN_CONFIG } from "utils/constants";
 import { proposalFormData } from "utils/proposalData";
 import Web3 from "web3";
+import {
+  PROPOSAL_MENU_ITEMS,
+  proposalActionCommands,
+} from "utils/proposalConstants";
 
 const useStyles = makeStyles({
   textField: {
@@ -142,70 +146,13 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         helperText={
           formik.touched.actionCommand && formik.errors.actionCommand
         }>
-        <MenuItem key={4} value="Send token to an address">
-          Send Token
-        </MenuItem>
-        <MenuItem key={5} value="Send nft to an address">
-          Send NFT
-        </MenuItem>
-        <MenuItem key={0} value="Distribute token to members">
-          Distribute Token to Members (Pro-rata)
-        </MenuItem>
-        <MenuItem key={1} value="Mint club token">
-          Mint Station Tokens
-        </MenuItem>
-        <MenuItem key={8} value="Buy nft">
-          Buy NFT (OpenSea)
-        </MenuItem>
-        {/* <MenuItem key={9} value="Sell nft">
-          Sell nft
-        </MenuItem> */}
-        <MenuItem key={14} value="Deposit tokens in AAVE pool">
-          AAVE Pool - Deposit
-        </MenuItem>
-        <MenuItem key={15} value="Withdraw tokens from AAVE pool">
-          AAVE Pool - Withdraw
-        </MenuItem>
-        <MenuItem key={10} value="Whitelist deposit">
-          Gate Deposit - CSV
-        </MenuItem>
-        <MenuItem key={11} value="Whitelist with lens followers">
-          Gate Deposit - Lens Followers
-        </MenuItem>
-        <MenuItem key={12} value="Whitelist with lens post's comments">
-          Gate Deposit - Lens Post Comments
-        </MenuItem>
-        <MenuItem key={16} value="Whitelist with lens post's mirror">
-          Gate Deposit - Lens Post Mirror
-        </MenuItem>
-
-        {isGovernanceActive ? (
-          <MenuItem key={2} value="Update governance settings">
-            Update Governance Settings
-          </MenuItem>
-        ) : null}
-
-        <MenuItem key={13} value="Update price per token">
-          Update Price per Token
-        </MenuItem>
-        <MenuItem key={6} value="Add signer">
-          Add Station Signer
-        </MenuItem>
-        <MenuItem key={7} value="Remove signer">
-          Remove Station signer
-        </MenuItem>
-
-        {tokenType !== "erc721" ? (
-          <MenuItem key={3} value="Change total raise amount">
-            Change total raise amount
-          </MenuItem>
-        ) : null}
-        <MenuItem key={17} value="Stake tokens through stargate">
-          Stake tokens through stargate
-        </MenuItem>
-        <MenuItem key={18} value="Unstake tokens through stargate">
-          Unstake tokens through stargate
-        </MenuItem>
+        {PROPOSAL_MENU_ITEMS(isGovernanceActive, tokenType)
+          .filter((item) => !item.condition || item.condition())
+          .map((item) => (
+            <MenuItem key={item.key} value={item.value}>
+              {item.text}
+            </MenuItem>
+          ))}
       </Select>
       {proposalFormData({
         formik,

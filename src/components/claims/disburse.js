@@ -107,7 +107,7 @@ const CreateDisburse = () => {
         }
 
         const totalAmount = disburseAmounts.reduce(
-          (partialSum, a) => partialSum + Number(a),
+          (partialSum, a) => partialSum + a,
           0,
         );
 
@@ -127,7 +127,7 @@ const CreateDisburse = () => {
         await approveDeposit(
           selectedToken.address,
           CHAIN_CONFIG[networkId].disburseContractAddress,
-          convertToWeiGovernance(totalAmount, selectedToken.decimals),
+          convertToWeiGovernance(totalAmount, selectedToken.decimals) ?? 0,
           1, //Passing 1 as the value is already converted
         );
 

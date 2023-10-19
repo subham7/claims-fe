@@ -15,6 +15,7 @@ import { extractNftAdressAndId, shortAddress } from "./helper";
 import Link from "next/link";
 import { getWhiteListMerkleRoot } from "api/whitelist";
 import { fetchLensActionAddresses, handleFetchFollowers } from "./lensHelper";
+import { proposalActionCommands } from "./proposalConstants";
 
 export const proposalData = ({ data, decimals, factoryData, symbol }) => {
   const {
@@ -34,6 +35,9 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
     pricePerToken,
     depositAmount,
     withdrawAmount,
+    swapToken,
+    swapAmount,
+    destinationToken,
     stakeAmount,
     unstakeAmount,
   } = data ?? {};
@@ -102,6 +106,12 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
       return {
         "Withdraw token": symbol,
         "Withdraw amount": convertFromWeiGovernance(withdrawAmount, decimals),
+      };
+    case 19:
+      return {
+        "Swap token": shortAddress(swapToken),
+        "Swap amt": convertFromWeiGovernance(swapAmount, decimals),
+        "Destination token": shortAddress(destinationToken),
       };
     case 17:
       return {
@@ -245,6 +255,13 @@ export const proposalFormData = ({
               }}
               disabled
               value={file?.name}
+              error={
+                formik.touched.mintGTAmounts &&
+                Boolean(formik.errors.mintGTAmounts)
+              }
+              helperText={
+                formik.touched.mintGTAmounts && formik.errors.mintGTAmounts
+              }
             />
             <Button onClick={handleClick} variant="normal">
               Upload
@@ -1033,6 +1050,102 @@ export const proposalFormData = ({
           </Grid>
         </>
       );
+    case 19:
+      return (
+        <>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            // mb={}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography variant="proposalBody">Token to swap</Typography>
+            <Select
+              sx={{ marginTop: "0.5rem" }}
+              value={formik.values.uniswapSwapToken}
+              onChange={(e) =>
+                formik.setFieldValue(
+                  "uniswapSwapToken",
+                  filteredTokens.find(
+                    (token) => token.symbol === e.target.value,
+                  ).address,
+                )
+              }
+              renderValue={(selected) => {
+                if (selected.length === 0) {
+                  return "Select a command";
+                }
+                return selected;
+              }}
+              inputProps={{ "aria-label": "Without label" }}
+              name="uniswapSwapToken"
+              id="uniswapSwapToken">
+              {filteredTokens.map((token) => (
+                <MenuItem key={token.symbol} value={token.symbol}>
+                  {token.symbol}
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography mt={2} variant="proposalBody">
+              Swap tokens to *
+            </Typography>
+            <TextField
+              variant="outlined"
+              className={classes.textField}
+              placeholder="0x00"
+              name="uniswapRecieverToken"
+              id="uniswapRecieverToken"
+              value={formik.values.uniswapRecieverToken}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.uniswapRecieverToken &&
+                Boolean(formik.errors.uniswapRecieverToken)
+              }
+              helperText={
+                formik.touched.uniswapRecieverToken &&
+                formik.errors.uniswapRecieverToken
+              }
+            />
+          </Grid>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography variant="proposalBody">
+              Amount of tokens to swap *
+            </Typography>
+            <TextField
+              variant="outlined"
+              className={classes.textField}
+              placeholder="0"
+              type="number"
+              name="uniswapSwapAmount"
+              id="uniswapSwapAmount"
+              value={formik.values.uniswapSwapAmount}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.uniswapSwapAmount &&
+                Boolean(formik.errors.uniswapSwapAmount)
+              }
+              helperText={
+                formik.touched.uniswapSwapAmount &&
+                formik.errors.uniswapSwapAmount
+              }
+              onWheel={(event) => event.target.blur()}
+            />
+          </Grid>
+        </>
+      );
   }
 };
 
@@ -1211,6 +1324,19 @@ export const getProposalCommands = async ({
         whitelistAddresses: mirrorAddresses,
         allowWhitelisting: true,
       };
+    case 19:
+      tokenDecimal = tokenData.find(
+        (token) => token.address === values.uniswapSwapToken,
+      ).decimals;
+
+      return {
+        swapToken: values.uniswapSwapToken,
+        swapAmount: convertToWeiGovernance(
+          values.uniswapSwapAmount,
+          tokenDecimal,
+        ),
+        destinationToken: values.uniswapRecieverToken,
+      };
     case 17:
       tokenDecimal = tokenData.find(
         (token) => token.address === values.stargateStakeToken,
@@ -1233,5 +1359,155 @@ export const getProposalCommands = async ({
           tokenDecimal,
         ),
       };
+  }
+};
+
+export const proposalDetailsData = ({
+  data,
+  decimals,
+  factoryData,
+  symbol,
+}) => {
+  debugger;
+  const {
+    executionId,
+    airDropAmount,
+    quorum,
+    threshold,
+    totalDeposits,
+    customTokenAmounts,
+    customTokenAddresses,
+    mintGTAddresses,
+    customNft,
+    ownerAddress,
+    nftLink,
+    lensId,
+    lensPostLink,
+    pricePerToken,
+    depositAmount,
+    withdrawAmount,
+    swapToken,
+    swapAmount,
+    destinationToken,
+    stakeAmount,
+    unstakeAmount,
+    customNftToken,
+    whitelistAddresses,
+    airDropCarryFee,
+  } = data ?? {};
+
+  let responseData = {
+    title: proposalActionCommands[executionId],
+  };
+
+  switch (executionId) {
+    case 0:
+      responseData.data = {
+        Amount: convertFromWeiGovernance(airDropAmount, decimals),
+        " Carry fee": airDropCarryFee,
+      };
+      return responseData;
+    case 1:
+      responseData.data = { "No of recipients :": mintGTAddresses };
+      return responseData;
+    case 2:
+      responseData.data = { Quorum: quorum, Threshold: threshold };
+      return responseData;
+
+    case 3:
+      responseData.data = {
+        "Raise Amount :":
+          (convertToWeiGovernance(
+            convertToWeiGovernance(totalDeposits, 6) /
+              factoryData?.pricePerToken,
+            18,
+          ) /
+            10 ** 18) *
+          convertFromWeiGovernance(factoryData?.pricePerToken, 6),
+      };
+      return responseData;
+
+    case 4:
+      responseData.data = {
+        Amount: customTokenAmounts[0] / 10 ** decimals,
+        Recipient: shortAddress(customTokenAddresses[0]),
+      };
+      return responseData;
+
+    case 5:
+      responseData.data = {
+        "NFT address": shortAddress(customNft),
+        "Nft Token Id": customNftToken,
+        Recipient: shortAddress(customTokenAddresses[0]),
+      };
+      return responseData;
+
+    case 6:
+    case 7:
+      responseData.data = { "Owner address": shortAddress(ownerAddress) };
+      return responseData;
+
+    case 8:
+    case 9:
+      responseData.data = {
+        "NFT address": shortAddress(extractNftAdressAndId(nftLink).nftAddress),
+        "Token Id": `${extractNftAdressAndId(nftLink).tokenId}`,
+      };
+      return responseData;
+
+    case 10:
+      responseData.data = { "Enable whitelisting": whitelistAddresses };
+      return responseData;
+
+    case 11:
+      responseData.data = { "Lens profile id": lensId };
+      return responseData;
+
+    case 12:
+    case 16:
+      responseData.data = { "Lens profile link": lensPostLink };
+      return responseData;
+
+    case 13:
+      responseData.data = { "Price per token": `${pricePerToken} USDC` };
+      return responseData;
+
+    case 14:
+      responseData.data = {
+        "Deposit token": symbol,
+        "Deposit amount": convertFromWeiGovernance(depositAmount, decimals),
+      };
+      return responseData;
+
+    case 15:
+      responseData.data = {
+        "Withdraw token": symbol,
+        "Withdraw amount": convertFromWeiGovernance(withdrawAmount, decimals),
+      };
+      return responseData;
+
+    case 19:
+      responseData.data = {
+        Token: symbol,
+        Amount: convertFromWeiGovernance(swapAmount, decimals),
+        "Destination token": shortAddress(destinationToken),
+      };
+      return responseData;
+    case 17:
+      responseData.data = {
+        "Stake token": symbol,
+        "Stake amount": convertFromWeiGovernance(stakeAmount, decimals),
+      };
+      return responseData;
+
+    case 18:
+      responseData.data = {
+        "Unstake token": symbol,
+        "Unstake amount": convertFromWeiGovernance(unstakeAmount, decimals),
+      };
+      return responseData;
+
+    default:
+      return {};
   }
 };

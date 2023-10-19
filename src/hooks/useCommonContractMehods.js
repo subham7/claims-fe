@@ -75,10 +75,10 @@ const useCommonContractMethods = () => {
     usdcConvertDecimal,
   ) => {
     if (contractAddress) {
-      const value = convertToWeiGovernance(
-        amount,
-        usdcConvertDecimal,
-      )?.toString();
+      const value =
+        amount > 0
+          ? convertToWeiGovernance(amount, usdcConvertDecimal)?.toString()
+          : 1000000;
 
       const currentAllowance = await readContractFunction({
         address: contractAddress,

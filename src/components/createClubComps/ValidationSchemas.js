@@ -132,6 +132,8 @@ export const getProposalValidationSchema = ({
   factoryData,
   walletAddress,
   daoAddress,
+  getERC20TotalSupply,
+  tokenType,
 }) => {
   return yup.object({
     proposalDeadline: yup.date().required("Deposit close date is required"),
@@ -168,6 +170,46 @@ export const getProposalValidationSchema = ({
                 Number(value) <=
                   Number(convertFromWeiGovernance(balance, decimals)) &&
                 Number(value) > 0
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
+    mintGTAmounts: yup
+      .array()
+      .test(
+        "invalidMintGTAmount",
+        "Enter an amount less or equal to total supply",
+        async (value, context) => {
+          const { actionCommand } = context.parent;
+          if (actionCommand === 1) {
+            try {
+              const { distributionAmount } = factoryData;
+              let clubTokensMinted;
+              let totalAmount;
+              if (tokenType === "erc20") {
+                clubTokensMinted = await getERC20TotalSupply();
+                totalAmount = value.reduce(
+                  (partialSum, a) => partialSum + Number(a),
+                  0,
+                );
+              }
+              if (tokenType === "erc721" && distributionAmount === 0) {
+                return true;
+              } else if (
+                Number(totalAmount) <=
+                  Number(
+                    convertFromWeiGovernance(
+                      distributionAmount - clubTokensMinted,
+                      18,
+                    ),
+                  ) &&
+                Number(totalAmount) > 0
               ) {
                 return true;
               } else return false;
@@ -305,7 +347,7 @@ export const getProposalValidationSchema = ({
         yup
           .number("Enter threshold")
           .required("Safe Threshold is required")
-          .moreThan(1, "Safe Threshold should be greater than 1"),
+          .moreThan(0, "Safe threshold can't be less than 1"),
     }),
     ownerAddress: yup
       .string()
@@ -436,15 +478,55 @@ export const getProposalValidationSchema = ({
           return true;
         },
       ),
-    stargateStakeToken: yup
-      .string("Enter stargate staking token")
-      .when("actionCommand", {
-        is: 17,
-        then: () =>
-          yup
-            .string("Enter stargate staking token")
-            .required("Token is required"),
-      }),
+
+    uniswapRecieverToken: yup
+      .string("Please enter token address")
+      .test(
+        "invalidUniswapRecieverToken",
+        "Reciever chain address should be same as sender chain ",
+        async (value, context) => {
+          const { actionCommand } = context.parent;
+
+          if (actionCommand === 19) {
+            try {
+              const decimals = await getDecimals(value);
+              if (decimals > 0) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
+
+    uniswapSwapAmount: yup
+      .number("Please enter amount")
+      .test(
+        "invalidUniswapSwapAmount",
+        "Enter an amount less or equal to treasury balance",
+        async (value, context) => {
+          const { actionCommand, uniswapSwapToken } = context.parent;
+          if (actionCommand === 19) {
+            try {
+              const balance = await getBalance(uniswapSwapToken, gnosisAddress);
+              const decimals = await getDecimals(uniswapSwapToken);
+              if (
+                Number(value) <=
+                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                Number(value) > 0
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
+
     stargateStakeAmount: yup
       .number("Please enter amount")
       .test(
@@ -474,6 +556,7 @@ export const getProposalValidationSchema = ({
           return true;
         },
       ),
+
     stargateUnstakeToken: yup
       .string("Enter stargate unstaking token")
       .when("actionCommand", {

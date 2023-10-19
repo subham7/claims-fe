@@ -18,6 +18,8 @@ import { getClaimDetails, getUserProofAndBalance } from "api/claims";
 import ClaimInput from "./ClaimInput";
 import { ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import PublicPageLayout from "@components/common/PublicPageLayout";
+import TwitterSharingModal from "@components/modals/TwitterSharingModal";
+import { processAmount } from "utils/helper";
 
 const ClaimInputComponent = ({
   claimInputProps,
@@ -70,6 +72,7 @@ const Claim = ({ claimAddress }) => {
     claimedAmt: "",
     address: "",
   });
+  const [showTwitterShareModal, setShowTwitterShareModal] = useState(false);
   const [isClaimActive, setIsClaimActive] = useState(false);
   const [hasDropStarted, setHasDropStarted] = useState(false);
   const [alreadyClaimed, setAlreadyClaimed] = useState(false);
@@ -166,16 +169,23 @@ const Claim = ({ claimAddress }) => {
         tokenDetails.tokenDecimal,
       );
 
+      const processedTotalClaimAmount = processAmount(
+        data?.claimAmountDetails?.totalClaimAmount + "",
+      );
+      const processedRemainingBalanceInContract = processAmount(
+        remainingBalanceInContract + "",
+      );
+
       const totalAmountClaimed =
         Number(
           convertFromWeiGovernance(
-            data?.claimAmountDetails?.totalClaimAmount,
+            processedTotalClaimAmount,
             tokenDetails?.tokenDecimal,
           ),
         ) -
         Number(
           convertFromWeiGovernance(
-            remainingBalanceInContract,
+            processedRemainingBalanceInContract,
             tokenDetails?.tokenDecimal,
           ),
         );
@@ -184,11 +194,12 @@ const Claim = ({ claimAddress }) => {
         (totalAmountClaimed /
           Number(
             convertFromWeiGovernance(
-              data?.claimAmountDetails?.totalClaimAmount,
+              processedTotalClaimAmount,
               tokenDetails?.tokenDecimal,
             ),
           )) *
         100;
+
       setClaimedPercentage(percentageClaimed);
 
       // claimed by user
@@ -262,7 +273,10 @@ const Claim = ({ claimAddress }) => {
       switch (permission) {
         case "0": {
           const whitelistTokenBalance = await getBalance(dropsData?.daoToken);
-          if (Number(whitelistTokenBalance) > dropsData?.tokenGatingValue) {
+
+          if (
+            Number(whitelistTokenBalance) >= Number(dropsData?.tokenGatingValue)
+          ) {
             setIsEligibleForTokenGated(true);
           } else {
             setIsEligibleForTokenGated(false);
@@ -335,6 +349,7 @@ const Claim = ({ claimAddress }) => {
         setClaimInput(0);
         showMessageHandler();
         setMessage("Successfully Claimed!");
+        setShowTwitterShareModal(true);
       } else {
         await claim(
           claimAddress,
@@ -367,6 +382,7 @@ const Claim = ({ claimAddress }) => {
 
         showMessageHandler();
         setMessage("Successfully Claimed!");
+        setShowTwitterShareModal(true);
       }
     } catch (err) {
       console.log(err);
@@ -397,6 +413,8 @@ const Claim = ({ claimAddress }) => {
   };
 
   const isClaimButtonDisabled = () => {
+    console.log("xxxx", isEligibleForTokenGated);
+
     return (claimRemaining == 0 && alreadyClaimed && claimed) ||
       !isClaimActive ||
       !maxClaimableAmount ||
@@ -444,53 +462,64 @@ const Claim = ({ claimAddress }) => {
   }, [claimAddress, networkId]);
 
   return (
-    <PublicPageLayout
-      clubData={dropsData}
-      tokenDetails={tokenDetails}
-      headerProps={{
-        contractData: dropsData,
-        deadline: dropsData?.endTime,
-        tokenDetails: tokenDetails,
-        isActive: isClaimActive,
-        hasStarted: hasDropStarted,
-      }}
-      inputComponents={
-        <ClaimInputComponent
-          claimInputProps={{
-            inputAmount: claimInput,
-            claimRemaining: claimRemaining,
-            maxClaimableAmount: maxClaimableAmount,
-            maxHandler: maxHandler,
-            setClaimInput: setClaimInput,
-            tokenDetails: tokenDetails,
-            claimsData: claimsData,
-          }}
-          alreadyClaimed={alreadyClaimed}
-          buttonProps={{
-            className: classes.claim,
-            onClick: claimHandler,
-            disabled: isClaimButtonDisabled(),
-            variant: "normal",
-          }}
-          claimRemaining={claimRemaining}
-          claimedPercentage={claimedPercentage}
-          isClaiming={isClaiming}
+    <>
+      <PublicPageLayout
+        clubData={dropsData}
+        tokenDetails={tokenDetails}
+        headerProps={{
+          contractData: dropsData,
+          deadline: dropsData?.endTime,
+          tokenDetails: tokenDetails,
+          isActive: isClaimActive,
+          hasStarted: hasDropStarted,
+        }}
+        inputComponents={
+          <ClaimInputComponent
+            claimInputProps={{
+              inputAmount: claimInput,
+              claimRemaining: claimRemaining,
+              maxClaimableAmount: maxClaimableAmount,
+              maxHandler: maxHandler,
+              setClaimInput: setClaimInput,
+              tokenDetails: tokenDetails,
+              claimsData: claimsData,
+            }}
+            alreadyClaimed={alreadyClaimed}
+            buttonProps={{
+              className: classes.claim,
+              onClick: claimHandler,
+              disabled: isClaimButtonDisabled(),
+              variant: "normal",
+            }}
+            claimRemaining={claimRemaining}
+            claimedPercentage={claimedPercentage}
+            isClaiming={isClaiming}
+          />
+        }
+        socialData={claimGeneralInfo}
+        imgUrl={claimGeneralInfo?.imageLinks?.banner}
+        bio={claimGeneralInfo?.description}
+        eligibilityProps={{
+          contractData: claimsData,
+          tokenDetails: tokenDetails,
+        }}
+        members={activityDetails}
+        message={message}
+        isSuccessfull={claimed}
+        loading={false}
+        showMessage={showMessage}
+        claimDescription={claimsData?.description}
+      />
+      {showTwitterShareModal && claimAddress && claimsData && tokenDetails ? (
+        <TwitterSharingModal
+          message="Hurray! You've successfully claimed from this drop, let your friends know for good karma."
+          tokenSymbol={tokenDetails?.tokenSymbol}
+          claimAddress={claimAddress}
+          description={claimsData?.description}
+          onClose={() => setShowTwitterShareModal(false)}
         />
-      }
-      socialData={claimGeneralInfo}
-      imgUrl={claimGeneralInfo?.imageLinks?.banner}
-      bio={claimGeneralInfo?.description}
-      eligibilityProps={{
-        contractData: claimsData,
-        tokenDetails: tokenDetails,
-      }}
-      members={activityDetails}
-      message={message}
-      isSuccessfull={claimed}
-      loading={false}
-      showMessage={showMessage}
-      claimDescription={claimsData?.description}
-    />
+      ) : null}
+    </>
   );
 };
 
