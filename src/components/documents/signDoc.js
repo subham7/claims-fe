@@ -331,7 +331,6 @@ StationX`,
     fetchDocs();
   });
 
-  console.log("admin", decryptedDataObj);
   return (
     <div>
       <div className={classes.container}>

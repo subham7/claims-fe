@@ -456,8 +456,6 @@ const Claim = ({ claimAddress }) => {
     if (claimAddress) fetchBannerDetails();
   }, [claimAddress, networkId]);
 
-  console.log("xxxL", claimedPercentage);
-
   return (
     <>
       <PublicPageLayout
