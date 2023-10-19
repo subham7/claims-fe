@@ -148,6 +148,7 @@ const CreateProposalDialog = ({
       walletAddress,
       daoAddress,
       getERC20TotalSupply,
+      tokenType,
     }),
     onSubmit: async (values) => {
       try {
@@ -206,7 +207,6 @@ const CreateProposalDialog = ({
       }
     },
   });
-
   return (
     <>
       <Dialog

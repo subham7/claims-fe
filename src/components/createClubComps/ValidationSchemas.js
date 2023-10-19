@@ -133,6 +133,7 @@ export const getProposalValidationSchema = ({
   walletAddress,
   daoAddress,
   getERC20TotalSupply,
+  tokenType,
 }) => {
   return yup.object({
     proposalDeadline: yup.date().required("Deposit close date is required"),
@@ -189,13 +190,18 @@ export const getProposalValidationSchema = ({
           if (actionCommand === 1) {
             try {
               const { distributionAmount } = factoryData;
-              const clubTokensMinted = await getERC20TotalSupply();
-              const totalAmount = value.reduce(
-                (partialSum, a) => partialSum + Number(a),
-                0,
-              );
-
-              if (
+              let clubTokensMinted;
+              let totalAmount;
+              if (tokenType === "erc20") {
+                clubTokensMinted = await getERC20TotalSupply();
+                totalAmount = value.reduce(
+                  (partialSum, a) => partialSum + Number(a),
+                  0,
+                );
+              }
+              if (tokenType === "erc721" && distributionAmount === 0) {
+                return true;
+              } else if (
                 Number(totalAmount) <=
                   Number(
                     convertFromWeiGovernance(
