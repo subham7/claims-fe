@@ -377,7 +377,3 @@ export const processAmount = (amount) => {
   }
   return amount;
 };
-
-export const reformClaimDescriptionForTwitter = (description) => {
-  return description?.replace("|", "%7C");
-};

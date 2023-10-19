@@ -273,7 +273,10 @@ const Claim = ({ claimAddress }) => {
       switch (permission) {
         case "0": {
           const whitelistTokenBalance = await getBalance(dropsData?.daoToken);
-          if (Number(whitelistTokenBalance) > dropsData?.tokenGatingValue) {
+
+          if (
+            Number(whitelistTokenBalance) >= Number(dropsData?.tokenGatingValue)
+          ) {
             setIsEligibleForTokenGated(true);
           } else {
             setIsEligibleForTokenGated(false);
@@ -410,6 +413,8 @@ const Claim = ({ claimAddress }) => {
   };
 
   const isClaimButtonDisabled = () => {
+    console.log("xxxx", isEligibleForTokenGated);
+
     return (claimRemaining == 0 && alreadyClaimed && claimed) ||
       !isClaimActive ||
       !maxClaimableAmount ||

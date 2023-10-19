@@ -12,10 +12,10 @@ const About = ({ bio }) => {
       <div
         className={classes.about}
         dangerouslySetInnerHTML={{
-          __html: ReactHtmlParser(showMore ? bio : bio.slice(0, 400)),
+          __html: ReactHtmlParser(showMore ? bio : bio.slice(0, 600)),
         }}></div>
 
-      {bio.length > 400 ? (
+      {bio.length > 600 ? (
         <div
           className={classes.showMore}
           onClick={() => {
