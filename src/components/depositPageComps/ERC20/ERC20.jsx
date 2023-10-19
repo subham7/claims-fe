@@ -177,7 +177,7 @@ const ERC20 = ({
         await approveDeposit(
           Deposit_Token_Address,
           FACTORY_CONTRACT_ADDRESS,
-          inputValue,
+          values.tokenInput,
           tokenDetails?.tokenDecimal,
         );
 
