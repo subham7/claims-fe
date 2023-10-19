@@ -1,9 +1,19 @@
 import { createPublicClient, createWalletClient, custom, http } from "viem";
-import { polygon, base, arbitrum, bsc, mainnet, gnosis } from "viem/chains";
+import {
+  polygon,
+  base,
+  arbitrum,
+  bsc,
+  mainnet,
+  gnosis,
+  taikoJolnir,
+} from "viem/chains";
 import {
   CHAIN_CONFIG,
   lineaMainnetWalletConnect,
+  mantaMainnet,
   mantleMainnetViem,
+  scrollMainnet,
 } from "utils/constants";
 
 const viemChains = {
@@ -15,6 +25,9 @@ const viemChains = {
   "0x1388": mantleMainnetViem,
   "0x1": mainnet,
   "0x64": gnosis,
+  "0x82750": scrollMainnet,
+  "0xa9": mantaMainnet,
+  "0x28c5f": taikoJolnir,
 };
 
 export const getPublicClient = (networkId) => {

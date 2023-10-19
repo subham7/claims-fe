@@ -14,8 +14,20 @@ import {
 } from "@web3modal/ethereum";
 import { Web3Modal } from "@web3modal/react";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { polygon, base, arbitrum, bsc, mantle, gnosis } from "wagmi/chains";
-import { lineaMainnetWalletConnect } from "utils/constants";
+import {
+  polygon,
+  base,
+  arbitrum,
+  bsc,
+  mantle,
+  gnosis,
+  taikoJolnir,
+} from "wagmi/chains";
+import {
+  lineaMainnetWalletConnect,
+  scrollMainnet,
+  mantaMainnet,
+} from "utils/constants";
 
 const API_URL = "https://api.lens.dev";
 
@@ -32,8 +44,11 @@ const chains = [
   mantle,
   lineaMainnetWalletConnect,
   gnosis,
+  taikoJolnir,
+  scrollMainnet,
+  mantaMainnet,
 ];
-const projectId = "35b31c8ffbfd99ac267e35ecdf60530a";
+const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 
 const { publicClient } = configureChains(chains, [w3mProvider({ projectId })]);
 const wagmiConfig = createConfig({
