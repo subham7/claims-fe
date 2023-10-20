@@ -63,7 +63,7 @@ const CreateClaim = () => {
     try {
       if (networkId === "0xa9") {
         const tokensList = await getTokensListOfManta(walletAddress);
-        return tokensList?.result;
+        return tokensList?.data?.result;
       }
 
       const covalentNetworkName = CHAIN_CONFIG[networkId]?.covalentNetworkName;
