@@ -297,13 +297,12 @@ const Claim = ({ claimAddress }) => {
         }
 
         case "3": {
-          const whitelistTokenBalance = await getBalance(dropsData?.daoToken);
-          setIsEligibleForTokenGated(whitelistTokenBalance > 0);
-
           const { amount } = await getUserProofAndBalance(
             dropsData?.merkleRoot,
             walletAddress.toLowerCase(),
           );
+
+          setIsEligibleForTokenGated(amount > 0);
 
           setMaxClaimableAmount(+amount);
           return;
@@ -455,8 +454,6 @@ const Claim = ({ claimAddress }) => {
   useEffect(() => {
     if (claimAddress) fetchBannerDetails();
   }, [claimAddress, networkId]);
-
-  console.log("xxxL", claimedPercentage);
 
   return (
     <>

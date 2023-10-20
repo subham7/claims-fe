@@ -8,6 +8,8 @@ const ClaimPage = () => {
 
   const [claimAddress, networkId = "0x89"] = router?.query?.slug ?? [];
 
+  console.log("xxx", networkId);
+
   return (
     <Layout
       showSidebar={false}

@@ -232,7 +232,7 @@ export const CHAIN_CONFIG = process.env.NEXT_IS_DEV
         covalentNetworkName: "scroll-mainnet",
         claimFactoryAddress: "0x563993D2c56628cfBBdec3FC3B3fb94744BbA9A6",
         claimsSubgraphUrl:
-          "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-scroll/0.0.1/gn",
+          "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-scroll/prod/gn",
         nativeToken: "",
         usdcAddress: "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
         airdropContractAddress: "",
@@ -254,7 +254,7 @@ export const CHAIN_CONFIG = process.env.NEXT_IS_DEV
         covalentNetworkName: "manta-mainnet",
         claimFactoryAddress: "0x50702Fd9086BAbDB0A3A576bFe22D4dD47b09937",
         claimsSubgraphUrl:
-          "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-manta/0.0.1/gn",
+          "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-manta/prod/gn",
         nativeToken: "",
         usdcAddress: "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
         airdropContractAddress: "",
@@ -276,7 +276,7 @@ export const CHAIN_CONFIG = process.env.NEXT_IS_DEV
         covalentNetworkName: "taiko-jolnir-testnet",
         claimFactoryAddress: "0x563993D2c56628cfBBdec3FC3B3fb94744BbA9A6",
         claimsSubgraphUrl:
-          "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-taiko-tn/0.0.1/gn",
+          "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-taiko-tn/prod/gn",
         nativeToken: "",
         usdcAddress: "0xf0380c236Eb7C3Fc51a9b46706D27bA738B0BE7f",
         airdropContractAddress: "",
@@ -491,7 +491,7 @@ export const CHAIN_CONFIG = process.env.NEXT_IS_DEV
         covalentNetworkName: "scroll-mainnet",
         claimFactoryAddress: "0x563993D2c56628cfBBdec3FC3B3fb94744BbA9A6",
         claimsSubgraphUrl:
-          "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-scroll/0.0.1/gn",
+          "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-scroll/prod/gn",
         nativeToken: "",
         usdcAddress: "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
         airdropContractAddress: "",
@@ -513,11 +513,11 @@ export const CHAIN_CONFIG = process.env.NEXT_IS_DEV
         covalentNetworkName: "manta-mainnet",
         claimFactoryAddress: "0x50702Fd9086BAbDB0A3A576bFe22D4dD47b09937",
         claimsSubgraphUrl:
-          "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-manta/0.0.1/gn",
+          "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-manta/prod/gn",
         nativeToken: "",
-        usdcAddress: "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
+        usdcAddress: "0xb73603C5d87fA094B7314C74ACE2e64D165016fb",
         airdropContractAddress: "",
-        blockExplorerUrl: "https://manta.subscan.io/",
+        blockExplorerUrl: "https://pacific-explorer.manta.network/",
         disburseContractAddress: "0x3DA9Fb55Ab77b10F99C1C1f52C150280dbd5a611",
       },
       "0x28c5f": {
@@ -535,7 +535,7 @@ export const CHAIN_CONFIG = process.env.NEXT_IS_DEV
         covalentNetworkName: "taiko-jolnir-testnet",
         claimFactoryAddress: "0x563993D2c56628cfBBdec3FC3B3fb94744BbA9A6",
         claimsSubgraphUrl:
-          "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-taiko-tn/0.0.1/gn",
+          "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-taiko-tn/prod/gn",
         nativeToken: "",
         usdcAddress: "0xf0380c236Eb7C3Fc51a9b46706D27bA738B0BE7f",
         airdropContractAddress: "",
@@ -608,8 +608,14 @@ export const mantaMainnet = {
     default: { http: ["https://pacific-rpc.manta.network/http"] },
   },
   blockExplorers: {
-    etherscan: { name: "Subscan", url: "https://manta.subscan.io/" },
-    default: { name: "Subscan", url: "https://manta.subscan.io/" },
+    etherscan: {
+      name: "Manta Pacific Explorer",
+      url: "https://pacific-explorer.manta.network/",
+    },
+    default: {
+      name: "Manta Pacific Explorer",
+      url: "https://pacific-explorer.manta.network/",
+    },
   },
 };
 

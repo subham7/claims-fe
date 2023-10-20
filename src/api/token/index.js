@@ -1,4 +1,7 @@
+import axios from "axios";
 import { COVALENT_API } from "../index";
+
+const MANTA_API_URL = process.env.NEXT_PUBLIC_MANTA_API_URL;
 
 export const getTokensList = async (networkName, walletAddress) => {
   try {
@@ -13,6 +16,16 @@ export const getTokensList = async (networkName, walletAddress) => {
     );
     const data = await res.json();
     return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getTokensListOfManta = async (walletAddress) => {
+  try {
+    return await axios.get(
+      `${MANTA_API_URL}?module=account&action=tokenlist&address=${walletAddress}`,
+    );
   } catch (error) {
     console.log(error);
   }
