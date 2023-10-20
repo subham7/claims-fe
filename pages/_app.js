@@ -76,6 +76,9 @@ function MyApp({ Component, pageProps }) {
             59144: "/assets/icons/linea-mainnet.webp",
             8453: "/assets/icons/base-mainnet.png",
             5000: "/assets/icons/mantle-mainnet.png",
+            169: "/assets/icons/manta.png",
+            534352: "/assets/icons/scroll.jpeg",
+            167007: "/assets/icons/taiko.jpeg",
           }}
           themeMode="light"
           themeVariables={{
