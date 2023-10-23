@@ -276,9 +276,13 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   ]);
 
   const shareOnLensterHandler = () => {
-    const lensterUrl = `https://lenster.xyz/?text=${`New proposal created`}&url=${
-      window.location.origin
-    }/proposals/${daoAddress}/${pid}&hashtags=lens,web3,stationX`;
+    const lensterUrl = `https://lenster.xyz/?text=${`
+Lads, a new proposal has been added 🥳%0A%0A
+Community vote is now LIVE in the ${clubData?.name} station.%0A%0A
+Cast your vote before ${new Date(
+      proposalData?.votingDuration,
+    ).toLocaleDateString()} here: 
+`}&url=${window.location.origin}/proposals/${daoAddress}/${pid}`;
 
     window.open(lensterUrl, "_blank");
   };
