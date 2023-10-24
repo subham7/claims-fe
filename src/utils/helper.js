@@ -205,9 +205,9 @@ export const getUserTokenData = async (
   return filteredData?.map((token) => {
     return {
       balance: token.balance,
-      address: token.contract_address,
-      decimals: token.contract_decimals,
-      symbol: token.contract_ticker_symbol,
+      address: token.contract_address || token.contractAddress,
+      decimals: token.contract_decimals || token.decimals,
+      symbol: token.contract_ticker_symbol || token.symbol,
     };
   });
 };

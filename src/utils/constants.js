@@ -217,6 +217,72 @@ export const CHAIN_CONFIG = process.env.NEXT_IS_DEV
         blockExplorerUrl: "https://gnosisscan.io/",
         disburseContractAddress: "",
       },
+      "0x82750": {
+        chainName: "Scroll",
+        shortName: "Scroll",
+        chainId: 534352,
+        nativeCurrency: {
+          name: "ETH",
+          decimals: 18,
+          symbol: "ETH",
+        },
+        rpcUrls: ["https://rpc.scroll.io"],
+        appRpcUrl: `https://scroll.blockpi.network/v1/rpc/public	`,
+        stationSubgraphUrl: "",
+        covalentNetworkName: "scroll-mainnet",
+        claimFactoryAddress: "0x563993D2c56628cfBBdec3FC3B3fb94744BbA9A6",
+        claimsSubgraphUrl:
+          "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-scroll/prod/gn",
+        nativeToken: "",
+        usdcAddress: "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
+        airdropContractAddress: "",
+        blockExplorerUrl: "https://blockscout.scroll.io/",
+        disburseContractAddress: "0x3DA9Fb55Ab77b10F99C1C1f52C150280dbd5a611",
+      },
+      "0xa9": {
+        chainName: "Manta",
+        shortName: "Manta",
+        chainId: 169,
+        nativeCurrency: {
+          name: "ETH",
+          decimals: 18,
+          symbol: "ETH",
+        },
+        rpcUrls: ["https://pacific-rpc.manta.network/http"],
+        appRpcUrl: `https://pacific-rpc.manta.network/http`,
+        stationSubgraphUrl: "",
+        covalentNetworkName: "manta-mainnet",
+        claimFactoryAddress: "0x50702Fd9086BAbDB0A3A576bFe22D4dD47b09937",
+        claimsSubgraphUrl:
+          "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-manta/prod/gn",
+        nativeToken: "",
+        usdcAddress: "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
+        airdropContractAddress: "",
+        blockExplorerUrl: "https://manta.subscan.io/",
+        disburseContractAddress: "0x3DA9Fb55Ab77b10F99C1C1f52C150280dbd5a611",
+      },
+      "0x28c5f": {
+        chainName: "Taiko",
+        shortName: "Taiko",
+        chainId: 167007,
+        nativeCurrency: {
+          name: "ETH",
+          decimals: 18,
+          symbol: "ETH",
+        },
+        rpcUrls: ["https://rpc.jolnir.taiko.xyz	"],
+        appRpcUrl: `https://rpc.jolnir.taiko.xyz`,
+        stationSubgraphUrl: "",
+        covalentNetworkName: "taiko-jolnir-testnet",
+        claimFactoryAddress: "0x563993D2c56628cfBBdec3FC3B3fb94744BbA9A6",
+        claimsSubgraphUrl:
+          "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-taiko-tn/prod/gn",
+        nativeToken: "",
+        usdcAddress: "0xf0380c236Eb7C3Fc51a9b46706D27bA738B0BE7f",
+        airdropContractAddress: "",
+        blockExplorerUrl: "https://explorer.jolnir.taiko.xyz/",
+        disburseContractAddress: "0x3DA9Fb55Ab77b10F99C1C1f52C150280dbd5a611",
+      },
     }
   : {
       "0x89": {
@@ -410,6 +476,72 @@ export const CHAIN_CONFIG = process.env.NEXT_IS_DEV
         blockExplorerUrl: "https://gnosisscan.io/",
         disburseContractAddress: "",
       },
+      "0x82750": {
+        chainName: "Scroll",
+        shortName: "Scroll",
+        chainId: 534352,
+        nativeCurrency: {
+          name: "ETH",
+          decimals: 18,
+          symbol: "ETH",
+        },
+        rpcUrls: ["https://rpc.scroll.io"],
+        appRpcUrl: `https://scroll.blockpi.network/v1/rpc/public	`,
+        stationSubgraphUrl: "",
+        covalentNetworkName: "scroll-mainnet",
+        claimFactoryAddress: "0x563993D2c56628cfBBdec3FC3B3fb94744BbA9A6",
+        claimsSubgraphUrl:
+          "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-scroll/prod/gn",
+        nativeToken: "",
+        usdcAddress: "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
+        airdropContractAddress: "",
+        blockExplorerUrl: "https://blockscout.scroll.io/",
+        disburseContractAddress: "0x3DA9Fb55Ab77b10F99C1C1f52C150280dbd5a611",
+      },
+      "0xa9": {
+        chainName: "Manta",
+        shortName: "Manta",
+        chainId: 169,
+        nativeCurrency: {
+          name: "ETH",
+          decimals: 18,
+          symbol: "ETH",
+        },
+        rpcUrls: ["https://pacific-rpc.manta.network/http"],
+        appRpcUrl: `https://pacific-rpc.manta.network/http`,
+        stationSubgraphUrl: "",
+        covalentNetworkName: "manta-mainnet",
+        claimFactoryAddress: "0x50702Fd9086BAbDB0A3A576bFe22D4dD47b09937",
+        claimsSubgraphUrl:
+          "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-manta/prod/gn",
+        nativeToken: "",
+        usdcAddress: "0xb73603C5d87fA094B7314C74ACE2e64D165016fb",
+        airdropContractAddress: "",
+        blockExplorerUrl: "https://pacific-explorer.manta.network/",
+        disburseContractAddress: "0x3DA9Fb55Ab77b10F99C1C1f52C150280dbd5a611",
+      },
+      "0x28c5f": {
+        chainName: "Taiko",
+        shortName: "Taiko",
+        chainId: 167007,
+        nativeCurrency: {
+          name: "ETH",
+          decimals: 18,
+          symbol: "ETH",
+        },
+        rpcUrls: ["https://rpc.jolnir.taiko.xyz	"],
+        appRpcUrl: `https://rpc.jolnir.taiko.xyz`,
+        stationSubgraphUrl: "",
+        covalentNetworkName: "taiko-jolnir-testnet",
+        claimFactoryAddress: "0x563993D2c56628cfBBdec3FC3B3fb94744BbA9A6",
+        claimsSubgraphUrl:
+          "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-taiko-tn/prod/gn",
+        nativeToken: "",
+        usdcAddress: "0xf0380c236Eb7C3Fc51a9b46706D27bA738B0BE7f",
+        airdropContractAddress: "",
+        blockExplorerUrl: "https://explorer.jolnir.taiko.xyz/",
+        disburseContractAddress: "0x3DA9Fb55Ab77b10F99C1C1f52C150280dbd5a611",
+      },
     };
 
 export const lineaMainnetWalletConnect = {
@@ -433,6 +565,56 @@ export const lineaMainnetWalletConnect = {
     multicall3: {
       address: "0xcA11bde05977b3631167028862bE2a173976CA11",
       blockCreated: 42,
+    },
+  },
+};
+
+export const scrollMainnet = {
+  id: 534352,
+  name: "Scroll",
+  network: "Scroll",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ether ",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    public: { http: ["https://rpc.scroll.io"] },
+    default: { http: ["https://scroll.blockpi.network/v1/rpc/public"] },
+  },
+  blockExplorers: {
+    etherscan: { name: "BlockScout", url: "https://blockscout.scroll.io/" },
+    default: { name: "BlockScout", url: "https://blockscout.scroll.io/" },
+  },
+  contracts: {
+    multicall3: {
+      address: "0xcA11bde05977b3631167028862bE2a173976CA11",
+      blockCreated: 14,
+    },
+  },
+};
+
+export const mantaMainnet = {
+  id: 169,
+  name: "Manta",
+  network: "Manta",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ether ",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    public: { http: ["https://pacific-rpc.manta.network/http"] },
+    default: { http: ["https://pacific-rpc.manta.network/http"] },
+  },
+  blockExplorers: {
+    etherscan: {
+      name: "Manta Pacific Explorer",
+      url: "https://pacific-explorer.manta.network/",
+    },
+    default: {
+      name: "Manta Pacific Explorer",
+      url: "https://pacific-explorer.manta.network/",
     },
   },
 };

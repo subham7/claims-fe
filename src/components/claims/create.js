@@ -13,7 +13,7 @@ import {
   claimStep2ValidationSchema,
 } from "../createClubComps/ValidationSchemas";
 import { useAccount, useNetwork } from "wagmi";
-import { getTokensList } from "api/token";
+import { getTokensList, getTokensListOfManta } from "api/token";
 import { getUserTokenData } from "utils/helper";
 import { CHAIN_CONFIG, ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
@@ -59,21 +59,48 @@ const CreateClaim = () => {
     setActiveStep((prevStep) => prevStep + 1);
   };
 
+  const fetchTokens = async (networkId, walletAddress) => {
+    try {
+      if (networkId === "0xa9") {
+        const tokensList = await getTokensListOfManta(walletAddress);
+        return tokensList?.data?.result;
+      }
+
+      const covalentNetworkName = CHAIN_CONFIG[networkId]?.covalentNetworkName;
+      if (!covalentNetworkName) {
+        throw new Error("Unsupported network ID");
+      }
+
+      const tokensList = await getTokensList(
+        covalentNetworkName,
+        walletAddress,
+      );
+      return tokensList?.data?.items;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const getCurrentAccount = async () => {
     try {
       setLoadingTokens(true);
+
       if (networkId && walletAddress) {
-        const tokensList = await getTokensList(
-          CHAIN_CONFIG[networkId].covalentNetworkName,
-          walletAddress,
+        const tokenItems = await fetchTokens(networkId, walletAddress);
+
+        const useMantaConfig = networkId === "0xa9";
+        const data = await getUserTokenData(
+          tokenItems,
+          networkId,
+          useMantaConfig,
         );
 
-        const data = await getUserTokenData(tokensList?.data?.items, networkId);
         setTokensInWallet(data?.filter((token) => token.symbol !== null));
-        setLoadingTokens(false);
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoadingTokens(false);
     }
   };
 
