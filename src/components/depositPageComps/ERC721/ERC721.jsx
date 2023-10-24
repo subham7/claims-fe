@@ -32,6 +32,7 @@ const ERC721 = ({
   networkId,
   gatedTokenDetails,
   depositConfig,
+  isSignable,
 }) => {
   const [tokenDetails, setTokenDetails] = useState({
     tokenDecimal: 6,
@@ -258,6 +259,7 @@ const ERC721 = ({
             whitelistUserData: whitelistUserData,
             isSigned: isSigned,
             isW8BenSigned: isW8BenSigned,
+            isSignable: isSignable,
           }}
         />
       }
