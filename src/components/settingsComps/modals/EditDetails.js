@@ -139,6 +139,7 @@ const EditDetails = ({
           telegram: values.telegram,
           website: values.website,
         },
+        tweetText: values.tweetText,
       });
     } else {
       return await editInfo({
@@ -176,6 +177,7 @@ const EditDetails = ({
       discord: "",
       telegram: "",
       website: "",
+      tweetText: "",
     },
     onSubmit: async (values) => {
       setLoaderOpen(true);
@@ -205,6 +207,7 @@ const EditDetails = ({
       twitter: "",
       discord: "",
       telegram: "",
+      tweetText: "",
     };
 
     if (isClaims) {
@@ -213,6 +216,7 @@ const EditDetails = ({
         twitter: bannerData?.socialLinks?.twitter ?? "",
         discord: bannerData?.socialLinks?.discord ?? "",
         telegram: bannerData?.socialLinks?.telegram ?? "",
+        tweetText: bannerData?.tweetText ?? "",
       });
     } else {
       formik.setValues({
@@ -374,6 +378,31 @@ const EditDetails = ({
                 helperText={formik.touched.telegram && formik.errors.telegram}
               />
             </Grid>
+
+            {isClaims ? (
+              <Grid item md={6} mb={2}>
+                <Typography className={classes.wrapTextIcon}>
+                  Twitter Text
+                </Typography>
+                <TextField
+                  name="tweetText"
+                  id="tweetText"
+                  placeholder="Text"
+                  variant="outlined"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.tweetText}
+                  error={
+                    formik.touched.tweetText && Boolean(formik.errors.tweetText)
+                  }
+                  helperText={
+                    formik.touched.tweetText && formik.errors.tweetText
+                  }
+                  multiline
+                  inputProps={{ maxLength: 280 }}
+                />
+              </Grid>
+            ) : null}
 
             {/* Submit Button */}
             <Grid container mt={2} spacing={3}>

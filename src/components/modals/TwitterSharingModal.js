@@ -59,9 +59,7 @@ const useStyles = makeStyles({
 const TwitterSharingModal = ({
   onClose,
   message,
-  claimAddress,
-  tokenSymbol,
-  description,
+  tweetText = "I just claimed a drop on @stationxnetwork. Yayyy!",
 }) => {
   const classes = useStyles();
 
@@ -77,7 +75,7 @@ const TwitterSharingModal = ({
             className={classes.shareBtns}
             onClick={() => {
               window.open(
-                `https://twitter.com/intent/tweet?text=Mission%20accomplished!%20I%27ve%20successfully%20become%20an%20ARBonaut%20by%20claiming%20%24${tokenSymbol}%20from%20this%20drop%20on%20Arbitrum%20using%20@stationxnetwork%0A%20%20%20%20%20%20%20%20%20%20${window.location.origin}%2Fclaim%2F${claimAddress}%2F0xa4b1%0A%0AWTF%20is%20an%20ARBonaut%3A%20https%3A%2F%2Ftinyurl.com%2Fbdd7b8kc`,
+                `https://twitter.com/intent/tweet?text=${tweetText}`,
                 "_blank",
               );
             }}>
