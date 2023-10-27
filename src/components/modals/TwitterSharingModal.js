@@ -75,7 +75,9 @@ const TwitterSharingModal = ({
             className={classes.shareBtns}
             onClick={() => {
               window.open(
-                `https://twitter.com/intent/tweet?text=${tweetText}`,
+                `https://twitter.com/intent/tweet?text=${tweetText
+                  .replaceAll("#", "%23")
+                  .replaceAll(";", "%0A")}`,
                 "_blank",
               );
             }}>

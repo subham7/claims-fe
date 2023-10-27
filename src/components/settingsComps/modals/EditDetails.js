@@ -66,6 +66,10 @@ const useStyles = makeStyles({
     width: "100%",
     height: "100%",
   },
+  subtext: {
+    color: "#707070",
+    fontSize: "14px",
+  },
 });
 
 const EditDetails = ({
@@ -258,7 +262,7 @@ const EditDetails = ({
           <form className={classes.form}>
             {isClaims ? (
               <Grid item md={6} mb={2}>
-                <Typography className={classes.wrapTextIcon}>
+                <Typography variant="inherit" className={classes.wrapTextIcon}>
                   Upload Banner{" "}
                 </Typography>
                 <span className={classes.smallText}>
@@ -305,7 +309,9 @@ const EditDetails = ({
             ) : null}
 
             <Grid item md={6} mb={2}>
-              <Typography className={classes.wrapTextIcon}>Add Bio</Typography>
+              <Typography variant="inherit" className={classes.wrapTextIcon}>
+                Add Bio
+              </Typography>
               <QuillEditor
                 multiline
                 rows={10}
@@ -333,7 +339,9 @@ const EditDetails = ({
             </Grid>
 
             <Grid item md={6} mb={2}>
-              <Typography className={classes.wrapTextIcon}>Twitter</Typography>
+              <Typography variant="inherit" className={classes.wrapTextIcon}>
+                Twitter
+              </Typography>
               <TextField
                 name="twitter"
                 id="twitter"
@@ -348,7 +356,9 @@ const EditDetails = ({
             </Grid>
 
             <Grid item md={6} mb={2}>
-              <Typography className={classes.wrapTextIcon}>Discord</Typography>
+              <Typography variant="inherit" className={classes.wrapTextIcon}>
+                Discord
+              </Typography>
               <TextField
                 name="discord"
                 id="discord"
@@ -363,7 +373,9 @@ const EditDetails = ({
             </Grid>
 
             <Grid item md={6} mb={2}>
-              <Typography className={classes.wrapTextIcon}>Telegram</Typography>
+              <Typography variant="inherit" className={classes.wrapTextIcon}>
+                Telegram
+              </Typography>
               <TextField
                 name="telegram"
                 id="telegram"
@@ -381,8 +393,12 @@ const EditDetails = ({
 
             {isClaims ? (
               <Grid item md={6} mb={2}>
-                <Typography className={classes.wrapTextIcon}>
+                <Typography variant="inherit" className={classes.wrapTextIcon}>
                   Twitter Text
+                </Typography>
+
+                <Typography variant="inherit" className={classes.subtext}>
+                  Use this &quot;;&quot; without spaces for a new line.
                 </Typography>
                 <TextField
                   name="tweetText"
