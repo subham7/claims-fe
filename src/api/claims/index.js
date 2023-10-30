@@ -79,6 +79,7 @@ export const createClaimDetails = async ({
   socialLinks,
   imageLinks,
   networkId,
+  tweetText,
 }) => {
   try {
     const res = await fetch(`${MAIN_API_URL}claim`, {
@@ -89,6 +90,7 @@ export const createClaimDetails = async ({
         socialLinks,
         imageLinks,
         networkId,
+        tweetText,
       }),
       headers: {
         "Content-Type": "application/json",
