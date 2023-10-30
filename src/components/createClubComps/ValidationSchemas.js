@@ -133,6 +133,7 @@ export const getProposalValidationSchema = ({
   walletAddress,
   daoAddress,
   getERC20TotalSupply,
+  getNftOwnersCount,
   tokenType,
 }) => {
   return yup.object({
@@ -186,40 +187,41 @@ export const getProposalValidationSchema = ({
         "invalidMintGTAmount",
         "Enter an amount less or equal to total supply",
         async (value, context) => {
-          const { actionCommand } = context.parent;
-          if (actionCommand === 1) {
-            try {
-              const { distributionAmount } = factoryData;
-              let clubTokensMinted;
-              let totalAmount;
-              if (tokenType === "erc20") {
-                clubTokensMinted = await getERC20TotalSupply();
-                totalAmount = value.reduce(
-                  (partialSum, a) => partialSum + Number(a),
-                  0,
-                );
-              }
-              if (tokenType === "erc721" && distributionAmount === 0) {
-                return true;
-              } else if (
-                Number(totalAmount) <=
-                  Number(
-                    convertFromWeiGovernance(
-                      distributionAmount - clubTokensMinted,
-                      18,
-                    ),
-                  ) &&
-                Number(totalAmount) > 0
-              ) {
-                return true;
-              } else return false;
-            } catch (error) {
-              return false;
+          if (context.parent.actionCommand !== 1) return true;
+
+          try {
+            const { distributionAmount } = factoryData;
+
+            const totalAmount = value.reduce(
+              (partialSum, a) => partialSum + Number(a),
+              0,
+            );
+
+            if (totalAmount <= 0) return false;
+
+            let availableAmount;
+            if (tokenType === "erc20") {
+              const clubTokensMinted = await getERC20TotalSupply();
+              availableAmount = convertFromWeiGovernance(
+                distributionAmount - clubTokensMinted,
+                18,
+              );
+            } else if (tokenType === "erc721") {
+              if (distributionAmount === 0) return true;
+
+              const clubTokensMinted = await getNftOwnersCount();
+              availableAmount = distributionAmount - clubTokensMinted;
+            } else {
+              return true;
             }
+
+            return Number(totalAmount) <= Number(availableAmount);
+          } catch (error) {
+            return false;
           }
-          return true;
         },
       ),
+
     quorum: yup.number("Enter Quorum in percentage").when("actionCommand", {
       is: 2,
       then: () =>
