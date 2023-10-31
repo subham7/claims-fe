@@ -75,6 +75,7 @@ const CreateClaim = () => {
         covalentNetworkName,
         walletAddress,
       );
+
       return tokensList?.data?.items;
     } catch (error) {
       console.log(error);
@@ -95,7 +96,11 @@ const CreateClaim = () => {
           useMantaConfig,
         );
 
-        setTokensInWallet(data?.filter((token) => token.symbol !== null));
+        setTokensInWallet(
+          data?.filter(
+            (token) => token.symbol !== null && token.symbol !== undefined,
+          ),
+        );
       }
     } catch (error) {
       console.log(error);
