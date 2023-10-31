@@ -34,6 +34,7 @@ export const supportedChainsDrops = [
   "0x64",
   "0x82750",
   "0xa9",
+  "0x28c5f",
 ];
 
 export const CHAIN_CONFIG = process.env.NEXT_IS_DEV
