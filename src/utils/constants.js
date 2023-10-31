@@ -24,6 +24,18 @@ export const OMIT_DAOS = [
   "0x1ae43fb8283e45ae90d5bd9249cc7227fd6ecc73",
 ];
 
+export const supportedChainsDrops = [
+  "0x89",
+  "0x2105",
+  "0xa4b1",
+  "0xe708",
+  "0x38",
+  "0x1388",
+  "0x64",
+  "0x82750",
+  "0xa9",
+];
+
 export const CHAIN_CONFIG = process.env.NEXT_IS_DEV
   ? {
       "0x89": {

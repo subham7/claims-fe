@@ -8,6 +8,7 @@ import {
   BLOCK_TIMEOUT,
   CHAIN_CONFIG,
   contractNetworks,
+  supportedChainsDrops,
 } from "./constants";
 import { getPublicClient, getWalletClient } from "utils/viemConfig";
 import { uploadToAWS } from "api/club";
@@ -122,10 +123,11 @@ export function returnRemainingTime(epochTime) {
 
 export const showWrongNetworkModal = (networkId, routeNetworkId) => {
   if (
-    routeNetworkId &&
-    routeNetworkId !== networkId &&
-    routeNetworkId !== "create" &&
-    routeNetworkId !== "disburse"
+    (routeNetworkId &&
+      routeNetworkId !== networkId &&
+      routeNetworkId !== "create" &&
+      routeNetworkId !== "disburse") ||
+    !supportedChainsDrops.includes(networkId)
   ) {
     return <WrongNetworkModal chainId={routeNetworkId} />;
   }
