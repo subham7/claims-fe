@@ -215,7 +215,8 @@ const App = () => {
   };
 
   const showStationsHandler = () => {
-    setManageStation(true);
+    // setManageStation(true);
+    window.open("https://tally.so/r/nG64GQ", "_blank");
   };
 
   const claimsHandler = () => {
@@ -239,7 +240,7 @@ const App = () => {
                 subtitle={
                   "Creating a Station is the easiest way to start managing money/assets towards shared goals"
                 }
-                buttonText="Enter App"
+                buttonText="Join Waitlist"
               />
               <NewCard
                 onClick={claimsHandler}

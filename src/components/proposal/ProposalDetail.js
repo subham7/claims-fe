@@ -275,6 +275,18 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     walletAddress,
   ]);
 
+  const shareOnLensterHandler = () => {
+    const lensterUrl = `https://lenster.xyz/?text=${`
+Lads, a new proposal has been added 🥳%0A%0A
+Community vote is now LIVE in the ${clubData?.name} station.%0A%0A
+Cast your vote before ${new Date(
+      proposalData?.votingDuration,
+    ).toLocaleDateString()} here: 
+`}&url=${window.location.origin}/proposals/${daoAddress}/${pid}`;
+
+    window.open(lensterUrl, "_blank");
+  };
+
   const checkUserVoted = () => {
     if (walletAddress) {
       let obj = proposalData.vote.find(
@@ -677,6 +689,20 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                     label={
                       proposalData?.status?.charAt(0).toUpperCase() +
                       proposalData?.status?.slice(1)
+                    }
+                  />
+                </Grid>
+                <Grid onClick={shareOnLensterHandler} item>
+                  <Chip
+                    className={classes.shareOnLens}
+                    label={"Share on Lens"}
+                    icon={
+                      <Image
+                        src="/assets/icons/lenster-comp.jpeg"
+                        alt="Share on Lenster"
+                        height={25}
+                        width={25}
+                      />
                     }
                   />
                 </Grid>
