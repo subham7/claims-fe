@@ -23,7 +23,7 @@ import {
   queryStationDataFromSubgraph,
   queryStationListFromSubgraph,
 } from "utils/stationsSubgraphHelper";
-import { isMainLink, shortAddress } from "utils/helper";
+import { shortAddress } from "utils/helper";
 import { OMIT_DAOS } from "utils/constants";
 
 const useStyles = makeStyles({
@@ -129,9 +129,12 @@ const App = () => {
   const [manageStation, setManageStation] = useState(false);
 
   const [open, setOpen] = useState(false);
-  const router = useRouter();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
+
+  const router = useRouter();
+
+  const isMainLink = window.location.origin.includes("app");
 
   useEffect(() => {
     try {
@@ -215,7 +218,7 @@ const App = () => {
   };
 
   const showStationsHandler = () => {
-    if (isMainLink()) {
+    if (isMainLink) {
       window.open("https://tally.so/r/nG64GQ", "_blank");
     } else {
       setManageStation(true);
@@ -243,7 +246,7 @@ const App = () => {
                 subtitle={
                   "Creating a Station is the easiest way to start managing money/assets towards shared goals"
                 }
-                buttonText={isMainLink() ? "Join Waitlist" : "Enter App"}
+                buttonText={isMainLink ? "Join Waitlist" : "Enter App"}
               />
               <NewCard
                 onClick={claimsHandler}
