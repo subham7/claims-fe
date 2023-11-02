@@ -379,3 +379,7 @@ export const processAmount = (amount) => {
   }
   return amount;
 };
+
+export const isMainLink = () => {
+  return window.location.origin.includes("app");
+};

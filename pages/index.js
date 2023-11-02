@@ -23,7 +23,7 @@ import {
   queryStationDataFromSubgraph,
   queryStationListFromSubgraph,
 } from "utils/stationsSubgraphHelper";
-import { shortAddress } from "utils/helper";
+import { isMainLink, shortAddress } from "utils/helper";
 import { OMIT_DAOS } from "utils/constants";
 
 const useStyles = makeStyles({
@@ -215,8 +215,11 @@ const App = () => {
   };
 
   const showStationsHandler = () => {
-    // setManageStation(true);
-    window.open("https://tally.so/r/nG64GQ", "_blank");
+    if (isMainLink()) {
+      window.open("https://tally.so/r/nG64GQ", "_blank");
+    } else {
+      setManageStation(true);
+    }
   };
 
   const claimsHandler = () => {
@@ -240,7 +243,7 @@ const App = () => {
                 subtitle={
                   "Creating a Station is the easiest way to start managing money/assets towards shared goals"
                 }
-                buttonText="Join Waitlist"
+                buttonText={isMainLink() ? "Join Waitlist" : "Enter App"}
               />
               <NewCard
                 onClick={claimsHandler}
