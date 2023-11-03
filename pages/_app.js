@@ -21,7 +21,8 @@ import {
   bsc,
   mantle,
   gnosis,
-  // taikoJolnir,
+  taikoJolnir,
+  mainnet,
 } from "wagmi/chains";
 import {
   lineaMainnetWalletConnect,
@@ -37,6 +38,7 @@ export const apolloClient = new ApolloClient({
 });
 
 const chains = [
+  mainnet,
   polygon,
   base,
   arbitrum,
@@ -44,7 +46,7 @@ const chains = [
   mantle,
   lineaMainnetWalletConnect,
   gnosis,
-  // taikoJolnir,
+  taikoJolnir,
   scrollMainnet,
   mantaMainnet,
 ];
