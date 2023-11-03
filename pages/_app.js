@@ -21,7 +21,7 @@ import {
   bsc,
   mantle,
   gnosis,
-  taikoJolnir,
+  // taikoJolnir,
   mainnet,
 } from "wagmi/chains";
 import {
@@ -46,7 +46,7 @@ const chains = [
   mantle,
   lineaMainnetWalletConnect,
   gnosis,
-  taikoJolnir,
+  // taikoJolnir,
   scrollMainnet,
   mantaMainnet,
 ];
