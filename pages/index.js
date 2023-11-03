@@ -129,9 +129,16 @@ const App = () => {
   const [manageStation, setManageStation] = useState(false);
 
   const [open, setOpen] = useState(false);
-  const router = useRouter();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
+
+  const router = useRouter();
+
+  let isMainLink = false;
+
+  useEffect(() => {
+    isMainLink = window.location.origin.includes("app");
+  });
 
   useEffect(() => {
     try {
@@ -215,7 +222,11 @@ const App = () => {
   };
 
   const showStationsHandler = () => {
-    setManageStation(true);
+    if (isMainLink) {
+      window.open("https://tally.so/r/nG64GQ", "_blank");
+    } else {
+      setManageStation(true);
+    }
   };
 
   const claimsHandler = () => {
@@ -239,7 +250,7 @@ const App = () => {
                 subtitle={
                   "Creating a Station is the easiest way to start managing money/assets towards shared goals"
                 }
-                buttonText="Enter App"
+                buttonText={isMainLink ? "Join Waitlist" : "Enter App"}
               />
               <NewCard
                 onClick={claimsHandler}
