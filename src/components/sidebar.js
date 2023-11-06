@@ -62,7 +62,7 @@ const BootstrapTooltip = styled(({ className, ...props }) => (
   },
 }));
 
-const drawerWidth = 100;
+const drawerWidth = 80;
 
 const Sidebar = (props) => {
   const classes = useStyles();

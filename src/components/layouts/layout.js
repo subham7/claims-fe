@@ -12,7 +12,7 @@ const drawerWidth = 50;
 
 const useStyles = makeStyles({
   container: {
-    padding: "12px 32px 0px 40px",
+    padding: "12px 10px 0px 10px",
     marginTop: "80px",
   },
 });

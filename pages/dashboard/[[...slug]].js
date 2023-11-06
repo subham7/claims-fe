@@ -1,7 +1,7 @@
 import React from "react";
-import DashboardIndex from "../../src/components/dashboardComps/DashboardIndex";
 import { useRouter } from "next/router";
 import Layout from "@components/layouts/layout";
+import Dashboard from "@components/dashboardComps/Dashboard";
 
 const DashboardPage = () => {
   const router = useRouter();
@@ -14,7 +14,7 @@ const DashboardPage = () => {
 
   return (
     <Layout daoAddress={daoAddress} networkId={networkId} page={1}>
-      <DashboardIndex daoAddress={daoAddress} />
+      <Dashboard daoAddress={daoAddress} />
     </Layout>
   );
 };
