@@ -125,7 +125,7 @@ const App = () => {
   const { address: walletAddress } = useAccount();
   const [clubListData, setClubListData] = useState([]);
   const [showVideoModal, setShowVideoModal] = useState(false);
-  const [isMainLink, setIsMainLink] = useState(true);
+  const [isMainLink, setIsMainLink] = useState(false);
 
   const [manageStation, setManageStation] = useState(false);
 
