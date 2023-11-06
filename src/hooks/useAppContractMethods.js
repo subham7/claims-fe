@@ -346,6 +346,7 @@ const useAppContractMethods = () => {
     merkleRoot,
   }) => {
     try {
+      debugger;
       const res = await writeContractFunction({
         address: FACTORY_CONTRACT_ADDRESS,
         abi: factoryContractABI,

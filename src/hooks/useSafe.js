@@ -10,7 +10,7 @@ import { createStation } from "../api/club";
 import useAppContractMethods from "./useAppContractMethods";
 import { ZERO_ADDRESS } from "utils/constants";
 import { uploadNFT } from "api/assets";
-import { uploadFileToAWS } from "utils/helper";
+import { handleSignMessage, uploadFileToAWS } from "utils/helper";
 
 const useSafe = () => {
   const { createERC721DAO, createERC20DAO } = useAppContractMethods();
@@ -49,6 +49,34 @@ const useSafe = () => {
           addressList,
         });
       }
+      console.log(value);
+
+      daoAddress =
+        params.treasuryAddress === ZERO_ADDRESS
+          ? value.logs[2].address
+          : value.logs[0].address;
+
+      const payload = {
+        depositConfig: {
+          subscriptionDocId: null,
+          enableKyc: false,
+          uploadDocId: null,
+        },
+        name: params.clubName,
+        daoAddress: daoAddress?.toLowerCase(),
+        votingStrategy: "onePersonOneVote",
+        safeAddress:
+          params.treasuryAddress === ZERO_ADDRESS
+            ? value.logs[0].address
+            : params.treasuryAddress,
+        networkId,
+        tokenType: clubTokenType === "NFT" ? "erc721" : "erc20NonTransferable",
+      };
+
+      const { signature } = await handleSignMessage(
+        addressList[0],
+        JSON.stringify(payload),
+      );
 
       try {
         dispatch(
@@ -65,27 +93,7 @@ const useSafe = () => {
           }),
         );
 
-        daoAddress =
-          params.treasuryAddress === ZERO_ADDRESS
-            ? value.logs[2].address
-            : value.logs[0].address;
-
-        await createStation({
-          depositConfig: {
-            subscriptionDocId: null,
-            enableKyc: false,
-            uploadDocId: null,
-          },
-          name: params.clubName,
-          daoAddress: daoAddress?.toLowerCase(),
-          safeAddress:
-            params.treasuryAddress === ZERO_ADDRESS
-              ? value.logs[0].address
-              : params.treasuryAddress,
-          networkId,
-          tokenType:
-            clubTokenType === "NFT" ? "erc721" : "erc20NonTransferable",
-        });
+        await createStation({ ...payload, signature });
 
         if (clubTokenType === "NFT") {
           const imageLink = await uploadFileToAWS(imageFile);

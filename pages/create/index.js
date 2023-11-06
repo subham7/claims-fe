@@ -109,10 +109,10 @@ const Create = () => {
   const formikERC20Step2 = useFormik({
     initialValues: {
       depositClose: dayjs(Date.now() + 3600 * 1000 * 24),
-      minDepositPerUser: "",
-      maxDepositPerUser: "",
-      totalRaiseAmount: "",
-      pricePerToken: "",
+      minDepositPerUser: "0.01",
+      maxDepositPerUser: "0.1",
+      totalRaiseAmount: "10",
+      pricePerToken: "0.001",
     },
     validationSchema: ERC20Step2ValidationSchema,
     onSubmit: (values) => {
