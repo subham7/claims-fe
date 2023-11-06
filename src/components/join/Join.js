@@ -27,6 +27,7 @@ const Join = ({ daoAddress }) => {
   const [remainingClaimAmount, setRemainingClaimAmount] = useState();
   const [whitelistUserData, setWhitelistUserData] = useState();
   const [depositConfig, setDepositConfig] = useState({});
+  const [isSignable, setIsSignable] = useState(false);
 
   const [gatedTokenDetails, setGatedTokenDetails] = useState({
     tokenASymbol: "",
@@ -189,6 +190,13 @@ const Join = ({ daoAddress }) => {
   const getDepositPreRequisites = async (daoAddress) => {
     const res = await fetchClubByDaoAddress(daoAddress?.toLowerCase());
     setDepositConfig(res?.data?.depositConfig);
+    setIsSignable(
+      res?.data?.depositConfig &&
+        (res?.data?.depositConfig?.subscriptionDocId !== null ||
+          res?.data?.depositConfig?.uploadDocId !== null)
+        ? true
+        : false,
+    );
   };
 
   useEffect(() => {
@@ -285,6 +293,7 @@ const Join = ({ daoAddress }) => {
           networkId={networkId}
           gatedTokenDetails={gatedTokenDetails}
           depositConfig={depositConfig}
+          isSignable={isSignable}
         />
       ) : TOKEN_TYPE === "erc721" ? (
         <ERC721
@@ -297,6 +306,7 @@ const Join = ({ daoAddress }) => {
           networkId={networkId}
           gatedTokenDetails={gatedTokenDetails}
           depositConfig={depositConfig}
+          isSignable={isSignable}
         />
       ) : null}
 

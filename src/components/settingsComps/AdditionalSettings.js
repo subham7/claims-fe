@@ -126,7 +126,7 @@ const AdditionalSettings = ({
       } else {
         await editDepositConfig(
           { subscriptionDocId: subscriptionId },
-          daoAddress.toLowerCase(),
+          daoAddress?.toLowerCase(),
         );
       }
       setLoading(false);
@@ -163,7 +163,7 @@ const AdditionalSettings = ({
         try {
           await editDepositConfig(
             { subscriptionDocId: null },
-            daoAddress.toLowerCase(),
+            daoAddress?.toLowerCase(),
           );
           setLoading(false);
           showMessageHandler();

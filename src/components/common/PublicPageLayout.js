@@ -77,11 +77,14 @@ const PublicPageLayout = ({
         </div>
 
         {isDeposit ? (
-          <DepositProgress
-            clubData={clubData}
-            tokenDetails={tokenDetails}
-            nftMinted={nftMinted}
-          />
+          clubData?.tokenType === "erc721" &&
+          Number(clubData?.distributionAmount) === 0 ? null : (
+            <DepositProgress
+              clubData={clubData}
+              tokenDetails={tokenDetails}
+              nftMinted={nftMinted}
+            />
+          )
         ) : null}
 
         {bio && <About bio={bio} />}

@@ -41,11 +41,16 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
       text: "Change total raise amount",
       condition: () => tokenType !== "erc721",
     },
-    { key: 4, value: "Send token to an address", text: "Send Token" },
+    {
+      key: 13,
+      value: "Update price per token",
+      text: "Update Price per Token",
+    },
+    { key: 4, value: "Send token to an address", text: "Send ERC20-Token" },
     { key: 5, value: "Send nft to an address", text: "Send NFT" },
+    { key: 8, value: "Buy nft", text: "Buy NFT" },
     { key: 6, value: "Add signer", text: "Add Station Signer" },
     { key: 7, value: "Remove signer", text: "Remove Station signer" },
-    { key: 8, value: "Buy nft", text: "Remove Station signer" },
     { key: 10, value: "Whitelist deposit", text: "Gate Deposit - CSV" },
     {
       key: 11,
@@ -58,9 +63,9 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
       text: "Gate Deposit - Lens Post Comments",
     },
     {
-      key: 13,
-      value: "Update price per token",
-      text: "Update Price per Token",
+      key: 16,
+      value: "Whitelist with lens post's mirror",
+      text: "Gate Deposit - Lens Post Mirror",
     },
     {
       key: 14,
@@ -73,24 +78,19 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
       text: " AAVE Pool - Withdraw",
     },
     {
-      key: 16,
-      value: "Whitelist with lens post's mirror",
-      text: "Gate Deposit - Lens Post Mirror",
-    },
-    {
       key: 17,
       value: "Stake tokens through stargate",
-      text: "Stake tokens through stargate",
+      text: "Stargate - Stake",
     },
     {
       key: 18,
       value: "Unstake tokens through stargate",
-      text: "Unstake tokens through stargate",
+      text: "Stargate - Unstake",
     },
     {
       key: 19,
       value: "Swap tokens through uniswap",
-      text: "Swap tokens through uniswap",
+      text: "Uniswap - Swap",
     },
   ];
 };

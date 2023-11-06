@@ -18,14 +18,17 @@ const Mint = ({
   whitelistUserData,
   isSigned,
   isW8BenSigned,
+  isSignable,
 }) => {
   const isButtonDisabled = () => {
-    if (
-      typeof isSigned !== "undefined" &&
-      typeof isW8BenSigned !== "undefined"
-    ) {
-      if (!isSigned) return true;
-      if (!isW8BenSigned) return true;
+    if (isSignable) {
+      if (
+        typeof isSigned !== "undefined" &&
+        typeof isW8BenSigned !== "undefined"
+      ) {
+        if (!isSigned) return true;
+        if (!isW8BenSigned) return true;
+      }
     }
     if (remainingDays <= 0 && remainingTimeInSecs < 0) return true;
     if (hasClaimed) return true;

@@ -124,9 +124,9 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   const [cancelTxHash, setCancelTxHash] = useState();
   const [signedOwners, setSignedOwners] = useState([]);
 
-  const [openSnackBar, setOpenSnackBar] = useState(false);
   const [message, setMessage] = useState("");
-  const [failed, setFailed] = useState(false);
+  const [isSuccessFullyExecuted, setIsSuccessFullyExecuted] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
   const [fetched, setFetched] = useState(false);
   const [members, setMembers] = useState([]);
   const [isNftSold, setIsNftSold] = useState(false);
@@ -151,6 +151,13 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     useAppContractMethods();
 
   const { getBalance } = useCommonContractMethods();
+
+  const showMessageHandler = () => {
+    setShowMessage(true);
+    setTimeout(() => {
+      setShowMessage(false);
+    }, 4000);
+  };
 
   const getSafeService = useCallback(async () => {
     const web3 = await web3InstanceEthereum();
@@ -267,6 +274,18 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     pid,
     walletAddress,
   ]);
+
+  const shareOnLensterHandler = () => {
+    const lensterUrl = `https://lenster.xyz/?text=${`
+Lads, a new proposal has been added 🥳%0A%0A
+Community vote is now LIVE in the ${clubData?.name} station.%0A%0A
+Cast your vote before ${new Date(
+      proposalData?.votingDuration,
+    ).toLocaleDateString()} here: 
+`}&url=${window.location.origin}/proposals/${daoAddress}/${pid}`;
+
+    window.open(lensterUrl, "_blank");
+  };
 
   const checkUserVoted = () => {
     if (walletAddress) {
@@ -418,16 +437,16 @@ const ProposalDetail = ({ pid, daoAddress }) => {
             updateStatus.then((result) => {
               if (result.status !== 200) {
                 setExecuted(false);
-                setOpenSnackBar(true);
+                showMessageHandler();
+                setIsSuccessFullyExecuted(false);
                 setMessage("execution status update failed!");
-                setFailed(true);
                 setLoaderOpen(false);
               } else {
                 fetchData();
                 setExecuted(true);
-                setOpenSnackBar(true);
+                showMessageHandler();
+                setIsSuccessFullyExecuted(true);
                 setMessage("execution successful!");
-                setFailed(false);
                 setLoaderOpen(false);
               }
             });
@@ -436,9 +455,10 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         (error) => {
           console.error(error);
           setExecuted(false);
-          setOpenSnackBar(true);
+          showMessageHandler();
+          setIsSuccessFullyExecuted(false);
           setMessage("execution failed!");
-          setFailed(true);
+
           setLoaderOpen(false);
         },
       );
@@ -451,9 +471,10 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         .catch((err) => {
           console.error(err);
           setSigned(false);
-          setOpenSnackBar(true);
+          showMessageHandler();
+          setIsSuccessFullyExecuted(false);
           setMessage("Signature failed!");
-          setFailed(true);
+
           setLoaderOpen(false);
         });
     }
@@ -473,15 +494,15 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     if (response) {
       fetchData();
       setIsCancelSigned(true);
-      setOpenSnackBar(true);
+      showMessageHandler();
+      setIsSuccessFullyExecuted(false);
       setMessage("Signature successful!");
-      setFailed(false);
       isOwner();
     } else {
       setIsCancelSigned(false);
-      setOpenSnackBar(true);
+      showMessageHandler();
+      setIsSuccessFullyExecuted(false);
       setMessage("Signature failed!");
-      setFailed(true);
       setLoaderOpen(false);
     }
   };
@@ -500,15 +521,17 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     if (response) {
       fetchData();
       setIsCancelSigned(true);
-      setOpenSnackBar(true);
+      showMessageHandler();
+      setIsSuccessFullyExecuted(false);
       setMessage("Signature successful!");
-      setFailed(false);
+
       isOwner();
     } else {
       setIsCancelSigned(false);
-      setOpenSnackBar(true);
+      showMessageHandler();
+      setIsSuccessFullyExecuted(false);
       setMessage("Signature failed!");
-      setFailed(true);
+
       setLoaderOpen(false);
     }
   };
@@ -529,16 +552,18 @@ const ProposalDetail = ({ pid, daoAddress }) => {
           updateStatus.then((result) => {
             if (result.status !== 200) {
               setExecuted(false);
-              setOpenSnackBar(true);
+              showMessageHandler();
+              setIsSuccessFullyExecuted(false);
               setMessage("execution status update failed!");
-              setFailed(true);
+
               setLoaderOpen(false);
             } else {
               fetchData();
               setExecuted(true);
-              setOpenSnackBar(true);
+              showMessageHandler();
+              setIsSuccessFullyExecuted(false);
               setMessage("execution successful!");
-              setFailed(false);
+
               setLoaderOpen(false);
             }
           });
@@ -547,19 +572,13 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       (error) => {
         console.error(error);
         setExecuted(false);
-        setOpenSnackBar(true);
+        showMessageHandler();
+        setIsSuccessFullyExecuted(false);
         setMessage("execution failed!");
-        setFailed(true);
+
         setLoaderOpen(false);
       },
     );
-  };
-
-  const handleSnackBarClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnackBar(false);
   };
 
   useEffect(() => {
@@ -670,6 +689,20 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                     label={
                       proposalData?.status?.charAt(0).toUpperCase() +
                       proposalData?.status?.slice(1)
+                    }
+                  />
+                </Grid>
+                <Grid onClick={shareOnLensterHandler} item>
+                  <Chip
+                    className={classes.shareOnLens}
+                    label={"Share on Lens"}
+                    icon={
+                      <Image
+                        src="/assets/icons/lenster-comp.jpeg"
+                        alt="Share on Lenster"
+                        height={25}
+                        width={25}
+                      />
                     }
                   />
                 </Grid>
@@ -858,8 +891,8 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                                         executeFunction("executed");
                                       }
                                     : () => {
-                                        setOpenSnackBar(true);
-                                        setFailed(true);
+                                        showMessageHandler();
+                                        setIsSuccessFullyExecuted(false);
                                         setMessage(
                                           "execute txns with smaller nonce first",
                                         );
@@ -936,8 +969,8 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                                         executeRejectSafeTransaction();
                                       }
                                     : () => {
-                                        setOpenSnackBar(true);
-                                        setFailed(true);
+                                        showMessageHandler();
+                                        setIsSuccessFullyExecuted(false);
                                         setMessage(
                                           "execute txns with smaller nonce first",
                                         );
@@ -1206,8 +1239,8 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         </Grid>
       </Grid>
 
-      {openSnackBar ? (
-        <CustomAlert alertMessage={message} severity={failed} />
+      {showMessage ? (
+        <CustomAlert alertMessage={message} severity={isSuccessFullyExecuted} />
       ) : null}
 
       <BackdropLoader isOpen={loaderOpen} />

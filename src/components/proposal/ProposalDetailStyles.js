@@ -113,4 +113,10 @@ export const ProposalDetailStyles = makeStyles({
     backgroundColor: "#D55438",
     padding: "5px 5px 5px 5px",
   },
+  shareOnLens: {
+    fontSize: "16px",
+    color: "#FFFFFF",
+    background: "#8B5BF9",
+    cursor: "pointer",
+  },
 });

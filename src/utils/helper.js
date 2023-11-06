@@ -8,6 +8,7 @@ import {
   BLOCK_TIMEOUT,
   CHAIN_CONFIG,
   contractNetworks,
+  supportedChainsDrops,
 } from "./constants";
 import { getPublicClient, getWalletClient } from "utils/viemConfig";
 import { uploadToAWS } from "api/club";
@@ -122,10 +123,11 @@ export function returnRemainingTime(epochTime) {
 
 export const showWrongNetworkModal = (networkId, routeNetworkId) => {
   if (
-    routeNetworkId &&
-    routeNetworkId !== networkId &&
-    routeNetworkId !== "create" &&
-    routeNetworkId !== "disburse"
+    (routeNetworkId &&
+      routeNetworkId !== networkId &&
+      routeNetworkId !== "create" &&
+      routeNetworkId !== "disburse") ||
+    !supportedChainsDrops.includes(networkId)
   ) {
     return <WrongNetworkModal chainId={routeNetworkId} />;
   }
@@ -205,9 +207,9 @@ export const getUserTokenData = async (
   return filteredData?.map((token) => {
     return {
       balance: token.balance,
-      address: token.contract_address,
-      decimals: token.contract_decimals,
-      symbol: token.contract_ticker_symbol,
+      address: token.contract_address || token.contractAddress,
+      decimals: token.contract_decimals || token.decimals,
+      symbol: token.contract_ticker_symbol || token.symbol,
     };
   });
 };

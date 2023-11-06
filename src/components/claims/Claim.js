@@ -113,10 +113,14 @@ const Claim = ({ claimAddress }) => {
       const tokenDecimal = await getDecimals(claims[0].airdropToken);
       const tokenSymbol = await getTokenSymbol(claims[0].airdropToken);
 
-      let whitelistTokenSymbol;
+      let whitelistTokenSymbol = "";
       let whitelistTokenDecimal = 1;
+
       try {
-        if (claims[0].whitelistToken !== ZERO_ADDRESS) {
+        if (
+          dropsData?.permission !== "3" &&
+          claims[0].whitelistToken !== ZERO_ADDRESS
+        ) {
           whitelistTokenSymbol = await getTokenSymbol(claims[0].whitelistToken);
           whitelistTokenDecimal = await getDecimals(claims[0].whitelistToken);
         }
@@ -131,6 +135,7 @@ const Claim = ({ claimAddress }) => {
         whitelistTokenSymbol: whitelistTokenSymbol,
         whitelistTokenDecimal,
       });
+
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -273,7 +278,10 @@ const Claim = ({ claimAddress }) => {
       switch (permission) {
         case "0": {
           const whitelistTokenBalance = await getBalance(dropsData?.daoToken);
-          if (Number(whitelistTokenBalance) > dropsData?.tokenGatingValue) {
+
+          if (
+            Number(whitelistTokenBalance) >= Number(dropsData?.tokenGatingValue)
+          ) {
             setIsEligibleForTokenGated(true);
           } else {
             setIsEligibleForTokenGated(false);
@@ -297,13 +305,12 @@ const Claim = ({ claimAddress }) => {
         }
 
         case "3": {
-          const whitelistTokenBalance = await getBalance(dropsData?.daoToken);
-          setIsEligibleForTokenGated(whitelistTokenBalance > 0);
-
           const { amount } = await getUserProofAndBalance(
             dropsData?.merkleRoot,
             walletAddress.toLowerCase(),
           );
+
+          setIsEligibleForTokenGated(amount > 0);
 
           setMaxClaimableAmount(+amount);
           return;
@@ -456,8 +463,6 @@ const Claim = ({ claimAddress }) => {
     if (claimAddress) fetchBannerDetails();
   }, [claimAddress, networkId]);
 
-  console.log("xxxL", claimedPercentage);
-
   return (
     <>
       <PublicPageLayout
@@ -510,9 +515,7 @@ const Claim = ({ claimAddress }) => {
       {showTwitterShareModal && claimAddress && claimsData && tokenDetails ? (
         <TwitterSharingModal
           message="Hurray! You've successfully claimed from this drop, let your friends know for good karma."
-          tokenSymbol={tokenDetails?.tokenSymbol}
-          claimAddress={claimAddress}
-          description={claimsData?.description}
+          tweetText={claimGeneralInfo?.tweetText}
           onClose={() => setShowTwitterShareModal(false)}
         />
       ) : null}

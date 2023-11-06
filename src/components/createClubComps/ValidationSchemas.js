@@ -133,6 +133,8 @@ export const getProposalValidationSchema = ({
   walletAddress,
   daoAddress,
   getERC20TotalSupply,
+  getNftOwnersCount,
+  tokenType,
 }) => {
   return yup.object({
     proposalDeadline: yup.date().required("Deposit close date is required"),
@@ -185,35 +187,41 @@ export const getProposalValidationSchema = ({
         "invalidMintGTAmount",
         "Enter an amount less or equal to total supply",
         async (value, context) => {
-          const { actionCommand } = context.parent;
-          if (actionCommand === 1) {
-            try {
-              const { distributionAmount } = factoryData;
-              const clubTokensMinted = await getERC20TotalSupply();
-              const totalAmount = value.reduce(
-                (partialSum, a) => partialSum + Number(a),
-                0,
-              );
+          if (context.parent.actionCommand !== 1) return true;
 
-              if (
-                Number(totalAmount) <=
-                  Number(
-                    convertFromWeiGovernance(
-                      distributionAmount - clubTokensMinted,
-                      18,
-                    ),
-                  ) &&
-                Number(totalAmount) > 0
-              ) {
-                return true;
-              } else return false;
-            } catch (error) {
-              return false;
+          try {
+            const { distributionAmount } = factoryData;
+
+            const totalAmount = value.reduce(
+              (partialSum, a) => partialSum + Number(a),
+              0,
+            );
+
+            if (totalAmount <= 0) return false;
+
+            let availableAmount;
+            if (tokenType === "erc20") {
+              const clubTokensMinted = await getERC20TotalSupply();
+              availableAmount = convertFromWeiGovernance(
+                distributionAmount - clubTokensMinted,
+                18,
+              );
+            } else if (tokenType === "erc721") {
+              if (distributionAmount === 0) return true;
+
+              const clubTokensMinted = await getNftOwnersCount();
+              availableAmount = distributionAmount - clubTokensMinted;
+            } else {
+              return true;
             }
+
+            return Number(totalAmount) <= Number(availableAmount);
+          } catch (error) {
+            return false;
           }
-          return true;
         },
       ),
+
     quorum: yup.number("Enter Quorum in percentage").when("actionCommand", {
       is: 2,
       then: () =>
@@ -341,7 +349,7 @@ export const getProposalValidationSchema = ({
         yup
           .number("Enter threshold")
           .required("Safe Threshold is required")
-          .moreThan(1, "Safe Threshold should be greater than 1"),
+          .moreThan(0, "Safe threshold can't be less than 1"),
     }),
     ownerAddress: yup
       .string()
@@ -475,16 +483,16 @@ export const getProposalValidationSchema = ({
 
     uniswapRecieverToken: yup
       .string("Please enter token address")
-      .required("Destination address is required")
       .test(
-        "invaliduniswapRecieverToken",
-        "Reciever chain address should be same as sender chain",
+        "invalidUniswapRecieverToken",
+        "Reciever chain address should be same as sender chain ",
         async (value, context) => {
           const { actionCommand } = context.parent;
+
           if (actionCommand === 19) {
             try {
               const decimals = await getDecimals(value);
-              if (decimals) {
+              if (decimals > 0) {
                 return true;
               } else return false;
             } catch (error) {
@@ -494,6 +502,7 @@ export const getProposalValidationSchema = ({
           return true;
         },
       ),
+
     uniswapSwapAmount: yup
       .number("Please enter amount")
       .test(

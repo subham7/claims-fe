@@ -66,6 +66,10 @@ const useStyles = makeStyles({
     width: "100%",
     height: "100%",
   },
+  subtext: {
+    color: "#707070",
+    fontSize: "14px",
+  },
 });
 
 const EditDetails = ({
@@ -139,6 +143,7 @@ const EditDetails = ({
           telegram: values.telegram,
           website: values.website,
         },
+        tweetText: values.tweetText,
       });
     } else {
       return await editInfo({
@@ -176,6 +181,7 @@ const EditDetails = ({
       discord: "",
       telegram: "",
       website: "",
+      tweetText: "",
     },
     onSubmit: async (values) => {
       setLoaderOpen(true);
@@ -205,6 +211,7 @@ const EditDetails = ({
       twitter: "",
       discord: "",
       telegram: "",
+      tweetText: "",
     };
 
     if (isClaims) {
@@ -213,6 +220,7 @@ const EditDetails = ({
         twitter: bannerData?.socialLinks?.twitter ?? "",
         discord: bannerData?.socialLinks?.discord ?? "",
         telegram: bannerData?.socialLinks?.telegram ?? "",
+        tweetText: bannerData?.tweetText ?? "",
       });
     } else {
       formik.setValues({
@@ -254,7 +262,7 @@ const EditDetails = ({
           <form className={classes.form}>
             {isClaims ? (
               <Grid item md={6} mb={2}>
-                <Typography className={classes.wrapTextIcon}>
+                <Typography variant="inherit" className={classes.wrapTextIcon}>
                   Upload Banner{" "}
                 </Typography>
                 <span className={classes.smallText}>
@@ -301,7 +309,9 @@ const EditDetails = ({
             ) : null}
 
             <Grid item md={6} mb={2}>
-              <Typography className={classes.wrapTextIcon}>Add Bio</Typography>
+              <Typography variant="inherit" className={classes.wrapTextIcon}>
+                Add Bio
+              </Typography>
               <QuillEditor
                 multiline
                 rows={10}
@@ -329,7 +339,9 @@ const EditDetails = ({
             </Grid>
 
             <Grid item md={6} mb={2}>
-              <Typography className={classes.wrapTextIcon}>Twitter</Typography>
+              <Typography variant="inherit" className={classes.wrapTextIcon}>
+                Twitter
+              </Typography>
               <TextField
                 name="twitter"
                 id="twitter"
@@ -344,7 +356,9 @@ const EditDetails = ({
             </Grid>
 
             <Grid item md={6} mb={2}>
-              <Typography className={classes.wrapTextIcon}>Discord</Typography>
+              <Typography variant="inherit" className={classes.wrapTextIcon}>
+                Discord
+              </Typography>
               <TextField
                 name="discord"
                 id="discord"
@@ -359,7 +373,9 @@ const EditDetails = ({
             </Grid>
 
             <Grid item md={6} mb={2}>
-              <Typography className={classes.wrapTextIcon}>Telegram</Typography>
+              <Typography variant="inherit" className={classes.wrapTextIcon}>
+                Telegram
+              </Typography>
               <TextField
                 name="telegram"
                 id="telegram"
@@ -374,6 +390,35 @@ const EditDetails = ({
                 helperText={formik.touched.telegram && formik.errors.telegram}
               />
             </Grid>
+
+            {isClaims ? (
+              <Grid item md={6} mb={2}>
+                <Typography variant="inherit" className={classes.wrapTextIcon}>
+                  Twitter Text
+                </Typography>
+
+                <Typography variant="inherit" className={classes.subtext}>
+                  Use this &quot;;&quot; without spaces for a new line.
+                </Typography>
+                <TextField
+                  name="tweetText"
+                  id="tweetText"
+                  placeholder="Text"
+                  variant="outlined"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.tweetText}
+                  error={
+                    formik.touched.tweetText && Boolean(formik.errors.tweetText)
+                  }
+                  helperText={
+                    formik.touched.tweetText && formik.errors.tweetText
+                  }
+                  multiline
+                  inputProps={{ maxLength: 280 }}
+                />
+              </Grid>
+            ) : null}
 
             {/* Submit Button */}
             <Grid container mt={2} spacing={3}>
