@@ -136,7 +136,7 @@ const App = () => {
   const router = useRouter();
 
   useEffect(() => {
-    setIsMainLink(window.location.origin.includes("app"));
+    // setIsMainLink(window.location.origin.includes("app"));
   }, []);
 
   useEffect(() => {
