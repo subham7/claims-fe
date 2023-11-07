@@ -121,6 +121,27 @@ const CommonProposalForm = ({ proposal }) => {
             </FormHelperText>
           )}
       </Grid>
+      <Grid
+        container
+        direction={"column"}
+        ml={3}
+        mt={2}
+        sx={{ marginLeft: "0 !important" }}>
+        <Typography variant="proposalBody">
+          Custom Block Number (optional)
+        </Typography>
+
+        <TextField
+          variant="outlined"
+          placeholder="Add a block number"
+          name="blockNum"
+          id="blockNum"
+          value={proposal.values.blockNum}
+          onChange={proposal.handleChange}
+          error={proposal.touched.blockNum && Boolean(proposal.errors.blockNum)}
+          helperText={proposal.touched.blockNum && proposal.errors.blockNum}
+        />
+      </Grid>
     </>
   );
 };

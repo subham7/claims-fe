@@ -23,6 +23,7 @@ import CustomAlert from "@components/common/CustomAlert";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import CommonProposalForm from "./CommonProposalForm";
 import SurveyProposalForm from "./SurveyProposalForm";
+import { getPublicClient } from "utils/viemConfig";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -97,6 +98,14 @@ const CreateProposalDialog = ({
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
+
+  const fetchLatestBlockNumber = async () => {
+    const publicClient = getPublicClient(networkId);
+    const block = Number(await publicClient.getBlockNumber());
+
+    return block;
+  };
+
   const proposal = useFormik({
     initialValues: {
       tokenType: tokenType,
@@ -104,6 +113,7 @@ const CreateProposalDialog = ({
       proposalDeadline: dayjs(Date.now() + 3600 * 1000 * 24),
       proposalTitle: "",
       proposalDescription: "",
+      blockNum: "",
       optionList: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
       actionCommand: "",
       airdropToken: tokenData ? tokenData[0]?.address : "",
@@ -169,7 +179,8 @@ const CreateProposalDialog = ({
           usdcTokenDecimal: 6,
           usdcGovernanceTokenDecimal: 18,
         };
-
+        const blockNum = await fetchLatestBlockNumber();
+        console.log("clubdata", clubData);
         const payload = {
           clubId: daoAddress,
           name: values.proposalTitle,
@@ -181,6 +192,14 @@ const CreateProposalDialog = ({
           type: values.typeOfProposal,
           tokenType: clubData.tokenType,
           daoAddress: daoAddress,
+          block:
+            values.blockNum !== undefined &&
+            values.blockNum !== null &&
+            values.blockNum.length > 0
+              ? values.blockNum
+              : Number(blockNum),
+          quorum: Number(clubData.quorum),
+          threshold: Number(clubData.threshold),
         };
 
         const createRequest = createProposal(payload, networkId);
@@ -208,6 +227,8 @@ const CreateProposalDialog = ({
       }
     },
   });
+
+  console.log(proposal);
   return (
     <>
       <Dialog
