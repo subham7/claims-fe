@@ -83,7 +83,7 @@ const Dashboard = ({ daoAddress }) => {
           const clubDetails = {};
 
           const noOfHolders = await getTotalNumberOfTokenHolders(
-            CHAIN_CONFIG[networkId].covalentNetworkName,
+            CHAIN_CONFIG[networkId]?.covalentNetworkName,
             daoAddress,
           );
 
@@ -103,7 +103,7 @@ const Dashboard = ({ daoAddress }) => {
               : imageUrl;
           }
 
-          clubDetails.noOfMembers = noOfHolders;
+          clubDetails.noOfMembers = noOfHolders ?? 1;
           setMyShare(balance);
           setClubDetails(clubDetails);
         }
@@ -143,7 +143,6 @@ const Dashboard = ({ daoAddress }) => {
   const fetchProposals = async () => {
     try {
       const activeProposals = await getProposalByDaoAddress(daoAddress);
-
       setProposals(activeProposals?.data);
     } catch (error) {
       console.log(error);
@@ -194,7 +193,7 @@ const Dashboard = ({ daoAddress }) => {
   const treasuryData = [
     {
       containerClass: classes.treasuryContainer,
-      iconSrc: "/assets/icons/stats.svg",
+      iconSrc: "/assets/icons/stats_hovered.svg",
       altText: "Treasury Holdings",
       title: "Treasury Holdings",
       value: `$${Number(tokenDetails?.treasuryAmount).toFixed(3)}`,

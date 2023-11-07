@@ -4,7 +4,7 @@
   font-family: "Avenir";
   src: url("https://github.com/platanus/fonts/blob/master/Avenir/Avenir-Medium.woff2")
     format("woff2");
-  background-color: #0f0f0f;
+  background-color: #111111;
 }
 
 html,
@@ -229,23 +229,6 @@ input::-webkit-inner-spin-button {
   cursor: pointer;
 }
 
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  padding: 16px 32px;
-  align-items: center;
-  position: fixed;
-  width: 100vw;
-  background-color: #0f0f0f;
-  z-index: 1;
-}
-
-.wallet-div {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-}
 
 .step-buttons {
   display: flex;

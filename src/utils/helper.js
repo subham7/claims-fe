@@ -12,6 +12,7 @@ import {
 } from "./constants";
 import { getPublicClient, getWalletClient } from "utils/viemConfig";
 import { uploadToAWS } from "api/club";
+import { baseLinks } from "data/dashboard";
 
 export const getCustomSafeSdk = async (
   gnosisAddress,
@@ -399,4 +400,14 @@ export const formatCash = (n) => {
   if (n >= 1e6 && n < 1e9) return +(n / 1e6).toFixed(1) + "M";
   if (n >= 1e9 && n < 1e12) return +(n / 1e9).toFixed(1) + "B";
   if (n >= 1e12) return +(n / 1e12).toFixed(1) + "T";
+};
+
+export const getLinks = (daoAddress, networkId) => {
+  return baseLinks.map((link, index) => ({
+    ...link,
+    icon: `/assets/icons/${link.icon}.svg`,
+    hoveredLink: `/assets/icons/${link.icon}_hovered.svg`,
+    route: `/${link.routeHeader}/${daoAddress}/${networkId}`,
+    id: String(index + 1),
+  }));
 };

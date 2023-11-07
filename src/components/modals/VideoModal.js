@@ -6,7 +6,7 @@ import BackdropLoader from "@components/common/BackdropLoader";
 const useStyles = makeStyles({
   modal: {
     width: "900px",
-    background: "#0F0F0F",
+    background: "#111111",
     // border: "1px solid #6475A3",
     position: "fixed",
     top: "50%",

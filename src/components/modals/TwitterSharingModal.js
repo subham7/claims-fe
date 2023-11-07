@@ -8,7 +8,7 @@ import { BsTwitter } from "react-icons/bs";
 const useStyles = makeStyles({
   modal: {
     width: "570px",
-    background: "#0F0F0F",
+    background: "#111111",
     position: "fixed",
     top: "50%",
     left: "50%",

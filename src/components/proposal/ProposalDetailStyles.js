@@ -90,7 +90,7 @@ export const ProposalDetailStyles = makeStyles({
     textTransform: "capitalize",
   },
   timeLeftChip: {
-    background: "#0F0F0F",
+    background: "#111111",
     borderRadius: "5px",
   },
   cardFontActive: {

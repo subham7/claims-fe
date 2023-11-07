@@ -211,7 +211,7 @@ const Documents = ({ daoAddress, networkId }) => {
                   position: "absolute",
                   left: 20,
                   top: 30,
-                  color: "#0F0F0F",
+                  color: "#111111",
                   fontWeight: "normal",
                   width: "80%",
                 }}>
@@ -222,7 +222,7 @@ const Documents = ({ daoAddress, networkId }) => {
                 target={"_blank"}
                 sx={{
                   position: "absolute",
-                  color: "#0F0F0F",
+                  color: "#111111",
                   fontWeight: "normal",
                   width: "70%",
                   textDecoration: "underline",

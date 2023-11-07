@@ -319,7 +319,7 @@ const EditDetails = ({
                 style={{
                   width: "100%",
                   height: "auto",
-                  backgroundColor: "#0f0f0f",
+                  backgroundColor: "#111111",
                   fontSize: "18px",
                   margin: "0.5rem 0",
                   marginBottom: "30px",

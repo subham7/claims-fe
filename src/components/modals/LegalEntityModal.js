@@ -10,7 +10,7 @@ import BackdropLoader from "@components/common/BackdropLoader";
 const useStyles = makeStyles({
   modal: {
     width: "570px",
-    background: "#0F0F0F",
+    background: "#111111",
     position: "fixed",
     top: "50%",
     left: "50%",
@@ -53,7 +53,7 @@ const useStyles = makeStyles({
   },
   inviteLink: {
     background:
-      "transparent linear-gradient(90deg, #0F0F0F00 0%, #2D55FF 100%) 0% 0% no-repeat padding-box",
+      "transparent linear-gradient(90deg, #11111100 0%, #2D55FF 100%) 0% 0% no-repeat padding-box",
     position: "",
     display: "block",
     padding: "0px 20px",
@@ -73,7 +73,7 @@ const useStyles = makeStyles({
   linkInput: {
     width: "100%",
     color: "#dcdcdc",
-    background: "#0F0F0F 0% 0% no-repeat padding-box",
+    background: "#111111 0% 0% no-repeat padding-box",
     border: "1px solid #dcdcdc40",
     borderRadius: "10px",
     "&:hover": {

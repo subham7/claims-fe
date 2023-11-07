@@ -31,7 +31,7 @@ const DocsCard = () => {
           position: "absolute",
           left: 20,
           top: 40,
-          color: "#0F0F0F",
+          color: "#111111",
           fontWeight: "normal",
           width: "70%",
         }}>
@@ -42,7 +42,7 @@ const DocsCard = () => {
         target={"_blank"}
         sx={{
           position: "absolute",
-          color: "#0F0F0F",
+          color: "#111111",
           fontWeight: "normal",
           width: "70%",
           textDecoration: "underline",

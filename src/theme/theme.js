@@ -23,7 +23,7 @@ const theme = () =>
         contrastText: "#F5F5F5",
       },
       background: {
-        default: "#0F0F0F",
+        default: "#111111",
         paper: "#191919",
       },
       text: {

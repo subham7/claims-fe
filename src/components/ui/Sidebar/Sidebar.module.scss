@@ -1,0 +1,28 @@
+@import "../../../../styles/variables.scss";
+
+.sidebar {
+  width: 70px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: fixed;
+  align-items: center;
+  padding: 12px;
+  border-right: 0.5px solid $border-color;
+
+  .iconsList {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    margin-top: 42px;
+
+    .link {
+      cursor: pointer;
+      color: $gray;
+
+      &:hover {
+        color: $white;
+      }
+    }
+  }
+}

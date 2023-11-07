@@ -1,0 +1,18 @@
+@import "../../../../styles/variables.scss";
+
+.nav {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 28px;
+  position: fixed;
+  border: 1px solid $border-color;
+  z-index: 10;
+
+  .wallet-div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+}
