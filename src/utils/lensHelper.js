@@ -111,7 +111,7 @@ export const getDefaultProfile = async (walletAddress) => {
     });
 
     if (!data?.profiles?.items.length) {
-      throw new Error("No handles found!");
+      return;
     }
 
     return data?.profiles?.items;
