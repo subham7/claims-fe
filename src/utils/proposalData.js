@@ -1368,7 +1368,6 @@ export const proposalDetailsData = ({
   factoryData,
   symbol,
 }) => {
-  debugger;
   const {
     executionId,
     airDropAmount,
