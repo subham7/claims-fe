@@ -1,12 +1,12 @@
-import { makeStyles } from "@mui/styles";
+import { makeStyles, useTheme } from "@mui/styles";
 import { IoMdClose } from "react-icons/io";
 import React from "react";
 import BackdropLoader from "@components/common/BackdropLoader";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   modal: {
     width: "900px",
-    background: "#111111",
+    background: theme.palette.background.default,
     // border: "1px solid #6475A3",
     position: "fixed",
     top: "50%",
@@ -27,10 +27,11 @@ const useStyles = makeStyles({
     right: "1rem",
     cursor: "pointer",
   },
-});
+}));
 
 const VideoModal = ({ onClose }) => {
-  const classes = useStyles();
+  const theme = useTheme();
+  const classes = useStyles(theme);
 
   return (
     <>

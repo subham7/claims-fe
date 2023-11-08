@@ -20,6 +20,7 @@ import {
 } from "utils/dropsSubgraphHelper";
 import { shortAddress } from "utils/helper";
 import { CHAIN_CONFIG } from "utils/constants";
+import { useTheme } from "@mui/styles";
 
 const ClaimsTransactions = ({
   claimAddress,
@@ -36,7 +37,8 @@ const ClaimsTransactions = ({
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
 
-  const classes = ClaimsInsightStyles();
+  const theme = useTheme();
+  const classes = ClaimsInsightStyles(theme);
   const walletHeaders = ["Wallet", "Total tokens", "Claimed", "Percentage"];
   const allTransactionHeaders = [
     "Date",

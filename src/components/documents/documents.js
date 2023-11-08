@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import settingsImg from "../../../public/assets/images/settings.png";
-import { makeStyles } from "@mui/styles";
+import { makeStyles, useTheme } from "@mui/styles";
 import { useRouter } from "next/router";
 import { Card, Grid, Link, Typography } from "@mui/material";
 import LegalEntityModal from "@components/modals/LegalEntityModal";
@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 import { getDocumentsByClubId } from "api/document";
 import DocumentCard from "@components/documentPageComps/DocumentCard";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   container: {
     display: "flex",
     gap: "30px",
@@ -94,10 +94,29 @@ const useStyles = makeStyles({
     height: "300px",
     width: "300px",
   },
-});
+  typography: {
+    position: "absolute",
+    left: 20,
+    top: 30,
+    color: theme.palette.background.default,
+    fontWeight: "normal",
+    width: "80%",
+  },
+  link: {
+    position: "absolute",
+    color: theme.palette.background.default,
+    fontWeight: "normal",
+    width: "70%",
+    textDecoration: "underline",
+    fontSize: "0.875rem",
+    left: 20,
+    bottom: 10,
+  },
+}));
 
 const Documents = ({ daoAddress, networkId }) => {
-  const classes = useStyles();
+  const theme = useTheme();
+  const classes = useStyles(theme);
   const router = useRouter();
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [documents, setDocuments] = useState([]);
@@ -205,31 +224,13 @@ const Documents = ({ daoAddress, networkId }) => {
                 alt="proposal image"
                 className={classes.proposalImg}
               />
-              <Typography
-                variant="h4"
-                sx={{
-                  position: "absolute",
-                  left: 20,
-                  top: 30,
-                  color: "#111111",
-                  fontWeight: "normal",
-                  width: "80%",
-                }}>
+              <Typography variant="h4" sx={{}}>
                 Sign documents within your station
               </Typography>
               <Link
                 href="https://stationxnetwork.gitbook.io/docs"
                 target={"_blank"}
-                sx={{
-                  position: "absolute",
-                  color: "#111111",
-                  fontWeight: "normal",
-                  width: "70%",
-                  textDecoration: "underline",
-                  fontSize: "0.875rem",
-                  left: 20,
-                  bottom: 10,
-                }}>
+                className={classes.link}>
                 Read Docs
               </Link>
             </Card>

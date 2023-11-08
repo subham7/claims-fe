@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import { TextField } from "@components/ui";
 import Button from "@components/ui/button/Button";
-import { makeStyles } from "@mui/styles";
+import { makeStyles, useTheme } from "@mui/styles";
 import { useFormik } from "formik";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -22,7 +22,7 @@ import { editInfo, getClubInfo } from "api/club";
 import { uploadFileToAWS } from "utils/helper";
 import CustomAlert from "@components/common/CustomAlert";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   modalStyle: {
     width: "792px",
     backgroundColor: "#151515",
@@ -70,7 +70,15 @@ const useStyles = makeStyles({
     color: "#707070",
     fontSize: "14px",
   },
-});
+  editor: {
+    width: "100%",
+    height: "auto",
+    backgroundColor: theme.palette.background.default,
+    fontSize: "18px",
+    margin: "0.5rem 0",
+    marginBottom: "30px",
+  },
+}));
 
 const EditDetails = ({
   open,
@@ -81,7 +89,8 @@ const EditDetails = ({
   daoAddress = "",
   isClaims = false,
 }) => {
-  const classes = useStyles();
+  const theme = useTheme();
+  const classes = useStyles(theme);
 
   const [loaderOpen, setLoaderOpen] = useState(false);
   const [isSuccessfull, setIsSuccessfull] = useState(false);
@@ -316,14 +325,7 @@ const EditDetails = ({
                 multiline
                 rows={10}
                 placeholder="Add description of your station"
-                style={{
-                  width: "100%",
-                  height: "auto",
-                  backgroundColor: "#111111",
-                  fontSize: "18px",
-                  margin: "0.5rem 0",
-                  marginBottom: "30px",
-                }}
+                className={classes.editor}
                 name="description"
                 id="description"
                 value={formik.values.description}

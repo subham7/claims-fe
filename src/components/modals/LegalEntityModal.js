@@ -1,5 +1,5 @@
 import { Button, Grid, TextField } from "@mui/material";
-import { makeStyles } from "@mui/styles";
+import { makeStyles, useTheme } from "@mui/styles";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { TwitterShareButton } from "react-twitter-embed";
@@ -7,10 +7,10 @@ import { IoMdClose } from "react-icons/io";
 import LensterShareButton from "../LensterShareButton";
 import BackdropLoader from "@components/common/BackdropLoader";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   modal: {
     width: "570px",
-    background: "#111111",
+    background: theme.palette.background.default,
     position: "fixed",
     top: "50%",
     left: "50%",
@@ -83,7 +83,7 @@ const useStyles = makeStyles({
       opacity: 1,
     },
   },
-});
+}));
 
 const LegalEntityModal = ({
   onClose,
@@ -96,7 +96,8 @@ const LegalEntityModal = ({
   networkId,
 }) => {
   const [isCopy, setIsCopy] = useState(false);
-  const classes = useStyles();
+  const theme = useTheme();
+  const classes = useStyles(theme);
   const router = useRouter();
 
   // create legal Entity

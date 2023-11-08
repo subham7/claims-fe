@@ -1,12 +1,12 @@
 import BackdropLoader from "@components/common/BackdropLoader";
 import { Link } from "@mui/material";
-import { makeStyles } from "@mui/styles";
+import { makeStyles, useTheme } from "@mui/styles";
 import React from "react";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   modal: {
     width: "570px",
-    background: "#111111",
+    background: theme.palette.background.default,
     position: "fixed",
     top: "50%",
     left: "50%",
@@ -39,10 +39,11 @@ const useStyles = makeStyles({
     letterSpacing: "0.6px",
     fontSize: "16px",
   },
-});
+}));
 
 const ErrorModal = ({ isSignRejected = false, isError = false }) => {
-  const classes = useStyles();
+  const theme = useTheme();
+  const classes = useStyles(theme);
   return (
     <>
       <BackdropLoader isOpen={true} showLoading={false}>

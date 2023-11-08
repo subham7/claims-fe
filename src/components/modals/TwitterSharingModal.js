@@ -1,14 +1,14 @@
 import { Typography } from "@mui/material";
-import { makeStyles } from "@mui/styles";
+import { makeStyles, useTheme } from "@mui/styles";
 import React from "react";
 import { IoMdClose } from "react-icons/io";
 import BackdropLoader from "@components/common/BackdropLoader";
 import { BsTwitter } from "react-icons/bs";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   modal: {
     width: "570px",
-    background: "#111111",
+    background: theme.palette.background.default,
     position: "fixed",
     top: "50%",
     left: "50%",
@@ -54,14 +54,15 @@ const useStyles = makeStyles({
       background: "#707070",
     },
   },
-});
+}));
 
 const TwitterSharingModal = ({
   onClose,
   message,
   tweetText = "I just claimed a drop on @stationxnetwork. Yayyy!",
 }) => {
-  const classes = useStyles();
+  const theme = useTheme();
+  const classes = useStyles(theme);
 
   return (
     <BackdropLoader showLoading={false} isOpen={true}>

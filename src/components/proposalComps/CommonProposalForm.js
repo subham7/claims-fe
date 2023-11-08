@@ -13,8 +13,22 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import QuillEditor from "../quillEditor";
 import dayjs from "dayjs";
+import { makeStyles, useTheme } from "@mui/styles";
+
+const useStyles = makeStyles((theme) => ({
+  editor: {
+    width: "100%",
+    height: "auto",
+    backgroundColor: theme.palette.background.default,
+    fontSize: "18px",
+    margin: "0.5rem 0",
+  },
+}));
 
 const CommonProposalForm = ({ proposal }) => {
+  const theme = useTheme();
+  const classes = useStyles(theme);
+
   return (
     <>
       {/* type of proposal and end time */}
@@ -92,13 +106,7 @@ const CommonProposalForm = ({ proposal }) => {
           multiline
           rows={10}
           placeholder="Add full description here"
-          style={{
-            width: "100%",
-            height: "auto",
-            backgroundColor: "#111111",
-            fontSize: "18px",
-            margin: "0.5rem 0",
-          }}
+          className={classes.editor}
           name="proposalDescription"
           id="proposalDescription"
           value={proposal.values.proposalDescription}

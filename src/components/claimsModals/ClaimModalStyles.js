@@ -1,9 +1,9 @@
 import { makeStyles } from "@mui/styles";
 
-export const ClaimModalStyles = makeStyles({
+export const ClaimModalStyles = makeStyles((theme) => ({
   card: {
     width: "650px",
-    background: "#111111",
+    background: theme.palette.background.default,
     position: "fixed",
     top: "50%",
     left: "50%",
@@ -100,4 +100,4 @@ export const ClaimModalStyles = makeStyles({
     border: "1px solid #dcdcdc40",
     background: "transparent",
   },
-});
+}));
