@@ -35,6 +35,7 @@ export const supportedChainsDrops = [
   "0x82750",
   "0xa9",
   "0x28c5f",
+  "0x1",
 ];
 
 export const CHAIN_CONFIG = process.env.NEXT_IS_DEV
@@ -150,6 +151,25 @@ export const CHAIN_CONFIG = process.env.NEXT_IS_DEV
         nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
         blockExplorerUrl: "https://arbiscan.io",
         disburseContractAddress: "",
+      },
+      "0x1": {
+        chainName: "Ethereum Mainnet",
+        shortName: "Ethereum",
+        chainId: 1,
+        nativeCurrency: {
+          name: "ETH",
+          decimals: 18,
+          symbol: "ETH",
+        },
+        rpcUrls: ["https://eth-rpc.gateway.pokt.network"],
+        appRpcUrl: `https://mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
+        claimFactoryAddress: "0x7aA33CC623Db79d5fFa859bA6cBE2Fb93c237401",
+        claimsSubgraphUrl:
+          "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-eth/prod/gn",
+        covalentNetworkName: "eth-mainnet",
+        nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        blockExplorerUrl: "https://etherscan.io",
+        disburseContractAddress: "0x8b41c0aa45c86cebcfed5fb3744bf99ac8fb45c3",
       },
       "0xe708": {
         chainName: "Linea Mainnet",
@@ -367,6 +387,25 @@ export const CHAIN_CONFIG = process.env.NEXT_IS_DEV
         nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
         blockExplorerUrl: "https://goerli.etherscan.io",
         disburseContractAddress: "0x63D57d534a44f486EE2cCDcd53EbB7FA988cA5d5",
+      },
+      "0x1": {
+        chainName: "Ethereum Mainnet",
+        shortName: "Ethereum",
+        chainId: 1,
+        nativeCurrency: {
+          name: "ETH",
+          decimals: 18,
+          symbol: "ETH",
+        },
+        rpcUrls: ["https://eth-rpc.gateway.pokt.network"],
+        appRpcUrl: `https://mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
+        claimFactoryAddress: "0x7aA33CC623Db79d5fFa859bA6cBE2Fb93c237401",
+        claimsSubgraphUrl:
+          "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-eth/prod/gn",
+        covalentNetworkName: "eth-mainnet",
+        nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        blockExplorerUrl: "https://etherscan.io",
+        disburseContractAddress: "0x8b41c0aa45c86cebcfed5fb3744bf99ac8fb45c3",
       },
       "0x2105": {
         chainName: "Base Mainnet",
