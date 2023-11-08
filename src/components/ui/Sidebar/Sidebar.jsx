@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useCallback, useMemo, useState } from "react";
 import { getLinks } from "utils/helper";
@@ -36,12 +35,6 @@ const Sidebar = ({ daoAddress, networkId }) => {
 
   return (
     <div className={classes.sidebar}>
-      <Image
-        src="/assets/images/monogram.png"
-        height="40"
-        width="40"
-        alt="monogram"
-      />
       <div className={classes.iconsList}>
         {links.map((link) => (
           <IconLink

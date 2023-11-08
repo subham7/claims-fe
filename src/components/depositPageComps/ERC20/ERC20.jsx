@@ -80,7 +80,7 @@ const ERC20 = ({
   const { approveDeposit, getDecimals, getTokenSymbol, getBalance } =
     useCommonContractMethods();
 
-  const { buyGovernanceTokenERC20DAO } = useAppContractMethods();
+  const { buyGovernanceTokenERC20DAO } = useAppContractMethods({ daoAddress });
   const { address: walletAddress } = useAccount();
 
   const day = Math.floor(new Date().getTime() / 1000.0);
@@ -183,7 +183,6 @@ const ERC20 = ({
 
         await buyGovernanceTokenERC20DAO(
           walletAddress,
-          daoAddress,
           convertToWeiGovernance(
             (inputValue / +clubData?.pricePerToken).toString(),
             18,

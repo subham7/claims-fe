@@ -66,7 +66,7 @@ const ERC721 = ({
   const { approveDeposit, getDecimals, getTokenSymbol, getBalance } =
     useCommonContractMethods();
 
-  const { buyGovernanceTokenERC721DAO } = useAppContractMethods();
+  const { buyGovernanceTokenERC721DAO } = useAppContractMethods({ daoAddress });
 
   const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
     return state.gnosis.factoryContractAddress;
@@ -142,7 +142,6 @@ const ERC721 = ({
 
       await buyGovernanceTokenERC721DAO(
         walletAddress,
-        daoAddress,
         clubData?.imageUrl,
         count,
         whitelistUserData?.proof ? whitelistUserData.proof : [],

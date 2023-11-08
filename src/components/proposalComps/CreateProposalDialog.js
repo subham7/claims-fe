@@ -67,7 +67,9 @@ const CreateProposalDialog = ({
     return state.club.clubData;
   });
 
-  const { getERC20TotalSupply, getNftOwnersCount } = useAppContractMethods();
+  const { getERC20TotalSupply, getNftOwnersCount } = useAppContractMethods({
+    daoAddress,
+  });
 
   const [loaderOpen, setLoaderOpen] = useState(false);
   const [openSnackBar, setOpenSnackBar] = useState(false);

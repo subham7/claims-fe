@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { useSelector } from "react-redux";
 import { fetchClubByDaoAddress, getClubInfo } from "api/club";
-import useAppContract from "hooks/useAppContract";
+// import useAppContract from "hooks/useAppContract";
 import { getWhitelistMerkleProof } from "api/whitelist";
 import { useAccount, useNetwork } from "wagmi";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
@@ -61,12 +61,12 @@ const Join = ({ daoAddress }) => {
     (state) => state.gnosis.factoryContractAddress,
   );
 
-  useAppContract(daoAddress);
-
   const { getDecimals, getBalance, getTokenSymbol } =
     useCommonContractMethods();
 
-  const { getTokenGatingDetails, getNftOwnersCount } = useAppContractMethods();
+  const { getTokenGatingDetails, getNftOwnersCount } = useAppContractMethods({
+    daoAddress,
+  });
 
   /**
    * Fetching details for ERC20 comp
@@ -112,7 +112,7 @@ const Join = ({ daoAddress }) => {
   const fetchTokenGatingDetials = async () => {
     try {
       setLoading(true);
-      const tokenGatingDetails = await getTokenGatingDetails(daoAddress);
+      const tokenGatingDetails = await getTokenGatingDetails();
 
       if (tokenGatingDetails) {
         const tokenASymbol = await getTokenSymbol(

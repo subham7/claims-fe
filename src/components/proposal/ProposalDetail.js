@@ -148,7 +148,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   });
 
   const { getERC20TotalSupply, updateProposalAndExecution, getNftOwnersCount } =
-    useAppContractMethods();
+    useAppContractMethods({ daoAddress });
 
   const { getBalance } = useCommonContractMethods();
 
@@ -390,7 +390,6 @@ Cast your vote before ${new Date(
     const response = updateProposalAndExecution(
       data,
       approvalData,
-      daoAddress,
       Web3.utils.toChecksumAddress(gnosisAddress),
       txHash,
       pid,

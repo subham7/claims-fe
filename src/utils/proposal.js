@@ -24,6 +24,7 @@ import { erc20AaveABI } from "abis/erc20AaveABI";
 import { stargateStakeABI } from "abis/stargateStakeABI";
 import { maticAaveABI } from "abis/MaticAaveABI";
 import { uniswapABI } from "abis/uniswapABI";
+import { encodeFunctionData } from "viem";
 
 export const fetchProposals = async (clubId, type) => {
   let proposalData;
@@ -746,7 +747,8 @@ export const getTransaction = async ({
   let transaction;
   const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
 
-  const { erc20DaoContractCall } = contractInstances;
+  // const { erc20DaoContractCall } = contractInstances;
+
   switch (executionId) {
     case 0:
     case 4:
@@ -792,13 +794,21 @@ export const getTransaction = async ({
       transaction = {
         //dao
         to: Web3.utils.toChecksumAddress(daoAddress),
-        data: erc20DaoContractCall.methods
-          .updateProposalAndExecution(
-            //factory
+        data: encodeFunctionData({
+          abi: erc20DaoABI,
+          functionName: "updateProposalAndExecution",
+          args: [
             factoryContractAddress ? factoryContractAddress : daoAddress,
             parameters,
-          )
-          .encodeABI(),
+          ],
+        }),
+        // erc20DaoContractCall.methods
+        //   .updateProposalAndExecution(
+        //     //factory
+        //     factoryContractAddress ? factoryContractAddress : daoAddress,
+        //     parameters,
+        //   )
+        //   .encodeABI(),
         value: "0",
       };
       return { transaction };
@@ -843,12 +853,20 @@ export const getTransaction = async ({
       } else {
         transaction = {
           to: Web3.utils.toChecksumAddress(daoAddress),
-          data: erc20DaoContractCall.methods
-            .updateProposalAndExecution(
+          data: encodeFunctionData({
+            abi: erc20DaoABI,
+            functionName: "updateProposalAndExecution",
+            args: [
               Web3.utils.toChecksumAddress(SEAPORT_CONTRACT_ADDRESS),
               parameters,
-            )
-            .encodeABI(),
+            ],
+          }),
+          // erc20DaoContractCall.methods
+          //   .updateProposalAndExecution(
+          //     Web3.utils.toChecksumAddress(SEAPORT_CONTRACT_ADDRESS),
+          //     parameters,
+          //   )
+          //   .encodeABI(),
           value: "10000000000000000",
         };
       }
@@ -859,25 +877,38 @@ export const getTransaction = async ({
     case 16:
       approvalTransaction = {
         to: Web3.utils.toChecksumAddress(daoAddress),
-        data: erc20DaoContractCall.methods
-          .updateProposalAndExecution(
-            //usdc address
-            daoAddress,
-            approvalData,
-          )
-          .encodeABI(),
+        data: encodeFunctionData({
+          abi: erc20DaoABI,
+          functionName: "updateProposalAndExecution",
+          args: [daoAddress, approvalData],
+        }),
+        //  erc20DaoContractCall.methods
+        //   .updateProposalAndExecution(
+        //     //usdc address
+        //     daoAddress,
+        //     approvalData,
+        //   )
+        //   .encodeABI(),
         value: "0",
       };
       transaction = {
         //dao
         to: Web3.utils.toChecksumAddress(daoAddress),
-        data: erc20DaoContractCall.methods
-          .updateProposalAndExecution(
-            //factory
+        data: encodeFunctionData({
+          abi: erc20DaoABI,
+          functionName: "updateProposalAndExecution",
+          args: [
             factoryContractAddress ? factoryContractAddress : daoAddress,
             parameters,
-          )
-          .encodeABI(),
+          ],
+        }),
+        // erc20DaoContractCall.methods
+        //   .updateProposalAndExecution(
+        //     //factory
+        //     factoryContractAddress ? factoryContractAddress : daoAddress,
+        //     parameters,
+        //   )
+        //   .encodeABI(),
         value: "0",
       };
       return { transaction, approvalTransaction };
