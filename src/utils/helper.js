@@ -12,6 +12,7 @@ import {
 } from "./constants";
 import { getPublicClient, getWalletClient } from "utils/viemConfig";
 import { uploadToAWS } from "api/club";
+import { baseLinks } from "data/dashboard";
 
 export const getCustomSafeSdk = async (
   gnosisAddress,
@@ -334,40 +335,42 @@ export const addLineBreaks = (inputString, breakAfter = 40) => {
 };
 
 export const convertToFullNumber = (expNotation) => {
-  let [base, exponent] = expNotation?.split("e");
-  let [whole, fractional] = base?.split(".");
+  if (expNotation.includes("e")) {
+    let [base, exponent] = expNotation?.split("e");
+    let [whole, fractional] = base?.split(".");
 
-  if (exponent.includes("+")) {
-    let positiveExponent = parseInt(exponent?.replace("+", ""), 10);
-    if (fractional) {
-      let adjustedWhole =
-        whole +
-        fractional?.substring(
-          0,
-          Math.min(positiveExponent, fractional?.length),
+    if (exponent.includes("+")) {
+      let positiveExponent = parseInt(exponent?.replace("+", ""), 10);
+      if (fractional) {
+        let adjustedWhole =
+          whole +
+          fractional?.substring(
+            0,
+            Math.min(positiveExponent, fractional?.length),
+          );
+        let remainingExponent = positiveExponent - fractional?.length;
+        return adjustedWhole + "0".repeat(Math.max(0, remainingExponent));
+      } else {
+        return whole + "0".repeat(positiveExponent);
+      }
+    } else if (exponent?.includes("-")) {
+      let negativeExponent = parseInt(exponent?.replace("-", ""), 10);
+      if (negativeExponent >= whole?.length) {
+        return (
+          "0." +
+          "0".repeat(negativeExponent - whole?.length) +
+          whole +
+          (fractional || "")
         );
-      let remainingExponent = positiveExponent - fractional?.length;
-      return adjustedWhole + "0".repeat(Math.max(0, remainingExponent));
-    } else {
-      return whole + "0".repeat(positiveExponent);
-    }
-  } else if (exponent?.includes("-")) {
-    let negativeExponent = parseInt(exponent?.replace("-", ""), 10);
-    if (negativeExponent >= whole?.length) {
-      return (
-        "0." +
-        "0".repeat(negativeExponent - whole?.length) +
-        whole +
-        (fractional || "")
-      );
-    } else {
-      let decimalPlace = whole?.length - negativeExponent;
-      return (
-        whole?.substring(0, decimalPlace) +
-        "." +
-        whole?.substring(decimalPlace) +
-        (fractional || "")
-      );
+      } else {
+        let decimalPlace = whole?.length - negativeExponent;
+        return (
+          whole?.substring(0, decimalPlace) +
+          "." +
+          whole?.substring(decimalPlace) +
+          (fractional || "")
+        );
+      }
     }
   }
   return expNotation;
@@ -378,4 +381,33 @@ export const processAmount = (amount) => {
     return convertToFullNumber(amount);
   }
   return amount;
+};
+
+export const getDaysDifferenceDescription = (targetDateStr) => {
+  const targetDate = new Date(targetDateStr);
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+  const differenceInMilliseconds = targetDate - currentDate;
+  const differenceInDays = Math.round(
+    differenceInMilliseconds / (1000 * 60 * 60 * 24),
+  );
+  return differenceInDays;
+};
+
+export const formatCash = (n) => {
+  if (n < 1e3) return n;
+  if (n >= 1e3 && n < 1e6) return +(n / 1e3).toFixed(1) + "K";
+  if (n >= 1e6 && n < 1e9) return +(n / 1e6).toFixed(1) + "M";
+  if (n >= 1e9 && n < 1e12) return +(n / 1e9).toFixed(1) + "B";
+  if (n >= 1e12) return +(n / 1e12).toFixed(1) + "T";
+};
+
+export const getLinks = (daoAddress, networkId) => {
+  return baseLinks.map((link, index) => ({
+    ...link,
+    icon: `/assets/icons/${link.icon}.svg`,
+    hoveredLink: `/assets/icons/${link.icon}_hovered.svg`,
+    route: `/${link.routeHeader}/${daoAddress}/${networkId}`,
+    id: String(index + 1),
+  }));
 };

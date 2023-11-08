@@ -1,6 +1,7 @@
 import BackdropLoader from "@components/common/BackdropLoader";
 import CustomAlert from "@components/common/CustomAlert";
 import { FormControlLabel, Switch } from "@mui/material";
+import { useTheme } from "@mui/styles";
 import useDropsContractMethods from "hooks/useDropsContractMethods";
 import React, { useEffect, useState } from "react";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
@@ -13,7 +14,8 @@ const ToggleClaim = ({ claimAddress, isActive }) => {
 
   const { toggleClaim } = useDropsContractMethods();
 
-  const classes = ClaimsInsightStyles();
+  const theme = useTheme();
+  const classes = ClaimsInsightStyles(theme);
 
   const claimsToggleHandler = async (e) => {
     setLoading(true);

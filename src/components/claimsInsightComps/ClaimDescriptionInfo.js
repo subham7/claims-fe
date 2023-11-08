@@ -7,6 +7,7 @@ import { FiExternalLink } from "react-icons/fi";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
 import { useNetwork } from "wagmi";
 import EditDetails from "@components/settingsComps/modals/EditDetails";
+import { useTheme } from "@mui/styles";
 
 const ClaimDescriptionInfo = ({
   description,
@@ -31,7 +32,8 @@ const ClaimDescriptionInfo = ({
   };
 
   const router = useRouter();
-  const classes = ClaimsInsightStyles();
+  const theme = useTheme();
+  const classes = ClaimsInsightStyles(theme);
   const copyHandler = () => {
     navigator.clipboard.writeText(
       `${window.location.origin}/claims/${networkId}/${claimAddress}`,

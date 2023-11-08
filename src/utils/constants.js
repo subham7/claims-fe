@@ -343,6 +343,7 @@ export const CHAIN_CONFIG = process.env.NEXT_IS_DEV
         aaveWrappedUsdcAddress: "0x625E7708f30cA75bfd92586e17077590C60eb4cD",
         aaveWrappedMaticAddress: "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97",
         blockExplorerUrl: "https://polygonscan.com",
+        logoUri: "https://cryptologos.cc/logos/polygon-matic-logo.png",
         stargateStakingAddresses: [
           "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
           "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",

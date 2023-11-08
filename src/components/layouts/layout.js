@@ -1,24 +1,22 @@
-import React, { useState } from "react";
 import { Box, CssBaseline, Grid, Typography } from "@mui/material";
-import Navbar from "../navbar";
-import Sidebar from "../sidebar";
 import { useAccount, useNetwork } from "wagmi";
 import { Web3Button } from "@web3modal/react";
 import useClubFetch from "hooks/useClubFetch";
 import { showWrongNetworkModal } from "utils/helper";
 import { makeStyles } from "@mui/styles";
+import Navbar from "@components/ui/Navbar/Navbar";
+import Sidebar from "@components/ui/Sidebar/Sidebar";
 
 const drawerWidth = 50;
 
 const useStyles = makeStyles({
   container: {
-    padding: "12px 32px 0px 40px",
+    padding: "12px 10px 0px 10px",
     marginTop: "80px",
   },
 });
 
 export default function Layout(props) {
-  const [mobileOpen, setMobileOpen] = useState(false);
   const { showSidebar = true, daoAddress, networkId: routeNetworkId } = props;
   useClubFetch({ daoAddress, networkId: routeNetworkId });
   const { address: walletAddress } = useAccount();
@@ -26,24 +24,17 @@ export default function Layout(props) {
   const networkId = "0x" + chain?.id.toString(16);
   const classes = useStyles();
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
-
   return (
     <>
-      <Navbar />
+      <div>
+        <Navbar />
+        {showSidebar && (
+          <Sidebar daoAddress={daoAddress} networkId={networkId} />
+        )}
+      </div>
+
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
-        {showSidebar && (
-          <Sidebar
-            mobileOpen={mobileOpen}
-            handleDrawerToggle={handleDrawerToggle}
-            page={props.page}
-            daoAddress={daoAddress}
-            networkId={networkId}
-          />
-        )}
 
         {!walletAddress || !networkId ? (
           <Grid

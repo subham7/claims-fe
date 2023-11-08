@@ -19,6 +19,7 @@ import { createSnapShot } from "api/claims";
 import dayjs from "dayjs";
 import CustomAlert from "@components/common/CustomAlert";
 import BackdropLoader from "@components/common/BackdropLoader";
+import { useTheme } from "@mui/styles";
 
 const ClaimInsight = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState([]);
@@ -32,7 +33,8 @@ const ClaimInsight = ({ claimAddress }) => {
   const [message, setMessage] = useState("");
   const [isSuccessFull, setIsSuccessFull] = useState(false);
 
-  const classes = ClaimsInsightStyles();
+  const theme = useTheme();
+  const classes = ClaimsInsightStyles(theme);
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
 
