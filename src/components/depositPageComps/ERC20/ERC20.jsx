@@ -17,6 +17,7 @@ import DepositDetails from "./DepositDetails";
 import { getDocumentsByClubId } from "api/document";
 import PublicPageLayout from "@components/common/PublicPageLayout";
 import DepositPreRequisites from "../DepositPreRequisites";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const DepositInputComponents = ({
   formik,
@@ -67,10 +68,6 @@ const ERC20 = ({
 
   const clubData = useSelector((state) => {
     return state.club.clubData;
-  });
-
-  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.factoryContractAddress;
   });
 
   const Deposit_Token_Address = useSelector((state) => {
@@ -176,7 +173,7 @@ const ERC20 = ({
 
         await approveDeposit(
           Deposit_Token_Address,
-          FACTORY_CONTRACT_ADDRESS,
+          CHAIN_CONFIG[networkId].factoryContractAddress,
           values.tokenInput,
           tokenDetails?.tokenDecimal,
         );

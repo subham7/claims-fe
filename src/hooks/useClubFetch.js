@@ -31,10 +31,6 @@ const useClubFetch = ({ daoAddress, networkId }) => {
     return state.club.clubData;
   });
 
-  const FACTORY_CONTRACT_ADDRESS = useSelector(
-    (state) => state.gnosis.factoryContractAddress,
-  );
-
   const {
     getDaoDetails,
     getERC20DAOdetails,
@@ -202,19 +198,12 @@ const useClubFetch = ({ daoAddress, networkId }) => {
     if (
       walletAddress &&
       networkId &&
-      FACTORY_CONTRACT_ADDRESS &&
       daoAddress &&
       reduxClubData.gnosisAddress
     ) {
       checkUserExists();
     }
-  }, [
-    walletAddress,
-    networkId,
-    daoAddress,
-    FACTORY_CONTRACT_ADDRESS,
-    reduxClubData.gnosisAddress,
-  ]);
+  }, [walletAddress, networkId, daoAddress, reduxClubData.gnosisAddress]);
 };
 
 export default useClubFetch;

@@ -362,7 +362,6 @@ const useAppContractMethods = (params) => {
     merkleRoot,
   }) => {
     try {
-      console.log(CHAIN_CONFIG[networkId].factoryContractAddress);
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
         abi: factoryContractABI,

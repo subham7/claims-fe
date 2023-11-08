@@ -12,6 +12,7 @@ import Mint from "./Mint";
 import { useRouter } from "next/router";
 import { getDocumentsByClubId } from "api/document";
 import PublicPageLayout from "@components/common/PublicPageLayout";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const DepositInputComponents = ({ depositPreRequisitesProps, mintProps }) => {
   return (
@@ -67,10 +68,6 @@ const ERC721 = ({
     useCommonContractMethods();
 
   const { buyGovernanceTokenERC721DAO } = useAppContractMethods({ daoAddress });
-
-  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.factoryContractAddress;
-  });
 
   const clubData = useSelector((state) => {
     return state.club.clubData;
@@ -132,7 +129,7 @@ const ERC721 = ({
       setLoading(true);
       await approveDeposit(
         Deposit_Token_Address,
-        FACTORY_CONTRACT_ADDRESS,
+        CHAIN_CONFIG[networkId].factoryContractAddress,
         convertFromWeiGovernance(
           clubData?.pricePerToken,
           tokenDetails.tokenDecimal,

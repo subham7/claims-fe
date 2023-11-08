@@ -53,6 +53,7 @@ import { ProposalDetailStyles } from "./ProposalDetailStyles";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import CustomAlert from "@components/common/CustomAlert";
 import BackdropLoader from "@components/common/BackdropLoader";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const ProposalDetail = ({ pid, daoAddress }) => {
   const classes = ProposalDetailStyles();
@@ -137,10 +138,6 @@ const ProposalDetail = ({ pid, daoAddress }) => {
 
   const GNOSIS_TRANSACTION_URL = useSelector((state) => {
     return state.gnosis.transactionUrl;
-  });
-
-  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.factoryContractAddress;
   });
 
   const factoryData = useSelector((state) => {
@@ -418,7 +415,7 @@ Cast your vote before ${new Date(
         proposalData?.commands[0]?.executionId === 12 ||
         proposalData.commands[0]?.executionId === 13 ||
         proposalData.commands[0]?.executionId === 14
-        ? FACTORY_CONTRACT_ADDRESS
+        ? CHAIN_CONFIG[networkId].factoryContractAddress
         : "",
       GNOSIS_TRANSACTION_URL,
       proposalData,
