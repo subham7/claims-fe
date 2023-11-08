@@ -10,7 +10,10 @@ const useCommonContractMethods = () => {
   const networkId = "0x" + chain?.id.toString(16);
 
   const getTokenSymbol = async (contractAddress) => {
-    if (contractAddress) {
+    const symbol = localStorage.getItem(`stationx-${contractAddress}-symbol`);
+    if (symbol) {
+      return symbol;
+    } else if (contractAddress) {
       const response = await readContractFunction({
         address: contractAddress,
         abi: erc20TokenABI,
@@ -18,7 +21,7 @@ const useCommonContractMethods = () => {
         args: [],
         networkId,
       });
-
+      localStorage.setItem(`stationx-${contractAddress}-name`, response);
       return response;
     } else {
       return "";
@@ -26,7 +29,10 @@ const useCommonContractMethods = () => {
   };
 
   const getTokenName = async (contractAddress) => {
-    if (contractAddress) {
+    const name = localStorage.getItem(`stationx-${contractAddress}-name`);
+    if (name) {
+      return name;
+    } else if (contractAddress) {
       const response = await readContractFunction({
         address: contractAddress,
         abi: erc20TokenABI,
@@ -34,7 +40,7 @@ const useCommonContractMethods = () => {
         args: [],
         networkId,
       });
-
+      localStorage.setItem(`stationx-${contractAddress}-name`, response);
       return response;
     } else {
       return "";
@@ -42,7 +48,12 @@ const useCommonContractMethods = () => {
   };
 
   const getDecimals = async (contractAddress) => {
-    if (contractAddress) {
+    const decimals = localStorage.getItem(
+      `stationx-${contractAddress}-decimals`,
+    );
+    if (decimals) {
+      return Number(decimals);
+    } else if (contractAddress) {
       const response = await readContractFunction({
         address: contractAddress,
         abi: erc20TokenABI,
@@ -50,7 +61,7 @@ const useCommonContractMethods = () => {
         args: [],
         networkId,
       });
-
+      localStorage.setItem(`stationx-${contractAddress}-decimals`, response);
       return response;
     } else {
       return "";
