@@ -1,7 +1,6 @@
 import { Box, Grid, Step, StepButton, Stepper } from "@mui/material";
 import Button from "@components/ui/button/Button";
-import ProtectRoute from "../../src/utils/auth";
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import Step1 from "../../src/components/createClubComps/Step1";
 import Step3 from "../../src/components/createClubComps/Step3";
 import { useFormik } from "formik";
@@ -136,6 +135,10 @@ const Create = () => {
       handleNext();
     },
   });
+
+  useEffect(() => {
+    formikStep3.setFieldValue("addressList", [walletAddress]);
+  }, [walletAddress]);
 
   const formikStep3 = useFormik({
     initialValues: {
@@ -511,4 +514,4 @@ const Create = () => {
     </Layout>
   );
 };
-export default ProtectRoute(Create);
+export default Create;
