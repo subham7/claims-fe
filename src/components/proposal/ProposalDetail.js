@@ -53,6 +53,7 @@ import { ProposalDetailStyles } from "./ProposalDetailStyles";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import CustomAlert from "@components/common/CustomAlert";
 import BackdropLoader from "@components/common/BackdropLoader";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const ProposalDetail = ({ pid, daoAddress }) => {
   const classes = ProposalDetailStyles();
@@ -139,16 +140,12 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     return state.gnosis.transactionUrl;
   });
 
-  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.factoryContractAddress;
-  });
-
   const factoryData = useSelector((state) => {
     return state.club.factoryData;
   });
 
   const { getERC20TotalSupply, updateProposalAndExecution, getNftOwnersCount } =
-    useAppContractMethods();
+    useAppContractMethods({ daoAddress });
 
   const { getBalance } = useCommonContractMethods();
 
@@ -390,7 +387,6 @@ Cast your vote before ${new Date(
     const response = updateProposalAndExecution(
       data,
       approvalData,
-      daoAddress,
       Web3.utils.toChecksumAddress(gnosisAddress),
       txHash,
       pid,
@@ -419,7 +415,7 @@ Cast your vote before ${new Date(
         proposalData?.commands[0]?.executionId === 12 ||
         proposalData.commands[0]?.executionId === 13 ||
         proposalData.commands[0]?.executionId === 14
-        ? FACTORY_CONTRACT_ADDRESS
+        ? CHAIN_CONFIG[networkId].factoryContractAddress
         : "",
       GNOSIS_TRANSACTION_URL,
       proposalData,

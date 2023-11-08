@@ -3,11 +3,14 @@
 .nav {
   width: 100%;
   display: flex;
-  justify-content: flex-end;
-  padding: 12px 28px;
+  justify-content: space-between;
+  padding: 12px 20px;
   position: fixed;
   border: 1px solid $border-color;
   z-index: 10;
+  height: 10vh;
+  align-items: center;
+  background-color: $background-color-dark;
 
   .wallet-div {
     display: flex;

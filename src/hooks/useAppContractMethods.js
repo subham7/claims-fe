@@ -14,8 +14,12 @@ import { factoryContractABI } from "abis/factoryContract.js";
 import { getTransaction } from "utils/proposal";
 import { erc20DaoABI } from "abis/erc20Dao";
 import { erc721DaoABI } from "abis/erc721Dao";
+import { encodeFunctionData } from "viem";
+import { CHAIN_CONFIG } from "utils/constants";
 
-const useAppContractMethods = () => {
+const useAppContractMethods = (params) => {
+  const { daoAddress } = params ?? {};
+
   const { address: walletAddress } = useAccount();
 
   const { chain } = useNetwork();
@@ -25,19 +29,9 @@ const useAppContractMethods = () => {
     return state.club.factoryData.assetsStoredOnGnosis;
   });
 
-  const contractInstances = useSelector((state) => {
-    return state.contractInstances.contractInstances;
-  });
-
-  const FACTORY_CONTRACT_ADDRESS = useSelector(
-    (state) => state.gnosis.factoryContractAddress,
-  );
-
-  const { erc20DaoContractCall, erc721DaoContractCall } = contractInstances;
-
-  const getDaoDetails = async (daoAddress) => {
+  const getDaoDetails = async () => {
     const response = await readContractFunction({
-      address: FACTORY_CONTRACT_ADDRESS,
+      address: CHAIN_CONFIG[networkId].factoryContractAddress,
       abi: factoryContractABI,
       functionName: "getDAOdetails",
       args: [daoAddress],
@@ -60,7 +54,7 @@ const useAppContractMethods = () => {
       : {};
   };
 
-  const getERC20DAOdetails = async (daoAddress) => {
+  const getERC20DAOdetails = async () => {
     const response = await readContractFunction({
       address: daoAddress,
       abi: erc20DaoABI,
@@ -79,7 +73,7 @@ const useAppContractMethods = () => {
       : {};
   };
 
-  const getERC721DAOdetails = async (daoAddress) => {
+  const getERC721DAOdetails = async () => {
     const response = await readContractFunction({
       address: daoAddress,
       abi: erc721DaoABI,
@@ -99,9 +93,9 @@ const useAppContractMethods = () => {
       : {};
   };
 
-  const getTokenGatingDetails = async (daoAddress) => {
+  const getTokenGatingDetails = async () => {
     let response = await readContractFunction({
-      address: FACTORY_CONTRACT_ADDRESS,
+      address: CHAIN_CONFIG[networkId].factoryContractAddress,
       abi: factoryContractABI,
       functionName: "getTokenGatingDetails",
       args: [daoAddress],
@@ -119,7 +113,7 @@ const useAppContractMethods = () => {
     return response ?? [];
   };
 
-  const getDaoBalance = async (daoAddress, is721) => {
+  const getDaoBalance = async (is721) => {
     const response = await readContractFunction({
       address: daoAddress,
       abi: is721 ? erc721DaoABI : erc20DaoABI,
@@ -133,19 +127,40 @@ const useAppContractMethods = () => {
   };
 
   const getERC20TotalSupply = async () => {
-    return await erc20DaoContractCall?.methods?.totalSupply().call();
+    const response = await readContractFunction({
+      address: daoAddress,
+      abi: erc20DaoABI,
+      functionName: "totalSupply",
+      args: [],
+      account: walletAddress,
+      networkId,
+    });
+
+    return Number(response ?? 0);
+  };
+
+  const getNftOwnersCount = async () => {
+    const response = await readContractFunction({
+      address: daoAddress,
+      abi: erc721DaoABI,
+      functionName: "_tokenIdTracker",
+      args: [],
+      account: walletAddress,
+      networkId,
+    });
+
+    return Number(response ?? 0);
   };
 
   const buyGovernanceTokenERC721DAO = async (
     userAddress,
-    daoAddress,
     tokenUriOfNFT,
     numOfTokens,
     merkleProof,
   ) => {
     try {
       const res = await writeContractFunction({
-        address: FACTORY_CONTRACT_ADDRESS,
+        address: CHAIN_CONFIG[networkId].factoryContractAddress,
         abi: factoryContractABI,
         functionName: "buyGovernanceTokenERC721DAO",
         args: [
@@ -166,13 +181,12 @@ const useAppContractMethods = () => {
 
   const buyGovernanceTokenERC20DAO = async (
     userAddress,
-    daoAddress,
     numOfTokens,
     merkleProof,
   ) => {
     try {
       const res = await writeContractFunction({
-        address: FACTORY_CONTRACT_ADDRESS,
+        address: CHAIN_CONFIG[networkId].factoryContractAddress,
         abi: factoryContractABI,
         functionName: "buyGovernanceTokenERC20DAO",
         args: [userAddress, daoAddress, numOfTokens, merkleProof],
@@ -185,14 +199,10 @@ const useAppContractMethods = () => {
     }
   };
 
-  const getNftOwnersCount = async () => {
-    return await erc721DaoContractCall?.methods?._tokenIdTracker().call();
-  };
-
-  const updateOwnerFee = async (ownerFeePerDeposit, daoAddress) => {
+  const updateOwnerFee = async (ownerFeePerDeposit) => {
     try {
       const res = await writeContractFunction({
-        address: FACTORY_CONTRACT_ADDRESS,
+        address: CHAIN_CONFIG[networkId].factoryContractAddress,
         abi: factoryContractABI,
         functionName: "updateOwnerFee",
         args: [ownerFeePerDeposit, daoAddress],
@@ -205,10 +215,10 @@ const useAppContractMethods = () => {
     }
   };
 
-  const updateDepositTime = async (depositTime, daoAddress) => {
+  const updateDepositTime = async (depositTime) => {
     try {
       const res = await writeContractFunction({
-        address: FACTORY_CONTRACT_ADDRESS,
+        address: CHAIN_CONFIG[networkId].factoryContractAddress,
         abi: factoryContractABI,
         functionName: "updateDepositTime",
         args: [depositTime, daoAddress],
@@ -227,11 +237,10 @@ const useAppContractMethods = () => {
     operator,
     comparator,
     value,
-    daoAddress,
   ) => {
     try {
       const res = await writeContractFunction({
-        address: FACTORY_CONTRACT_ADDRESS,
+        address: CHAIN_CONFIG[networkId].factoryContractAddress,
         abi: factoryContractABI,
         functionName: "setupTokenGating",
         args: [tokenA, tokenB, operator, comparator, value, daoAddress],
@@ -244,10 +253,10 @@ const useAppContractMethods = () => {
     }
   };
 
-  const disableTokenGating = async (daoAddress) => {
+  const disableTokenGating = async () => {
     try {
       const res = await writeContractFunction({
-        address: FACTORY_CONTRACT_ADDRESS,
+        address: CHAIN_CONFIG[networkId].factoryContractAddress,
         abi: factoryContractABI,
         functionName: "disableTokenGating",
         args: [daoAddress],
@@ -261,9 +270,12 @@ const useAppContractMethods = () => {
   };
 
   const toggleWhitelist = async () => {
-    return await erc20DaoContractCall?.methods
-      ?.toggleOnlyAllowWhitelist()
-      .encodeABI();
+    const res = encodeFunctionData({
+      abi: erc20DaoABI,
+      functionName: "toggleOnlyAllowWhitelist",
+    });
+
+    return res;
   };
 
   const createERC721DAO = async ({
@@ -290,7 +302,7 @@ const useAppContractMethods = () => {
   }) => {
     try {
       const res = await writeContractFunction({
-        address: FACTORY_CONTRACT_ADDRESS,
+        address: CHAIN_CONFIG[networkId].factoryContractAddress,
         abi: factoryContractABI,
         functionName: "createERC721DAO",
         args: [
@@ -347,7 +359,7 @@ const useAppContractMethods = () => {
   }) => {
     try {
       const res = await writeContractFunction({
-        address: FACTORY_CONTRACT_ADDRESS,
+        address: CHAIN_CONFIG[networkId].factoryContractAddress,
         abi: factoryContractABI,
         functionName: "createERC20DAO",
         args: [
@@ -384,7 +396,6 @@ const useAppContractMethods = () => {
   const updateProposalAndExecution = async (
     data,
     approvalData = "",
-    daoAddress = "",
     gnosisAddress = "",
     txHash = "",
     pid,
@@ -428,7 +439,6 @@ const useAppContractMethods = () => {
       airdropContractAddress,
       tokenData,
       gnosisAddress,
-      contractInstances,
       parameters,
       isAssetsStoredOnGnosis,
       networkId,
