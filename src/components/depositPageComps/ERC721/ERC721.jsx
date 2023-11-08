@@ -73,10 +73,6 @@ const ERC721 = ({
     return state.club.clubData;
   });
 
-  const Deposit_Token_Address = useSelector((state) => {
-    return state.club.factoryData.depositTokenAddress;
-  });
-
   const fetchActivities = async () => {
     try {
       const { users } = await queryLatestMembersFromSubgraph(
@@ -91,7 +87,7 @@ const ERC721 = ({
 
   const fetchTokenDetails = async () => {
     try {
-      if (Deposit_Token_Address && daoAddress) {
+      if (daoAddress) {
         const balance = await getBalance(daoAddress);
         setBalanceOfNft(balance);
 
@@ -100,10 +96,11 @@ const ERC721 = ({
         } else {
           setHasClaimed(false);
         }
-        const decimals = await getDecimals(Deposit_Token_Address);
-        const symbol = await getTokenSymbol(Deposit_Token_Address);
-        const name = await getTokenSymbol(Deposit_Token_Address);
-        const userBalance = await getBalance(Deposit_Token_Address);
+        const depositTokenAddress = CHAIN_CONFIG[networkId].usdcAddress;
+        const decimals = await getDecimals(depositTokenAddress);
+        const symbol = await getTokenSymbol(depositTokenAddress);
+        const name = await getTokenSymbol(depositTokenAddress);
+        const userBalance = await getBalance(depositTokenAddress);
 
         setTokenDetails({
           tokenSymbol: symbol,
@@ -127,8 +124,10 @@ const ERC721 = ({
   const claimNFTHandler = async () => {
     try {
       setLoading(true);
+      const depositTokenAddress = CHAIN_CONFIG[networkId].usdcAddress;
+
       await approveDeposit(
-        Deposit_Token_Address,
+        depositTokenAddress,
         CHAIN_CONFIG[networkId].factoryContractAddress,
         convertFromWeiGovernance(
           clubData?.pricePerToken,
@@ -186,7 +185,7 @@ const ERC721 = ({
 
   useEffect(() => {
     fetchTokenDetails();
-  }, [Deposit_Token_Address, daoAddress]);
+  }, [daoAddress]);
 
   useEffect(() => {
     const fetchSubgraphData = async () => {

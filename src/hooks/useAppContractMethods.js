@@ -29,10 +29,6 @@ const useAppContractMethods = (params) => {
     return state.club.factoryData.assetsStoredOnGnosis;
   });
 
-  const contractInstances = useSelector((state) => {
-    return state.contractInstances.contractInstances;
-  });
-
   const getDaoDetails = async () => {
     const response = await readContractFunction({
       address: CHAIN_CONFIG[networkId].factoryContractAddress,
@@ -443,7 +439,6 @@ const useAppContractMethods = (params) => {
       airdropContractAddress,
       tokenData,
       gnosisAddress,
-      contractInstances,
       parameters,
       isAssetsStoredOnGnosis,
       networkId,

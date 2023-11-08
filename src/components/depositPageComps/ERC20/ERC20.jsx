@@ -70,10 +70,6 @@ const ERC20 = ({
     return state.club.clubData;
   });
 
-  const Deposit_Token_Address = useSelector((state) => {
-    return state.club.factoryData.depositTokenAddress;
-  });
-
   const { approveDeposit, getDecimals, getTokenSymbol, getBalance } =
     useCommonContractMethods();
 
@@ -172,7 +168,7 @@ const ERC20 = ({
         );
 
         await approveDeposit(
-          Deposit_Token_Address,
+          CHAIN_CONFIG[networkId].usdcAddress,
           CHAIN_CONFIG[networkId].factoryContractAddress,
           values.tokenInput,
           tokenDetails?.tokenDecimal,
@@ -207,9 +203,10 @@ const ERC20 = ({
 
   const fetchTokenDetails = async () => {
     try {
-      const decimals = await getDecimals(Deposit_Token_Address);
-      const symbol = await getTokenSymbol(Deposit_Token_Address);
-      const userBalance = await getBalance(Deposit_Token_Address);
+      const depositTokenAddress = CHAIN_CONFIG[networkId].usdcAddress;
+      const decimals = await getDecimals(depositTokenAddress);
+      const symbol = await getTokenSymbol(depositTokenAddress);
+      const userBalance = await getBalance(depositTokenAddress);
 
       setTokenDetails({
         tokenSymbol: symbol,
@@ -261,8 +258,8 @@ const ERC20 = ({
   }, [daoAddress, depositConfig?.uploadDocId]);
 
   useEffect(() => {
-    if (Deposit_Token_Address) fetchTokenDetails();
-  }, [Deposit_Token_Address]);
+    fetchTokenDetails();
+  }, []);
 
   useEffect(() => {
     if (daoAddress) {

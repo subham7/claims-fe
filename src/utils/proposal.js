@@ -720,7 +720,6 @@ export const getTransaction = async ({
   transactionData,
   tokenData,
   gnosisAddress,
-  contractInstances,
   parameters,
   isAssetsStoredOnGnosis,
   networkId,
@@ -746,8 +745,6 @@ export const getTransaction = async ({
   let approvalTransaction;
   let transaction;
   const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
-
-  // const { erc20DaoContractCall } = contractInstances;
 
   switch (executionId) {
     case 0:
