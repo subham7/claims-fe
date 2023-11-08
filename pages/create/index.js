@@ -1,6 +1,6 @@
 import { Box, Grid, Step, StepButton, Stepper } from "@mui/material";
 import Button from "@components/ui/button/Button";
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import Step1 from "../../src/components/createClubComps/Step1";
 import Step3 from "../../src/components/createClubComps/Step3";
 import { useFormik } from "formik";
