@@ -1,16 +1,13 @@
-import Web3 from "web3";
 import { erc20TokenABI } from "abis/usdcTokenContract.js";
 import { convertToWeiGovernance } from "utils/globalFunctions";
 import { useAccount, useNetwork } from "wagmi";
-import { CHAIN_CONFIG } from "utils/constants";
 import { readContractFunction, writeContractFunction } from "utils/helper";
+import { encodePacked } from "viem";
 
 const useCommonContractMethods = () => {
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
-
-  const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
 
   const getTokenSymbol = async (contractAddress) => {
     if (contractAddress) {
@@ -23,6 +20,8 @@ const useCommonContractMethods = () => {
       });
 
       return response;
+    } else {
+      return "";
     }
   };
 
@@ -37,6 +36,8 @@ const useCommonContractMethods = () => {
       });
 
       return response;
+    } else {
+      return "";
     }
   };
 
@@ -51,6 +52,8 @@ const useCommonContractMethods = () => {
       });
 
       return response;
+    } else {
+      return "";
     }
   };
 
@@ -65,6 +68,8 @@ const useCommonContractMethods = () => {
       });
 
       return Number(response);
+    } else {
+      return 0;
     }
   };
 
@@ -109,13 +114,9 @@ const useCommonContractMethods = () => {
   };
 
   const encode = (address, amount) => {
-    // Define the types and values for encoding
     const types = ["address", "uint256"];
     const values = [address, amount];
-
-    // Encode the address and amount together
-    const encodedData = web3Call.eth.abi.encodeParameters(types, values);
-
+    const encodedData = encodePacked(types, values);
     return encodedData;
   };
 
