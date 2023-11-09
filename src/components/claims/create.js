@@ -20,6 +20,8 @@ import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useDropsContractMethods from "hooks/useDropsContractMethods";
 import CustomAlert from "@components/common/CustomAlert";
 import { getPublicClient } from "utils/viemConfig";
+import { useDispatch } from "react-redux";
+import { addAlertData } from "redux/reducers/general";
 
 const useStyles = makeStyles({
   container: {
@@ -31,25 +33,23 @@ const useStyles = makeStyles({
 });
 
 const CreateClaim = () => {
-  const [activeStep, setActiveStep] = useState(0);
-  const [tokensInWallet, setTokensInWallet] = useState(null);
-  const [showError, setShowError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [finish, setFinish] = useState(false);
-  const [message, setMessage] = useState("");
-  const [loadingTokens, setLoadingTokens] = useState(false);
-  const [snapshotMerkleData, setSnapshotMerkleData] = useState([]);
-
   const classes = useStyles();
-
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const { approveDeposit, getDecimals } = useCommonContractMethods();
 
   const { claimContract } = useDropsContractMethods();
+
+  const [activeStep, setActiveStep] = useState(0);
+  const [tokensInWallet, setTokensInWallet] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [finish, setFinish] = useState(false);
+  const [loadingTokens, setLoadingTokens] = useState(false);
+  const [snapshotMerkleData, setSnapshotMerkleData] = useState([]);
 
   const handleBack = () => {
     setActiveStep((prevStep) => prevStep - 1);
@@ -211,8 +211,13 @@ const CreateClaim = () => {
             data.blockNumber > 0 &&
             data.blockNumber > Number(latestBlockNumber)
           ) {
-            showMessageHandler(setShowError);
-            setMessage("Invalid block number!");
+            dispatch(
+              addAlertData({
+                open: true,
+                message: "Invalid block number!",
+                severity: "error",
+              }),
+            );
             setLoading(false);
             return;
           }
@@ -232,8 +237,13 @@ const CreateClaim = () => {
           setSnapshotMerkleData(snapshotData);
         } catch (error) {
           console.log(error);
-          setMessage("Unable to fetch snapshot data");
-          showMessageHandler(setShowError);
+          dispatch(
+            addAlertData({
+              open: true,
+              message: "Unable to fetch snapshot data",
+              severity: "error",
+            }),
+          );
           setLoading(false);
         }
       }
@@ -364,8 +374,13 @@ const CreateClaim = () => {
           } catch (err) {
             console.log(err);
             setLoading(false);
-            showMessageHandler(setShowError);
-            setMessage(err.message);
+            dispatch(
+              addAlertData({
+                open: true,
+                message: err.message,
+                severity: "error",
+              }),
+            );
           }
         };
 
@@ -467,8 +482,13 @@ const CreateClaim = () => {
           } catch (err) {
             console.log(err);
             setLoading(false);
-            showMessageHandler(setShowError);
-            setMessage(err.message);
+            dispatch(
+              addAlertData({
+                open: true,
+                message: err.message,
+                severity: "error",
+              }),
+            );
           }
         };
         loadClaimsContractFactoryData_CSV();
@@ -525,10 +545,6 @@ const CreateClaim = () => {
             </Grid>
           )}
         </Grid>
-
-        {showError ? (
-          <CustomAlert severity={false} alertMessage={message} />
-        ) : null}
 
         {finish ? (
           <CustomAlert

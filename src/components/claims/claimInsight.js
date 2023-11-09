@@ -20,6 +20,7 @@ import dayjs from "dayjs";
 import BackdropLoader from "@components/common/BackdropLoader";
 import { useTheme } from "@mui/styles";
 import { useDispatch } from "react-redux";
+import { addAlertData } from "redux/reducers/general";
 
 const ClaimInsight = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState([]);
