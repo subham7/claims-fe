@@ -14,7 +14,7 @@ import React, { useState } from "react";
 import dayjs from "dayjs";
 import ProposalActionForm from "./ProposalActionForm";
 import { createProposal } from "../../api/proposal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useAccount, useNetwork } from "wagmi";
 import { getProposalCommands } from "utils/proposalData";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
@@ -23,6 +23,7 @@ import CustomAlert from "@components/common/CustomAlert";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import CommonProposalForm from "./CommonProposalForm";
 import SurveyProposalForm from "./SurveyProposalForm";
+import { addAlertData } from "redux/reducers/general";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -66,6 +67,7 @@ const CreateProposalDialog = ({
   const clubData = useSelector((state) => {
     return state.club.clubData;
   });
+  const dispatch = useDispatch();
 
   const { getERC20TotalSupply, getNftOwnersCount } = useAppContractMethods();
 
@@ -191,11 +193,18 @@ const CreateProposalDialog = ({
             setLoaderOpen(false);
           } else {
             fetchProposalList();
-            setOpenSnackBar(true);
-            setMessage("Proposal created successfully!");
-            setFailed(true);
-            showMessageHandler();
+            // setOpenSnackBar(true);
+            // setMessage("Proposal created successfully!");
+            // setFailed(true);
+            // showMessageHandler();
             setOpen(false);
+            dispatch(
+              addAlertData({
+                open: true,
+                message: "Proposal created successfully!",
+                severity: "success",
+              }),
+            );
             setLoaderOpen(false);
           }
         });
