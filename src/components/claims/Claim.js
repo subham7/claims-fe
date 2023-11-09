@@ -20,6 +20,8 @@ import { ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import PublicPageLayout from "@components/common/PublicPageLayout";
 import TwitterSharingModal from "@components/modals/TwitterSharingModal";
 import { processAmount } from "utils/helper";
+import { addAlertData } from "redux/reducers/general";
+import { useDispatch } from "react-redux";
 
 const ClaimInputComponent = ({
   claimInputProps,
@@ -61,6 +63,8 @@ const ClaimInputComponent = ({
 const Claim = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState();
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+
   const [tokenDetails, setTokenDetails] = useState({
     tokenDecimal: 0,
     tokenSymbol: "",
@@ -84,8 +88,6 @@ const Claim = ({ claimAddress }) => {
   const [remainingInUSD, setRemainingInUSD] = useState(0);
   const [claimInput, setClaimInput] = useState(0);
   const [isClaiming, setIsClaiming] = useState(false);
-  const [showMessage, setShowMessage] = useState(false);
-  const [message, setMessage] = useState("");
   const [claimed, setClaimed] = useState(false);
   const [claimGeneralInfo, setClaimGeneralInfo] = useState();
 
@@ -351,8 +353,13 @@ const Claim = ({ claimAddress }) => {
         setAlreadyClaimed(true);
         setClaimed(true);
         setClaimInput(0);
-        showMessageHandler();
-        setMessage("Successfully Claimed!");
+        dispatch(
+          addAlertData({
+            open: true,
+            message: "Successfully Claimed!",
+            severity: "success",
+          }),
+        );
         setShowTwitterShareModal(true);
       } else {
         await claim(
@@ -384,24 +391,27 @@ const Claim = ({ claimAddress }) => {
         setAlreadyClaimed(true);
         setClaimInput(0);
 
-        showMessageHandler();
-        setMessage("Successfully Claimed!");
+        dispatch(
+          addAlertData({
+            open: true,
+            message: "Successfully Claimed!",
+            severity: "success",
+          }),
+        );
         setShowTwitterShareModal(true);
       }
     } catch (err) {
       console.log(err);
       setClaimed(false);
-      setMessage("Some Error Occured!");
-      showMessageHandler();
+      dispatch(
+        addAlertData({
+          open: true,
+          message: "Some error occured!",
+          severity: "error",
+        }),
+      );
       setIsClaiming(false);
     }
-  };
-
-  const showMessageHandler = () => {
-    setShowMessage(true);
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 4000);
   };
 
   const maxHandler = async () => {
@@ -506,7 +516,6 @@ const Claim = ({ claimAddress }) => {
           tokenDetails: tokenDetails,
         }}
         members={activityDetails}
-        message={message}
         isSuccessfull={claimed}
         loading={false}
         showMessage={showMessage}

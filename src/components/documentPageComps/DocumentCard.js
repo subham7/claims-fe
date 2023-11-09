@@ -1,7 +1,8 @@
-import CustomAlert from "@components/common/CustomAlert";
 import { makeStyles } from "@mui/styles";
-import React, { useState } from "react";
+import React from "react";
 import { BsLink45Deg } from "react-icons/bs";
+import { useDispatch } from "react-redux";
+import { addAlertData } from "redux/reducers/general";
 import { shortAddress } from "utils/helper";
 
 const useStyles = makeStyles({
@@ -70,9 +71,9 @@ const DocumentCard = ({
   daoAddress,
   networkId,
 }) => {
-  const [isCopied, setIsCopied] = useState(false);
-
   const classes = useStyles();
+  const dispatch = useDispatch();
+
   const convertedDate = new Date(date).toLocaleDateString();
 
   return (
@@ -91,10 +92,13 @@ const DocumentCard = ({
               navigator.clipboard.writeText(
                 `${window.location.origin}/documents/${daoAddress}/${networkId}/sign/${legalDocLink}`,
               );
-              setIsCopied(true);
-              setTimeout(() => {
-                setIsCopied(false);
-              }, 3000);
+              dispatch(
+                addAlertData({
+                  open: true,
+                  message: "Copied!",
+                  severity: "success",
+                }),
+              );
             }}
             size={25}
             className={classes.icons}
@@ -106,8 +110,6 @@ const DocumentCard = ({
         <span className={classes.span}>#{index} </span>
         {fileName}
       </h2>
-
-      {isCopied && <CustomAlert alertMessage={"Copied"} severity={true} />}
     </div>
   );
 };

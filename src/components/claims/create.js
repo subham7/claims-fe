@@ -18,7 +18,6 @@ import { getUserTokenData } from "utils/helper";
 import { CHAIN_CONFIG, ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useDropsContractMethods from "hooks/useDropsContractMethods";
-import CustomAlert from "@components/common/CustomAlert";
 import { getPublicClient } from "utils/viemConfig";
 import { useDispatch } from "react-redux";
 import { addAlertData } from "redux/reducers/general";
@@ -367,7 +366,13 @@ const CreateClaim = () => {
 
             setLoading(false);
             setFinish(true);
-            showMessageHandler(setFinish);
+            dispatch(
+              addAlertData({
+                open: true,
+                message: "Airdrop created successfully",
+                severity: "success",
+              }),
+            );
             setTimeout(() => {
               router.push(`/claims/`);
             }, 1000);
@@ -475,7 +480,13 @@ const CreateClaim = () => {
 
             setLoading(false);
             setFinish(true);
-            showMessageHandler(setFinish);
+            dispatch(
+              addAlertData({
+                open: true,
+                message: "Airdrop created successfully",
+                severity: "success",
+              }),
+            );
             setTimeout(() => {
               router.push(`/claims/`);
             }, 3000);
@@ -525,35 +536,19 @@ const CreateClaim = () => {
     }
   };
 
-  const showMessageHandler = (setState) => {
-    setState(true);
-    setTimeout(() => {
-      setState(false);
-    }, 4000);
-  };
-
   return (
-    <>
-      <div className={classes.container}>
-        <Grid container>
-          <Grid item xs={12} sx={{ padding: "20px" }}>
-            {formContent(activeStep)}
-          </Grid>
-          {formikStep1.errors.submit && (
-            <Grid item xs={12}>
-              <FormHelperText error>{formikStep1.errors.submit}</FormHelperText>
-            </Grid>
-          )}
+    <div className={classes.container}>
+      <Grid container>
+        <Grid item xs={12} sx={{ padding: "20px" }}>
+          {formContent(activeStep)}
         </Grid>
-
-        {finish ? (
-          <CustomAlert
-            severity={true}
-            alertMessage={"Airdrop created successfully"}
-          />
-        ) : null}
-      </div>
-    </>
+        {formikStep1.errors.submit && (
+          <Grid item xs={12}>
+            <FormHelperText error>{formikStep1.errors.submit}</FormHelperText>
+          </Grid>
+        )}
+      </Grid>
+    </div>
   );
 };
 

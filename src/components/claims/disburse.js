@@ -12,7 +12,6 @@ import DisburseForm from "@components/claimsPageComps/DisburseForm";
 import { convertToWeiGovernance } from "utils/globalFunctions";
 import useDropsContractMethods from "hooks/useDropsContractMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
-import CustomAlert from "@components/common/CustomAlert";
 import { addAlertData } from "redux/reducers/general";
 import { useDispatch } from "react-redux";
 
@@ -38,10 +37,7 @@ const CreateDisburse = () => {
   const { approveDeposit } = useCommonContractMethods();
 
   const [tokensInWallet, setTokensInWallet] = useState(null);
-  const [message, setMessage] = useState("");
-  const [showMessage, setShowMessage] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [isSuccessFull, setIsSuccessFull] = useState(false);
   const [loadingTokens, setLoadingTokens] = useState(false);
 
   const getCurrentAccount = async () => {
@@ -94,9 +90,13 @@ const CreateDisburse = () => {
             disburseAmounts.push(Number(amount));
           } else {
             setLoading(false);
-            showMessageHandler();
-            setIsSuccessFull(false);
-            throw new Error("Invalid disburse list format");
+            dispatch(
+              addAlertData({
+                open: true,
+                message: "Invalid disburse list format",
+                severity: "error",
+              }),
+            );
           }
         });
 
@@ -174,13 +174,6 @@ const CreateDisburse = () => {
     },
   });
 
-  const showMessageHandler = () => {
-    setShowMessage(true);
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 4000);
-  };
-
   return (
     <>
       <div className={classes.container}>
@@ -193,11 +186,6 @@ const CreateDisburse = () => {
             />
           </Grid>
         </Grid>
-
-        {showMessage && (
-          <CustomAlert alertMessage={message} severity={isSuccessFull} />
-        )}
-
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={loading}>

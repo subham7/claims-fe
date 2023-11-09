@@ -21,10 +21,11 @@ import DepositDocument from "./modals/DepositDocument";
 import { useNetwork } from "wagmi";
 import { CHAIN_CONFIG } from "utils/constants";
 import UploadW8Ben from "./modals/UploadW8Ben";
-import CustomAlert from "@components/common/CustomAlert";
 import { createStation, fetchClubByDaoAddress } from "api/club";
 import { editDepositConfig } from "api/deposit";
 import BackdropLoader from "@components/common/BackdropLoader";
+import { addAlertData } from "redux/reducers/general";
+import { useDispatch } from "react-redux";
 
 const AdditionalSettings = ({
   tokenType,
@@ -39,15 +40,13 @@ const AdditionalSettings = ({
   const classes = AdditionalSettingsStyles();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
+  const dispatch = useDispatch();
 
   const [showDepositTimeModal, setShowDepositTimeModal] = useState(false);
   const [showDepositDocumentLinkModal, setShowDepositDocumentLinkModal] =
     useState(false);
   const [showOwnerFeesModal, setShowOwnerFeesModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showMessage, setShowMessage] = useState(false);
-  const [message, setMessage] = useState("");
-  const [isSuccessFull, setIsSuccessFull] = useState(false);
   const [checked, setChecked] = useState(false);
   const [w8Checked, setW8Checked] = useState(false);
   const [kycChecked, setKycChecked] = useState(false);
@@ -63,9 +62,13 @@ const AdditionalSettings = ({
     try {
       await updateOwnerFee(+ownerFee * 100, daoAddress);
       setLoading(false);
-      showMessageHandler();
-      setIsSuccessFull(true);
-      setMessage("Owner Fee updated Successfully");
+      dispatch(
+        addAlertData({
+          open: true,
+          message: "Owner fee updated successfully",
+          severity: "success",
+        }),
+      );
       if (tokenType === "erc20") {
         fetchErc20ContractDetails();
       } else {
@@ -73,12 +76,24 @@ const AdditionalSettings = ({
       }
     } catch (error) {
       console.log(error.code);
-      showMessageHandler();
       setLoading(false);
-      setIsSuccessFull(false);
       if (error.code === 4001) {
-        setMessage("Metamask Signature denied");
-      } else setMessage("Owner Fee updating failed");
+        dispatch(
+          addAlertData({
+            open: true,
+            message: "Metamask Signature denied",
+            severity: "error",
+          }),
+        );
+      } else {
+        dispatch(
+          addAlertData({
+            open: true,
+            message: "Owner fee updating failed",
+            severity: "error",
+          }),
+        );
+      }
     }
   };
 
@@ -87,21 +102,37 @@ const AdditionalSettings = ({
     try {
       await updateDepositTime(+depositTime.toFixed(0).toString(), daoAddress);
       setLoading(false);
-      showMessageHandler();
-      setIsSuccessFull(true);
-      setMessage("Deposit Time updated Successfully");
+      dispatch(
+        addAlertData({
+          open: true,
+          message: "Deposit time updated successfully",
+          severity: "success",
+        }),
+      );
       if (tokenType === "erc20") {
         fetchErc20ContractDetails();
       } else {
         fetchErc721ContractDetails();
       }
     } catch (error) {
-      showMessageHandler();
       setLoading(false);
-      setIsSuccessFull(false);
       if (error.code === 4001) {
-        setMessage("Metamask Signature denied");
-      } else setMessage("Deposit Time updating failed");
+        dispatch(
+          addAlertData({
+            open: true,
+            message: "Metamask Signature denied",
+            severity: "error",
+          }),
+        );
+      } else {
+        dispatch(
+          addAlertData({
+            open: true,
+            message: "Deposit time updating failed",
+            severity: "error",
+          }),
+        );
+      }
     }
   };
 
@@ -130,15 +161,23 @@ const AdditionalSettings = ({
         );
       }
       setLoading(false);
-      showMessageHandler();
-      setIsSuccessFull(true);
       setChecked(true);
-      setMessage("Subscription link updated Successfully");
+      dispatch(
+        addAlertData({
+          open: true,
+          message: "Subscription link updated successfully",
+          severity: "success",
+        }),
+      );
     } catch (error) {
-      showMessageHandler();
       setLoading(false);
-      setIsSuccessFull(false);
-      setMessage("Subscription link updating failed");
+      dispatch(
+        addAlertData({
+          open: true,
+          message: "Subscription link updating failed",
+          severity: "error",
+        }),
+      );
     }
   };
 
@@ -150,13 +189,6 @@ const AdditionalSettings = ({
     setShowOwnerFeesModal(true);
   };
 
-  const showMessageHandler = () => {
-    setShowMessage(true);
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 4000);
-  };
-
   const handleEnableSubscription = async () => {
     if (isAdminUser) {
       if (checked) {
@@ -166,15 +198,23 @@ const AdditionalSettings = ({
             daoAddress?.toLowerCase(),
           );
           setLoading(false);
-          showMessageHandler();
-          setIsSuccessFull(true);
           setChecked(!checked);
-          setMessage("Subscription link removed Successfully");
+          dispatch(
+            addAlertData({
+              open: true,
+              message: "Subscription link removed Successfully",
+              severity: "success",
+            }),
+          );
         } catch (error) {
-          showMessageHandler();
           setLoading(false);
-          setIsSuccessFull(false);
-          setMessage("Subscription link removing failed");
+          dispatch(
+            addAlertData({
+              open: true,
+              message: "Subscription link removing failed",
+              severity: "error",
+            }),
+          );
         }
       } else {
         handleDocumentLinkChange();
@@ -193,15 +233,23 @@ const AdditionalSettings = ({
         daoAddress.toLowerCase(),
       );
       setLoading(false);
-      showMessageHandler();
-      setIsSuccessFull(true);
       setKycChecked(!kycChecked);
-      setMessage("Kyc settings changed successfully");
+      dispatch(
+        addAlertData({
+          open: true,
+          message: "Kyc settings changed successfully",
+          severity: "success",
+        }),
+      );
     } catch (error) {
-      showMessageHandler();
       setLoading(false);
-      setIsSuccessFull(false);
-      setMessage("Kyc settings removing failed");
+      dispatch(
+        addAlertData({
+          open: true,
+          message: "Kyc settings removing failed",
+          severity: "error",
+        }),
+      );
     }
   };
 
@@ -231,9 +279,13 @@ const AdditionalSettings = ({
     if (w8Checked) {
       setLoading(true);
       await editDepositConfig({ uploadDocId: null }, daoAddress.toLowerCase());
-      showMessageHandler();
-      setIsSuccessFull(true);
-      setMessage("W-8Ben disabled");
+      dispatch(
+        addAlertData({
+          open: true,
+          message: "W-8Ben disabled",
+          severity: "success",
+        }),
+      );
       setLoading(false);
     }
     setW8Checked(!w8Checked);
@@ -538,10 +590,6 @@ const AdditionalSettings = ({
           loading={loading}
         />
       )}
-
-      {showMessage ? (
-        <CustomAlert severity={isSuccessFull} alertMessage={message} />
-      ) : null}
     </div>
   );
 };
