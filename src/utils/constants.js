@@ -112,6 +112,7 @@ export const CHAIN_CONFIG = {
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     blockExplorerUrl: "https://goerli.etherscan.io",
     disburseContractAddress: "0x63D57d534a44f486EE2cCDcd53EbB7FA988cA5d5",
+    gnosisTxUrl: "https://safe-transaction-goerli.safe.global/",
   },
   "0x1": {
     chainName: "Ethereum Mainnet",
@@ -132,6 +133,7 @@ export const CHAIN_CONFIG = {
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     blockExplorerUrl: "https://etherscan.io",
     disburseContractAddress: "0x8b41c0aa45c86cebcfed5fb3744bf99ac8fb45c3",
+    gnosisTxUrl: "https://safe-transaction-mainnet.safe.global/",
   },
   "0x2105": {
     chainName: "Base Mainnet",
@@ -156,6 +158,7 @@ export const CHAIN_CONFIG = {
     airdropContractAddress: "0x9aeF8F840FED23502506CC988c0057F24638C00E",
     blockExplorerUrl: "https://explorer.base.org",
     disburseContractAddress: "0x9e812abE64b47FFB970ea908Db27a1E7Ca2f15b6",
+    gnosisTxUrl: "https://safe-transaction-base.safe.global/",
   },
   "0xa4b1": {
     chainName: "Arbitrum One",
@@ -176,6 +179,7 @@ export const CHAIN_CONFIG = {
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     blockExplorerUrl: "https://arbiscan.io",
     disburseContractAddress: "",
+    gnosisTxUrl: "https://safe-transaction-arbitrum.safe.global/",
   },
   "0xe708": {
     chainName: "Linea Mainnet",
@@ -198,6 +202,7 @@ export const CHAIN_CONFIG = {
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     blockExplorerUrl: "https://lineascan.build",
     disburseContractAddress: "0xE6301e65e1371eeECFBB124872a6C3d0F8288DE1",
+    gnosisTxUrl: "https://transaction.safe.linea.build",
   },
   "0x38": {
     chainName: "BNB Smart Chain",
@@ -218,6 +223,7 @@ export const CHAIN_CONFIG = {
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     blockExplorerUrl: "https://bscscan.com",
     disburseContractAddress: "0x2105929127a1e57c5D6FBb4136ADe15771503963",
+    gnosisTxUrl: "https://safe-transaction-bsc.safe.global/",
   },
   "0x1388": {
     chainName: "Mantle Mainnet",
@@ -258,6 +264,7 @@ export const CHAIN_CONFIG = {
     airdropContractAddress: "0x45a27ea11D159A86AacE1eC24d3ba3d103642D9f",
     blockExplorerUrl: "https://gnosisscan.io/",
     disburseContractAddress: "",
+    gnosisTxUrl: "https://safe-transaction-gnosis-chain.safe.global/",
   },
   "0x82750": {
     chainName: "Scroll",
