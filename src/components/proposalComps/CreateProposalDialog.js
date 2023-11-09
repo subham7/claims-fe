@@ -19,7 +19,6 @@ import { useAccount, useNetwork } from "wagmi";
 import { getProposalCommands } from "utils/proposalData";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { getProposalValidationSchema } from "@components/createClubComps/ValidationSchemas";
-import CustomAlert from "@components/common/CustomAlert";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import CommonProposalForm from "./CommonProposalForm";
 import SurveyProposalForm from "./SurveyProposalForm";
@@ -72,24 +71,6 @@ const CreateProposalDialog = ({
   const { getERC20TotalSupply, getNftOwnersCount } = useAppContractMethods();
 
   const [loaderOpen, setLoaderOpen] = useState(false);
-  const [openSnackBar, setOpenSnackBar] = useState(false);
-  const [failed, setFailed] = useState(false);
-  const [message, setMessage] = useState("");
-
-  const showMessageHandler = () => {
-    setOpenSnackBar(true);
-    setTimeout(() => {
-      setOpenSnackBar(false);
-    }, 4000);
-  };
-
-  const handleSnackBarClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnackBar(false);
-    setLoaderOpen(false);
-  };
 
   const { getBalance, getDecimals } = useCommonContractMethods();
 
@@ -188,15 +169,16 @@ const CreateProposalDialog = ({
         const createRequest = createProposal(payload, networkId);
         createRequest.then(async (result) => {
           if (result.status !== 201) {
-            setOpenSnackBar(true);
-            setFailed(true);
             setLoaderOpen(false);
+            dispatch(
+              addAlertData({
+                open: true,
+                message: "Proposal creation failed!",
+                severity: "error",
+              }),
+            );
           } else {
             fetchProposalList();
-            // setOpenSnackBar(true);
-            // setMessage("Proposal created successfully!");
-            // setFailed(true);
-            // showMessageHandler();
             setOpen(false);
             dispatch(
               addAlertData({
@@ -209,11 +191,14 @@ const CreateProposalDialog = ({
           }
         });
       } catch (error) {
-        setMessage(error.message ?? error);
         setLoaderOpen(false);
-        setOpenSnackBar(true);
-        setFailed(false);
-        showMessageHandler();
+        dispatch(
+          addAlertData({
+            open: true,
+            message: "Proposal creation failed!",
+            severity: "error",
+          }),
+        );
       }
     },
   });
@@ -282,9 +267,6 @@ const CreateProposalDialog = ({
           </form>
         </DialogContent>
       </Dialog>
-      {openSnackBar ? (
-        <CustomAlert alertMessage={message} severity={failed} />
-      ) : null}
     </>
   );
 };
