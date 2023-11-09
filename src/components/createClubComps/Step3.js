@@ -14,21 +14,15 @@ import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Step3Styles } from "./CreateClubStyles";
 import Web3 from "web3";
-import { useCallback, useEffect } from "react";
-import { getCustomSafeSdk, web3InstanceEthereum } from "../../utils/helper";
+import { useEffect } from "react";
+import { getSafeSdk } from "../../utils/helper";
 import { useState } from "react";
-import { useSelector } from "react-redux";
-import SafeApiKit from "@safe-global/api-kit";
-import { Web3Adapter } from "@safe-global/protocol-kit";
 import { useAccount, useNetwork } from "wagmi";
+import { CHAIN_CONFIG } from "utils/constants";
 
 export default function Step3(props) {
   const classes = Step3Styles();
   const { address: walletAddress } = useAccount();
-
-  const GNOSIS_DATA = useSelector((state) => {
-    return state.gnosis;
-  });
 
   const [ownerAddresses, setOwnerAddresses] = useState();
   const [allSafeAddresses, setAllSafeAddresses] = useState();
@@ -36,51 +30,38 @@ export default function Step3(props) {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
 
-  // const index = props.formik.values.addressList.indexOf(
-  //   Web3.utils.toChecksumAddress(walletAddress),
-  // );
-  // if (index >= 0) props.formik.values.addressList.splice(index, 1);
-
   const fetchOwners = async (gnosisAddress) => {
-    const safeSdk = await getCustomSafeSdk(
-      Web3.utils.toChecksumAddress(gnosisAddress),
-      Web3.utils.toChecksumAddress(walletAddress),
+    const { safeSdk } = await getSafeSdk(
+      gnosisAddress,
+      walletAddress,
+      "",
       networkId,
     );
+
     const owners = await safeSdk.getOwners();
 
-    const ownerAddressesArray = owners.map((value) =>
+    const ownerAddressesArray = owners?.map((value) =>
       Web3.utils.toChecksumAddress(value),
     );
+
     setOwnerAddresses(ownerAddressesArray);
   };
 
-  const getSafeService = useCallback(async () => {
-    if (GNOSIS_DATA.transactionUrl) {
-      const web3 = await web3InstanceEthereum();
-      const ethAdapter = new Web3Adapter({
-        web3,
-        signerAddress: localStorage.getItem("wallet"),
-      });
-      const safeService = new SafeApiKit({
-        txServiceUrl: GNOSIS_DATA.transactionUrl,
-        ethAdapter,
-      });
-      return safeService;
-    }
-  }, [GNOSIS_DATA.transactionUrl]);
-
   const getAllSafes = async () => {
-    const safeService = await getSafeService();
+    const { safeService } = await getSafeSdk(
+      "",
+      walletAddress,
+      CHAIN_CONFIG[networkId].gnosisTxUrl,
+    );
     const safes = await safeService.getSafesByOwner(
       localStorage.getItem("wallet"),
     );
-    setAllSafeAddresses(safes.safes);
+    setAllSafeAddresses(safes?.safes);
   };
 
   useEffect(() => {
     if (props.formik.values.deploySafe === "oldSafe") getAllSafes();
-  }, [props.formik.values.deploySafe, GNOSIS_DATA.transactionUrl]);
+  }, [props.formik.values.deploySafe]);
 
   useEffect(() => {
     if (props.formik.values.safeAddress?.length)

@@ -91,6 +91,7 @@ export const CHAIN_CONFIG = {
     },
     disburseContractAddress: "0x2F73a97D1be96853AF8E2b8F29E0F2AF332EA9f5",
     uniswapRouterAddress: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
+    gnosisTxUrl: "https://safe-transaction-polygon.safe.global",
   },
   "0x5": {
     chainName: "Goerli Testnet",

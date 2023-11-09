@@ -6,12 +6,10 @@ import {
   readContractFunction,
   writeContractFunction,
 } from "utils/helper";
-import { Web3Adapter } from "@safe-global/protocol-kit";
 import { createProposalTxHash, getProposalTxHash } from "../api/proposal";
-import SafeApiKit from "@safe-global/api-kit";
 import { useAccount, useNetwork } from "wagmi";
 import { factoryContractABI } from "abis/factoryContract.js";
-import { getTransaction } from "utils/proposal";
+import { createSafeTransactionData, getTransaction } from "utils/proposal";
 import { erc20DaoABI } from "abis/erc20Dao";
 import { erc721DaoABI } from "abis/erc721Dao";
 import { encodeFunctionData } from "viem";
@@ -397,37 +395,31 @@ const useAppContractMethods = (params) => {
     data,
     approvalData = "",
     gnosisAddress = "",
-    txHash = "",
     pid,
     tokenData,
     executionStatus,
-    airdropContractAddress = "",
     factoryContractAddress = "",
-    gnosisTransactionUrl,
     proposalData,
     membersArray,
     airDropAmountArray,
     transactionData = "",
   ) => {
     const { executionId, safeThreshold } = proposalData.commands[0];
+    const airdropContractAddress =
+      CHAIN_CONFIG[networkId].airdropContractAddress;
+
     const parameters = data;
-    const web3 = new Web3(window.ethereum);
-    const ethAdapter = new Web3Adapter({
-      web3: web3,
-      signerAddress: Web3.utils.toChecksumAddress(walletAddress),
-    });
-    const txServiceUrl = gnosisTransactionUrl;
 
-    const safeService = new SafeApiKit({
-      txServiceUrl,
-      ethAdapter,
-    });
-
-    const safeSdk = await getSafeSdk(
-      Web3.utils.toChecksumAddress(gnosisAddress),
-      Web3.utils.toChecksumAddress(walletAddress),
-      networkId,
+    const { safeSdk, safeService } = await getSafeSdk(
+      gnosisAddress,
+      walletAddress,
+      CHAIN_CONFIG[networkId].gnosisTxUrl,
     );
+
+    const proposalTxHash = await getProposalTxHash(pid);
+    const txHash = proposalTxHash?.data[0]?.txHash ?? "";
+
+    const tx = txHash ? await safeService.getTransaction(txHash) : null;
 
     const { transaction, approvalTransaction } = await getTransaction({
       proposalData,
@@ -445,46 +437,28 @@ const useAppContractMethods = (params) => {
       membersArray,
       airDropAmountArray,
     });
+
     if (executionStatus !== "executed") {
       if (txHash === "") {
         const nonce = await safeService.getNextNonce(gnosisAddress);
-        let safeTransactionData;
-        if (approvalTransaction === "" || approvalTransaction === undefined) {
-          safeTransactionData = {
-            to: transaction.to,
-            data: transaction.data,
-            value: transaction.value,
-            nonce: nonce, // Optional
-          };
-        } else {
-          safeTransactionData = [
-            {
-              to: approvalTransaction.to,
-              data: approvalTransaction.data,
-              value: approvalTransaction.value,
-              nonce: nonce, // Optional
-            },
-            {
-              to: transaction.to,
-              data: transaction.data,
-              value: transaction.value,
-              nonce: nonce, // Optional
-            },
-          ];
-        }
+        const safeTransactionData = createSafeTransactionData({
+          approvalTransaction,
+          transaction,
+          nonce,
+        });
+
         let safeTransaction;
 
-        if (executionId === 6 || executionId === 7) {
-          if (executionId === 6) {
-            safeTransaction = await safeSdk.createAddOwnerTx(transaction);
-          } else {
-            safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
-          }
+        if (executionId === 6) {
+          safeTransaction = await safeSdk.createAddOwnerTx(transaction);
+        } else if (executionId === 7) {
+          safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
         } else {
           safeTransaction = await safeSdk.createTransaction({
             safeTransactionData,
           });
         }
+
         const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
 
         const payload = {
@@ -510,46 +484,25 @@ const useAppContractMethods = (params) => {
       }
       //case for remaining signatures
       else {
-        const proposalTxHash = await getProposalTxHash(pid);
-        const tx = await safeService.getTransaction(
-          proposalTxHash.data[0].txHash,
-        );
-        const nonce = await safeSdk.getNonce();
-        let safeTransactionData;
+        const safeTransactionData = createSafeTransactionData({
+          approvalTransaction: approvalTransaction
+            ? tx.dataDecoded.parameters[0].valueDecoded[0]
+            : undefined,
+          transaction: approvalTransaction
+            ? tx.dataDecoded.parameters[0].valueDecoded[1]
+            : tx,
+          nonce: tx.nonce,
+        });
 
-        if (approvalTransaction === "" || approvalTransaction === undefined) {
-          safeTransactionData = {
-            to: tx.to,
-            data: tx.data,
-            value: tx.value,
-            nonce: tx.nonce, // Optional
-          };
-        } else {
-          safeTransactionData = [
-            {
-              to: tx.dataDecoded.parameters[0].valueDecoded[0].to,
-              data: tx.dataDecoded.parameters[0].valueDecoded[0].data,
-              value: tx.dataDecoded.parameters[0].valueDecoded[0].value,
-              nonce: tx.nonce, // Optional
-            },
-            {
-              to: tx.dataDecoded.parameters[0].valueDecoded[1].to,
-              data: tx.dataDecoded.parameters[0].valueDecoded[1].data,
-              value: tx.dataDecoded.parameters[0].valueDecoded[1].value,
-              nonce: tx.nonce, // Optional
-            },
-          ];
-        }
         const safeTxHash = tx.safeTxHash;
 
         let safeTransaction;
         let rejectionTransaction;
-        if (executionId === 6 || executionId === 7) {
-          if (executionId === 6) {
-            safeTransaction = await safeSdk.createAddOwnerTx(transaction);
-          } else {
-            safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
-          }
+
+        if (executionId === 6) {
+          safeTransaction = await safeSdk.createAddOwnerTx(transaction);
+        } else if (executionId === 7) {
+          safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
         } else {
           safeTransaction = await safeSdk.createTransaction({
             safeTransactionData,
@@ -565,26 +518,21 @@ const useAppContractMethods = (params) => {
           executionStatus === "cancel" ? rejectionTransaction : safeTransaction,
           "v4",
         );
+
         await safeService.confirmTransaction(safeTxHash, senderSignature.data);
         return tx;
       }
     } else {
-      const proposalTxHash = await getProposalTxHash(pid);
-      const safetx = await safeService.getTransaction(
-        proposalTxHash.data[0].txHash,
-      );
       const options = {
         gasPrice: await getIncreaseGasPrice(networkId),
       };
 
-      const executeTxResponse = await safeSdk.executeTransaction(
-        safetx,
-        options,
-      );
+      const executeTxResponse = await safeSdk.executeTransaction(tx, options);
 
       const receipt =
         executeTxResponse.transactionResponse &&
         (await executeTxResponse.transactionResponse.wait());
+
       return executeTxResponse;
     }
   };

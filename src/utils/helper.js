@@ -13,39 +13,44 @@ import {
 import { getPublicClient, getWalletClient } from "utils/viemConfig";
 import { uploadToAWS } from "api/club";
 import { baseLinks } from "data/dashboard";
+import SafeApiKit from "@safe-global/api-kit";
 
-export const getCustomSafeSdk = async (
+export const getSafeSdk = async (
   gnosisAddress,
   walletAddress,
+  gnosisTransactionUrl,
   networkId,
 ) => {
-  const web3 = await web3InstanceCustomRPC(networkId);
-  const ethAdapter = new Web3Adapter({
-    web3,
-    signerAddress: walletAddress,
-  });
-  const safeSdk = await Safe.create({
-    ethAdapter,
-    safeAddress: gnosisAddress,
-    contractNetworks,
-  });
+  try {
+    const web3 = networkId
+      ? await web3InstanceCustomRPC(networkId)
+      : await web3InstanceEthereum();
 
-  return safeSdk;
-};
+    const ethAdapter = new Web3Adapter({
+      web3,
+      signerAddress: walletAddress,
+    });
 
-export const getSafeSdk = async (gnosisAddress, walletAddress, networkId) => {
-  const web3 = await web3InstanceEthereum();
-  const ethAdapter = new Web3Adapter({
-    web3,
-    signerAddress: walletAddress,
-  });
-  const safeSdk = await Safe.create({
-    ethAdapter,
-    safeAddress: gnosisAddress,
-    contractNetworks,
-  });
+    const safeSdk = gnosisAddress
+      ? await Safe.create({
+          ethAdapter,
+          safeAddress: gnosisAddress,
+          contractNetworks,
+        })
+      : null;
 
-  return safeSdk;
+    const safeService = gnosisTransactionUrl
+      ? new SafeApiKit({
+          txServiceUrl: gnosisTransactionUrl,
+          ethAdapter,
+        })
+      : null;
+
+    return { safeSdk, safeService };
+  } catch (e) {
+    console.error(e);
+    return {};
+  }
 };
 
 export const getIncreaseGasPrice = async (networkId = "0x89") => {
