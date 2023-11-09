@@ -17,9 +17,9 @@ import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { queryDropDetailsFromSubgraph } from "utils/dropsSubgraphHelper";
 import { createSnapShot } from "api/claims";
 import dayjs from "dayjs";
-import CustomAlert from "@components/common/CustomAlert";
 import BackdropLoader from "@components/common/BackdropLoader";
 import { useTheme } from "@mui/styles";
+import { useDispatch } from "react-redux";
 
 const ClaimInsight = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState([]);
@@ -29,14 +29,12 @@ const ClaimInsight = ({ claimAddress }) => {
     tokenSymbol: "",
     tokenAddress: "",
   });
-  const [showMessage, setShowMessage] = useState(false);
-  const [message, setMessage] = useState("");
-  const [isSuccessFull, setIsSuccessFull] = useState(false);
 
   const theme = useTheme();
   const classes = ClaimsInsightStyles(theme);
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
+  const dispatch = useDispatch();
 
   const { addMoreTokens, rollbackTokens, modifyStartAndEndTime } =
     useDropsContractMethods();
@@ -120,17 +118,32 @@ const ClaimInsight = ({ claimAddress }) => {
           : snapshotData?.merkleRoot,
       );
       setLoading(false);
-      showMessageHandler();
-      setIsSuccessFull(true);
-      setMessage("Token added successfully!");
+      dispatch(
+        addAlertData({
+          open: true,
+          message: "Token added successfully!",
+          severity: "success",
+        }),
+      );
     } catch (error) {
       console.log(error);
       setLoading(false);
-      showMessageHandler();
-      setIsSuccessFull(false);
       if (error.code === 4001) {
-        setMessage("Metamask Signature denied");
-      } else setMessage("Adding token failed");
+        dispatch(
+          addAlertData({
+            open: true,
+            message: "Metamask Signature denied",
+            severity: "error",
+          }),
+        );
+      } else
+        dispatch(
+          addAlertData({
+            open: true,
+            message: "Adding token failed",
+            severity: "error",
+          }),
+        );
     }
   };
 
@@ -144,17 +157,33 @@ const ClaimInsight = ({ claimAddress }) => {
 
       await rollbackTokens(claimAddress, rollbackAmount, rollbackAddress);
       setLoading(false);
-      showMessageHandler();
-      setIsSuccessFull(true);
-      setMessage("Claimed successfully!");
+      dispatch(
+        addAlertData({
+          open: true,
+          message: "Claimed successfully!",
+          severity: "success",
+        }),
+      );
     } catch (error) {
       console.log(error);
       setLoading(false);
-      showMessageHandler();
-      setIsSuccessFull(false);
       if (error.code === 4001) {
-        setMessage("Metamask Signature denied");
-      } else setMessage("Claiming token failed");
+        dispatch(
+          addAlertData({
+            open: true,
+            message: "Metamask signature denied",
+            severity: "error",
+          }),
+        );
+      } else {
+        dispatch(
+          addAlertData({
+            open: true,
+            message: "Claiming token failed",
+            severity: "error",
+          }),
+        );
+      }
     }
   };
 
@@ -167,25 +196,34 @@ const ClaimInsight = ({ claimAddress }) => {
         Number(endTime).toFixed(0),
       );
       setLoading(false);
-      showMessageHandler();
-      setIsSuccessFull(true);
-      setMessage("Modified time successfully!");
+      dispatch(
+        addAlertData({
+          open: true,
+          message: "Modified time successfully!",
+          severity: "success",
+        }),
+      );
     } catch (error) {
       console.log(error);
       setLoading(false);
-      showMessageHandler();
-      setIsSuccessFull(false);
       if (error.code === 4001) {
-        setMessage("Metamask Signature denied");
-      } else setMessage("Modifying time failed");
+        dispatch(
+          addAlertData({
+            open: true,
+            message: "Metamask Signature denied",
+            severity: "error",
+          }),
+        );
+      } else {
+        dispatch(
+          addAlertData({
+            open: true,
+            message: "Modifying time failed",
+            severity: "error",
+          }),
+        );
+      }
     }
-  };
-
-  const showMessageHandler = () => {
-    setShowMessage(true);
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 4000);
   };
 
   useEffect(() => {
@@ -248,10 +286,6 @@ const ClaimInsight = ({ claimAddress }) => {
           maxClaimAmount={claimsData[0]?.maxClaimableAmount}
         />
       </section>
-
-      {showMessage ? (
-        <CustomAlert alertMessage={message} severity={isSuccessFull} />
-      ) : null}
 
       <BackdropLoader isOpen={loading} />
     </>
