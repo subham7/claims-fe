@@ -20,7 +20,8 @@ import { FIVE_MB } from "utils/constants";
 import Image from "next/image";
 import { editInfo, getClubInfo } from "api/club";
 import { uploadFileToAWS } from "utils/helper";
-import CustomAlert from "@components/common/CustomAlert";
+import { setAlertData } from "redux/reducers/general";
+import { useDispatch } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   modalStyle: {
@@ -91,11 +92,9 @@ const EditDetails = ({
 }) => {
   const theme = useTheme();
   const classes = useStyles(theme);
+  const dispatch = useDispatch();
 
   const [loaderOpen, setLoaderOpen] = useState(false);
-  const [isSuccessfull, setIsSuccessfull] = useState(false);
-  const [message, setMessage] = useState("");
-  const [showMessage, setShowMessage] = useState(false);
   const uploadInputRef = useRef(null);
 
   const [selectedFile, setSelectedFile] = useState("");
@@ -103,13 +102,6 @@ const EditDetails = ({
 
   const selectFile = (event) => {
     setSelectedFile(event.target.files[0]);
-  };
-
-  const showMessageHandler = () => {
-    setShowMessage(true);
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 4000);
   };
 
   const fetchBannerDetails = async () => {
@@ -167,9 +159,13 @@ const EditDetails = ({
 
   const updateUIAfterSuccess = async () => {
     setLoaderOpen(false);
-    showMessageHandler();
-    setIsSuccessfull(true);
-    setMessage("Details Changed Successfully!");
+    dispatch(
+      setAlertData({
+        open: true,
+        message: "Details changed successfully",
+        severity: "success",
+      }),
+    );
     if (isClaims) {
       await getClubInfo();
     }
@@ -178,9 +174,13 @@ const EditDetails = ({
 
   const updateUIAfterFailure = () => {
     setLoaderOpen(false);
-    showMessageHandler();
-    setIsSuccessfull(false);
-    setMessage("Details changing failed!");
+    dispatch(
+      setAlertData({
+        open: true,
+        message: "Details changing failed",
+        severity: "error",
+      }),
+    );
   };
 
   const formik = useFormik({
@@ -254,209 +254,198 @@ const EditDetails = ({
   }, [bannerData]);
 
   return (
-    <>
-      <Dialog
-        open={open}
-        onClose={onClose}
-        scroll="body"
-        PaperProps={{ classes: { root: classes.modalStyle } }}
-        fullWidth
-        maxWidth="lg">
-        <DialogContent
-          sx={{
-            overflow: "hidden",
-            backgroundColor: "#151515",
-            padding: "3rem",
-          }}>
-          <form className={classes.form}>
-            {isClaims ? (
-              <Grid item md={6} mb={2}>
-                <Typography variant="inherit" className={classes.wrapTextIcon}>
-                  Upload Banner{" "}
-                </Typography>
-                <span className={classes.smallText}>
-                  (recommended dimension - 16:8)
-                </span>
-                <p className={classes.error}>
-                  {selectedFile?.size > FIVE_MB
-                    ? "Image exceeds max size, please add image below 5 mb"
-                    : null}
-                </p>
-
-                {bannerData?.imageLinks?.banner || selectedFile ? (
-                  <div className={classes.bannerContainer}>
-                    <Image
-                      className={classes.bannerImage}
-                      src={
-                        selectedFile
-                          ? URL.createObjectURL(selectedFile)
-                          : bannerData?.imageLinks?.banner
-                      }
-                      fill
-                      alt="Banner Image"
-                    />
-                  </div>
-                ) : null}
-                <Button
-                  variant="normal"
-                  onClick={(e) => {
-                    uploadInputRef.current.click();
-                  }}>
-                  <UploadIcon fontSize="8px" />
-                  Upload
-                </Button>
-                <input
-                  name="banner"
-                  accept="image/*"
-                  type="file"
-                  id="select-image"
-                  style={{ display: "none" }}
-                  ref={uploadInputRef}
-                  onChange={selectFile}
-                />
-              </Grid>
-            ) : null}
-
+    <Dialog
+      open={open}
+      onClose={onClose}
+      scroll="body"
+      PaperProps={{ classes: { root: classes.modalStyle } }}
+      fullWidth
+      maxWidth="lg">
+      <DialogContent
+        sx={{
+          overflow: "hidden",
+          backgroundColor: "#151515",
+          padding: "3rem",
+        }}>
+        <form className={classes.form}>
+          {isClaims ? (
             <Grid item md={6} mb={2}>
               <Typography variant="inherit" className={classes.wrapTextIcon}>
-                Add Bio
+                Upload Banner{" "}
               </Typography>
-              <QuillEditor
-                multiline
-                rows={10}
-                placeholder="Add description of your station"
-                className={classes.editor}
-                name="description"
-                id="description"
-                value={formik.values.description}
-                onChange={(value) => formik.setFieldValue("description", value)}
-                error={
-                  formik.touched.description &&
-                  Boolean(formik.errors.description)
-                }
-                helperText={
-                  formik.touched.description && formik.errors.description
-                }
-              />
-            </Grid>
+              <span className={classes.smallText}>
+                (recommended dimension - 16:8)
+              </span>
+              <p className={classes.error}>
+                {selectedFile?.size > FIVE_MB
+                  ? "Image exceeds max size, please add image below 5 mb"
+                  : null}
+              </p>
 
-            <Grid item md={6} mb={2}>
-              <Typography variant="inherit" className={classes.wrapTextIcon}>
-                Twitter
-              </Typography>
-              <TextField
-                name="twitter"
-                id="twitter"
-                placeholder="Link"
-                variant="outlined"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.twitter}
-                error={formik.touched.twitter && Boolean(formik.errors.twitter)}
-                helperText={formik.touched.twitter && formik.errors.twitter}
-              />
-            </Grid>
-
-            <Grid item md={6} mb={2}>
-              <Typography variant="inherit" className={classes.wrapTextIcon}>
-                Discord
-              </Typography>
-              <TextField
-                name="discord"
-                id="discord"
-                placeholder="Link"
-                variant="outlined"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.discord}
-                error={formik.touched.discord && Boolean(formik.errors.discord)}
-                helperText={formik.touched.discord && formik.errors.discord}
-              />
-            </Grid>
-
-            <Grid item md={6} mb={2}>
-              <Typography variant="inherit" className={classes.wrapTextIcon}>
-                Telegram
-              </Typography>
-              <TextField
-                name="telegram"
-                id="telegram"
-                placeholder="Link"
-                variant="outlined"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.telegram}
-                error={
-                  formik.touched.telegram && Boolean(formik.errors.telegram)
-                }
-                helperText={formik.touched.telegram && formik.errors.telegram}
-              />
-            </Grid>
-
-            {isClaims ? (
-              <Grid item md={6} mb={2}>
-                <Typography variant="inherit" className={classes.wrapTextIcon}>
-                  Twitter Text
-                </Typography>
-
-                <Typography variant="inherit" className={classes.subtext}>
-                  Use this &quot;;&quot; without spaces for a new line.
-                </Typography>
-                <TextField
-                  name="tweetText"
-                  id="tweetText"
-                  placeholder="Text"
-                  variant="outlined"
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.tweetText}
-                  error={
-                    formik.touched.tweetText && Boolean(formik.errors.tweetText)
-                  }
-                  helperText={
-                    formik.touched.tweetText && formik.errors.tweetText
-                  }
-                  multiline
-                  inputProps={{ maxLength: 280 }}
-                />
-              </Grid>
-            ) : null}
-
-            {/* Submit Button */}
-            <Grid container mt={2} spacing={3}>
-              <Grid
-                item
-                xs
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  alignItems: "center",
+              {bannerData?.imageLinks?.banner || selectedFile ? (
+                <div className={classes.bannerContainer}>
+                  <Image
+                    className={classes.bannerImage}
+                    src={
+                      selectedFile
+                        ? URL.createObjectURL(selectedFile)
+                        : bannerData?.imageLinks?.banner
+                    }
+                    fill
+                    alt="Banner Image"
+                  />
+                </div>
+              ) : null}
+              <Button
+                variant="normal"
+                onClick={(e) => {
+                  uploadInputRef.current.click();
                 }}>
-                <Button
-                  onClick={() => {
-                    formik.resetForm();
-                    setLoaderOpen(false);
-                    onClose(event, "cancel");
-                  }}>
-                  Cancel
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button
-                  disabled={selectedFile && selectedFile?.size > FIVE_MB}
-                  onClick={() => formik.handleSubmit()}>
-                  {loaderOpen ? <CircularProgress size={25} /> : "Save Changes"}
-                </Button>
-              </Grid>
+                <UploadIcon fontSize="8px" />
+                Upload
+              </Button>
+              <input
+                name="banner"
+                accept="image/*"
+                type="file"
+                id="select-image"
+                style={{ display: "none" }}
+                ref={uploadInputRef}
+                onChange={selectFile}
+              />
             </Grid>
-          </form>
-        </DialogContent>
-      </Dialog>
+          ) : null}
 
-      {showMessage ? (
-        <CustomAlert alertMessage={message} severity={isSuccessfull} />
-      ) : null}
-    </>
+          <Grid item md={6} mb={2}>
+            <Typography variant="inherit" className={classes.wrapTextIcon}>
+              Add Bio
+            </Typography>
+            <QuillEditor
+              multiline
+              rows={10}
+              placeholder="Add description of your station"
+              className={classes.editor}
+              name="description"
+              id="description"
+              value={formik.values.description}
+              onChange={(value) => formik.setFieldValue("description", value)}
+              error={
+                formik.touched.description && Boolean(formik.errors.description)
+              }
+              helperText={
+                formik.touched.description && formik.errors.description
+              }
+            />
+          </Grid>
+
+          <Grid item md={6} mb={2}>
+            <Typography variant="inherit" className={classes.wrapTextIcon}>
+              Twitter
+            </Typography>
+            <TextField
+              name="twitter"
+              id="twitter"
+              placeholder="Link"
+              variant="outlined"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.twitter}
+              error={formik.touched.twitter && Boolean(formik.errors.twitter)}
+              helperText={formik.touched.twitter && formik.errors.twitter}
+            />
+          </Grid>
+
+          <Grid item md={6} mb={2}>
+            <Typography variant="inherit" className={classes.wrapTextIcon}>
+              Discord
+            </Typography>
+            <TextField
+              name="discord"
+              id="discord"
+              placeholder="Link"
+              variant="outlined"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.discord}
+              error={formik.touched.discord && Boolean(formik.errors.discord)}
+              helperText={formik.touched.discord && formik.errors.discord}
+            />
+          </Grid>
+
+          <Grid item md={6} mb={2}>
+            <Typography variant="inherit" className={classes.wrapTextIcon}>
+              Telegram
+            </Typography>
+            <TextField
+              name="telegram"
+              id="telegram"
+              placeholder="Link"
+              variant="outlined"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.telegram}
+              error={formik.touched.telegram && Boolean(formik.errors.telegram)}
+              helperText={formik.touched.telegram && formik.errors.telegram}
+            />
+          </Grid>
+
+          {isClaims ? (
+            <Grid item md={6} mb={2}>
+              <Typography variant="inherit" className={classes.wrapTextIcon}>
+                Twitter Text
+              </Typography>
+
+              <Typography variant="inherit" className={classes.subtext}>
+                Use this &quot;;&quot; without spaces for a new line.
+              </Typography>
+              <TextField
+                name="tweetText"
+                id="tweetText"
+                placeholder="Text"
+                variant="outlined"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.tweetText}
+                error={
+                  formik.touched.tweetText && Boolean(formik.errors.tweetText)
+                }
+                helperText={formik.touched.tweetText && formik.errors.tweetText}
+                multiline
+                inputProps={{ maxLength: 280 }}
+              />
+            </Grid>
+          ) : null}
+
+          {/* Submit Button */}
+          <Grid container mt={2} spacing={3}>
+            <Grid
+              item
+              xs
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+              }}>
+              <Button
+                onClick={() => {
+                  formik.resetForm();
+                  setLoaderOpen(false);
+                  onClose(event, "cancel");
+                }}>
+                Cancel
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button
+                disabled={selectedFile && selectedFile?.size > FIVE_MB}
+                onClick={() => formik.handleSubmit()}>
+                {loaderOpen ? <CircularProgress size={25} /> : "Save Changes"}
+              </Button>
+            </Grid>
+          </Grid>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 };
 

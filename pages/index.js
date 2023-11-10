@@ -25,6 +25,7 @@ import {
 } from "utils/stationsSubgraphHelper";
 import { shortAddress } from "utils/helper";
 import { OMIT_DAOS } from "utils/constants";
+import useClubFetch from "hooks/useClubFetch";
 
 const useStyles = makeStyles({
   container: {
@@ -132,7 +133,7 @@ const App = () => {
   const [open, setOpen] = useState(false);
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
-
+  useClubFetch({ networkId });
   const router = useRouter();
 
   useEffect(() => {

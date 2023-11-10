@@ -7,6 +7,8 @@ import { makeStyles } from "@mui/styles";
 import Navbar from "@components/ui/Navbar/Navbar";
 import Sidebar from "@components/ui/Sidebar/Sidebar";
 
+import CustomAlert from "@components/common/CustomAlert";
+
 const drawerWidth = 50;
 
 const useStyles = makeStyles({
@@ -21,6 +23,7 @@ export default function Layout(props) {
   useClubFetch({ daoAddress, networkId: routeNetworkId });
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
+
   const networkId = "0x" + chain?.id.toString(16);
   const classes = useStyles();
 
@@ -79,6 +82,7 @@ export default function Layout(props) {
             {showWrongNetworkModal(networkId, routeNetworkId)}
           </>
         )}
+        <CustomAlert />
       </Box>
     </>
   );

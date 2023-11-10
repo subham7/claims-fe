@@ -4,14 +4,14 @@ import React, { useRef, useState } from "react";
 import { generateRandomString, uploadFileToAWS } from "utils/helper";
 import { createDocument } from "api/document";
 import { editDepositConfig } from "api/deposit";
-import CustomAlert from "@components/common/CustomAlert";
 import BackdropLoader from "@components/common/BackdropLoader";
+import { useDispatch } from "react-redux";
+import { setAlertData } from "redux/reducers/general";
 
 const UploadW8Ben = ({ daoAddress, walletAddress, depositConfig }) => {
   const hiddenFileInput = useRef(null);
-  const [message, setMessage] = useState("");
-  const [showMessage, setShowMessage] = useState(false);
-  const [isSuccessFull, setIsSuccessFull] = useState(false);
+  const dispatch = useDispatch();
+
   const [loading, setLoading] = useState(false);
 
   const handleClick = async () => {
@@ -25,13 +25,6 @@ const UploadW8Ben = ({ daoAddress, walletAddress, depositConfig }) => {
   const handleChange = (event) => {
     const fileUploaded = event.target.files[0];
     formik.setFieldValue("pdfFile", fileUploaded);
-  };
-
-  const showMessageHandler = () => {
-    setShowMessage(true);
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 4000);
   };
 
   const formik = useFormik({
@@ -61,15 +54,23 @@ const UploadW8Ben = ({ daoAddress, walletAddress, depositConfig }) => {
           daoAddress.toLowerCase(),
         );
         setLoading(false);
-        showMessageHandler();
-        setIsSuccessFull(true);
-        setMessage("W-8BEN enabled");
+        dispatch(
+          setAlertData({
+            open: true,
+            message: "W-8BEN enabled",
+            severity: "success",
+          }),
+        );
       } catch (error) {
         console.log(error);
         setLoading(false);
-        showMessageHandler();
-        setIsSuccessFull(false);
-        setMessage("File upload failed");
+        dispatch(
+          setAlertData({
+            open: true,
+            message: "File upload failed",
+            severity: "error",
+          }),
+        );
       }
     },
   });
@@ -118,10 +119,6 @@ const UploadW8Ben = ({ daoAddress, walletAddress, depositConfig }) => {
       </Grid>
 
       <BackdropLoader isOpen={loading} />
-
-      {showMessage && (
-        <CustomAlert alertMessage={message} severity={isSuccessFull} />
-      )}
     </Grid>
   );
 };

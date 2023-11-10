@@ -18,7 +18,7 @@ import {
   getProposalTxHash,
   patchProposalExecuted,
 } from "api/proposal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CloseIcon from "@mui/icons-material/Close";
 import tickerIcon from "../../../public/assets/icons/ticker_icon.svg";
@@ -49,8 +49,8 @@ import useAppContractMethods from "hooks/useAppContractMethods";
 import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 import { ProposalDetailStyles } from "./ProposalDetailStyles";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
-import CustomAlert from "@components/common/CustomAlert";
 import BackdropLoader from "@components/common/BackdropLoader";
+import { setAlertData } from "redux/reducers/general";
 import { CHAIN_CONFIG } from "utils/constants";
 
 const ProposalDetail = ({ pid, daoAddress }) => {
@@ -60,6 +60,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
+  const dispatch = useDispatch();
 
   const sdk = new SafeAppsSDK({
     allowedDomains: [/gnosis-safe.io$/, /safe.global$/, /5afe.dev$/],
@@ -118,10 +119,6 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   const [txHash, setTxHash] = useState();
   const [cancelTxHash, setCancelTxHash] = useState();
   const [signedOwners, setSignedOwners] = useState([]);
-
-  const [message, setMessage] = useState("");
-  const [isSuccessFullyExecuted, setIsSuccessFullyExecuted] = useState(false);
-  const [showMessage, setShowMessage] = useState(false);
   const [fetched, setFetched] = useState(false);
   const [members, setMembers] = useState([]);
   const [isNftSold, setIsNftSold] = useState(false);
@@ -138,13 +135,6 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     useAppContractMethods({ daoAddress });
 
   const { getBalance } = useCommonContractMethods();
-
-  const showMessageHandler = () => {
-    setShowMessage(true);
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 4000);
-  };
 
   const isOwner = useCallback(async () => {
     if (gnosisAddress) {
@@ -399,16 +389,24 @@ Cast your vote before ${new Date(
             updateStatus.then((result) => {
               if (result.status !== 200) {
                 setExecuted(false);
-                showMessageHandler();
-                setIsSuccessFullyExecuted(false);
-                setMessage("execution status update failed!");
+                dispatch(
+                  setAlertData({
+                    open: true,
+                    message: "Execution status update failed!",
+                    severity: "error",
+                  }),
+                );
                 setLoaderOpen(false);
               } else {
                 fetchData();
                 setExecuted(true);
-                showMessageHandler();
-                setIsSuccessFullyExecuted(true);
-                setMessage("execution successful!");
+                dispatch(
+                  setAlertData({
+                    open: true,
+                    message: "Execution successful!",
+                    severity: "success",
+                  }),
+                );
                 setLoaderOpen(false);
               }
             });
@@ -417,10 +415,13 @@ Cast your vote before ${new Date(
         (error) => {
           console.error(error);
           setExecuted(false);
-          showMessageHandler();
-          setIsSuccessFullyExecuted(false);
-          setMessage("execution failed!");
-
+          dispatch(
+            setAlertData({
+              open: true,
+              message: "Execution failed!",
+              severity: "error",
+            }),
+          );
           setLoaderOpen(false);
         },
       );
@@ -433,10 +434,13 @@ Cast your vote before ${new Date(
         .catch((err) => {
           console.error(err);
           setSigned(false);
-          showMessageHandler();
-          setIsSuccessFullyExecuted(false);
-          setMessage("Signature failed!");
-
+          dispatch(
+            setAlertData({
+              open: true,
+              message: "Signature failed!",
+              severity: "error",
+            }),
+          );
           setLoaderOpen(false);
         });
     }
@@ -456,15 +460,23 @@ Cast your vote before ${new Date(
     if (response) {
       fetchData();
       setIsCancelSigned(true);
-      showMessageHandler();
-      setIsSuccessFullyExecuted(false);
-      setMessage("Signature successful!");
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Signature successful!",
+          severity: "success",
+        }),
+      );
       isOwner();
     } else {
       setIsCancelSigned(false);
-      showMessageHandler();
-      setIsSuccessFullyExecuted(false);
-      setMessage("Signature failed!");
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Signature failed!",
+          severity: "error",
+        }),
+      );
       setLoaderOpen(false);
     }
   };
@@ -483,17 +495,23 @@ Cast your vote before ${new Date(
     if (response) {
       fetchData();
       setIsCancelSigned(true);
-      showMessageHandler();
-      setIsSuccessFullyExecuted(false);
-      setMessage("Signature successful!");
-
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Signature successful!",
+          severity: "success",
+        }),
+      );
       isOwner();
     } else {
       setIsCancelSigned(false);
-      showMessageHandler();
-      setIsSuccessFullyExecuted(false);
-      setMessage("Signature failed!");
-
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Signature failed!",
+          severity: "error",
+        }),
+      );
       setLoaderOpen(false);
     }
   };
@@ -514,18 +532,24 @@ Cast your vote before ${new Date(
           updateStatus.then((result) => {
             if (result.status !== 200) {
               setExecuted(false);
-              showMessageHandler();
-              setIsSuccessFullyExecuted(false);
-              setMessage("execution status update failed!");
-
+              dispatch(
+                setAlertData({
+                  open: true,
+                  message: "Execution status update failed!",
+                  severity: "error",
+                }),
+              );
               setLoaderOpen(false);
             } else {
               fetchData();
               setExecuted(true);
-              showMessageHandler();
-              setIsSuccessFullyExecuted(false);
-              setMessage("execution successful!");
-
+              dispatch(
+                setAlertData({
+                  open: true,
+                  message: "Execution successful!",
+                  severity: "success",
+                }),
+              );
               setLoaderOpen(false);
             }
           });
@@ -534,9 +558,13 @@ Cast your vote before ${new Date(
       (error) => {
         console.error(error);
         setExecuted(false);
-        showMessageHandler();
-        setIsSuccessFullyExecuted(false);
-        setMessage("execution failed!");
+        dispatch(
+          setAlertData({
+            open: true,
+            message: "Execution failed!",
+            severity: "error",
+          }),
+        );
 
         setLoaderOpen(false);
       },
@@ -853,10 +881,13 @@ Cast your vote before ${new Date(
                                         executeFunction("executed");
                                       }
                                     : () => {
-                                        showMessageHandler();
-                                        setIsSuccessFullyExecuted(false);
-                                        setMessage(
-                                          "execute txns with smaller nonce first",
+                                        dispatch(
+                                          setAlertData({
+                                            open: true,
+                                            message:
+                                              "Execute txns with smaller nonce first",
+                                            severity: "error",
+                                          }),
                                         );
                                       }
                                   : () => {
@@ -931,10 +962,13 @@ Cast your vote before ${new Date(
                                         executeRejectSafeTransaction();
                                       }
                                     : () => {
-                                        showMessageHandler();
-                                        setIsSuccessFullyExecuted(false);
-                                        setMessage(
-                                          "execute txns with smaller nonce first",
+                                        dispatch(
+                                          setAlertData({
+                                            open: true,
+                                            message:
+                                              "Execute txns with smaller nonce first",
+                                            severity: "error",
+                                          }),
                                         );
                                       }
                                   : !isRejectTxnSigned
@@ -1200,10 +1234,6 @@ Cast your vote before ${new Date(
           </Stack>
         </Grid>
       </Grid>
-
-      {showMessage ? (
-        <CustomAlert alertMessage={message} severity={isSuccessFullyExecuted} />
-      ) : null}
 
       <BackdropLoader isOpen={loaderOpen} />
     </>

@@ -5,7 +5,6 @@ import classes from "../claims/Claim.module.scss";
 import About from "./About";
 import Activity from "./Activity";
 import BackdropLoader from "./BackdropLoader";
-import CustomAlert from "./CustomAlert";
 import Eligibility from "./Eligibility";
 import Header from "./Header";
 import SocialButtons from "./SocialButtons";
@@ -17,11 +16,9 @@ const PublicPageLayout = ({
   inputComponents,
   socialData,
   eligibilityProps,
-  message,
   isSuccessfull,
   loading,
   isDeposit,
-  showMessage,
   bio,
   imgUrl,
   claimDescription,
@@ -97,10 +94,6 @@ const PublicPageLayout = ({
           tokenDetails={tokenDetails}
         />
       </div>
-
-      {showMessage ? (
-        <CustomAlert alertMessage={message} severity={isSuccessfull} />
-      ) : null}
 
       <BackdropLoader isOpen={loading} />
     </div>

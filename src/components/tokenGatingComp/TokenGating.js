@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { TokenGatingStyle } from "./TokenGatingStyles";
 import { MdDelete } from "react-icons/md";
 import TokenGatingModal from "./TokenGatingModal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import SingleToken from "./SingleToken";
 import {
   convertFromWeiGovernance,
@@ -12,8 +12,8 @@ import {
 } from "../../utils/globalFunctions";
 import useAppContractMethods from "../../hooks/useAppContractMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
-import CustomAlert from "@components/common/CustomAlert";
 import BackdropLoader from "@components/common/BackdropLoader";
+import { setAlertData } from "redux/reducers/general";
 
 const TokenGating = ({ daoAddress }) => {
   const [showTokenGatingModal, setShowTokenGatingModal] = useState(false);
@@ -34,10 +34,6 @@ const TokenGating = ({ daoAddress }) => {
   });
   const [tokensList, setTokensList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [isTokenGatingSuccessfull, setIsTokenGatingSuccessfull] =
-    useState(false);
-  const [showMessage, setShowMessage] = useState(false);
-  const [message, setMessage] = useState("");
   const [showEditOptions, setShowEditOptions] = useState(true);
 
   const isAdminUser = useSelector((state) => {
@@ -45,6 +41,7 @@ const TokenGating = ({ daoAddress }) => {
   });
 
   const classes = TokenGatingStyle();
+  const dispatch = useDispatch();
 
   const { getTokenGatingDetails, setupTokenGating, disableTokenGating } =
     useAppContractMethods({
@@ -97,24 +94,25 @@ const TokenGating = ({ daoAddress }) => {
       );
       fetchTokenGatingDetails();
       setLoading(false);
-      setIsTokenGatingSuccessfull(true);
       setShowEditOptions(false);
-      setMessage("Token Gating Successfull");
-      showMessageHandler();
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Token Gating Successfull",
+          severity: "success",
+        }),
+      );
     } catch (error) {
       console.log(error);
       setLoading(false);
-      setIsTokenGatingSuccessfull(false);
-      setMessage("Token Gating Failed");
-      showMessageHandler();
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Token Gating failed",
+          severity: "success",
+        }),
+      );
     }
-  };
-
-  const showMessageHandler = () => {
-    setShowMessage(true);
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 4000);
   };
 
   const fetchTokenGatingDetails = useCallback(async () => {
@@ -332,13 +330,6 @@ const TokenGating = ({ daoAddress }) => {
       )}
 
       <BackdropLoader isOpen={loading} />
-
-      {showMessage ? (
-        <CustomAlert
-          alertMessage={message}
-          severity={isTokenGatingSuccessfull}
-        />
-      ) : null}
     </div>
   );
 };
