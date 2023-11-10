@@ -42,6 +42,8 @@ import {
   executeRejectTx,
   fetchABI,
   getEncodedData,
+  getTokenTypeByExecutionId,
+  isFactoryContractAddressRequired,
   signRejectTx,
 } from "utils/proposal";
 import { BsInfoCircleFill } from "react-icons/bs";
@@ -353,37 +355,21 @@ Cast your vote before ${new Date(
       gnosisAddress,
     });
 
+    const tokenType = getTokenTypeByExecutionId(proposalData.commands);
+    const factoryContractAddress = isFactoryContractAddressRequired(
+      proposalData?.commands,
+    )
+      ? CHAIN_CONFIG[networkId].factoryContractAddress
+      : "";
+
     const response = updateProposalAndExecution(
       data,
       approvalData,
       Web3.utils.toChecksumAddress(gnosisAddress),
       pid,
-      proposalData.commands[0]?.executionId === 0
-        ? proposalData.commands[0]?.airDropToken
-        : proposalData.commands[0]?.executionId === 4
-        ? proposalData.commands[0]?.customToken
-        : proposalData.commands[0]?.executionId === 5
-        ? proposalData.commands[0]?.customNft
-        : proposalData.commands[0]?.executionId === 14
-        ? proposalData.commands[0]?.depositToken
-        : proposalData.commands[0]?.executionId === 15
-        ? proposalData.commands[0]?.withdrawToken
-        : proposalData.commands[0]?.executionId === 19
-        ? proposalData.commands[0]?.swapToken
-        : proposalData.commands[0]?.executionId === 17
-        ? proposalData.commands[0]?.stakeToken
-        : proposalData.commands[0]?.executionId === 18
-        ? proposalData.commands[0]?.unstakeToken
-        : "",
+      tokenType,
       proposalStatus,
-      proposalData.commands[0]?.executionId === 3 ||
-        proposalData.commands[0]?.executionId === 10 ||
-        proposalData.commands[0]?.executionId === 11 ||
-        proposalData?.commands[0]?.executionId === 12 ||
-        proposalData.commands[0]?.executionId === 13 ||
-        proposalData.commands[0]?.executionId === 14
-        ? CHAIN_CONFIG[networkId].factoryContractAddress
-        : "",
+      factoryContractAddress,
       proposalData,
       membersArray,
       airDropAmountArray,

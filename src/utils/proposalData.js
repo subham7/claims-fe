@@ -11,11 +11,13 @@ import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "./globalFunctions";
-import { extractNftAdressAndId, shortAddress } from "./helper";
+import { extractNftAdressAndId, getSafeSdk, shortAddress } from "./helper";
 import Link from "next/link";
 import { getWhiteListMerkleRoot } from "api/whitelist";
 import { fetchLensActionAddresses, handleFetchFollowers } from "./lensHelper";
 import { proposalActionCommands } from "./proposalConstants";
+import { getProposalTxHash } from "api/proposal";
+import { createSafeTransactionData } from "./proposal";
 
 export const proposalData = ({ data, decimals, factoryData, symbol }) => {
   const {
@@ -1509,4 +1511,66 @@ export const proposalDetailsData = ({
     default:
       return {};
   }
+};
+
+export const getSafeTransaction = async (
+  gnosisAddress,
+  walletAddress,
+  gnosisTxUrl,
+) => {
+  return await getSafeSdk(gnosisAddress, walletAddress, gnosisTxUrl);
+};
+
+export const getTransactionHash = async (pid) => {
+  const proposalTxHash = await getProposalTxHash(pid);
+  return proposalTxHash?.data[0]?.txHash ?? "";
+};
+
+export const createOrUpdateSafeTransaction = async (
+  safeSdk,
+  safeService,
+  executionId,
+  transaction,
+  approvalTransaction,
+  txHash,
+  nonce,
+  executionStatus,
+) => {
+  let safeTransaction;
+  let rejectionTransaction;
+
+  if (executionId === 6) {
+    safeTransaction = await safeSdk.createAddOwnerTx(transaction);
+  } else if (executionId === 7) {
+    safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
+  } else {
+    safeTransaction = await safeSdk.createTransaction({
+      safeTransactionData: createSafeTransactionData({
+        approvalTransaction,
+        transaction,
+        nonce,
+      }),
+    });
+    if (executionStatus === "cancel") {
+      rejectionTransaction = await safeSdk.createRejectionTransaction(nonce);
+    }
+  }
+
+  const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
+
+  return { safeTransaction, rejectionTransaction, safeTxHash: safeTxHash };
+};
+
+export const signAndConfirmTransaction = async (
+  safeSdk,
+  safeService,
+  safeTransaction,
+  rejectionTransaction,
+  executionStatus,
+  safeTxHash,
+) => {
+  const transactionToSign =
+    executionStatus === "cancel" ? rejectionTransaction : safeTransaction;
+  const senderSignature = await safeSdk.signTypedData(transactionToSign, "v4");
+  await safeService.confirmTransaction(safeTxHash, senderSignature.data);
 };

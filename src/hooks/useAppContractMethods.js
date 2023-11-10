@@ -2,18 +2,23 @@ import { useSelector } from "react-redux";
 import Web3 from "web3";
 import {
   getIncreaseGasPrice,
-  getSafeSdk,
   readContractFunction,
   writeContractFunction,
 } from "utils/helper";
-import { createProposalTxHash, getProposalTxHash } from "../api/proposal";
+import { createProposalTxHash } from "../api/proposal";
 import { useAccount, useNetwork } from "wagmi";
 import { factoryContractABI } from "abis/factoryContract.js";
-import { createSafeTransactionData, getTransaction } from "utils/proposal";
+import { getTransaction } from "utils/proposal";
 import { erc20DaoABI } from "abis/erc20Dao";
 import { erc721DaoABI } from "abis/erc721Dao";
 import { encodeFunctionData } from "viem";
 import { CHAIN_CONFIG } from "utils/constants";
+import {
+  createOrUpdateSafeTransaction,
+  getSafeTransaction,
+  getTransactionHash,
+  signAndConfirmTransaction,
+} from "utils/proposalData";
 
 const useAppContractMethods = (params) => {
   const { daoAddress } = params ?? {};
@@ -407,19 +412,13 @@ const useAppContractMethods = (params) => {
     const { executionId, safeThreshold } = proposalData.commands[0];
     const airdropContractAddress =
       CHAIN_CONFIG[networkId].airdropContractAddress;
-
     const parameters = data;
 
-    const { safeSdk, safeService } = await getSafeSdk(
+    const { safeSdk, safeService } = await getSafeTransaction(
       gnosisAddress,
       walletAddress,
       CHAIN_CONFIG[networkId].gnosisTxUrl,
     );
-
-    const proposalTxHash = await getProposalTxHash(pid);
-    const txHash = proposalTxHash?.data[0]?.txHash ?? "";
-
-    const tx = txHash ? await safeService.getTransaction(txHash) : null;
 
     const { transaction, approvalTransaction } = await getTransaction({
       proposalData,
@@ -438,34 +437,25 @@ const useAppContractMethods = (params) => {
       airDropAmountArray,
     });
 
+    const txHash = await getTransactionHash(pid);
+    const tx = txHash ? await safeService.getTransaction(txHash) : null;
+
     if (executionStatus !== "executed") {
       if (txHash === "") {
         const nonce = await safeService.getNextNonce(gnosisAddress);
-        const safeTransactionData = createSafeTransactionData({
-          approvalTransaction,
-          transaction,
-          nonce,
-        });
+        const { safeTransaction, safeTxHash } =
+          await createOrUpdateSafeTransaction(
+            safeSdk,
+            safeService,
+            executionId,
+            transaction,
+            approvalTransaction,
+            txHash,
+            nonce,
+            executionStatus,
+          );
 
-        let safeTransaction;
-
-        if (executionId === 6) {
-          safeTransaction = await safeSdk.createAddOwnerTx(transaction);
-        } else if (executionId === 7) {
-          safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
-        } else {
-          safeTransaction = await safeSdk.createTransaction({
-            safeTransactionData,
-          });
-        }
-
-        const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
-
-        const payload = {
-          proposalId: pid,
-          txHash: safeTxHash,
-        };
-
+        const payload = { proposalId: pid, txHash: safeTxHash };
         await createProposalTxHash(payload);
 
         const proposeTxn = await safeService.proposeTransaction({
@@ -475,64 +465,44 @@ const useAppContractMethods = (params) => {
           senderAddress: Web3.utils.toChecksumAddress(walletAddress),
         });
 
-        const senderSignature = await safeSdk.signTypedData(
+        await signAndConfirmTransaction(
+          safeSdk,
+          safeService,
           safeTransaction,
-          "v4",
+          null,
+          executionStatus,
+          safeTxHash,
         );
-        await safeService.confirmTransaction(safeTxHash, senderSignature.data);
         return proposeTxn;
-      }
-      //case for remaining signatures
-      else {
-        const safeTransactionData = createSafeTransactionData({
-          approvalTransaction: approvalTransaction
-            ? tx.dataDecoded.parameters[0].valueDecoded[0]
-            : undefined,
-          transaction: approvalTransaction
-            ? tx.dataDecoded.parameters[0].valueDecoded[1]
-            : tx,
-          nonce: tx.nonce,
-        });
+      } else {
+        const { safeTransaction, rejectionTransaction, safeTxHash } =
+          await createOrUpdateSafeTransaction(
+            safeSdk,
+            safeService,
+            executionId,
+            transaction,
+            approvalTransaction,
+            tx.safeTxHash,
+            tx.nonce,
+            executionStatus,
+          );
 
-        const safeTxHash = tx.safeTxHash;
-
-        let safeTransaction;
-        let rejectionTransaction;
-
-        if (executionId === 6) {
-          safeTransaction = await safeSdk.createAddOwnerTx(transaction);
-        } else if (executionId === 7) {
-          safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
-        } else {
-          safeTransaction = await safeSdk.createTransaction({
-            safeTransactionData,
-          });
-          if (executionStatus === "cancel") {
-            rejectionTransaction = await safeSdk.createRejectionTransaction(
-              safeTransaction.data.nonce,
-            );
-          }
-        }
-
-        const senderSignature = await safeSdk.signTypedData(
-          executionStatus === "cancel" ? rejectionTransaction : safeTransaction,
-          "v4",
+        await signAndConfirmTransaction(
+          safeSdk,
+          safeService,
+          safeTransaction,
+          rejectionTransaction,
+          executionStatus,
+          safeTxHash,
         );
-
-        await safeService.confirmTransaction(safeTxHash, senderSignature.data);
         return tx;
       }
     } else {
-      const options = {
-        gasPrice: await getIncreaseGasPrice(networkId),
-      };
-
+      const options = { gasPrice: await getIncreaseGasPrice(networkId) };
       const executeTxResponse = await safeSdk.executeTransaction(tx, options);
-
       const receipt =
         executeTxResponse.transactionResponse &&
         (await executeTxResponse.transactionResponse.wait());
-
       return executeTxResponse;
     }
   };
