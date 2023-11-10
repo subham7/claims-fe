@@ -28,14 +28,12 @@ import surveyIcon from "../../../public/assets/icons/survey_icon.svg";
 import ReactHtmlParser from "react-html-parser";
 
 import Web3 from "web3";
-import { Web3Adapter } from "@safe-global/protocol-kit";
-import SafeApiKit from "@safe-global/api-kit";
 import ProposalExecutionInfo from "@components/proposalComps/ProposalExecutionInfo";
 import Signators from "@components/proposalComps/Signators";
 import ProposalInfo from "@components/proposalComps/ProposalInfo";
 import CurrentResults from "@components/proposalComps/CurrentResults";
 import ProposalVotes from "@components/proposalComps/ProposalVotes";
-import { getCustomSafeSdk, web3InstanceEthereum } from "utils/helper";
+import { getSafeSdk } from "utils/helper";
 import { retrieveNftListing } from "api/assets";
 import SafeAppsSDK from "@safe-global/safe-apps-sdk";
 import { useAccount, useNetwork } from "wagmi";
@@ -53,6 +51,7 @@ import { ProposalDetailStyles } from "./ProposalDetailStyles";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import BackdropLoader from "@components/common/BackdropLoader";
 import { addAlertData } from "redux/reducers/general";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const ProposalDetail = ({ pid, daoAddress }) => {
   const classes = ProposalDetailStyles();
@@ -95,10 +94,6 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     return state.club.clubData.gnosisAddress;
   });
 
-  const airdropContractAddress = useSelector((state) => {
-    return state.gnosis.actionContractAddress;
-  });
-
   const ERC721_Threshold = useSelector((state) => {
     return state.club.erc721ClubDetails.threshold;
   });
@@ -132,48 +127,30 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   const [isCancelExecuted, setIsCancelExecuted] = useState(false);
   const [isRejectTxnSigned, setIsRejectTxnSigned] = useState(false);
 
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
-  });
-
-  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.factoryContractAddress;
-  });
-
   const factoryData = useSelector((state) => {
     return state.club.factoryData;
   });
 
   const { getERC20TotalSupply, updateProposalAndExecution, getNftOwnersCount } =
-    useAppContractMethods();
+    useAppContractMethods({ daoAddress });
 
   const { getBalance } = useCommonContractMethods();
 
-  const getSafeService = useCallback(async () => {
-    const web3 = await web3InstanceEthereum();
-    const ethAdapter = new Web3Adapter({
-      web3,
-      signerAddress: Web3.utils.toChecksumAddress(walletAddress),
-    });
-    const safeService = new SafeApiKit({
-      txServiceUrl: GNOSIS_TRANSACTION_URL,
-      ethAdapter,
-    });
-    return safeService;
-  }, [GNOSIS_TRANSACTION_URL, walletAddress]);
-
   const isOwner = useCallback(async () => {
     if (gnosisAddress) {
-      const safeSdk = await getCustomSafeSdk(
-        Web3.utils.toChecksumAddress(gnosisAddress),
-        Web3.utils.toChecksumAddress(walletAddress),
+      const { safeSdk, safeService } = await getSafeSdk(
+        gnosisAddress,
+        walletAddress,
+        CHAIN_CONFIG[networkId].gnosisTxUrl,
         networkId,
       );
+
       const owners = await safeSdk.getOwners();
 
       const ownerAddressesArray = owners.map((value) =>
         Web3.utils.toChecksumAddress(value),
       );
+
       setOwnerAddresses(ownerAddressesArray);
 
       if (isGovernanceActive === false) {
@@ -196,9 +173,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
           ) {
             setCancelTxHash("");
           } else {
-            // txHash = result.data[0].txHash;
             setCancelTxHash(result.data[0].txHash);
-            const safeService = await getSafeService();
             const tx = await safeService.getTransaction(result.data[0].txHash);
             const ownerAddresses = tx.confirmations.map(
               (confirmOwners) => confirmOwners.owner,
@@ -231,9 +206,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         ) {
           setTxHash("");
         } else {
-          // txHash = result.data[0].txHash;
           setTxHash(result.data[0].txHash);
-          const safeService = await getSafeService();
           const tx = await safeService.getTransaction(result.data[0].txHash);
           const ownerAddresses = tx.confirmations.map(
             (confirmOwners) => confirmOwners.owner,
@@ -256,14 +229,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         setLoaderOpen(false);
       });
     }
-  }, [
-    getSafeService,
-    gnosisAddress,
-    isAdmin,
-    isGovernanceActive,
-    pid,
-    walletAddress,
-  ]);
+  }, [gnosisAddress, isAdmin, isGovernanceActive, pid, walletAddress]);
 
   const shareOnLensterHandler = () => {
     const lensterUrl = `https://lenster.xyz/?text=${`
@@ -380,9 +346,7 @@ Cast your vote before ${new Date(
     const response = updateProposalAndExecution(
       data,
       approvalData,
-      daoAddress,
       Web3.utils.toChecksumAddress(gnosisAddress),
-      txHash,
       pid,
       proposalData.commands[0]?.executionId === 0
         ? proposalData.commands[0]?.airDropToken
@@ -402,16 +366,14 @@ Cast your vote before ${new Date(
         ? proposalData.commands[0]?.unstakeToken
         : "",
       proposalStatus,
-      airdropContractAddress,
       proposalData.commands[0]?.executionId === 3 ||
         proposalData.commands[0]?.executionId === 10 ||
         proposalData.commands[0]?.executionId === 11 ||
         proposalData?.commands[0]?.executionId === 12 ||
         proposalData.commands[0]?.executionId === 13 ||
         proposalData.commands[0]?.executionId === 14
-        ? FACTORY_CONTRACT_ADDRESS
+        ? CHAIN_CONFIG[networkId].factoryContractAddress
         : "",
-      GNOSIS_TRANSACTION_URL,
       proposalData,
       membersArray,
       airDropAmountArray,
@@ -488,7 +450,7 @@ Cast your vote before ${new Date(
     setLoaderOpen(true);
     const response = await createRejectSafeTx({
       pid,
-      gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
+      gnosisTransactionUrl: CHAIN_CONFIG[networkId].gnosisTxUrl,
       gnosisAddress,
       networkId,
       daoAddress,
@@ -526,7 +488,7 @@ Cast your vote before ${new Date(
     const response = await signRejectTx({
       pid: cancelPid,
       walletAddress,
-      gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
+      gnosisTransactionUrl: CHAIN_CONFIG[networkId].gnosisTxUrl,
       gnosisAddress,
       networkId,
     });
@@ -558,7 +520,7 @@ Cast your vote before ${new Date(
     setLoaderOpen(true);
     const response = executeRejectTx({
       pid: proposalData?.cancelProposalId,
-      gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
+      gnosisTransactionUrl: CHAIN_CONFIG[networkId].gnosisTxUrl,
       gnosisAddress,
       walletAddress,
       networkId,

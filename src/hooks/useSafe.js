@@ -39,6 +39,7 @@ const useSafe = () => {
       // dispatch(setCreateDaoAuthorized(true));
 
       let value;
+
       if (clubTokenType === "NFT") {
         value = await createERC721DAO({
           ...params,

@@ -80,7 +80,7 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
     case 6:
     case 7:
       return {
-        "Owner address": shortAddress(ownerAddress),
+        Address: shortAddress(ownerAddress),
       };
     case 8:
     case 9:
@@ -1368,7 +1368,6 @@ export const proposalDetailsData = ({
   factoryData,
   symbol,
 }) => {
-  debugger;
   const {
     executionId,
     airDropAmount,

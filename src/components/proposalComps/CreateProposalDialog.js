@@ -68,7 +68,9 @@ const CreateProposalDialog = ({
   });
   const dispatch = useDispatch();
 
-  const { getERC20TotalSupply, getNftOwnersCount } = useAppContractMethods();
+  const { getERC20TotalSupply, getNftOwnersCount } = useAppContractMethods({
+    daoAddress,
+  });
 
   const [loaderOpen, setLoaderOpen] = useState(false);
 

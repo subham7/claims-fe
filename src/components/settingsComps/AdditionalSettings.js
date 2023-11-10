@@ -55,12 +55,14 @@ const AdditionalSettings = ({
 
   const startingTimeInNum = new Date(+daoDetails?.depositDeadline * 1000);
 
-  const { updateDepositTime, updateOwnerFee } = useAppContractMethods();
+  const { updateDepositTime, updateOwnerFee } = useAppContractMethods({
+    daoAddress,
+  });
 
   const updateAdminFees = async (ownerFee) => {
     setLoading(true);
     try {
-      await updateOwnerFee(+ownerFee * 100, daoAddress);
+      await updateOwnerFee(+ownerFee * 100);
       setLoading(false);
       dispatch(
         addAlertData({
@@ -100,7 +102,7 @@ const AdditionalSettings = ({
   const updateDepositDeadline = async (depositTime) => {
     setLoading(true);
     try {
-      await updateDepositTime(+depositTime.toFixed(0).toString(), daoAddress);
+      await updateDepositTime(+depositTime.toFixed(0).toString());
       setLoading(false);
       dispatch(
         addAlertData({

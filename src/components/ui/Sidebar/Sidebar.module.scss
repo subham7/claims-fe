@@ -4,17 +4,19 @@
   width: 70px;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 90vh;
   position: fixed;
   align-items: center;
   padding: 12px;
   border-right: 0.5px solid $border-color;
+  top: 10vh;
+  background-color: $background-color-dark;
 
   .iconsList {
     display: flex;
     flex-direction: column;
     gap: 32px;
-    margin-top: 42px;
+    margin-top: 25px;
 
     .link {
       cursor: pointer;

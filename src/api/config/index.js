@@ -14,16 +14,3 @@ export async function fetchConfig() {
     console.log(error);
   }
 }
-
-export async function fetchConfigById(networkId) {
-  try {
-    return await axios.get(MAIN_API_URL + `config/${networkId}`, {
-      headers: {
-        Authorization: "Bearer " + getJwtToken(),
-        "Content-Type": "application/json",
-      },
-    });
-  } catch (error) {
-    console.log(error);
-  }
-}

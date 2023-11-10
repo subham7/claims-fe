@@ -43,12 +43,10 @@ const TokenGating = ({ daoAddress }) => {
   const classes = TokenGatingStyle();
   const dispatch = useDispatch();
 
-  const {
-    getTokenGatingDetails,
-    setupTokenGating,
-
-    disableTokenGating,
-  } = useAppContractMethods();
+  const { getTokenGatingDetails, setupTokenGating, disableTokenGating } =
+    useAppContractMethods({
+      daoAddress,
+    });
 
   const { getTokenSymbol, getDecimals } = useCommonContractMethods();
 
@@ -93,7 +91,6 @@ const TokenGating = ({ daoAddress }) => {
                 tokensList[0]?.tokenDecimal,
               ),
         ], // Minimum user balance of tokenA & tokenB
-        daoAddress,
       );
       fetchTokenGatingDetails();
       setLoading(false);
@@ -121,7 +118,7 @@ const TokenGating = ({ daoAddress }) => {
   const fetchTokenGatingDetails = useCallback(async () => {
     try {
       setLoading(true);
-      const tokenGatingDetails = await getTokenGatingDetails(daoAddress);
+      const tokenGatingDetails = await getTokenGatingDetails();
 
       setFetchedDetails({
         tokenA: tokenGatingDetails[0]?.tokenA,
@@ -176,7 +173,7 @@ const TokenGating = ({ daoAddress }) => {
             onClick={async () => {
               try {
                 setLoading(true);
-                await disableTokenGating(daoAddress);
+                await disableTokenGating();
                 await fetchTokenGatingDetails();
                 setFetchedDetails({
                   tokenA: "",

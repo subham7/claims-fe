@@ -1,6 +1,4 @@
 import { getProposal } from "../api/proposal";
-import SafeApiKit from "@safe-global/api-kit";
-import { Web3Adapter } from "@safe-global/protocol-kit";
 import { createCancelProposal, getProposalTxHash } from "api/proposal";
 import Web3 from "web3";
 import { getIncreaseGasPrice, getSafeSdk } from "./helper";
@@ -24,6 +22,7 @@ import { erc20AaveABI } from "abis/erc20AaveABI";
 import { stargateStakeABI } from "abis/stargateStakeABI";
 import { maticAaveABI } from "abis/MaticAaveABI";
 import { uniswapABI } from "abis/uniswapABI";
+import { encodeFunctionData } from "viem";
 
 export const fetchProposals = async (clubId, type) => {
   let proposalData;
@@ -42,32 +41,18 @@ export const createRejectSafeTx = async ({
   daoAddress,
   network,
   walletAddress,
-  networkId,
 }) => {
   try {
-    const web3 = new Web3(window.ethereum);
-    const ethAdapter = new Web3Adapter({
-      web3: web3,
-      signerAddress: Web3.utils.toChecksumAddress(walletAddress),
-    });
-
-    const txServiceUrl = gnosisTransactionUrl;
-
-    const safeService = new SafeApiKit({
-      txServiceUrl,
-      ethAdapter,
-    });
+    const { safeSdk, safeService } = await getSafeSdk(
+      gnosisAddress,
+      walletAddress,
+      gnosisTransactionUrl,
+    );
 
     const proposalTxHash = await getProposalTxHash(pid);
 
     const safetx = await safeService.getTransaction(
       proposalTxHash.data[0].txHash,
-    );
-
-    const safeSdk = await getSafeSdk(
-      Web3.utils.toChecksumAddress(gnosisAddress),
-      Web3.utils.toChecksumAddress(walletAddress),
-      networkId,
     );
 
     const rejectionTransaction = await safeSdk.createRejectionTransaction(
@@ -116,32 +101,18 @@ export const executeRejectTx = async ({
   walletAddress,
   gnosisTransactionUrl,
   gnosisAddress,
-  networkId,
 }) => {
   try {
-    const web3 = new Web3(window.ethereum);
-    const ethAdapter = new Web3Adapter({
-      web3: web3,
-      signerAddress: Web3.utils.toChecksumAddress(walletAddress),
-    });
-
-    const txServiceUrl = gnosisTransactionUrl;
-
-    const safeService = new SafeApiKit({
-      txServiceUrl,
-      ethAdapter,
-    });
+    const { safeSdk, safeService } = await getSafeSdk(
+      gnosisAddress,
+      walletAddress,
+      gnosisTransactionUrl,
+    );
 
     const proposalTxHash = await getProposalTxHash(pid);
 
     const safetx = await safeService.getTransaction(
       proposalTxHash.data[0].txHash,
-    );
-
-    const safeSdk = await getSafeSdk(
-      Web3.utils.toChecksumAddress(gnosisAddress),
-      Web3.utils.toChecksumAddress(walletAddress),
-      networkId,
     );
 
     const options = {
@@ -161,31 +132,17 @@ export const signRejectTx = async ({
   walletAddress,
   gnosisTransactionUrl,
   gnosisAddress,
-  networkId,
 }) => {
   try {
-    const web3 = new Web3(window.ethereum);
-    const ethAdapter = new Web3Adapter({
-      web3: web3,
-      signerAddress: Web3.utils.toChecksumAddress(walletAddress),
-    });
-
-    const txServiceUrl = gnosisTransactionUrl;
-
-    const safeService = new SafeApiKit({
-      txServiceUrl,
-      ethAdapter,
-    });
+    const { safeSdk, safeService } = await getSafeSdk(
+      gnosisAddress,
+      walletAddress,
+      gnosisTransactionUrl,
+    );
 
     const proposalTxHash = await getProposalTxHash(pid);
     const safetx = await safeService.getTransaction(
       proposalTxHash.data[0].txHash,
-    );
-
-    const safeSdk = await getSafeSdk(
-      Web3.utils.toChecksumAddress(gnosisAddress),
-      Web3.utils.toChecksumAddress(walletAddress),
-      networkId,
     );
 
     const safeTransaction = await safeSdk.createRejectionTransaction(
@@ -719,7 +676,6 @@ export const getTransaction = async ({
   transactionData,
   tokenData,
   gnosisAddress,
-  contractInstances,
   parameters,
   isAssetsStoredOnGnosis,
   networkId,
@@ -746,7 +702,6 @@ export const getTransaction = async ({
   let transaction;
   const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
 
-  const { erc20DaoContractCall } = contractInstances;
   switch (executionId) {
     case 0:
     case 4:
@@ -792,13 +747,14 @@ export const getTransaction = async ({
       transaction = {
         //dao
         to: Web3.utils.toChecksumAddress(daoAddress),
-        data: erc20DaoContractCall.methods
-          .updateProposalAndExecution(
-            //factory
+        data: encodeFunctionData({
+          abi: erc20DaoABI,
+          functionName: "updateProposalAndExecution",
+          args: [
             factoryContractAddress ? factoryContractAddress : daoAddress,
             parameters,
-          )
-          .encodeABI(),
+          ],
+        }),
         value: "0",
       };
       return { transaction };
@@ -843,12 +799,14 @@ export const getTransaction = async ({
       } else {
         transaction = {
           to: Web3.utils.toChecksumAddress(daoAddress),
-          data: erc20DaoContractCall.methods
-            .updateProposalAndExecution(
+          data: encodeFunctionData({
+            abi: erc20DaoABI,
+            functionName: "updateProposalAndExecution",
+            args: [
               Web3.utils.toChecksumAddress(SEAPORT_CONTRACT_ADDRESS),
               parameters,
-            )
-            .encodeABI(),
+            ],
+          }),
           value: "10000000000000000",
         };
       }
@@ -859,25 +817,23 @@ export const getTransaction = async ({
     case 16:
       approvalTransaction = {
         to: Web3.utils.toChecksumAddress(daoAddress),
-        data: erc20DaoContractCall.methods
-          .updateProposalAndExecution(
-            //usdc address
-            daoAddress,
-            approvalData,
-          )
-          .encodeABI(),
+        data: encodeFunctionData({
+          abi: erc20DaoABI,
+          functionName: "updateProposalAndExecution",
+          args: [daoAddress, approvalData],
+        }),
         value: "0",
       };
       transaction = {
-        //dao
         to: Web3.utils.toChecksumAddress(daoAddress),
-        data: erc20DaoContractCall.methods
-          .updateProposalAndExecution(
-            //factory
+        data: encodeFunctionData({
+          abi: erc20DaoABI,
+          functionName: "updateProposalAndExecution",
+          args: [
             factoryContractAddress ? factoryContractAddress : daoAddress,
             parameters,
-          )
-          .encodeABI(),
+          ],
+        }),
         value: "0",
       };
       return { transaction, approvalTransaction };
@@ -1020,7 +976,6 @@ export const getTransaction = async ({
         ),
         value: "0",
       };
-
       transaction = {
         to: Web3.utils.toChecksumAddress(
           CHAIN_CONFIG[networkId].stargateRouterAddress,
@@ -1059,7 +1014,41 @@ export const getTransaction = async ({
         ),
         value: "0",
       };
-
       return { transaction, approvalTransaction };
+  }
+};
+
+export const createSafeTransactionData = ({
+  approvalTransaction,
+  transaction,
+  nonce,
+}) => {
+  try {
+    if (approvalTransaction === "" || approvalTransaction === undefined) {
+      return {
+        to: transaction?.to,
+        data: transaction?.data,
+        value: transaction?.value,
+        nonce,
+      };
+    } else {
+      return [
+        {
+          to: approvalTransaction?.to,
+          data: approvalTransaction?.data,
+          value: approvalTransaction?.value,
+          nonce,
+        },
+        {
+          to: transaction?.to,
+          data: transaction?.data,
+          value: transaction?.value,
+          nonce,
+        },
+      ];
+    }
+  } catch (e) {
+    console.error(e);
+    return {};
   }
 };
