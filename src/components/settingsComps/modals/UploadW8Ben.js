@@ -6,7 +6,7 @@ import { createDocument } from "api/document";
 import { editDepositConfig } from "api/deposit";
 import BackdropLoader from "@components/common/BackdropLoader";
 import { useDispatch } from "react-redux";
-import { addAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/general";
 
 const UploadW8Ben = ({ daoAddress, walletAddress, depositConfig }) => {
   const hiddenFileInput = useRef(null);
@@ -55,7 +55,7 @@ const UploadW8Ben = ({ daoAddress, walletAddress, depositConfig }) => {
         );
         setLoading(false);
         dispatch(
-          addAlertData({
+          setAlertData({
             open: true,
             message: "W-8BEN enabled",
             severity: "success",
@@ -65,7 +65,7 @@ const UploadW8Ben = ({ daoAddress, walletAddress, depositConfig }) => {
         console.log(error);
         setLoading(false);
         dispatch(
-          addAlertData({
+          setAlertData({
             open: true,
             message: "File upload failed",
             severity: "error",

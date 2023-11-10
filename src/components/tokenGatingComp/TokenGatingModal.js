@@ -6,7 +6,7 @@ import * as yup from "yup";
 import { TokenGatingModalStyles } from "./TokenGatingModalStyles";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import BackdropLoader from "@components/common/BackdropLoader";
-import { addAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/general";
 import { useDispatch } from "react-redux";
 
 const TokenGatingModal = ({ closeModal, chooseTokens }) => {
@@ -52,7 +52,7 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
             console.log(error);
 
             dispatch(
-              addAlertData({
+              setAlertData({
                 open: true,
                 message: "Not a valid token address!",
                 severity: "error",

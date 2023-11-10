@@ -20,7 +20,7 @@ import { FIVE_MB } from "utils/constants";
 import Image from "next/image";
 import { editInfo, getClubInfo } from "api/club";
 import { uploadFileToAWS } from "utils/helper";
-import { addAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/general";
 import { useDispatch } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
@@ -160,7 +160,7 @@ const EditDetails = ({
   const updateUIAfterSuccess = async () => {
     setLoaderOpen(false);
     dispatch(
-      addAlertData({
+      setAlertData({
         open: true,
         message: "Details changed successfully",
         severity: "success",
@@ -175,7 +175,7 @@ const EditDetails = ({
   const updateUIAfterFailure = () => {
     setLoaderOpen(false);
     dispatch(
-      addAlertData({
+      setAlertData({
         open: true,
         message: "Details changing failed",
         severity: "error",

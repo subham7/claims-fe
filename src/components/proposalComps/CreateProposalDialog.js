@@ -22,7 +22,7 @@ import { getProposalValidationSchema } from "@components/createClubComps/Validat
 import useAppContractMethods from "hooks/useAppContractMethods";
 import CommonProposalForm from "./CommonProposalForm";
 import SurveyProposalForm from "./SurveyProposalForm";
-import { addAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/general";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -173,7 +173,7 @@ const CreateProposalDialog = ({
           if (result.status !== 201) {
             setLoaderOpen(false);
             dispatch(
-              addAlertData({
+              setAlertData({
                 open: true,
                 message: "Proposal creation failed!",
                 severity: "error",
@@ -183,7 +183,7 @@ const CreateProposalDialog = ({
             fetchProposalList();
             setOpen(false);
             dispatch(
-              addAlertData({
+              setAlertData({
                 open: true,
                 message: "Proposal created successfully!",
                 severity: "success",
@@ -195,7 +195,7 @@ const CreateProposalDialog = ({
       } catch (error) {
         setLoaderOpen(false);
         dispatch(
-          addAlertData({
+          setAlertData({
             open: true,
             message: "Proposal creation failed!",
             severity: "error",

@@ -20,7 +20,7 @@ import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useDropsContractMethods from "hooks/useDropsContractMethods";
 import { getPublicClient } from "utils/viemConfig";
 import { useDispatch } from "react-redux";
-import { addAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/general";
 
 const useStyles = makeStyles({
   container: {
@@ -211,7 +211,7 @@ const CreateClaim = () => {
             data.blockNumber > Number(latestBlockNumber)
           ) {
             dispatch(
-              addAlertData({
+              setAlertData({
                 open: true,
                 message: "Invalid block number!",
                 severity: "error",
@@ -237,7 +237,7 @@ const CreateClaim = () => {
         } catch (error) {
           console.log(error);
           dispatch(
-            addAlertData({
+            setAlertData({
               open: true,
               message: "Unable to fetch snapshot data",
               severity: "error",
@@ -367,7 +367,7 @@ const CreateClaim = () => {
             setLoading(false);
             setFinish(true);
             dispatch(
-              addAlertData({
+              setAlertData({
                 open: true,
                 message: "Airdrop created successfully",
                 severity: "success",
@@ -380,7 +380,7 @@ const CreateClaim = () => {
             console.log(err);
             setLoading(false);
             dispatch(
-              addAlertData({
+              setAlertData({
                 open: true,
                 message: err.message,
                 severity: "error",
@@ -481,7 +481,7 @@ const CreateClaim = () => {
             setLoading(false);
             setFinish(true);
             dispatch(
-              addAlertData({
+              setAlertData({
                 open: true,
                 message: "Airdrop created successfully",
                 severity: "success",
@@ -494,7 +494,7 @@ const CreateClaim = () => {
             console.log(err);
             setLoading(false);
             dispatch(
-              addAlertData({
+              setAlertData({
                 open: true,
                 message: err.message,
                 severity: "error",

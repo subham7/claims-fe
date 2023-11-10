@@ -20,7 +20,7 @@ import { ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import PublicPageLayout from "@components/common/PublicPageLayout";
 import TwitterSharingModal from "@components/modals/TwitterSharingModal";
 import { processAmount } from "utils/helper";
-import { addAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/general";
 import { useDispatch } from "react-redux";
 
 const ClaimInputComponent = ({
@@ -354,7 +354,7 @@ const Claim = ({ claimAddress }) => {
         setClaimed(true);
         setClaimInput(0);
         dispatch(
-          addAlertData({
+          setAlertData({
             open: true,
             message: "Successfully Claimed!",
             severity: "success",
@@ -392,7 +392,7 @@ const Claim = ({ claimAddress }) => {
         setClaimInput(0);
 
         dispatch(
-          addAlertData({
+          setAlertData({
             open: true,
             message: "Successfully Claimed!",
             severity: "success",
@@ -404,7 +404,7 @@ const Claim = ({ claimAddress }) => {
       console.log(err);
       setClaimed(false);
       dispatch(
-        addAlertData({
+        setAlertData({
           open: true,
           message: "Some error occured!",
           severity: "error",

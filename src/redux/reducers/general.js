@@ -8,7 +8,7 @@ export const slice = createSlice({
     severity: null,
   },
   reducers: {
-    addAlertData: (state, action) => {
+    setAlertData: (state, action) => {
       state.open = action.payload.open;
       state.message = action.payload.message;
       state.severity = action.payload.severity;
@@ -16,6 +16,6 @@ export const slice = createSlice({
   },
 });
 
-export const { addAlertData } = slice.actions;
+export const { setAlertData } = slice.actions;
 
 export default slice.reducer;

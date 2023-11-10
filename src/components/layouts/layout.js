@@ -6,11 +6,8 @@ import { showWrongNetworkModal } from "utils/helper";
 import { makeStyles } from "@mui/styles";
 import Navbar from "@components/ui/Navbar/Navbar";
 import Sidebar from "@components/ui/Sidebar/Sidebar";
-import { useDispatch, useSelector } from "react-redux";
-import MuiAlert from "@mui/material/Alert";
-import Snackbar from "@mui/material/Snackbar";
-import { forwardRef } from "react";
-import { addAlertData } from "redux/reducers/general";
+
+import CustomAlert from "@components/common/CustomAlert";
 
 const drawerWidth = 50;
 
@@ -21,35 +18,14 @@ const useStyles = makeStyles({
   },
 });
 
-const Alert = forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
-
 export default function Layout(props) {
   const { showSidebar = true, daoAddress, networkId: routeNetworkId } = props;
   useClubFetch({ daoAddress, networkId: routeNetworkId });
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
-  const dispatch = useDispatch();
+
   const networkId = "0x" + chain?.id.toString(16);
   const classes = useStyles();
-  const isAlertOpen = useSelector((state) => state.general.open);
-  const severity = useSelector((state) => state.general.severity);
-  const message = useSelector((state) => state.general.message);
-
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    dispatch(
-      addAlertData({
-        open: false,
-        message: null,
-        severity: null,
-      }),
-    );
-  };
 
   return (
     <>
@@ -106,20 +82,7 @@ export default function Layout(props) {
             {showWrongNetworkModal(networkId, routeNetworkId)}
           </>
         )}
-        {isAlertOpen && (
-          <Snackbar
-            open={isAlertOpen}
-            autoHideDuration={4000}
-            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            onClose={handleClose}>
-            <Alert
-              onClose={handleClose}
-              severity={severity}
-              sx={{ width: "100%" }}>
-              {message}
-            </Alert>
-          </Snackbar>
-        )}
+        <CustomAlert />
       </Box>
     </>
   );

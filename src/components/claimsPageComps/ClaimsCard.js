@@ -8,7 +8,7 @@ import Countdown from "react-countdown";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { useDispatch } from "react-redux";
-import { addAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/general";
 
 const useStyles = makeStyles({
   container: {
@@ -193,7 +193,7 @@ const ClaimsCard = ({
               );
 
               dispatch(
-                addAlertData({
+                setAlertData({
                   open: true,
                   message: "Copied",
                   severity: "success",

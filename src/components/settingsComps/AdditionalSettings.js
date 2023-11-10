@@ -24,7 +24,7 @@ import UploadW8Ben from "./modals/UploadW8Ben";
 import { createStation, fetchClubByDaoAddress } from "api/club";
 import { editDepositConfig } from "api/deposit";
 import BackdropLoader from "@components/common/BackdropLoader";
-import { addAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/general";
 import { useDispatch } from "react-redux";
 
 const AdditionalSettings = ({
@@ -65,7 +65,7 @@ const AdditionalSettings = ({
       await updateOwnerFee(+ownerFee * 100);
       setLoading(false);
       dispatch(
-        addAlertData({
+        setAlertData({
           open: true,
           message: "Owner fee updated successfully",
           severity: "success",
@@ -81,7 +81,7 @@ const AdditionalSettings = ({
       setLoading(false);
       if (error.code === 4001) {
         dispatch(
-          addAlertData({
+          setAlertData({
             open: true,
             message: "Metamask Signature denied",
             severity: "error",
@@ -89,7 +89,7 @@ const AdditionalSettings = ({
         );
       } else {
         dispatch(
-          addAlertData({
+          setAlertData({
             open: true,
             message: "Owner fee updating failed",
             severity: "error",
@@ -105,7 +105,7 @@ const AdditionalSettings = ({
       await updateDepositTime(+depositTime.toFixed(0).toString());
       setLoading(false);
       dispatch(
-        addAlertData({
+        setAlertData({
           open: true,
           message: "Deposit time updated successfully",
           severity: "success",
@@ -120,7 +120,7 @@ const AdditionalSettings = ({
       setLoading(false);
       if (error.code === 4001) {
         dispatch(
-          addAlertData({
+          setAlertData({
             open: true,
             message: "Metamask Signature denied",
             severity: "error",
@@ -128,7 +128,7 @@ const AdditionalSettings = ({
         );
       } else {
         dispatch(
-          addAlertData({
+          setAlertData({
             open: true,
             message: "Deposit time updating failed",
             severity: "error",
@@ -165,7 +165,7 @@ const AdditionalSettings = ({
       setLoading(false);
       setChecked(true);
       dispatch(
-        addAlertData({
+        setAlertData({
           open: true,
           message: "Subscription link updated successfully",
           severity: "success",
@@ -174,7 +174,7 @@ const AdditionalSettings = ({
     } catch (error) {
       setLoading(false);
       dispatch(
-        addAlertData({
+        setAlertData({
           open: true,
           message: "Subscription link updating failed",
           severity: "error",
@@ -202,7 +202,7 @@ const AdditionalSettings = ({
           setLoading(false);
           setChecked(!checked);
           dispatch(
-            addAlertData({
+            setAlertData({
               open: true,
               message: "Subscription link removed Successfully",
               severity: "success",
@@ -211,7 +211,7 @@ const AdditionalSettings = ({
         } catch (error) {
           setLoading(false);
           dispatch(
-            addAlertData({
+            setAlertData({
               open: true,
               message: "Subscription link removing failed",
               severity: "error",
@@ -237,7 +237,7 @@ const AdditionalSettings = ({
       setLoading(false);
       setKycChecked(!kycChecked);
       dispatch(
-        addAlertData({
+        setAlertData({
           open: true,
           message: "Kyc settings changed successfully",
           severity: "success",
@@ -246,7 +246,7 @@ const AdditionalSettings = ({
     } catch (error) {
       setLoading(false);
       dispatch(
-        addAlertData({
+        setAlertData({
           open: true,
           message: "Kyc settings removing failed",
           severity: "error",
@@ -282,7 +282,7 @@ const AdditionalSettings = ({
       setLoading(true);
       await editDepositConfig({ uploadDocId: null }, daoAddress.toLowerCase());
       dispatch(
-        addAlertData({
+        setAlertData({
           open: true,
           message: "W-8Ben disabled",
           severity: "success",

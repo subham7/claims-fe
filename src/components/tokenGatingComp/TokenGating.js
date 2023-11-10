@@ -13,7 +13,7 @@ import {
 import useAppContractMethods from "../../hooks/useAppContractMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import BackdropLoader from "@components/common/BackdropLoader";
-import { addAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/general";
 
 const TokenGating = ({ daoAddress }) => {
   const [showTokenGatingModal, setShowTokenGatingModal] = useState(false);
@@ -96,7 +96,7 @@ const TokenGating = ({ daoAddress }) => {
       setLoading(false);
       setShowEditOptions(false);
       dispatch(
-        addAlertData({
+        setAlertData({
           open: true,
           message: "Token Gating Successfull",
           severity: "success",
@@ -106,7 +106,7 @@ const TokenGating = ({ daoAddress }) => {
       console.log(error);
       setLoading(false);
       dispatch(
-        addAlertData({
+        setAlertData({
           open: true,
           message: "Token Gating failed",
           severity: "success",

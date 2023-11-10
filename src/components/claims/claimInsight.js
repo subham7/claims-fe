@@ -20,7 +20,7 @@ import dayjs from "dayjs";
 import BackdropLoader from "@components/common/BackdropLoader";
 import { useTheme } from "@mui/styles";
 import { useDispatch } from "react-redux";
-import { addAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/general";
 
 const ClaimInsight = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState([]);
@@ -120,7 +120,7 @@ const ClaimInsight = ({ claimAddress }) => {
       );
       setLoading(false);
       dispatch(
-        addAlertData({
+        setAlertData({
           open: true,
           message: "Token added successfully!",
           severity: "success",
@@ -131,7 +131,7 @@ const ClaimInsight = ({ claimAddress }) => {
       setLoading(false);
       if (error.code === 4001) {
         dispatch(
-          addAlertData({
+          setAlertData({
             open: true,
             message: "Metamask Signature denied",
             severity: "error",
@@ -139,7 +139,7 @@ const ClaimInsight = ({ claimAddress }) => {
         );
       } else
         dispatch(
-          addAlertData({
+          setAlertData({
             open: true,
             message: "Adding token failed",
             severity: "error",
@@ -159,7 +159,7 @@ const ClaimInsight = ({ claimAddress }) => {
       await rollbackTokens(claimAddress, rollbackAmount, rollbackAddress);
       setLoading(false);
       dispatch(
-        addAlertData({
+        setAlertData({
           open: true,
           message: "Claimed successfully!",
           severity: "success",
@@ -170,7 +170,7 @@ const ClaimInsight = ({ claimAddress }) => {
       setLoading(false);
       if (error.code === 4001) {
         dispatch(
-          addAlertData({
+          setAlertData({
             open: true,
             message: "Metamask signature denied",
             severity: "error",
@@ -178,7 +178,7 @@ const ClaimInsight = ({ claimAddress }) => {
         );
       } else {
         dispatch(
-          addAlertData({
+          setAlertData({
             open: true,
             message: "Claiming token failed",
             severity: "error",
@@ -198,7 +198,7 @@ const ClaimInsight = ({ claimAddress }) => {
       );
       setLoading(false);
       dispatch(
-        addAlertData({
+        setAlertData({
           open: true,
           message: "Modified time successfully!",
           severity: "success",
@@ -209,7 +209,7 @@ const ClaimInsight = ({ claimAddress }) => {
       setLoading(false);
       if (error.code === 4001) {
         dispatch(
-          addAlertData({
+          setAlertData({
             open: true,
             message: "Metamask Signature denied",
             severity: "error",
@@ -217,7 +217,7 @@ const ClaimInsight = ({ claimAddress }) => {
         );
       } else {
         dispatch(
-          addAlertData({
+          setAlertData({
             open: true,
             message: "Modifying time failed",
             severity: "error",

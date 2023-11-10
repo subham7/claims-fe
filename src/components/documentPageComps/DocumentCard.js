@@ -2,7 +2,7 @@ import { makeStyles } from "@mui/styles";
 import React from "react";
 import { BsLink45Deg } from "react-icons/bs";
 import { useDispatch } from "react-redux";
-import { addAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/general";
 import { shortAddress } from "utils/helper";
 
 const useStyles = makeStyles({
@@ -93,7 +93,7 @@ const DocumentCard = ({
                 `${window.location.origin}/documents/${daoAddress}/${networkId}/sign/${legalDocLink}`,
               );
               dispatch(
-                addAlertData({
+                setAlertData({
                   open: true,
                   message: "Copied!",
                   severity: "success",

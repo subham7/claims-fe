@@ -12,7 +12,7 @@ import DisburseForm from "@components/claimsPageComps/DisburseForm";
 import { convertToWeiGovernance } from "utils/globalFunctions";
 import useDropsContractMethods from "hooks/useDropsContractMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
-import { addAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/general";
 import { useDispatch } from "react-redux";
 
 const useStyles = makeStyles({
@@ -91,7 +91,7 @@ const CreateDisburse = () => {
           } else {
             setLoading(false);
             dispatch(
-              addAlertData({
+              setAlertData({
                 open: true,
                 message: "Invalid disburse list format",
                 severity: "error",
@@ -103,7 +103,7 @@ const CreateDisburse = () => {
         if (disburseAddresses.length !== disburseAmounts.length) {
           setLoading(false);
           dispatch(
-            addAlertData({
+            setAlertData({
               open: true,
               message: "Invalid disburse list format",
               severity: "error",
@@ -123,7 +123,7 @@ const CreateDisburse = () => {
         ) {
           setLoading(false);
           dispatch(
-            addAlertData({
+            setAlertData({
               open: true,
               message:
                 "Your wallet does not have enough balance for the disburse",
@@ -151,7 +151,7 @@ const CreateDisburse = () => {
 
         setLoading(false);
         dispatch(
-          addAlertData({
+          setAlertData({
             open: true,
             message: "Tokens disbursed successfully",
             severity: "success",
@@ -164,7 +164,7 @@ const CreateDisburse = () => {
       } catch (e) {
         setLoading(false);
         dispatch(
-          addAlertData({
+          setAlertData({
             open: true,
             message: e.message,
             severity: "error",

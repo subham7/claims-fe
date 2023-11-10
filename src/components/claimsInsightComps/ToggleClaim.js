@@ -5,7 +5,7 @@ import useDropsContractMethods from "hooks/useDropsContractMethods";
 import React, { useEffect, useState } from "react";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
 import { useDispatch } from "react-redux";
-import { addAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/general";
 
 const ToggleClaim = ({ claimAddress, isActive }) => {
   const theme = useTheme();
@@ -25,7 +25,7 @@ const ToggleClaim = ({ claimAddress, isActive }) => {
       setLoading(false);
       setIsEnabled(!isEnabled);
       dispatch(
-        addAlertData({
+        setAlertData({
           open: true,
           message: "Claims turned on",
           severity: "success",
@@ -35,7 +35,7 @@ const ToggleClaim = ({ claimAddress, isActive }) => {
       console.log(error);
       setLoading(false);
       dispatch(
-        addAlertData({
+        setAlertData({
           open: true,
           message: "Claims turned off",
           severity: "error",

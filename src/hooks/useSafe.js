@@ -11,7 +11,7 @@ import useAppContractMethods from "./useAppContractMethods";
 import { ZERO_ADDRESS } from "utils/constants";
 import { uploadNFT } from "api/assets";
 import { uploadFileToAWS } from "utils/helper";
-import { addAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/general";
 
 const useSafe = () => {
   const { createERC721DAO, createERC20DAO } = useAppContractMethods();
@@ -106,7 +106,7 @@ const useSafe = () => {
         if (error.code === 4001) {
           // dispatch(setCreateSafeErrorCode(4001));
           dispatch(
-            addAlertData({
+            setAlertData({
               open: true,
               message: "Metamask Signature denied",
               severity: "error",
@@ -114,7 +114,7 @@ const useSafe = () => {
           );
         } else {
           dispatch(
-            addAlertData({
+            setAlertData({
               open: true,
               message: "Some error occured",
               severity: "error",
@@ -125,7 +125,7 @@ const useSafe = () => {
     } catch (error) {
       console.error("error");
       dispatch(
-        addAlertData({
+        setAlertData({
           open: true,
           message: "Some error occured",
           severity: "error",

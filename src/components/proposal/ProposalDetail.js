@@ -50,7 +50,7 @@ import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 import { ProposalDetailStyles } from "./ProposalDetailStyles";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import BackdropLoader from "@components/common/BackdropLoader";
-import { addAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/general";
 import { CHAIN_CONFIG } from "utils/constants";
 
 const ProposalDetail = ({ pid, daoAddress }) => {
@@ -390,7 +390,7 @@ Cast your vote before ${new Date(
               if (result.status !== 200) {
                 setExecuted(false);
                 dispatch(
-                  addAlertData({
+                  setAlertData({
                     open: true,
                     message: "Execution status update failed!",
                     severity: "error",
@@ -401,7 +401,7 @@ Cast your vote before ${new Date(
                 fetchData();
                 setExecuted(true);
                 dispatch(
-                  addAlertData({
+                  setAlertData({
                     open: true,
                     message: "Execution successful!",
                     severity: "success",
@@ -416,7 +416,7 @@ Cast your vote before ${new Date(
           console.error(error);
           setExecuted(false);
           dispatch(
-            addAlertData({
+            setAlertData({
               open: true,
               message: "Execution failed!",
               severity: "error",
@@ -435,7 +435,7 @@ Cast your vote before ${new Date(
           console.error(err);
           setSigned(false);
           dispatch(
-            addAlertData({
+            setAlertData({
               open: true,
               message: "Signature failed!",
               severity: "error",
@@ -461,7 +461,7 @@ Cast your vote before ${new Date(
       fetchData();
       setIsCancelSigned(true);
       dispatch(
-        addAlertData({
+        setAlertData({
           open: true,
           message: "Signature successful!",
           severity: "success",
@@ -471,7 +471,7 @@ Cast your vote before ${new Date(
     } else {
       setIsCancelSigned(false);
       dispatch(
-        addAlertData({
+        setAlertData({
           open: true,
           message: "Signature failed!",
           severity: "error",
@@ -496,7 +496,7 @@ Cast your vote before ${new Date(
       fetchData();
       setIsCancelSigned(true);
       dispatch(
-        addAlertData({
+        setAlertData({
           open: true,
           message: "Signature successful!",
           severity: "success",
@@ -506,7 +506,7 @@ Cast your vote before ${new Date(
     } else {
       setIsCancelSigned(false);
       dispatch(
-        addAlertData({
+        setAlertData({
           open: true,
           message: "Signature failed!",
           severity: "error",
@@ -533,7 +533,7 @@ Cast your vote before ${new Date(
             if (result.status !== 200) {
               setExecuted(false);
               dispatch(
-                addAlertData({
+                setAlertData({
                   open: true,
                   message: "Execution status update failed!",
                   severity: "error",
@@ -544,7 +544,7 @@ Cast your vote before ${new Date(
               fetchData();
               setExecuted(true);
               dispatch(
-                addAlertData({
+                setAlertData({
                   open: true,
                   message: "Execution successful!",
                   severity: "success",
@@ -559,7 +559,7 @@ Cast your vote before ${new Date(
         console.error(error);
         setExecuted(false);
         dispatch(
-          addAlertData({
+          setAlertData({
             open: true,
             message: "Execution failed!",
             severity: "error",
@@ -882,7 +882,7 @@ Cast your vote before ${new Date(
                                       }
                                     : () => {
                                         dispatch(
-                                          addAlertData({
+                                          setAlertData({
                                             open: true,
                                             message:
                                               "Execute txns with smaller nonce first",
@@ -963,7 +963,7 @@ Cast your vote before ${new Date(
                                       }
                                     : () => {
                                         dispatch(
-                                          addAlertData({
+                                          setAlertData({
                                             open: true,
                                             message:
                                               "Execute txns with smaller nonce first",
