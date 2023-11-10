@@ -44,10 +44,6 @@ const Join = ({ daoAddress }) => {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
 
-  const SUBGRAPH_URL = useSelector((state) => {
-    return state.gnosis.subgraphUrl;
-  });
-
   const TOKEN_TYPE = useSelector((state) => {
     return state.club.clubData.tokenType;
   });
@@ -250,7 +246,7 @@ const Join = ({ daoAddress }) => {
       console.log(error);
       setLoading(false);
     }
-  }, [SUBGRAPH_URL, daoAddress, daoDetails, walletAddress]);
+  }, [daoAddress, daoDetails, walletAddress]);
 
   useEffect(() => {
     const fetchMerkleProof = async () => {

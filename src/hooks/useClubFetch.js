@@ -7,13 +7,13 @@ import {
   addFactoryData,
 } from "../redux/reducers/club";
 import {
-  addContractAddress,
+  // addContractAddress,
   setAdminUser,
   setMemberUser,
 } from "../redux/reducers/gnosis";
-import { fetchConfigById } from "../api/config";
+// import { fetchConfigById } from "../api/config";
 
-import { getCustomSafeSdk } from "../utils/helper";
+import { getSafeSdk } from "../utils/helper";
 import { useAccount } from "wagmi";
 import { useRouter } from "next/router";
 import useAppContractMethods from "./useAppContractMethods";
@@ -40,29 +40,29 @@ const useClubFetch = ({ daoAddress, networkId }) => {
     daoAddress,
   });
 
-  useEffect(() => {
-    const getNetworkConfig = async () => {
-      try {
-        const networkData = await fetchConfigById(networkId);
+  // useEffect(() => {
+  //   const getNetworkConfig = async () => {
+  //     try {
+  //       const networkData = await fetchConfigById(networkId);
 
-        dispatch(
-          addContractAddress({
-            factoryContractAddress: networkData?.data[0]?.factoryContract,
-            usdcContractAddress: networkData?.data[0]?.depositTokenContract,
-            actionContractAddress:
-              networkData?.data[0]?.tokenTransferActionContract,
-            subgraphUrl: networkData?.data[0]?.subgraph,
-            transactionUrl: networkData?.data[0]?.gnosisTransactionUrl,
-            networkHex: networkData?.data[0]?.networkHex,
-            networkId: networkData?.data[0]?.networkId,
-          }),
-        );
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    networkId && getNetworkConfig();
-  }, [networkId]);
+  //       dispatch(
+  //         addContractAddress({
+  //           factoryContractAddress: networkData?.data[0]?.factoryContract,
+  //           usdcContractAddress: networkData?.data[0]?.depositTokenContract,
+  //           actionContractAddress:
+  //             networkData?.data[0]?.tokenTransferActionContract,
+  //           subgraphUrl: networkData?.data[0]?.subgraph,
+  //           transactionUrl: networkData?.data[0]?.gnosisTransactionUrl,
+  //           networkHex: networkData?.data[0]?.networkHex,
+  //           networkId: networkData?.data[0]?.networkId,
+  //         }),
+  //       );
+  //     } catch (e) {
+  //       console.error(e);
+  //     }
+  //   };
+  //   networkId && getNetworkConfig();
+  // }, [networkId]);
 
   useEffect(() => {
     const fetchStationData = async () => {
@@ -166,11 +166,11 @@ const useClubFetch = ({ daoAddress, networkId }) => {
 
       const balance = await getDaoBalance(reduxClubData.tokenType === "erc721");
 
-      const safeSdk = await getCustomSafeSdk(
+      const { safeSdk } = await getSafeSdk(
         reduxClubData.gnosisAddress,
         walletAddress,
-        networkId,
       );
+
       const ownerAddresses = await safeSdk.getOwners();
       const ownerAddressesArray = ownerAddresses.map((value) =>
         value.toLowerCase(),
