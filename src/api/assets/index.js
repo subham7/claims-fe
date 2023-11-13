@@ -53,9 +53,11 @@ export async function getNFTsByDaoAddress(daoAddress, networkId) {
 }
 
 export async function retrieveNftListing(chain, contractAddress, tokenId) {
+  debugger;
   try {
     return await axios.get(
-      `https://api.opensea.io/v2/orders/${chain}/seaport/listings?asset_contract_address=${contractAddress}&token_ids=${tokenId}&order_by=created_date&order_direction=desc`,
+      MAIN_API_URL +
+        `external/opensea/nftListing/?chain=${chain}&contractAddress=${contractAddress}&tokenId=${tokenId}`,
       {
         headers: {
           accept: "application/json",
@@ -69,6 +71,7 @@ export async function retrieveNftListing(chain, contractAddress, tokenId) {
 }
 
 export async function fulfillOrder(offer, fulfiller, consideration) {
+  debugger;
   const options = {
     method: "POST",
     headers: {
@@ -83,7 +86,7 @@ export async function fulfillOrder(offer, fulfiller, consideration) {
   };
 
   const res = await fetch(
-    "https://api.opensea.io/v2/offers/fulfillment_data",
+    MAIN_API_URL + "external/opensea/fulfillOrder/",
     options,
   );
   return res.json();
