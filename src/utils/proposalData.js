@@ -1526,16 +1526,14 @@ export const getTransactionHash = async (pid) => {
   return proposalTxHash?.data[0]?.txHash ?? "";
 };
 
-export const createOrUpdateSafeTransaction = async (
+export const createOrUpdateSafeTransaction = async ({
   safeSdk,
-  safeService,
   executionId,
   transaction,
   approvalTransaction,
-  txHash,
   nonce,
   executionStatus,
-) => {
+}) => {
   let safeTransaction;
   let rejectionTransaction;
 

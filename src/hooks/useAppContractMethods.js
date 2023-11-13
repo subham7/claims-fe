@@ -396,22 +396,24 @@ const useAppContractMethods = (params) => {
     }
   };
 
-  const updateProposalAndExecution = async (
+  const updateProposalAndExecution = async ({
     data,
     approvalData = "",
     gnosisAddress = "",
     pid,
     tokenData,
-    executionStatus,
-    factoryContractAddress = "",
+    proposalStatus,
     proposalData,
     membersArray,
     airDropAmountArray,
     transactionData = "",
-  ) => {
+  }) => {
     const { executionId, safeThreshold } = proposalData.commands[0];
     const airdropContractAddress =
       CHAIN_CONFIG[networkId].airdropContractAddress;
+
+    const factoryContractAddress =
+      CHAIN_CONFIG[networkId]?.factoryContractAddress;
     const parameters = data;
 
     const { safeSdk, safeService } = await getSafeTransaction(
@@ -440,20 +442,18 @@ const useAppContractMethods = (params) => {
     const txHash = await getTransactionHash(pid);
     const tx = txHash ? await safeService.getTransaction(txHash) : null;
 
-    if (executionStatus !== "executed") {
+    if (proposalStatus !== "executed") {
       if (txHash === "") {
         const nonce = await safeService.getNextNonce(gnosisAddress);
         const { safeTransaction, safeTxHash } =
-          await createOrUpdateSafeTransaction(
+          await createOrUpdateSafeTransaction({
             safeSdk,
-            safeService,
             executionId,
             transaction,
             approvalTransaction,
-            txHash,
             nonce,
-            executionStatus,
-          );
+            proposalStatus,
+          });
 
         const payload = { proposalId: pid, txHash: safeTxHash };
         await createProposalTxHash(payload);
@@ -470,29 +470,27 @@ const useAppContractMethods = (params) => {
           safeService,
           safeTransaction,
           null,
-          executionStatus,
+          proposalStatus,
           safeTxHash,
         );
         return proposeTxn;
       } else {
         const { safeTransaction, rejectionTransaction, safeTxHash } =
-          await createOrUpdateSafeTransaction(
+          await createOrUpdateSafeTransaction({
             safeSdk,
-            safeService,
             executionId,
             transaction,
             approvalTransaction,
-            tx.safeTxHash,
-            tx.nonce,
-            executionStatus,
-          );
+            nonce: tx.nonce,
+            executionStatus: proposalStatus,
+          });
 
         await signAndConfirmTransaction(
           safeSdk,
           safeService,
           safeTransaction,
           rejectionTransaction,
-          executionStatus,
+          proposalStatus,
           safeTxHash,
         );
         return tx;

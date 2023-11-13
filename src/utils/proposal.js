@@ -1077,8 +1077,3 @@ export const getTokenTypeByExecutionId = (commands) => {
       return "";
   }
 };
-
-export const isFactoryContractAddressRequired = (commands) => {
-  const executionId = commands[0]?.executionId;
-  return [3, 10, 11, 12, 13, 14].includes(executionId);
-};

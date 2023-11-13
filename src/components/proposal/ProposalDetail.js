@@ -43,7 +43,6 @@ import {
   fetchABI,
   getEncodedData,
   getTokenTypeByExecutionId,
-  isFactoryContractAddressRequired,
   signRejectTx,
 } from "utils/proposal";
 import { BsInfoCircleFill } from "react-icons/bs";
@@ -355,26 +354,20 @@ Cast your vote before ${new Date(
       gnosisAddress,
     });
 
-    const tokenType = getTokenTypeByExecutionId(proposalData.commands);
-    const factoryContractAddress = isFactoryContractAddressRequired(
-      proposalData?.commands,
-    )
-      ? CHAIN_CONFIG[networkId].factoryContractAddress
-      : "";
+    const tokenData = getTokenTypeByExecutionId(proposalData.commands);
 
-    const response = updateProposalAndExecution(
+    const response = updateProposalAndExecution({
       data,
       approvalData,
-      Web3.utils.toChecksumAddress(gnosisAddress),
+      gnosisAddress: Web3.utils.toChecksumAddress(gnosisAddress),
       pid,
-      tokenType,
+      tokenData,
       proposalStatus,
-      factoryContractAddress,
       proposalData,
       membersArray,
       airDropAmountArray,
       transactionData,
-    );
+    });
 
     if (proposalStatus === "executed") {
       // fetchData()
