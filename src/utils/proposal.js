@@ -1052,3 +1052,28 @@ export const createSafeTransactionData = ({
     return {};
   }
 };
+
+export const getTokenTypeByExecutionId = (commands) => {
+  const executionId = commands[0]?.executionId;
+
+  switch (executionId) {
+    case 0:
+      return commands[0]?.airDropToken;
+    case 4:
+      return commands[0]?.customToken;
+    case 5:
+      return commands[0]?.customNft;
+    case 14:
+      return commands[0]?.depositToken;
+    case 15:
+      return commands[0]?.withdrawToken;
+    case 19:
+      return commands[0]?.swapToken;
+    case 17:
+      return commands[0]?.stakeToken;
+    case 18:
+      return commands[0]?.unstakeToken;
+    default:
+      return "";
+  }
+};

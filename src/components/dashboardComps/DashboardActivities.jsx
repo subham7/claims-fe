@@ -123,8 +123,6 @@ const DashboardActivities = ({ proposals, daoAddress, networkId }) => {
     // eslint-disable-next-line
   }, [gnosisAddress]);
 
-  console.log("xxx", allTransactions);
-
   return (
     <div className={classes.rightContainer}>
       {[
