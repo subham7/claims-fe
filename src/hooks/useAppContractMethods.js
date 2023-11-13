@@ -465,14 +465,14 @@ const useAppContractMethods = (params) => {
           senderAddress: Web3.utils.toChecksumAddress(walletAddress),
         });
 
-        await signAndConfirmTransaction(
+        await signAndConfirmTransaction({
           safeSdk,
           safeService,
           safeTransaction,
-          null,
-          proposalStatus,
+          rejectionTransaction: null,
+          executionStatus: proposalStatus,
           safeTxHash,
-        );
+        });
         return proposeTxn;
       } else {
         const { safeTransaction, rejectionTransaction, safeTxHash } =
@@ -485,14 +485,14 @@ const useAppContractMethods = (params) => {
             executionStatus: proposalStatus,
           });
 
-        await signAndConfirmTransaction(
+        await signAndConfirmTransaction({
           safeSdk,
           safeService,
           safeTransaction,
           rejectionTransaction,
-          proposalStatus,
+          executionStatus: proposalStatus,
           safeTxHash,
-        );
+        });
         return tx;
       }
     } else {

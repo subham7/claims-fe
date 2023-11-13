@@ -1559,14 +1559,14 @@ export const createOrUpdateSafeTransaction = async ({
   return { safeTransaction, rejectionTransaction, safeTxHash: safeTxHash };
 };
 
-export const signAndConfirmTransaction = async (
+export const signAndConfirmTransaction = async ({
   safeSdk,
   safeService,
   safeTransaction,
   rejectionTransaction,
   executionStatus,
   safeTxHash,
-) => {
+}) => {
   const transactionToSign =
     executionStatus === "cancel" ? rejectionTransaction : safeTransaction;
   const senderSignature = await safeSdk.signTypedData(transactionToSign, "v4");
