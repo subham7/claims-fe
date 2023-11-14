@@ -3,7 +3,6 @@ import { Grid, MenuItem, OutlinedInput, Select } from "@mui/material";
 import { Button, Typography } from "@components/ui";
 import { proposalDisplayOptions } from "data/dashboard";
 import DocsCard from "@components/proposalComps/DocsCard";
-import CreateProposalDialog from "@components/proposalComps/CreateProposalDialog";
 import { fetchProposals } from "utils/proposal";
 import { useRouter } from "next/router";
 import ProposalCard from "./ProposalCard";
@@ -18,6 +17,7 @@ import { getTokensList } from "api/token";
 import { CHAIN_CONFIG } from "utils/constants";
 import { useAccount, useNetwork } from "wagmi";
 import BackdropLoader from "@components/common/BackdropLoader";
+import SelectActionDialog from "@components/proposalComps/SelectActionDialog";
 
 const useStyles = makeStyles({
   noProposal_heading: {
@@ -321,14 +321,14 @@ const Proposal = ({ daoAddress }) => {
         </Grid>
       </Grid>
 
-      <CreateProposalDialog
+      <SelectActionDialog
         open={open}
         setOpen={setOpen}
         onClose={handleClose}
         tokenData={tokenData}
         nftData={nftData}
         daoAddress={daoAddress}
-        fetchProposalList={fetchProposalList}
+        networkId={networkId}
       />
       <BackdropLoader isOpen={open} />
     </>

@@ -1,10 +1,4 @@
-import {
-  MenuItem,
-  OutlinedInput,
-  Select,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Stack } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useNetwork } from "wagmi";
 import { csvToObjectForMintGT } from "utils/helper";
@@ -13,10 +7,6 @@ import { useSelector } from "react-redux";
 import { CHAIN_CONFIG } from "utils/constants";
 import { proposalFormData } from "utils/proposalData";
 import Web3 from "web3";
-import {
-  PROPOSAL_MENU_ITEMS,
-  proposalActionCommands,
-} from "utils/proposalConstants";
 
 const useStyles = makeStyles({
   textField: {
@@ -113,47 +103,7 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
   };
 
   return (
-    <Stack sx={{ marginTop: "1rem" }}>
-      <Typography variant="proposalBody">
-        Choose a command for this proposal to execute
-      </Typography>
-      <Select
-        displayEmpty
-        value={formik.actionCommand}
-        onChange={(e) => {
-          const selectedValue = e.target.value;
-          const selectedKey = Object.keys(proposalActionCommands).find(
-            (key) => proposalActionCommands[key] === selectedValue,
-          );
-          formik.setFieldValue("actionCommand", Number(selectedKey));
-        }}
-        input={<OutlinedInput />}
-        renderValue={(selected) => {
-          if (!selected) {
-            return "Select a command";
-          }
-          return selected;
-        }}
-        style={{
-          borderRadius: "10px",
-          background: "#111111 0% 0% no-repeat padding-box",
-          width: "100%",
-          marginTop: "0.5rem",
-        }}
-        error={
-          formik.touched.actionCommand && Boolean(formik.errors.actionCommand)
-        }
-        helperText={
-          formik.touched.actionCommand && formik.errors.actionCommand
-        }>
-        {PROPOSAL_MENU_ITEMS(isGovernanceActive, tokenType)
-          .filter((item) => !item.condition || item.condition())
-          .map((item) => (
-            <MenuItem key={item.key} value={item.value}>
-              {item.text}
-            </MenuItem>
-          ))}
-      </Select>
+    <Stack>
       {proposalFormData({
         formik,
         tokenData,

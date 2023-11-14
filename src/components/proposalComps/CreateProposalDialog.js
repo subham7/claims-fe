@@ -1,16 +1,8 @@
-import {
-  CircularProgress,
-  Dialog,
-  DialogContent,
-  Grid,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { CircularProgress, Grid, Stack, Typography } from "@mui/material";
 import { Button } from "@components/ui";
 import { makeStyles } from "@mui/styles";
 import { useFormik } from "formik";
 import React, { useState } from "react";
-
 import dayjs from "dayjs";
 import ProposalActionForm from "./ProposalActionForm";
 import { createProposal } from "../../api/proposal";
@@ -23,8 +15,15 @@ import useAppContractMethods from "hooks/useAppContractMethods";
 import CommonProposalForm from "./CommonProposalForm";
 import SurveyProposalForm from "./SurveyProposalForm";
 import { setAlertData } from "redux/reducers/general";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles({
+  main: {
+    display: "flex",
+    paddingLeft: "2rem",
+    paddingRight: "2rem",
+  },
   modalStyle: {
     width: "792px",
     backgroundColor: "#151515",
@@ -37,23 +36,22 @@ const useStyles = makeStyles({
   },
   textField: {
     width: "100%",
-    // margin: "16px 0 25px 0",
     fontSize: "18px",
-
     marginTop: "0.5rem",
+  },
+  leftDiv: {
+    width: "50%",
+  },
+  rightDiv: {
+    width: "50%",
   },
 });
 
-const CreateProposalDialog = ({
-  open,
-  setOpen,
-  onClose,
-  tokenData,
-  nftData,
-  daoAddress,
-  fetchProposalList,
-}) => {
+const CreateProposalDialog = ({ daoAddress }) => {
   const classes = useStyles();
+  const router = useRouter();
+  const { item, nftData, tokenData } = router.query;
+  const selectedProposal = JSON.parse(item);
 
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
@@ -82,6 +80,7 @@ const CreateProposalDialog = ({
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
+
   const proposal = useFormik({
     initialValues: {
       tokenType: tokenType,
@@ -90,7 +89,7 @@ const CreateProposalDialog = ({
       proposalTitle: "",
       proposalDescription: "",
       optionList: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
-      actionCommand: "",
+      actionCommand: selectedProposal.key,
       airdropToken: tokenData ? tokenData[0]?.address : "",
       amountToAirdrop: 0,
       carryFee: 0,
@@ -180,8 +179,6 @@ const CreateProposalDialog = ({
               }),
             );
           } else {
-            fetchProposalList();
-            setOpen(false);
             dispatch(
               setAlertData({
                 open: true,
@@ -205,71 +202,49 @@ const CreateProposalDialog = ({
     },
   });
   return (
-    <>
-      <Dialog
-        open={open}
-        onClose={onClose}
-        scroll="body"
-        PaperProps={{ classes: { root: classes.modalStyle } }}
-        fullWidth
-        maxWidth="lg">
-        <DialogContent
-          sx={{
-            overflow: "hidden",
-            backgroundColor: "#151515",
-            padding: "3rem",
-          }}>
-          <form onSubmit={proposal.handleSubmit} className={classes.form}>
-            <Typography className={classes.dialogBox}>
-              Create proposal
+    <div className={classes.main}>
+      <div className={classes.leftDiv}>
+        <Grid container spacing={1} ml={-4} onClick={() => router.back()}>
+          <Grid item mt={0.5} sx={{ "&:hover": { cursor: "pointer" } }}>
+            <KeyboardBackspaceIcon className={classes.listFont} />
+          </Grid>
+          <Grid item sx={{ "&:hover": { cursor: "pointer" } }} mb={2}>
+            <Typography className={classes.listFont}>
+              Back to all proposals
             </Typography>
+          </Grid>
+        </Grid>
+        <Typography variant="subtitle1"> {selectedProposal.text}</Typography>
+      </div>
+      <div className={classes.rightDiv}>
+        <form onSubmit={proposal.handleSubmit} className={classes.form}>
+          <CommonProposalForm proposal={proposal} />
 
-            <CommonProposalForm proposal={proposal} />
+          {/* proposal forms */}
+          {proposal.values.typeOfProposal === "survey" ? (
+            <Stack mt={1}>
+              <SurveyProposalForm proposal={proposal} />
+            </Stack>
+          ) : (
+            <Stack>
+              <ProposalActionForm
+                formik={proposal}
+                tokenData={tokenData}
+                nftData={nftData}
+              />
+            </Stack>
+          )}
 
-            {/* proposal forms */}
-            {proposal.values.typeOfProposal === "survey" ? (
-              <Stack mt={1}>
-                <SurveyProposalForm proposal={proposal} />
-              </Stack>
-            ) : (
-              <Stack>
-                <ProposalActionForm
-                  formik={proposal}
-                  tokenData={tokenData}
-                  nftData={nftData}
-                />
-              </Stack>
-            )}
-
-            {/* Submit Button */}
-            <Grid container mt={2} spacing={3}>
-              <Grid
-                item
-                xs
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  alignItems: "center",
-                }}>
-                <Button
-                  onClick={() => {
-                    proposal.resetForm();
-                    setLoaderOpen(false);
-                    onClose(event, "cancel");
-                  }}>
-                  Cancel
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button type="submit">
-                  {loaderOpen ? <CircularProgress size={25} /> : "Submit"}
-                </Button>
-              </Grid>
+          <Grid container mt={2} spacing={3}>
+            <Grid item>
+              <Button type="submit">
+                {loaderOpen ? <CircularProgress size={25} /> : "Submit"}
+              </Button>
             </Grid>
-          </form>
-        </DialogContent>
-      </Dialog>
-    </>
+          </Grid>
+        </form>
+      </div>
+    </div>
   );
 };
 
