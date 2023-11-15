@@ -4,16 +4,12 @@ import { getJwtToken } from "../../utils/auth";
 
 export async function createProposal(data, networkId) {
   // create proposal API
-  return await axios.post(
-    MAIN_API_URL + `proposal/create?networkId=${networkId}`,
-    data,
-    {
-      headers: {
-        Authorization: "Bearer " + getJwtToken(),
-        "Content-Type": "application/json",
-      },
+  return await axios.post(MAIN_API_URL + `proposal`, data, {
+    headers: {
+      Authorization: "Bearer " + getJwtToken(),
+      "Content-Type": "application/json",
     },
-  );
+  });
 }
 
 export async function createCancelProposal(data, networkId) {
