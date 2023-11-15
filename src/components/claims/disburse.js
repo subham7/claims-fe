@@ -12,7 +12,7 @@ import DisburseForm from "@components/claimsPageComps/DisburseForm";
 import { convertToWeiGovernance } from "utils/globalFunctions";
 import useDropsContractMethods from "hooks/useDropsContractMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
-import { setAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/alert";
 import { useDispatch } from "react-redux";
 
 const useStyles = makeStyles({

@@ -24,7 +24,7 @@ import UploadW8Ben from "./modals/UploadW8Ben";
 import { createStation, fetchClubByDaoAddress } from "api/club";
 import { editDepositConfig } from "api/deposit";
 import BackdropLoader from "@components/common/BackdropLoader";
-import { setAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/alert";
 import { useDispatch } from "react-redux";
 import { addFactoryData } from "redux/reducers/club";
 

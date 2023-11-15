@@ -20,7 +20,7 @@ import { FIVE_MB } from "utils/constants";
 import Image from "next/image";
 import { editInfo, getClubInfo } from "api/club";
 import { uploadFileToAWS } from "utils/helper";
-import { setAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/alert";
 import { useDispatch } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({

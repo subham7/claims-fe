@@ -22,7 +22,7 @@ import { getProposalValidationSchema } from "@components/createClubComps/Validat
 import useAppContractMethods from "hooks/useAppContractMethods";
 import CommonProposalForm from "./CommonProposalForm";
 import SurveyProposalForm from "./SurveyProposalForm";
-import { setAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/alert";
 
 const useStyles = makeStyles({
   modalStyle: {

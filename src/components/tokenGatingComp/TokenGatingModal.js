@@ -6,7 +6,7 @@ import * as yup from "yup";
 import { TokenGatingModalStyles } from "./TokenGatingModalStyles";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import BackdropLoader from "@components/common/BackdropLoader";
-import { setAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/alert";
 import { useDispatch } from "react-redux";
 
 const TokenGatingModal = ({ closeModal, chooseTokens }) => {
