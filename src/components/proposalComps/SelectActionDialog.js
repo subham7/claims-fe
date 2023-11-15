@@ -57,11 +57,11 @@ const SelectActionDialog = ({
 }) => {
   const classes = useStyles();
 
-  const onProposalClick = (item) => {
+  const onProposalClick = (key) => {
     Router.push({
       pathname:
         window.location.origin + `/proposals/${daoAddress}/${networkId}/new`,
-      query: { item: JSON.stringify(item), tokenData, nftData },
+      query: { executionId: key, tokenData, nftData },
     });
   };
 
@@ -87,6 +87,15 @@ const SelectActionDialog = ({
             <IoMdClose onClick={onClose} className={classes.icon} size={24} />
           </div>
           <div className={classes.list}>
+            <Typography variant="h5">Survey</Typography>
+            <div className={classes.section}>
+              <div
+                onClick={() => onProposalClick("survey")}
+                className={classes.proposal}
+                key="survey">
+                Create a Survey
+              </div>
+            </div>
             <Typography variant="h5">Manage Assets</Typography>
             <div className={classes.section}>
               {PROPOSAL_MENU_ITEMS()
@@ -94,7 +103,7 @@ const SelectActionDialog = ({
                 .map((item, index) => {
                   return (
                     <div
-                      onClick={() => onProposalClick(item)}
+                      onClick={() => onProposalClick(item.key)}
                       className={classes.proposal}
                       key={item.text}>
                       {item.text}
@@ -109,7 +118,7 @@ const SelectActionDialog = ({
                 .map((item, index) => {
                   return (
                     <div
-                      onClick={() => onProposalClick(item)}
+                      onClick={() => onProposalClick(item.key)}
                       className={classes.proposal}
                       key={item.text}>
                       {item.text}
@@ -124,7 +133,7 @@ const SelectActionDialog = ({
                 .map((item, index) => {
                   return (
                     <div
-                      onClick={() => onProposalClick(item)}
+                      onClick={() => onProposalClick(item.key)}
                       className={classes.proposal}
                       key={item.text}>
                       {item.text}
@@ -139,7 +148,7 @@ const SelectActionDialog = ({
                 .map((item, index) => {
                   return (
                     <div
-                      onClick={() => onProposalClick(item)}
+                      onClick={() => onProposalClick(item.key)}
                       className={classes.proposal}
                       key={item.text}>
                       {item.text}

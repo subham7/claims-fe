@@ -17,6 +17,7 @@ import SurveyProposalForm from "./SurveyProposalForm";
 import { setAlertData } from "redux/reducers/general";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { useRouter } from "next/router";
+import { proposalActionCommands } from "utils/proposalConstants";
 
 const useStyles = makeStyles({
   main: {
@@ -44,14 +45,15 @@ const useStyles = makeStyles({
   },
   rightDiv: {
     width: "50%",
+    height: "80vh",
+    overflowY: "auto",
   },
 });
 
 const CreateProposalDialog = ({ daoAddress }) => {
   const classes = useStyles();
   const router = useRouter();
-  const { item, nftData, tokenData } = router.query;
-  const selectedProposal = JSON.parse(item);
+  const { executionId, nftData, tokenData } = router.query;
 
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
@@ -84,12 +86,12 @@ const CreateProposalDialog = ({ daoAddress }) => {
   const proposal = useFormik({
     initialValues: {
       tokenType: tokenType,
-      typeOfProposal: "action",
+      typeOfProposal: executionId === "survey" ? "survey" : "action",
       proposalDeadline: dayjs(Date.now() + 3600 * 1000 * 24),
       proposalTitle: "",
       proposalDescription: "",
       optionList: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
-      actionCommand: selectedProposal.key,
+      actionCommand: executionId === "survey" ? "" : executionId,
       airdropToken: tokenData ? tokenData[0]?.address : "",
       amountToAirdrop: 0,
       carryFee: 0,
@@ -204,17 +206,26 @@ const CreateProposalDialog = ({ daoAddress }) => {
   return (
     <div className={classes.main}>
       <div className={classes.leftDiv}>
-        <Grid container spacing={1} ml={-4} onClick={() => router.back()}>
-          <Grid item mt={0.5} sx={{ "&:hover": { cursor: "pointer" } }}>
+        <Grid
+          container
+          spacing={1}
+          ml={-4}
+          mb={2}
+          onClick={() => router.back()}>
+          <Grid item sx={{ "&:hover": { cursor: "pointer" } }}>
             <KeyboardBackspaceIcon className={classes.listFont} />
           </Grid>
-          <Grid item sx={{ "&:hover": { cursor: "pointer" } }} mb={2}>
+          <Grid item sx={{ "&:hover": { cursor: "pointer" } }}>
             <Typography className={classes.listFont}>
               Back to all proposals
             </Typography>
           </Grid>
         </Grid>
-        <Typography variant="subtitle1"> {selectedProposal.text}</Typography>
+        <Typography variant="h5">
+          {executionId === "survey"
+            ? "Create a survey proposal"
+            : proposalActionCommands[executionId]}
+        </Typography>
       </div>
       <div className={classes.rightDiv}>
         <form onSubmit={proposal.handleSubmit} className={classes.form}>
