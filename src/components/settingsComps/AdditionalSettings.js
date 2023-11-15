@@ -26,6 +26,7 @@ import { editDepositConfig } from "api/deposit";
 import BackdropLoader from "@components/common/BackdropLoader";
 import { setAlertData } from "redux/reducers/general";
 import { useDispatch } from "react-redux";
+import { addFactoryData } from "redux/reducers/club";
 
 const AdditionalSettings = ({
   tokenType,
@@ -36,6 +37,7 @@ const AdditionalSettings = ({
   gnosisAddress,
   daoAddress,
   walletAddress,
+  factoryData,
 }) => {
   const classes = AdditionalSettingsStyles();
   const { chain } = useNetwork();
@@ -71,6 +73,13 @@ const AdditionalSettings = ({
           severity: "success",
         }),
       );
+      dispatch(
+        addFactoryData({
+          ...factoryData,
+          ownerFeePerDepositPercent: ownerFee * 100,
+        }),
+      );
+
       if (tokenType === "erc20") {
         fetchErc20ContractDetails();
       } else {

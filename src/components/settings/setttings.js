@@ -66,7 +66,6 @@ const Settings = ({ daoAddress }) => {
   const factoryData = useSelector((state) => {
     return state.club.factoryData;
   });
-
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
@@ -264,6 +263,7 @@ const Settings = ({ daoAddress }) => {
         fetchErc721ContractDetails={fetchErc721ContractDetails}
         isAdminUser={isAdminUser}
         daoAddress={daoAddress}
+        factoryData={factoryData}
       />
       <TokenGating daoAddress={daoAddress} />
     </>
