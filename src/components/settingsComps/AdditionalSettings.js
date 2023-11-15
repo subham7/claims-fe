@@ -120,6 +120,12 @@ const AdditionalSettings = ({
           severity: "success",
         }),
       );
+      dispatch(
+        addFactoryData({
+          ...factoryData,
+          depositCloseTime: +depositTime.toFixed(0).toString(),
+        }),
+      );
       if (tokenType === "erc20") {
         fetchErc20ContractDetails();
       } else {
