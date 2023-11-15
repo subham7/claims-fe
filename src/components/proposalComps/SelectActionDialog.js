@@ -65,6 +65,21 @@ const SelectActionDialog = ({
     });
   };
 
+  const proposalMenuItems = (filterVal) => {
+    return PROPOSAL_MENU_ITEMS()
+      .filter((item) => item.section === filterVal)
+      .map((item, index) => {
+        return (
+          <div
+            onClick={() => onProposalClick(item.key)}
+            className={classes.proposal}
+            key={item.text}>
+            {item.text}
+          </div>
+        );
+      });
+  };
+
   return (
     <>
       <Dialog
@@ -98,63 +113,19 @@ const SelectActionDialog = ({
             </div>
             <Typography variant="h5">Manage Assets</Typography>
             <div className={classes.section}>
-              {PROPOSAL_MENU_ITEMS()
-                .filter((item) => item.section === "Manage Assets")
-                .map((item, index) => {
-                  return (
-                    <div
-                      onClick={() => onProposalClick(item.key)}
-                      className={classes.proposal}
-                      key={item.text}>
-                      {item.text}
-                    </div>
-                  );
-                })}
+              {proposalMenuItems("Manage Assets")}
             </div>
             <Typography variant="h5">DeFi Pools</Typography>
             <div className={classes.section}>
-              {PROPOSAL_MENU_ITEMS()
-                .filter((item) => item.section === "DeFi Pools")
-                .map((item, index) => {
-                  return (
-                    <div
-                      onClick={() => onProposalClick(item.key)}
-                      className={classes.proposal}
-                      key={item.text}>
-                      {item.text}
-                    </div>
-                  );
-                })}
+              {proposalMenuItems("DeFi Pools")}
             </div>
             <Typography variant="h5">Deposits</Typography>
             <div className={classes.section}>
-              {PROPOSAL_MENU_ITEMS()
-                .filter((item) => item.section === "Deposits")
-                .map((item, index) => {
-                  return (
-                    <div
-                      onClick={() => onProposalClick(item.key)}
-                      className={classes.proposal}
-                      key={item.text}>
-                      {item.text}
-                    </div>
-                  );
-                })}
+              {proposalMenuItems("Deposits")}
             </div>
             <Typography variant="h5">Administrative</Typography>
             <div className={classes.section}>
-              {PROPOSAL_MENU_ITEMS()
-                .filter((item) => item.section === "Administrative")
-                .map((item, index) => {
-                  return (
-                    <div
-                      onClick={() => onProposalClick(item.key)}
-                      className={classes.proposal}
-                      key={item.text}>
-                      {item.text}
-                    </div>
-                  );
-                })}
+              {proposalMenuItems("Administrative")}
             </div>
           </div>
         </DialogContent>
