@@ -53,7 +53,15 @@ const useStyles = makeStyles({
 const CreateProposalDialog = ({ daoAddress }) => {
   const classes = useStyles();
   const router = useRouter();
-  const { executionId, nftData = [], tokenData = [] } = router.query;
+  let { executionId, nftData = [], tokenData = [] } = router.query;
+
+  if (!Array.isArray(nftData)) {
+    nftData = [];
+  }
+
+  if (!Array.isArray(tokenData)) {
+    tokenData = [];
+  }
 
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
