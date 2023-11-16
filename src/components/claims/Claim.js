@@ -20,7 +20,7 @@ import { ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import PublicPageLayout from "@components/common/PublicPageLayout";
 import TwitterSharingModal from "@components/modals/TwitterSharingModal";
 import { processAmount } from "utils/helper";
-import { setAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/alert";
 import { useDispatch } from "react-redux";
 
 const ClaimInputComponent = ({

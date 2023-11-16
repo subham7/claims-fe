@@ -13,7 +13,7 @@ import {
 import useAppContractMethods from "../../hooks/useAppContractMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import BackdropLoader from "@components/common/BackdropLoader";
-import { setAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/alert";
 
 const TokenGating = ({ daoAddress }) => {
   const [showTokenGatingModal, setShowTokenGatingModal] = useState(false);

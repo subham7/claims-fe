@@ -24,8 +24,9 @@ import UploadW8Ben from "./modals/UploadW8Ben";
 import { createStation, fetchClubByDaoAddress } from "api/club";
 import { editDepositConfig } from "api/deposit";
 import BackdropLoader from "@components/common/BackdropLoader";
-import { setAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/alert";
 import { useDispatch } from "react-redux";
+import { addFactoryData } from "redux/reducers/club";
 
 const AdditionalSettings = ({
   tokenType,
@@ -36,6 +37,7 @@ const AdditionalSettings = ({
   gnosisAddress,
   daoAddress,
   walletAddress,
+  factoryData,
 }) => {
   const classes = AdditionalSettingsStyles();
   const { chain } = useNetwork();
@@ -71,6 +73,13 @@ const AdditionalSettings = ({
           severity: "success",
         }),
       );
+      dispatch(
+        addFactoryData({
+          ...factoryData,
+          ownerFeePerDepositPercent: ownerFee * 100,
+        }),
+      );
+
       if (tokenType === "erc20") {
         fetchErc20ContractDetails();
       } else {
@@ -109,6 +118,12 @@ const AdditionalSettings = ({
           open: true,
           message: "Deposit time updated successfully",
           severity: "success",
+        }),
+      );
+      dispatch(
+        addFactoryData({
+          ...factoryData,
+          depositCloseTime: +depositTime.toFixed(0).toString(),
         }),
       );
       if (tokenType === "erc20") {

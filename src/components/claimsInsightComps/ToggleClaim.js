@@ -5,7 +5,7 @@ import useDropsContractMethods from "hooks/useDropsContractMethods";
 import React, { useEffect, useState } from "react";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
 import { useDispatch } from "react-redux";
-import { setAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/alert";
 
 const ToggleClaim = ({ claimAddress, isActive }) => {
   const theme = useTheme();

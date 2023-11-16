@@ -33,6 +33,7 @@ import Layout from "../../src/components/layouts/layout";
 import { useAccount, useNetwork } from "wagmi";
 import { CHAIN_CONFIG, ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import useClubFetch from "hooks/useClubFetch";
+import { NFT_STORAGE_TOKEN } from "api/token";
 
 const Create = () => {
   const steps = [
@@ -163,8 +164,7 @@ const Create = () => {
       if (formikStep1.values.clubTokenType === "NFT") {
         // dispatch(setUploadNFTLoading(true));
         const client = new NFTStorage({
-          token:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDlhMWRFQjEyMjQyYTBlN0VmNTUwNjFlOTAwMTYyMDcxNEFENDBlNDgiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY3NDEyOTI3MzM5MSwibmFtZSI6InN0YXRpb25YIG5mdCJ9.1w-RC7qZ43T2NhjHrtsO_Gmb0Mw1BjJo7GXMciqX5jY",
+          token: NFT_STORAGE_TOKEN,
         });
 
         const metadata = await client.store({
