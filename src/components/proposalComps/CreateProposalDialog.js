@@ -2,7 +2,7 @@ import { CircularProgress, Grid, Stack, Typography } from "@mui/material";
 import { Button } from "@components/ui";
 import { makeStyles } from "@mui/styles";
 import { useFormik } from "formik";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import dayjs from "dayjs";
 import ProposalActionForm from "./ProposalActionForm";
 import { createProposal } from "../../api/proposal";
@@ -18,6 +18,11 @@ import { setAlertData } from "redux/reducers/general";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { useRouter } from "next/router";
 import { proposalActionCommands } from "utils/proposalConstants";
+import { getNFTsByDaoAddress } from "api/assets";
+import { getUserTokenData } from "utils/helper";
+import { getTokensList } from "api/token";
+import { addNftsOwnedByDao } from "redux/reducers/club";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const useStyles = makeStyles({
   main: {
@@ -53,15 +58,10 @@ const useStyles = makeStyles({
 const CreateProposalDialog = ({ daoAddress }) => {
   const classes = useStyles();
   const router = useRouter();
-  let { executionId, nftData = [], tokenData = [] } = router.query;
+  const [nftData, setNftData] = useState([]);
+  const [tokenData, setTokenData] = useState([]);
 
-  if (!Array.isArray(nftData)) {
-    nftData = [];
-  }
-
-  if (!Array.isArray(tokenData)) {
-    tokenData = [];
-  }
+  let { executionId } = router.query;
 
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
@@ -87,9 +87,43 @@ const CreateProposalDialog = ({ daoAddress }) => {
   const factoryData = useSelector((state) => {
     return state.club.factoryData;
   });
+
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
+
+  const fetchTokens = useCallback(async () => {
+    if (daoAddress && gnosisAddress && networkId) {
+      const tokensList = await getTokensList(
+        CHAIN_CONFIG[networkId].covalentNetworkName,
+        gnosisAddress,
+      );
+      const data = await getUserTokenData(
+        tokensList?.data?.items,
+        networkId,
+        true,
+      );
+
+      setTokenData(data?.filter((token) => token.symbol !== null));
+    }
+  }, [daoAddress, networkId, gnosisAddress]);
+
+  const fetchNfts = useCallback(async () => {
+    try {
+      const nftsData = await getNFTsByDaoAddress(gnosisAddress, networkId);
+      setNftData(nftsData?.data);
+      dispatch(addNftsOwnedByDao(nftsData?.data));
+    } catch (error) {
+      console.log(error);
+    }
+  }, [networkId, dispatch, gnosisAddress]);
+
+  useEffect(() => {
+    if (daoAddress) {
+      fetchTokens();
+      fetchNfts();
+    }
+  }, [daoAddress, fetchNfts, fetchTokens]);
 
   const proposal = useFormik({
     initialValues: {

@@ -47,21 +47,14 @@ const useStyles = makeStyles({
   },
 });
 
-const SelectActionDialog = ({
-  open,
-  onClose,
-  daoAddress,
-  networkId,
-  tokenData,
-  nftData,
-}) => {
+const SelectActionDialog = ({ open, onClose, daoAddress, networkId }) => {
   const classes = useStyles();
 
   const onProposalClick = (key) => {
     Router.push({
       pathname:
         window.location.origin + `/proposals/${daoAddress}/${networkId}/new`,
-      query: { executionId: key, tokenData, nftData },
+      query: { executionId: key },
     });
   };
 

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Grid, MenuItem, OutlinedInput, Select } from "@mui/material";
 import { Button, Typography } from "@components/ui";
 import { proposalDisplayOptions } from "data/dashboard";
@@ -6,14 +6,11 @@ import DocsCard from "@components/proposalComps/DocsCard";
 import { fetchProposals } from "utils/proposal";
 import { useRouter } from "next/router";
 import ProposalCard from "./ProposalCard";
-import { getNFTsByDaoAddress } from "api/assets";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { makeStyles } from "@mui/styles";
 import Web3 from "web3";
 import { getProposalByDaoAddress, getProposalTxHash } from "api/proposal";
-import { getSafeSdk, getUserTokenData } from "utils/helper";
-import { addNftsOwnedByDao } from "redux/reducers/club";
-import { getTokensList } from "api/token";
+import { getSafeSdk } from "utils/helper";
 import { CHAIN_CONFIG } from "utils/constants";
 import { useAccount, useNetwork } from "wagmi";
 import BackdropLoader from "@components/common/BackdropLoader";
@@ -43,19 +40,17 @@ const useStyles = makeStyles({
 
 const Proposal = ({ daoAddress }) => {
   const router = useRouter();
-  const dispatch = useDispatch();
   const { chain } = useNetwork();
   const { address: walletAddress } = useAccount();
   const networkId = "0x" + chain?.id.toString(16);
   const classes = useStyles();
 
-  const [nftData, setNftData] = useState([]);
   const [selectedListItem, setSelectedListItem] = useState(
     proposalDisplayOptions[0].type,
   );
 
   const [open, setOpen] = useState(false);
-  const [tokenData, setTokenData] = useState([]);
+
   const [proposalList, setProposalList] = useState([]);
 
   const gnosisAddress = useSelector((state) => {
@@ -99,32 +94,6 @@ const Proposal = ({ daoAddress }) => {
       shallow: true,
     });
   };
-
-  const fetchNfts = useCallback(async () => {
-    try {
-      const nftsData = await getNFTsByDaoAddress(gnosisAddress, networkId);
-      setNftData(nftsData?.data);
-      dispatch(addNftsOwnedByDao(nftsData?.data));
-    } catch (error) {
-      console.log(error);
-    }
-  }, [networkId, dispatch, gnosisAddress]);
-
-  const fetchTokens = useCallback(async () => {
-    if (daoAddress && gnosisAddress && networkId) {
-      const tokensList = await getTokensList(
-        CHAIN_CONFIG[networkId].covalentNetworkName,
-        gnosisAddress,
-      );
-      const data = await getUserTokenData(
-        tokensList?.data?.items,
-        networkId,
-        true,
-      );
-
-      setTokenData(data?.filter((token) => token.symbol !== null));
-    }
-  }, [daoAddress, networkId, gnosisAddress]);
 
   const fetchProposalList = async (type = "all") => {
     const data = await fetchProposals(daoAddress, type);
@@ -172,13 +141,6 @@ const Proposal = ({ daoAddress }) => {
       console.log(error);
     }
   };
-
-  useEffect(() => {
-    if (daoAddress) {
-      fetchTokens();
-      fetchNfts();
-    }
-  }, [daoAddress, fetchNfts, fetchTokens]);
 
   useEffect(() => {
     setLoaderOpen(true);
@@ -325,8 +287,6 @@ const Proposal = ({ daoAddress }) => {
         open={open}
         setOpen={setOpen}
         onClose={handleClose}
-        tokenData={tokenData}
-        nftData={nftData}
         daoAddress={daoAddress}
         networkId={networkId}
       />
