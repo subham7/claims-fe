@@ -24,6 +24,7 @@ import useAppContractMethods from "hooks/useAppContractMethods";
 import CommonProposalForm from "./CommonProposalForm";
 import SurveyProposalForm from "./SurveyProposalForm";
 import { getPublicClient } from "utils/viemConfig";
+import { handleSignMessage } from "utils/helper";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -184,7 +185,6 @@ const CreateProposalDialog = ({
         const payload = {
           clubId: daoAddress,
           name: values.proposalTitle,
-          description: values.proposalDescription,
           createdBy: walletAddress,
           votingDuration: dayjs(values.proposalDeadline).unix(),
           votingOptions: values.optionList,
@@ -200,9 +200,17 @@ const CreateProposalDialog = ({
               : Number(blockNum),
           quorum: Number(clubData.quorum),
           threshold: Number(clubData.threshold),
+          networkId: networkId,
         };
-
-        const createRequest = createProposal(payload, networkId);
+        const { signature } = await handleSignMessage(
+          walletAddress,
+          JSON.stringify(payload),
+        );
+        const createRequest = createProposal({
+          ...payload,
+          description: values.proposalDescription,
+          signature,
+        });
         createRequest.then(async (result) => {
           if (result.status !== 201) {
             setOpenSnackBar(true);
@@ -228,7 +236,6 @@ const CreateProposalDialog = ({
     },
   });
 
-  console.log(proposal);
   return (
     <>
       <Dialog

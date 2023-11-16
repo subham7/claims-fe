@@ -35,7 +35,11 @@ import Signators from "@components/proposalComps/Signators";
 import ProposalInfo from "@components/proposalComps/ProposalInfo";
 import CurrentResults from "@components/proposalComps/CurrentResults";
 import ProposalVotes from "@components/proposalComps/ProposalVotes";
-import { getCustomSafeSdk, web3InstanceEthereum } from "utils/helper";
+import {
+  getCustomSafeSdk,
+  handleSignMessage,
+  web3InstanceEthereum,
+} from "utils/helper";
 import { retrieveNftListing } from "api/assets";
 import SafeAppsSDK from "@safe-global/safe-apps-sdk";
 import { useAccount, useNetwork } from "wagmi";
@@ -297,7 +301,7 @@ Cast your vote before ${new Date(
     }
   };
 
-  const submitVote = () => {
+  const submitVote = async () => {
     setLoaderOpen(true);
     const payload = {
       proposalId: pid,
@@ -306,7 +310,11 @@ Cast your vote before ${new Date(
       clubId: daoAddress,
       daoAddress: daoAddress,
     };
-    const voteSubmit = castVote(payload, networkId);
+    const { signature } = await handleSignMessage(
+      walletAddress,
+      JSON.stringify(payload),
+    );
+    const voteSubmit = castVote({ ...payload, signature });
     voteSubmit.then((result) => {
       if (result.status !== 201) {
         setVoted(false);
