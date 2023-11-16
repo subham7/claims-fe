@@ -91,7 +91,7 @@ const CreateProposalDialog = ({ daoAddress }) => {
       proposalTitle: "",
       proposalDescription: "",
       optionList: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
-      actionCommand: executionId === "survey" ? "" : executionId,
+      actionCommand: executionId === "survey" ? "" : Number(executionId),
       airdropToken: tokenData ? tokenData[0]?.address : "",
       amountToAirdrop: 0,
       carryFee: 0,
@@ -189,6 +189,7 @@ const CreateProposalDialog = ({ daoAddress }) => {
               }),
             );
             setLoaderOpen(false);
+            router.back();
           }
         });
       } catch (error) {
