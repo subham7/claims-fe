@@ -41,7 +41,7 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
 
   let filteredTokens = [];
-  tokenData.map((token) => {
+  tokenData?.map((token) => {
     if (
       token.address === CHAIN_CONFIG[networkId].nativeToken ||
       Web3.utils.toChecksumAddress(token.address) ===
@@ -52,7 +52,7 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
   });
 
   let stargateFilteredTokens = [];
-  tokenData.map((token) => {
+  tokenData?.map((token) => {
     if (
       CHAIN_CONFIG[networkId].stargateStakingAddresses.includes(token.address)
     ) {
@@ -61,7 +61,7 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
   });
 
   let stargateUnstakeFilteredTokens = [];
-  tokenData.map((token) => {
+  tokenData?.map((token) => {
     if (
       CHAIN_CONFIG[networkId].stargateUnstakingAddresses.includes(token.address)
     ) {
