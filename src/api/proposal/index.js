@@ -2,14 +2,23 @@ import axios from "axios";
 import { MAIN_API_URL } from "../index";
 import { getJwtToken } from "../../utils/auth";
 
-export async function createProposal(data) {
+export async function createProposal(isGovernanceActive, data) {
   // create proposal API
-  return await axios.post(MAIN_API_URL + `proposal`, data, {
-    headers: {
-      Authorization: "Bearer " + getJwtToken(),
-      "Content-Type": "application/json",
-    },
-  });
+  if (isGovernanceActive) {
+    return await axios.post(MAIN_API_URL + `proposal`, data, {
+      headers: {
+        Authorization: "Bearer " + getJwtToken(),
+        "Content-Type": "application/json",
+      },
+    });
+  } else {
+    return await axios.post(MAIN_API_URL + `proposal/admin`, data, {
+      headers: {
+        Authorization: "Bearer " + getJwtToken(),
+        "Content-Type": "application/json",
+      },
+    });
+  }
 }
 
 export async function createCancelProposal(data, networkId) {

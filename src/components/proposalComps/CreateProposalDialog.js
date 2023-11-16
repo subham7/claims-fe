@@ -100,6 +100,17 @@ const CreateProposalDialog = ({
     return state.club.clubData.gnosisAddress;
   });
 
+  const isGovernanceERC20 = useSelector((state) => {
+    return state.club.erc20ClubDetails.isGovernanceActive;
+  });
+
+  const isGovernanceERC721 = useSelector((state) => {
+    return state.club.erc721ClubDetails.isGovernanceActive;
+  });
+
+  const isGovernanceActive =
+    tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
+
   const fetchLatestBlockNumber = async () => {
     const publicClient = getPublicClient(networkId);
     const block = Number(await publicClient.getBlockNumber());
@@ -206,7 +217,7 @@ const CreateProposalDialog = ({
           walletAddress,
           JSON.stringify(payload),
         );
-        const createRequest = createProposal({
+        const createRequest = createProposal(isGovernanceActive, {
           ...payload,
           description: values.proposalDescription,
           signature,
