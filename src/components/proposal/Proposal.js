@@ -11,14 +11,12 @@ import { getNFTsByDaoAddress } from "api/assets";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@mui/styles";
 import Web3 from "web3";
-import { Web3Adapter } from "@safe-global/protocol-kit";
-import SafeApiKit from "@safe-global/api-kit";
 import { getProposalByDaoAddress, getProposalTxHash } from "api/proposal";
-import { getUserTokenData, web3InstanceCustomRPC } from "utils/helper";
+import { getSafeSdk, getUserTokenData } from "utils/helper";
 import { addNftsOwnedByDao } from "redux/reducers/club";
 import { getTokensList } from "api/token";
 import { CHAIN_CONFIG } from "utils/constants";
-import { useNetwork } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import BackdropLoader from "@components/common/BackdropLoader";
 
 const useStyles = makeStyles({
@@ -47,6 +45,7 @@ const Proposal = ({ daoAddress }) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const { chain } = useNetwork();
+  const { address: walletAddress } = useAccount();
   const networkId = "0x" + chain?.id.toString(16);
   const classes = useStyles();
 
@@ -58,10 +57,6 @@ const Proposal = ({ daoAddress }) => {
   const [open, setOpen] = useState(false);
   const [tokenData, setTokenData] = useState([]);
   const [proposalList, setProposalList] = useState([]);
-
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
-  });
 
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
@@ -144,23 +139,14 @@ const Proposal = ({ daoAddress }) => {
     fetchProposalList(value);
   };
 
-  const getSafeService = useCallback(async () => {
-    const web3 = await web3InstanceCustomRPC(networkId);
-
-    const ethAdapter = new Web3Adapter({
-      web3,
-      signerAddress: localStorage.getItem("wallet"),
-    });
-    const safeService = new SafeApiKit({
-      txServiceUrl: GNOSIS_TRANSACTION_URL,
-      ethAdapter,
-    });
-    return safeService;
-  }, [GNOSIS_TRANSACTION_URL]);
-
   const getExecutionTransaction = async () => {
     try {
-      const safeService = await getSafeService();
+      const { safeService } = await getSafeSdk(
+        "",
+        walletAddress,
+        CHAIN_CONFIG[networkId].gnosisTxUrl,
+        networkId,
+      );
       const proposalData = getProposalByDaoAddress(daoAddress);
       const pendingTxs = await safeService.getPendingTransactions(
         Web3.utils.toChecksumAddress(gnosisAddress),
@@ -196,12 +182,12 @@ const Proposal = ({ daoAddress }) => {
 
   useEffect(() => {
     setLoaderOpen(true);
-    if (gnosisAddress && GNOSIS_TRANSACTION_URL) {
+    if (gnosisAddress) {
       getExecutionTransaction();
       setLoaderOpen(false);
     }
     setLoaderOpen(false);
-  }, [gnosisAddress, GNOSIS_TRANSACTION_URL]);
+  }, [gnosisAddress]);
 
   useEffect(() => {
     fetchProposalList();
@@ -249,7 +235,7 @@ const Proposal = ({ daoAddress }) => {
                     MenuProps={proposalDisplayOptions}
                     style={{
                       borderRadius: "10px",
-                      background: "#0F0F0F 0% 0% no-repeat padding-box",
+                      background: "#111111 0% 0% no-repeat padding-box",
                       width: "30%",
                     }}>
                     {proposalDisplayOptions.map((option) => (

@@ -21,7 +21,7 @@ import {
   bsc,
   mantle,
   gnosis,
-  // taikoJolnir,
+  taikoJolnir,
   mainnet,
 } from "wagmi/chains";
 import {
@@ -46,7 +46,7 @@ const chains = [
   mantle,
   lineaMainnetWalletConnect,
   gnosis,
-  // taikoJolnir,
+  taikoJolnir,
   scrollMainnet,
   mantaMainnet,
 ];
@@ -80,7 +80,7 @@ function MyApp({ Component, pageProps }) {
             5000: "/assets/icons/mantle-mainnet.png",
             169: "/assets/icons/manta.png",
             534352: "/assets/icons/scroll.jpeg",
-            // 167007: "/assets/icons/taiko.jpeg",
+            167007: "/assets/icons/taiko.jpeg",
           }}
           themeMode="light"
           themeVariables={{

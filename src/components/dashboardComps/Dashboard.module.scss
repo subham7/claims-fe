@@ -1,0 +1,234 @@
+@import "../../../styles/variables.scss";
+
+.main {
+  display: flex;
+  padding: 10px;
+  height: 85vh;
+  gap: 24px;
+
+  .leftContainer {
+    flex: 0.65;
+
+    .headerContainer {
+      padding-bottom: 10px;
+      border-bottom: 0.5px solid $divider-color;
+    }
+
+    .flexContainer {
+      display: flex;
+      gap: 20px;
+
+      .treasuryContainer,
+      .ownershipContainer {
+        display: flex;
+        padding: 20px;
+        min-width: 320px;
+        margin-top: 20px;
+        border-radius: 10px;
+        flex-grow: 1;
+
+        .treasury {
+          display: flex;
+          flex-direction: column;
+          gap: 40px;
+
+          span {
+            margin-left: 8px;
+          }
+
+          .title {
+            font-weight: 500;
+            font-size: 14px;
+          }
+
+          .value {
+            font-size: 24px;
+            font-weight: 600;
+          }
+
+          .imgContainer {
+            width: fit-content;
+            border-radius: 8px;
+            padding: 6px 6px 0;
+            background-color: $blur-bg;
+          }
+        }
+      }
+
+      .treasuryContainer {
+        background: transparent linear-gradient(238deg, #2D55FF 0%, #D55439 100%) 0% 0% no-repeat padding-box;
+      }
+
+      .ownershipContainer {
+        background: $background-primary;
+
+        .title {
+          color: $gray;
+        }
+      }
+    }
+
+    .assetsContainer {
+      margin-top: 20px;
+
+      .assetsType {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .title {
+        font-size: 24px;
+        font-weight: 600;
+      }
+
+      .noTokensContainer {
+        margin-top: 20px;
+        padding: 120px;
+        width: 100%;
+        border-radius: 20px;
+        background: $background-primary;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        .title {
+          font-size: 18px;
+          font-weight: 500;
+        }
+
+        .subtext {
+          font-size: 14px;
+          font-weight: 400;
+          color: $gray;
+        }
+      }
+
+      .collectiblesContainer {
+        display: flex;
+        margin-top: 20px;
+        flex-wrap: wrap;
+        gap: 20px;
+
+        .nft {
+          border-radius: 12px;
+          object-fit: cover;
+        }
+      }
+
+      .tokensContainer {
+        overflow-y: scroll;
+        max-height: 300px;
+
+        .token {
+          display: flex;
+          gap: 8px;
+          align-items: center;
+          width: fit-content;
+
+          .tokenName {
+            font-size: 16px;
+            font-weight: 500;
+          }
+
+          .tokenSymbol {
+            font-size: 14px;
+            color: $gray;
+          }
+        }
+
+        .tableHeader,
+        .tableCell {
+          padding-left: 0;
+          font-family: inherit;
+          font-size: 16px;
+        }
+
+        .tableHeader {
+          color: $gray;
+        }
+
+        .tableCell {
+          font-weight: 500;
+        }
+      }
+    }
+  }
+
+  .rightContainer {
+    flex: 0.35;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .activityContainer,
+  .transactionContainer {
+    border: 0.5px solid $border-color;
+    border-radius: 10px;
+  }
+
+  .heading {
+    padding: 20px;
+    border-bottom: 0.5px solid $border-color;
+    font-size: 18px;
+    font-weight: 500;
+    color: $gray;
+  }
+
+  .proposalList,
+  .transactionList {
+    height: 250px;
+    overflow-y: scroll;
+
+    .noActivity{
+      color: $gray;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+  }
+
+  .proposalList {
+    height: 200px;
+  }
+
+  .proposal,
+  .transaction {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+
+    div{
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    &:hover {
+      background: $background-primary;
+      cursor: pointer;
+    }
+  }
+
+  .itemTitle,
+  .proposalTitle {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .proposalDate {
+    color: $gray;
+  }
+
+  .deposit {
+    color: $active-text;
+  }
+
+  .send {
+    color: $inactive-text;
+  }
+}

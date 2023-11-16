@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { useSelector } from "react-redux";
 import { fetchClubByDaoAddress, getClubInfo } from "api/club";
-import useAppContract from "hooks/useAppContract";
 import { getWhitelistMerkleProof } from "api/whitelist";
 import { useAccount, useNetwork } from "wagmi";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
@@ -45,10 +44,6 @@ const Join = ({ daoAddress }) => {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
 
-  const SUBGRAPH_URL = useSelector((state) => {
-    return state.gnosis.subgraphUrl;
-  });
-
   const TOKEN_TYPE = useSelector((state) => {
     return state.club.clubData.tokenType;
   });
@@ -57,16 +52,12 @@ const Join = ({ daoAddress }) => {
     return state.club.factoryData;
   });
 
-  const FACTORY_CONTRACT_ADDRESS = useSelector(
-    (state) => state.gnosis.factoryContractAddress,
-  );
-
-  useAppContract(daoAddress);
-
   const { getDecimals, getBalance, getTokenSymbol } =
     useCommonContractMethods();
 
-  const { getTokenGatingDetails, getNftOwnersCount } = useAppContractMethods();
+  const { getTokenGatingDetails, getNftOwnersCount } = useAppContractMethods({
+    daoAddress,
+  });
 
   /**
    * Fetching details for ERC20 comp
@@ -112,7 +103,7 @@ const Join = ({ daoAddress }) => {
   const fetchTokenGatingDetials = async () => {
     try {
       setLoading(true);
-      const tokenGatingDetails = await getTokenGatingDetails(daoAddress);
+      const tokenGatingDetails = await getTokenGatingDetails();
 
       if (tokenGatingDetails) {
         const tokenASymbol = await getTokenSymbol(
@@ -204,10 +195,10 @@ const Join = ({ daoAddress }) => {
   }, [daoAddress, walletAddress]);
 
   useEffect(() => {
-    if (walletAddress && daoAddress && FACTORY_CONTRACT_ADDRESS) {
+    if (walletAddress && daoAddress) {
       fetchTokenGatingDetials();
     }
-  }, [walletAddress, daoAddress, FACTORY_CONTRACT_ADDRESS]);
+  }, [walletAddress, daoAddress]);
 
   useEffect(() => {
     if (daoAddress) {
@@ -217,7 +208,7 @@ const Join = ({ daoAddress }) => {
         fetchErc721ContractDetails();
       }
     }
-  }, [TOKEN_TYPE, factoryData, FACTORY_CONTRACT_ADDRESS, daoAddress]);
+  }, [TOKEN_TYPE, factoryData, daoAddress]);
 
   useEffect(() => {
     try {
@@ -255,13 +246,7 @@ const Join = ({ daoAddress }) => {
       console.log(error);
       setLoading(false);
     }
-  }, [
-    SUBGRAPH_URL,
-    daoAddress,
-    daoDetails,
-    walletAddress,
-    FACTORY_CONTRACT_ADDRESS,
-  ]);
+  }, [daoAddress, daoDetails, walletAddress]);
 
   useEffect(() => {
     const fetchMerkleProof = async () => {

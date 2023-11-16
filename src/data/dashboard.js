@@ -59,3 +59,19 @@ export const proposalDisplayOptions = [
     name: "Failed",
   },
 ];
+
+export const tableHeader = ["Name", "Holding", "Value in USD"];
+
+export const baseLinks = [
+  { icon: "home_icon", title: "Dashboard", routeHeader: "dashboard" },
+  { icon: "stats", title: "Activity", routeHeader: "proposals" },
+  { icon: "chart", title: "Deposit", routeHeader: "join" },
+  {
+    icon: "workflows_icon",
+    title: "Transactions",
+    routeHeader: "transactions",
+  },
+  { icon: "astronaut_icon", title: "Members", routeHeader: "members" },
+  { icon: "document_icon", title: "Documents", routeHeader: "documents" },
+  { icon: "settings_icon", title: "Settings", routeHeader: "settings" },
+];

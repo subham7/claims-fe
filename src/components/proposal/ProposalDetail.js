@@ -18,7 +18,7 @@ import {
   getProposalTxHash,
   patchProposalExecuted,
 } from "api/proposal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CloseIcon from "@mui/icons-material/Close";
 import tickerIcon from "../../../public/assets/icons/ticker_icon.svg";
@@ -28,18 +28,12 @@ import surveyIcon from "../../../public/assets/icons/survey_icon.svg";
 import ReactHtmlParser from "react-html-parser";
 
 import Web3 from "web3";
-import { Web3Adapter } from "@safe-global/protocol-kit";
-import SafeApiKit from "@safe-global/api-kit";
 import ProposalExecutionInfo from "@components/proposalComps/ProposalExecutionInfo";
 import Signators from "@components/proposalComps/Signators";
 import ProposalInfo from "@components/proposalComps/ProposalInfo";
 import CurrentResults from "@components/proposalComps/CurrentResults";
 import ProposalVotes from "@components/proposalComps/ProposalVotes";
-import {
-  getCustomSafeSdk,
-  handleSignMessage,
-  web3InstanceEthereum,
-} from "utils/helper";
+import { getSafeSdk, handleSignMessage } from "utils/helper";
 import { retrieveNftListing } from "api/assets";
 import SafeAppsSDK from "@safe-global/safe-apps-sdk";
 import { useAccount, useNetwork } from "wagmi";
@@ -48,6 +42,7 @@ import {
   executeRejectTx,
   fetchABI,
   getEncodedData,
+  getTokenTypeByExecutionId,
   signRejectTx,
 } from "utils/proposal";
 import { BsInfoCircleFill } from "react-icons/bs";
@@ -55,8 +50,9 @@ import useAppContractMethods from "hooks/useAppContractMethods";
 import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 import { ProposalDetailStyles } from "./ProposalDetailStyles";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
-import CustomAlert from "@components/common/CustomAlert";
 import BackdropLoader from "@components/common/BackdropLoader";
+import { setAlertData } from "redux/reducers/general";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const ProposalDetail = ({ pid, daoAddress }) => {
   const classes = ProposalDetailStyles();
@@ -65,6 +61,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
+  const dispatch = useDispatch();
 
   const sdk = new SafeAppsSDK({
     allowedDomains: [/gnosis-safe.io$/, /safe.global$/, /5afe.dev$/],
@@ -98,10 +95,6 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     return state.club.clubData.gnosisAddress;
   });
 
-  const airdropContractAddress = useSelector((state) => {
-    return state.gnosis.actionContractAddress;
-  });
-
   const ERC721_Threshold = useSelector((state) => {
     return state.club.erc721ClubDetails.threshold;
   });
@@ -127,10 +120,6 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   const [txHash, setTxHash] = useState();
   const [cancelTxHash, setCancelTxHash] = useState();
   const [signedOwners, setSignedOwners] = useState([]);
-
-  const [message, setMessage] = useState("");
-  const [isSuccessFullyExecuted, setIsSuccessFullyExecuted] = useState(false);
-  const [showMessage, setShowMessage] = useState(false);
   const [fetched, setFetched] = useState(false);
   const [members, setMembers] = useState([]);
   const [isNftSold, setIsNftSold] = useState(false);
@@ -139,55 +128,30 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   const [isCancelExecuted, setIsCancelExecuted] = useState(false);
   const [isRejectTxnSigned, setIsRejectTxnSigned] = useState(false);
 
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
-  });
-
-  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.factoryContractAddress;
-  });
-
   const factoryData = useSelector((state) => {
     return state.club.factoryData;
   });
 
   const { getERC20TotalSupply, updateProposalAndExecution, getNftOwnersCount } =
-    useAppContractMethods();
+    useAppContractMethods({ daoAddress });
 
   const { getBalance } = useCommonContractMethods();
 
-  const showMessageHandler = () => {
-    setShowMessage(true);
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 4000);
-  };
-
-  const getSafeService = useCallback(async () => {
-    const web3 = await web3InstanceEthereum();
-    const ethAdapter = new Web3Adapter({
-      web3,
-      signerAddress: Web3.utils.toChecksumAddress(walletAddress),
-    });
-    const safeService = new SafeApiKit({
-      txServiceUrl: GNOSIS_TRANSACTION_URL,
-      ethAdapter,
-    });
-    return safeService;
-  }, [GNOSIS_TRANSACTION_URL, walletAddress]);
-
   const isOwner = useCallback(async () => {
     if (gnosisAddress) {
-      const safeSdk = await getCustomSafeSdk(
-        Web3.utils.toChecksumAddress(gnosisAddress),
-        Web3.utils.toChecksumAddress(walletAddress),
+      const { safeSdk, safeService } = await getSafeSdk(
+        gnosisAddress,
+        walletAddress,
+        CHAIN_CONFIG[networkId].gnosisTxUrl,
         networkId,
       );
+
       const owners = await safeSdk.getOwners();
 
       const ownerAddressesArray = owners.map((value) =>
         Web3.utils.toChecksumAddress(value),
       );
+
       setOwnerAddresses(ownerAddressesArray);
 
       if (isGovernanceActive === false) {
@@ -210,9 +174,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
           ) {
             setCancelTxHash("");
           } else {
-            // txHash = result.data[0].txHash;
             setCancelTxHash(result.data[0].txHash);
-            const safeService = await getSafeService();
             const tx = await safeService.getTransaction(result.data[0].txHash);
             const ownerAddresses = tx.confirmations.map(
               (confirmOwners) => confirmOwners.owner,
@@ -245,9 +207,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         ) {
           setTxHash("");
         } else {
-          // txHash = result.data[0].txHash;
           setTxHash(result.data[0].txHash);
-          const safeService = await getSafeService();
           const tx = await safeService.getTransaction(result.data[0].txHash);
           const ownerAddresses = tx.confirmations.map(
             (confirmOwners) => confirmOwners.owner,
@@ -270,14 +230,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         setLoaderOpen(false);
       });
     }
-  }, [
-    getSafeService,
-    gnosisAddress,
-    isAdmin,
-    isGovernanceActive,
-    pid,
-    walletAddress,
-  ]);
+  }, [gnosisAddress, isAdmin, isGovernanceActive, pid, walletAddress]);
 
   const shareOnLensterHandler = () => {
     const lensterUrl = `https://lenster.xyz/?text=${`
@@ -395,46 +348,20 @@ Cast your vote before ${new Date(
       gnosisAddress,
     });
 
-    const response = updateProposalAndExecution(
+    const tokenData = getTokenTypeByExecutionId(proposalData.commands);
+
+    const response = updateProposalAndExecution({
       data,
       approvalData,
-      daoAddress,
-      Web3.utils.toChecksumAddress(gnosisAddress),
-      txHash,
+      gnosisAddress: Web3.utils.toChecksumAddress(gnosisAddress),
       pid,
-      proposalData.commands[0]?.executionId === 0
-        ? proposalData.commands[0]?.airDropToken
-        : proposalData.commands[0]?.executionId === 4
-        ? proposalData.commands[0]?.customToken
-        : proposalData.commands[0]?.executionId === 5
-        ? proposalData.commands[0]?.customNft
-        : proposalData.commands[0]?.executionId === 14
-        ? proposalData.commands[0]?.depositToken
-        : proposalData.commands[0]?.executionId === 15
-        ? proposalData.commands[0]?.withdrawToken
-        : proposalData.commands[0]?.executionId === 19
-        ? proposalData.commands[0]?.swapToken
-        : proposalData.commands[0]?.executionId === 17
-        ? proposalData.commands[0]?.stakeToken
-        : proposalData.commands[0]?.executionId === 18
-        ? proposalData.commands[0]?.unstakeToken
-        : "",
+      tokenData,
       proposalStatus,
-      airdropContractAddress,
-      proposalData.commands[0]?.executionId === 3 ||
-        proposalData.commands[0]?.executionId === 10 ||
-        proposalData.commands[0]?.executionId === 11 ||
-        proposalData?.commands[0]?.executionId === 12 ||
-        proposalData.commands[0]?.executionId === 13 ||
-        proposalData.commands[0]?.executionId === 14
-        ? FACTORY_CONTRACT_ADDRESS
-        : "",
-      GNOSIS_TRANSACTION_URL,
       proposalData,
       membersArray,
       airDropAmountArray,
       transactionData,
-    );
+    });
 
     if (proposalStatus === "executed") {
       // fetchData()
@@ -445,16 +372,24 @@ Cast your vote before ${new Date(
             updateStatus.then((result) => {
               if (result.status !== 200) {
                 setExecuted(false);
-                showMessageHandler();
-                setIsSuccessFullyExecuted(false);
-                setMessage("execution status update failed!");
+                dispatch(
+                  setAlertData({
+                    open: true,
+                    message: "Execution status update failed!",
+                    severity: "error",
+                  }),
+                );
                 setLoaderOpen(false);
               } else {
                 fetchData();
                 setExecuted(true);
-                showMessageHandler();
-                setIsSuccessFullyExecuted(true);
-                setMessage("execution successful!");
+                dispatch(
+                  setAlertData({
+                    open: true,
+                    message: "Execution successful!",
+                    severity: "success",
+                  }),
+                );
                 setLoaderOpen(false);
               }
             });
@@ -463,10 +398,13 @@ Cast your vote before ${new Date(
         (error) => {
           console.error(error);
           setExecuted(false);
-          showMessageHandler();
-          setIsSuccessFullyExecuted(false);
-          setMessage("execution failed!");
-
+          dispatch(
+            setAlertData({
+              open: true,
+              message: "Execution failed!",
+              severity: "error",
+            }),
+          );
           setLoaderOpen(false);
         },
       );
@@ -479,10 +417,13 @@ Cast your vote before ${new Date(
         .catch((err) => {
           console.error(err);
           setSigned(false);
-          showMessageHandler();
-          setIsSuccessFullyExecuted(false);
-          setMessage("Signature failed!");
-
+          dispatch(
+            setAlertData({
+              open: true,
+              message: "Signature failed!",
+              severity: "error",
+            }),
+          );
           setLoaderOpen(false);
         });
     }
@@ -492,7 +433,7 @@ Cast your vote before ${new Date(
     setLoaderOpen(true);
     const response = await createRejectSafeTx({
       pid,
-      gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
+      gnosisTransactionUrl: CHAIN_CONFIG[networkId].gnosisTxUrl,
       gnosisAddress,
       networkId,
       daoAddress,
@@ -502,15 +443,23 @@ Cast your vote before ${new Date(
     if (response) {
       fetchData();
       setIsCancelSigned(true);
-      showMessageHandler();
-      setIsSuccessFullyExecuted(false);
-      setMessage("Signature successful!");
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Signature successful!",
+          severity: "success",
+        }),
+      );
       isOwner();
     } else {
       setIsCancelSigned(false);
-      showMessageHandler();
-      setIsSuccessFullyExecuted(false);
-      setMessage("Signature failed!");
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Signature failed!",
+          severity: "error",
+        }),
+      );
       setLoaderOpen(false);
     }
   };
@@ -522,24 +471,30 @@ Cast your vote before ${new Date(
     const response = await signRejectTx({
       pid: cancelPid,
       walletAddress,
-      gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
+      gnosisTransactionUrl: CHAIN_CONFIG[networkId].gnosisTxUrl,
       gnosisAddress,
       networkId,
     });
     if (response) {
       fetchData();
       setIsCancelSigned(true);
-      showMessageHandler();
-      setIsSuccessFullyExecuted(false);
-      setMessage("Signature successful!");
-
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Signature successful!",
+          severity: "success",
+        }),
+      );
       isOwner();
     } else {
       setIsCancelSigned(false);
-      showMessageHandler();
-      setIsSuccessFullyExecuted(false);
-      setMessage("Signature failed!");
-
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Signature failed!",
+          severity: "error",
+        }),
+      );
       setLoaderOpen(false);
     }
   };
@@ -548,7 +503,7 @@ Cast your vote before ${new Date(
     setLoaderOpen(true);
     const response = executeRejectTx({
       pid: proposalData?.cancelProposalId,
-      gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
+      gnosisTransactionUrl: CHAIN_CONFIG[networkId].gnosisTxUrl,
       gnosisAddress,
       walletAddress,
       networkId,
@@ -560,18 +515,24 @@ Cast your vote before ${new Date(
           updateStatus.then((result) => {
             if (result.status !== 200) {
               setExecuted(false);
-              showMessageHandler();
-              setIsSuccessFullyExecuted(false);
-              setMessage("execution status update failed!");
-
+              dispatch(
+                setAlertData({
+                  open: true,
+                  message: "Execution status update failed!",
+                  severity: "error",
+                }),
+              );
               setLoaderOpen(false);
             } else {
               fetchData();
               setExecuted(true);
-              showMessageHandler();
-              setIsSuccessFullyExecuted(false);
-              setMessage("execution successful!");
-
+              dispatch(
+                setAlertData({
+                  open: true,
+                  message: "Execution successful!",
+                  severity: "success",
+                }),
+              );
               setLoaderOpen(false);
             }
           });
@@ -580,9 +541,13 @@ Cast your vote before ${new Date(
       (error) => {
         console.error(error);
         setExecuted(false);
-        showMessageHandler();
-        setIsSuccessFullyExecuted(false);
-        setMessage("execution failed!");
+        dispatch(
+          setAlertData({
+            open: true,
+            message: "Execution failed!",
+            severity: "error",
+          }),
+        );
 
         setLoaderOpen(false);
       },
@@ -899,10 +864,13 @@ Cast your vote before ${new Date(
                                         executeFunction("executed");
                                       }
                                     : () => {
-                                        showMessageHandler();
-                                        setIsSuccessFullyExecuted(false);
-                                        setMessage(
-                                          "execute txns with smaller nonce first",
+                                        dispatch(
+                                          setAlertData({
+                                            open: true,
+                                            message:
+                                              "Execute txns with smaller nonce first",
+                                            severity: "error",
+                                          }),
                                         );
                                       }
                                   : () => {
@@ -977,10 +945,13 @@ Cast your vote before ${new Date(
                                         executeRejectSafeTransaction();
                                       }
                                     : () => {
-                                        showMessageHandler();
-                                        setIsSuccessFullyExecuted(false);
-                                        setMessage(
-                                          "execute txns with smaller nonce first",
+                                        dispatch(
+                                          setAlertData({
+                                            open: true,
+                                            message:
+                                              "Execute txns with smaller nonce first",
+                                            severity: "error",
+                                          }),
                                         );
                                       }
                                   : !isRejectTxnSigned
@@ -1246,10 +1217,6 @@ Cast your vote before ${new Date(
           </Stack>
         </Grid>
       </Grid>
-
-      {showMessage ? (
-        <CustomAlert alertMessage={message} severity={isSuccessFullyExecuted} />
-      ) : null}
 
       <BackdropLoader isOpen={loaderOpen} />
     </>

@@ -30,3 +30,24 @@ export const getTokensListOfManta = async (walletAddress) => {
     console.log(error);
   }
 };
+
+export const getTotalNumberOfTokenHolders = async (
+  networkName,
+  tokenAddress,
+) => {
+  try {
+    let headers = new Headers();
+    headers.set("Authorization", `Bearer ${COVALENT_API}`);
+    const res = await fetch(
+      `https://api.covalenthq.com/v1/${networkName}/tokens/${tokenAddress}/token_holders_v2/`,
+      {
+        method: "GET",
+        headers: headers,
+      },
+    );
+    const data = await res.json();
+    return data.data.pagination.total_count;
+  } catch (error) {
+    console.log(error);
+  }
+};

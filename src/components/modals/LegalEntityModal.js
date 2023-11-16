@@ -1,5 +1,5 @@
 import { Button, Grid, TextField } from "@mui/material";
-import { makeStyles } from "@mui/styles";
+import { makeStyles, useTheme } from "@mui/styles";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { TwitterShareButton } from "react-twitter-embed";
@@ -7,10 +7,10 @@ import { IoMdClose } from "react-icons/io";
 import LensterShareButton from "../LensterShareButton";
 import BackdropLoader from "@components/common/BackdropLoader";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   modal: {
     width: "570px",
-    background: "#0F0F0F",
+    background: theme.palette.background.default,
     position: "fixed",
     top: "50%",
     left: "50%",
@@ -53,7 +53,7 @@ const useStyles = makeStyles({
   },
   inviteLink: {
     background:
-      "transparent linear-gradient(90deg, #0F0F0F00 0%, #2D55FF 100%) 0% 0% no-repeat padding-box",
+      "transparent linear-gradient(90deg, #11111100 0%, #2D55FF 100%) 0% 0% no-repeat padding-box",
     position: "",
     display: "block",
     padding: "0px 20px",
@@ -73,7 +73,7 @@ const useStyles = makeStyles({
   linkInput: {
     width: "100%",
     color: "#dcdcdc",
-    background: "#0F0F0F 0% 0% no-repeat padding-box",
+    background: "#111111 0% 0% no-repeat padding-box",
     border: "1px solid #dcdcdc40",
     borderRadius: "10px",
     "&:hover": {
@@ -83,7 +83,7 @@ const useStyles = makeStyles({
       opacity: 1,
     },
   },
-});
+}));
 
 const LegalEntityModal = ({
   onClose,
@@ -96,7 +96,8 @@ const LegalEntityModal = ({
   networkId,
 }) => {
   const [isCopy, setIsCopy] = useState(false);
-  const classes = useStyles();
+  const theme = useTheme();
+  const classes = useStyles(theme);
   const router = useRouter();
 
   // create legal Entity

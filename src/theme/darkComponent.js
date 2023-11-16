@@ -31,7 +31,7 @@ export const darkComponents = {
     styleOverrides: {
       root: {
         border: "none",
-        backgroundColor: "#0F0F0F",
+        backgroundColor: "#111111",
       },
     },
     variants: [
@@ -55,7 +55,7 @@ export const darkComponents = {
     styleOverrides: {
       root: {
         borderRadius: "10px",
-        backgroundColor: "#0F0F0F",
+        backgroundColor: "#111111",
       },
     },
   },
@@ -63,7 +63,7 @@ export const darkComponents = {
     styleOverrides: {
       root: {
         borderRadius: "10px",
-        backgroundColor: "#0F0F0F",
+        backgroundColor: "#111111",
       },
     },
   },
@@ -175,7 +175,7 @@ export const darkComponents = {
         style: {
           fontSize: "2.125em",
 
-          color: "#0F0F0F",
+          color: "#111111",
         },
       },
       {
@@ -225,7 +225,7 @@ export const darkComponents = {
   MuiList: {
     styleOverrides: {
       root: {
-        backgroundColor: "#0F0F0F",
+        backgroundColor: "#111111",
       },
     },
   },

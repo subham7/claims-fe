@@ -1,16 +1,17 @@
 import { Button, Typography } from "@mui/material";
 import { TextField } from "@components/ui";
 import { useFormik } from "formik";
-import React, { useState } from "react";
+import React from "react";
 import * as yup from "yup";
 import { TokenGatingModalStyles } from "./TokenGatingModalStyles";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
-import CustomAlert from "@components/common/CustomAlert";
 import BackdropLoader from "@components/common/BackdropLoader";
+import { setAlertData } from "redux/reducers/general";
+import { useDispatch } from "react-redux";
 
 const TokenGatingModal = ({ closeModal, chooseTokens }) => {
-  const [notValid, setNotValid] = useState(false);
   const classes = TokenGatingModalStyles();
+  const dispatch = useDispatch();
 
   const { getTokenSymbol, getDecimals } = useCommonContractMethods();
 
@@ -50,10 +51,13 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
           } catch (error) {
             console.log(error);
 
-            setTimeout(() => {
-              setNotValid(false);
-            }, 3000);
-            setNotValid(true);
+            dispatch(
+              setAlertData({
+                open: true,
+                message: "Not a valid token address!",
+                severity: "error",
+              }),
+            );
           }
         };
         checkTokenGating();
@@ -111,13 +115,6 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
           </form>
         </div>
       </BackdropLoader>
-
-      {notValid ? (
-        <CustomAlert
-          alertMessage={"Not a valid token address!"}
-          severity={false}
-        />
-      ) : null}
     </>
   );
 };

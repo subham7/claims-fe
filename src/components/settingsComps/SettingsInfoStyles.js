@@ -1,6 +1,6 @@
 import { makeStyles } from "@mui/styles";
 
-export const SettingsInfoStlyes = makeStyles({
+export const SettingsInfoStlyes = makeStyles((theme) => ({
   icon: {
     marginRight: "0.5rem",
   },
@@ -30,7 +30,7 @@ export const SettingsInfoStlyes = makeStyles({
     fontSize: "20px",
   },
   cardSmall: {
-    backgroundColor: "#0F0F0F",
+    backgroundColor: theme.palette.background.default,
     borderRadius: "20px",
     opacity: 1,
   },
@@ -136,7 +136,7 @@ export const SettingsInfoStlyes = makeStyles({
   },
   datePicker: {
     borderRadius: "10px",
-    backgroundColor: "#0F0F0F",
+    backgroundColor: theme.palette.background.default,
     width: "95%",
   },
-});
+}));
