@@ -20,7 +20,7 @@ import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useDropsContractMethods from "hooks/useDropsContractMethods";
 import { getPublicClient } from "utils/viemConfig";
 import { useDispatch } from "react-redux";
-import { setAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/alert";
 
 const useStyles = makeStyles({
   container: {

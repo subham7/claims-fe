@@ -2,7 +2,7 @@ import { makeStyles } from "@mui/styles";
 import React from "react";
 import { BsLink45Deg } from "react-icons/bs";
 import { useDispatch } from "react-redux";
-import { setAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/alert";
 import { shortAddress } from "utils/helper";
 
 const useStyles = makeStyles({
