@@ -24,7 +24,7 @@ import CommonProposalForm from "./CommonProposalForm";
 import SurveyProposalForm from "./SurveyProposalForm";
 import { getPublicClient } from "utils/viemConfig";
 import { handleSignMessage } from "utils/helper";
-import { setAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/alert";
 
 const useStyles = makeStyles({
   modalStyle: {

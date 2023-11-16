@@ -11,7 +11,7 @@ import useAppContractMethods from "./useAppContractMethods";
 import { ZERO_ADDRESS } from "utils/constants";
 import { uploadNFT } from "api/assets";
 import { handleSignMessage, uploadFileToAWS } from "utils/helper";
-import { setAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/alert";
 
 const useSafe = () => {
   const { createERC721DAO, createERC20DAO } = useAppContractMethods();
