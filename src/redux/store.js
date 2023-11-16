@@ -9,7 +9,7 @@ export default configureStore({
     club: clubReducer,
     gnosis: gnosisReducer,
     legal: legalReducer,
-    general: alertReducer,
+    alert: alertReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
