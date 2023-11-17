@@ -6,7 +6,7 @@ import { createDocument } from "api/document";
 import { editDepositConfig } from "api/deposit";
 import BackdropLoader from "@components/common/BackdropLoader";
 import { useDispatch } from "react-redux";
-import { setAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/alert";
 
 const UploadW8Ben = ({ daoAddress, walletAddress, depositConfig }) => {
   const hiddenFileInput = useRef(null);

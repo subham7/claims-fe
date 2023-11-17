@@ -51,7 +51,7 @@ import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 import { ProposalDetailStyles } from "./ProposalDetailStyles";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import BackdropLoader from "@components/common/BackdropLoader";
-import { setAlertData } from "redux/reducers/general";
+import { setAlertData } from "redux/reducers/alert";
 import { CHAIN_CONFIG } from "utils/constants";
 
 const ProposalDetail = ({ pid, daoAddress }) => {
