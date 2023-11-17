@@ -219,7 +219,6 @@ const CreateProposalDialog = ({ daoAddress }) => {
           usdcGovernanceTokenDecimal: 18,
         };
         const blockNum = await fetchLatestBlockNumber();
-        console.log("clubdata", clubData);
         const payload = {
           clubId: daoAddress,
           name: values.proposalTitle,

@@ -267,34 +267,41 @@ Cast your vote before ${new Date(
       walletAddress,
       JSON.stringify(payload),
     );
-    const voteSubmit = castVote({ ...payload, signature });
-    voteSubmit
-      .then((result) => {
-        console.log("result", result);
-        if (result.status !== 201) {
-          setVoted(false);
-          setLoaderOpen(false);
-        } else {
-          fetchData();
-          setVoted(true);
-          setLoaderOpen(false);
-        }
-      })
-      .catch((error) => {
+    try {
+      const result = await castVote({ ...payload, signature });
+
+      if (result.status !== 201) {
         setVoted(false);
         setLoaderOpen(false);
-        const errorMessage =
-          error.response && error.response.data
-            ? error.response.data.msg
-            : "Voting failed!";
+      } else {
+        await fetchData();
+        setVoted(true);
+        setLoaderOpen(false);
         dispatch(
           setAlertData({
             open: true,
-            message: errorMessage,
-            severity: "error",
+            message: "Voted successfully",
+            severity: "success",
           }),
         );
-      });
+      }
+    } catch (error) {
+      setVoted(false);
+      setLoaderOpen(false);
+
+      const errorMessage =
+        error.response && error.response.data
+          ? error.response.data.msg
+          : "Voting failed!";
+
+      dispatch(
+        setAlertData({
+          open: true,
+          message: errorMessage,
+          severity: "error",
+        }),
+      );
+    }
   };
 
   const fetchData = useCallback(async () => {
