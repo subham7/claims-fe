@@ -160,7 +160,7 @@ const Transactions = ({ networkId }) => {
                                   onError={({ target }) => {
                                     target.onerror = null;
                                     target.src =
-                                      "https://cryptologos.cc/logos/ethereum-eth-logo.svg";
+                                      "/assets/images/fallbackUSDC.png";
                                   }}
                                 />
                                 <Typography variant="info">

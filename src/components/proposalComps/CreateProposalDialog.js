@@ -14,6 +14,8 @@ import { getProposalValidationSchema } from "@components/createClubComps/Validat
 import useAppContractMethods from "hooks/useAppContractMethods";
 import CommonProposalForm from "./CommonProposalForm";
 import SurveyProposalForm from "./SurveyProposalForm";
+import { getPublicClient } from "utils/viemConfig";
+import { handleSignMessage } from "utils/helper";
 import { setAlertData } from "redux/reducers/alert";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { useRouter } from "next/router";
@@ -92,6 +94,24 @@ const CreateProposalDialog = ({ daoAddress }) => {
     return state.club.clubData.gnosisAddress;
   });
 
+  const isGovernanceERC20 = useSelector((state) => {
+    return state.club.erc20ClubDetails.isGovernanceActive;
+  });
+
+  const isGovernanceERC721 = useSelector((state) => {
+    return state.club.erc721ClubDetails.isGovernanceActive;
+  });
+
+  const isGovernanceActive =
+    tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
+
+  const fetchLatestBlockNumber = async () => {
+    const publicClient = getPublicClient(networkId);
+    const block = Number(await publicClient.getBlockNumber());
+
+    return block;
+  };
+
   const fetchTokens = useCallback(async () => {
     if (daoAddress && gnosisAddress && networkId) {
       const tokensList = await getTokensList(
@@ -132,6 +152,7 @@ const CreateProposalDialog = ({ daoAddress }) => {
       proposalDeadline: dayjs(Date.now() + 3600 * 1000 * 24),
       proposalTitle: "",
       proposalDescription: "",
+      blockNum: "",
       optionList: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
       actionCommand: executionId === "survey" ? "" : Number(executionId),
       airdropToken: tokenData ? tokenData[0]?.address : "",
@@ -197,11 +218,10 @@ const CreateProposalDialog = ({ daoAddress }) => {
           usdcTokenDecimal: 6,
           usdcGovernanceTokenDecimal: 18,
         };
-
+        const blockNum = await fetchLatestBlockNumber();
         const payload = {
           clubId: daoAddress,
           name: values.proposalTitle,
-          description: values.proposalDescription,
           createdBy: walletAddress,
           votingDuration: dayjs(values.proposalDeadline).unix(),
           votingOptions: values.optionList,
@@ -209,9 +229,25 @@ const CreateProposalDialog = ({ daoAddress }) => {
           type: values.typeOfProposal,
           tokenType: clubData.tokenType,
           daoAddress: daoAddress,
+          block:
+            values.blockNum !== undefined &&
+            values.blockNum !== null &&
+            values.blockNum.length > 0
+              ? values.blockNum
+              : Number(blockNum),
+          // quorum: Number(clubData.quorum),
+          // threshold: Number(clubData.threshold),
+          networkId: networkId,
         };
-
-        const createRequest = createProposal(payload, networkId);
+        const { signature } = await handleSignMessage(
+          walletAddress,
+          JSON.stringify(payload),
+        );
+        const createRequest = createProposal(isGovernanceActive, {
+          ...payload,
+          description: values.proposalDescription,
+          signature,
+        });
         createRequest.then(async (result) => {
           if (result.status !== 201) {
             setLoaderOpen(false);
@@ -246,6 +282,7 @@ const CreateProposalDialog = ({ daoAddress }) => {
       }
     },
   });
+
   return (
     <div className={classes.main}>
       <div className={classes.leftDiv}>

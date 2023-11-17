@@ -2,6 +2,7 @@ import { retrieveNftListing } from "api/assets";
 import { CHAIN_CONFIG } from "utils/constants";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { isMember } from "utils/stationsSubgraphHelper";
+import { getPublicClient } from "utils/viemConfig";
 import * as yup from "yup";
 
 export const step1ValidationSchema = yup.object({
@@ -172,6 +173,27 @@ export const getProposalValidationSchema = ({
         text: yup.string().required("Option is required"),
       }),
     ),
+    blockNum: yup
+      .number()
+      .test(
+        "invalidBlockNum",
+        "Enter a block num less than current block number",
+        async (value, context) => {
+          try {
+            const publicClient = getPublicClient(networkId);
+            const block = Number(await publicClient.getBlockNumber());
+            if (
+              Number(value) <= block ||
+              value === undefined ||
+              value.length === 0
+            ) {
+              return true;
+            } else return false;
+          } catch (error) {
+            return false;
+          }
+        },
+      ),
     actionCommand: yup.string("Enter proposal action").when("typeOfProposal", {
       is: "action",
       then: () =>
