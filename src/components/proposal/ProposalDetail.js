@@ -268,16 +268,33 @@ Cast your vote before ${new Date(
       JSON.stringify(payload),
     );
     const voteSubmit = castVote({ ...payload, signature });
-    voteSubmit.then((result) => {
-      if (result.status !== 201) {
+    voteSubmit
+      .then((result) => {
+        console.log("result", result);
+        if (result.status !== 201) {
+          setVoted(false);
+          setLoaderOpen(false);
+        } else {
+          fetchData();
+          setVoted(true);
+          setLoaderOpen(false);
+        }
+      })
+      .catch((error) => {
         setVoted(false);
         setLoaderOpen(false);
-      } else {
-        fetchData();
-        setVoted(true);
-        setLoaderOpen(false);
-      }
-    });
+        const errorMessage =
+          error.response && error.response.data
+            ? error.response.data.msg
+            : "Voting failed!";
+        dispatch(
+          setAlertData({
+            open: true,
+            message: errorMessage,
+            severity: "error",
+          }),
+        );
+      });
   };
 
   const fetchData = useCallback(async () => {
