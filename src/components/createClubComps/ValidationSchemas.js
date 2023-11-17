@@ -91,9 +91,32 @@ export const step4ValidationSchema = yup.object({
 export const ERC721Step2ValidationSchema = yup.object({
   nftImage: yup.mixed().required("File is required"),
   pricePerToken: yup
-    .number()
+    .number("Enter amount of tokens")
     .required("Price per token is required")
-    .moreThan(0, "Price should be greater than 0"),
+    .test(
+      "invalidPricePerToken",
+      "Invalid price per token value",
+      async (value, context) => {
+        const { isNftTotalSupplylimited } = context.parent;
+        if (isNftTotalSupplylimited === true) {
+          try {
+            if (Number(value) >= 0) {
+              return true;
+            } else return false;
+          } catch (error) {
+            return false;
+          }
+        } else {
+          try {
+            if (Number(value) > 0) {
+              return true;
+            } else return false;
+          } catch (error) {
+            return false;
+          }
+        }
+      },
+    ),
   maxTokensPerUser: yup
     .number("Enter amount of tokens")
     .test(
