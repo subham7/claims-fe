@@ -53,7 +53,6 @@ export async function getNFTsByDaoAddress(daoAddress, networkId) {
 }
 
 export async function retrieveNftListing(chain, contractAddress, tokenId) {
-  debugger;
   try {
     return await axios.get(
       MAIN_API_URL +
@@ -71,7 +70,6 @@ export async function retrieveNftListing(chain, contractAddress, tokenId) {
 }
 
 export async function fulfillOrder(offer, fulfiller, consideration) {
-  debugger;
   const options = {
     method: "POST",
     headers: {
