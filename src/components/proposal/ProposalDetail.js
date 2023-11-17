@@ -33,7 +33,7 @@ import Signators from "@components/proposalComps/Signators";
 import ProposalInfo from "@components/proposalComps/ProposalInfo";
 import CurrentResults from "@components/proposalComps/CurrentResults";
 import ProposalVotes from "@components/proposalComps/ProposalVotes";
-import { getSafeSdk } from "utils/helper";
+import { getSafeSdk, handleSignMessage } from "utils/helper";
 import { retrieveNftListing } from "api/assets";
 import SafeAppsSDK from "@safe-global/safe-apps-sdk";
 import { useAccount, useNetwork } from "wagmi";
@@ -254,7 +254,7 @@ Cast your vote before ${new Date(
     }
   };
 
-  const submitVote = () => {
+  const submitVote = async () => {
     setLoaderOpen(true);
     const payload = {
       proposalId: pid,
@@ -263,17 +263,45 @@ Cast your vote before ${new Date(
       clubId: daoAddress,
       daoAddress: daoAddress,
     };
-    const voteSubmit = castVote(payload, networkId);
-    voteSubmit.then((result) => {
+    const { signature } = await handleSignMessage(
+      walletAddress,
+      JSON.stringify(payload),
+    );
+    try {
+      const result = await castVote({ ...payload, signature });
+
       if (result.status !== 201) {
         setVoted(false);
         setLoaderOpen(false);
       } else {
-        fetchData();
+        await fetchData();
         setVoted(true);
         setLoaderOpen(false);
+        dispatch(
+          setAlertData({
+            open: true,
+            message: "Voted successfully",
+            severity: "success",
+          }),
+        );
       }
-    });
+    } catch (error) {
+      setVoted(false);
+      setLoaderOpen(false);
+
+      const errorMessage =
+        error.response && error.response.data
+          ? error.response.data.msg
+          : "Voting failed!";
+
+      dispatch(
+        setAlertData({
+          open: true,
+          message: errorMessage,
+          severity: "error",
+        }),
+      );
+    }
   };
 
   const fetchData = useCallback(async () => {

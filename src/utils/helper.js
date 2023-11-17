@@ -388,6 +388,17 @@ export const processAmount = (amount) => {
   return amount;
 };
 
+export const handleSignMessage = async (userAddress, data) => {
+  try {
+    const web3 = await web3InstanceEthereum();
+
+    const signature = await web3?.eth.personal.sign(data, userAddress, "");
+
+    return { data, signature };
+  } catch (err) {
+    throw new Error("User denied message signature.");
+  }
+};
 export const getDaysDifferenceDescription = (targetDateStr) => {
   const targetDate = new Date(targetDateStr);
   const currentDate = new Date();
