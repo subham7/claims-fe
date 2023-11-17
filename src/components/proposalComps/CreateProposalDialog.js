@@ -194,8 +194,8 @@ const CreateProposalDialog = ({
             values.blockNum.length > 0
               ? values.blockNum
               : Number(blockNum),
-          quorum: Number(clubData.quorum),
-          threshold: Number(clubData.threshold),
+          // quorum: Number(clubData.quorum),
+          // threshold: Number(clubData.threshold),
           networkId: networkId,
         };
         const { signature } = await handleSignMessage(
