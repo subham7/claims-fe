@@ -11,9 +11,9 @@ const Alert = forwardRef(function Alert(props, ref) {
 
 const CustomAlert = () => {
   const dispatch = useDispatch();
-  const isAlertOpen = useSelector((state) => state.general.open);
-  const severity = useSelector((state) => state.general.severity);
-  const message = useSelector((state) => state.general.message);
+  const isAlertOpen = useSelector((state) => state.alert.open);
+  const severity = useSelector((state) => state.alert.severity);
+  const message = useSelector((state) => state.alert.message);
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {

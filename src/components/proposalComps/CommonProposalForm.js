@@ -1,12 +1,4 @@
-import {
-  FormControl,
-  FormHelperText,
-  Grid,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { FormHelperText, Grid, TextField, Typography } from "@mui/material";
 import React from "react";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
@@ -31,41 +23,6 @@ const CommonProposalForm = ({ proposal }) => {
 
   return (
     <>
-      {/* type of proposal and end time */}
-      <Grid container spacing={3} ml={0} width="100%">
-        <Grid item md={6} sx={{ paddingLeft: "0 !important" }}>
-          <Typography variant="proposalBody">Type of Proposal</Typography>
-          <FormControl sx={{ width: "100%", marginTop: "0.5rem" }}>
-            <Select
-              value={proposal.values.typeOfProposal}
-              onChange={proposal.handleChange}
-              inputProps={{ "aria-label": "Without label" }}
-              name="typeOfProposal"
-              id="typeOfProposal">
-              <MenuItem value={"survey"}>Survey</MenuItem>
-              <MenuItem value={"action"}>Action</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item md={6}>
-          <Typography variant="proposalBody">Proposal deadline</Typography>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateTimePicker
-              fullWidth
-              sx={{
-                width: "100%",
-                marginTop: "0.5rem",
-              }}
-              value={proposal.values.proposalDeadline}
-              minDateTime={dayjs(Date.now())}
-              onChange={(value) => {
-                proposal.setFieldValue("proposalDeadline", value);
-              }}
-            />
-          </LocalizationProvider>
-        </Grid>
-      </Grid>
-
       {/* proposal title */}
       <Grid
         container
@@ -73,7 +30,9 @@ const CommonProposalForm = ({ proposal }) => {
         ml={3}
         mt={2}
         sx={{ marginLeft: "0 !important" }}>
-        <Typography variant="proposalBody">Proposal Title*</Typography>
+        <Typography mb={1} variant="proposalBody">
+          Proposal Title*
+        </Typography>
 
         <TextField
           variant="outlined"
@@ -90,6 +49,25 @@ const CommonProposalForm = ({ proposal }) => {
             proposal.touched.proposalTitle && proposal.errors.proposalTitle
           }
         />
+      </Grid>
+
+      {/* proposal end time */}
+      <Grid item md={6} mt={2}>
+        <Typography variant="proposalBody">Proposal deadline</Typography>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DateTimePicker
+            fullWidth
+            sx={{
+              width: "100%",
+              marginTop: "0.5rem",
+            }}
+            value={proposal.values.proposalDeadline}
+            minDateTime={dayjs(Date.now())}
+            onChange={(value) => {
+              proposal.setFieldValue("proposalDeadline", value);
+            }}
+          />
+        </LocalizationProvider>
       </Grid>
 
       {/* proposal description */}
