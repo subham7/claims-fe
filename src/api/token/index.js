@@ -2,6 +2,7 @@ import axios from "axios";
 import { COVALENT_API, MAIN_API_URL } from "../index";
 
 const MANTA_API_URL = process.env.NEXT_PUBLIC_MANTA_API_URL;
+export const NFT_STORAGE_TOKEN = process.env.NEXT_PUBLIC_NFT_STORAGE_TOKEN;
 
 export const getTokensList = async (networkName, walletAddress) => {
   try {

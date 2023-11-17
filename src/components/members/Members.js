@@ -88,7 +88,7 @@ const Members = ({ daoAddress }) => {
           memberAddresses.forEach((address) => {
             memberProfiles.set(
               address,
-              profiles.find(
+              profiles?.find(
                 (profile) => profile.ownedBy.toLowerCase() === address,
               )?.handle,
             );
