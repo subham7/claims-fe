@@ -5,7 +5,7 @@ import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import { disburseFormValidation } from "../createClubComps/ValidationSchemas";
 import { useAccount, useNetwork } from "wagmi";
-import { getTokensList } from "api/token";
+import { getTokensList, getTokensListOfManta } from "api/token";
 import { getUserTokenData, isValidAddress } from "utils/helper";
 import { CHAIN_CONFIG } from "utils/constants";
 import DisburseForm from "@components/claimsPageComps/DisburseForm";
@@ -42,21 +42,47 @@ const CreateDisburse = () => {
 
   const { approveDeposit } = useCommonContractMethods();
 
+  const fetchTokens = async () => {
+    try {
+      if (networkId === "0xa9") {
+        const tokensList = await getTokensListOfManta(walletAddress);
+        return tokensList?.data?.result;
+      }
+
+      const covalentNetworkName = CHAIN_CONFIG[networkId]?.covalentNetworkName;
+      if (!covalentNetworkName) {
+        throw new Error("Unsupported network ID");
+      }
+
+      const tokensList = await getTokensList(
+        covalentNetworkName,
+        walletAddress,
+      );
+
+      return tokensList?.data?.items;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const getCurrentAccount = async () => {
     try {
       setLoadingTokens(true);
       if (networkId && walletAddress) {
-        const tokensList = await getTokensList(
-          CHAIN_CONFIG[networkId].covalentNetworkName,
-          walletAddress,
+        const tokenItems = await fetchTokens(networkId, walletAddress);
+
+        const useMantaConfig = networkId === "0xa9";
+        const data = await getUserTokenData(
+          tokenItems,
+          networkId,
+          useMantaConfig,
         );
 
-        const data = await getUserTokenData(
-          tokensList?.data?.items,
-          networkId,
-          true,
+        setTokensInWallet(
+          data?.filter(
+            (token) => token.symbol !== null && token.symbol !== undefined,
+          ),
         );
-        setTokensInWallet(data?.filter((token) => token.symbol !== null));
         setLoadingTokens(false);
       }
     } catch (error) {
