@@ -201,9 +201,11 @@ export const CHAIN_CONFIG = {
     covalentNetworkName: "linea-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0x176211869cA2b568f2A7D4EE941E073a821EE1ff",
+    airdropContractAddress: "0xd9b4bCCD76E4c35AFa4b473af723fBb19B3E65e8",
     blockExplorerUrl: "https://lineascan.build",
     disburseContractAddress: "0xE6301e65e1371eeECFBB124872a6C3d0F8288DE1",
     gnosisTxUrl: "https://transaction.safe.linea.build",
+    stargateStakingAddresses: ["0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"],
   },
   "0x38": {
     chainName: "BNB Smart Chain",

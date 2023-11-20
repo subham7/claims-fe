@@ -3,6 +3,7 @@ import { CHAIN_CONFIG } from "utils/constants";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { isMember } from "utils/stationsSubgraphHelper";
 import { getPublicClient } from "utils/viemConfig";
+import Web3 from "web3";
 import * as yup from "yup";
 
 export const step1ValidationSchema = yup.object({
@@ -581,14 +582,18 @@ export const getProposalValidationSchema = ({
         "Enter an amount less or equal to treasury balance",
         async (value, context) => {
           const { actionCommand, stargateStakeToken } = context.parent;
-
+          let balance;
+          let decimals;
           if (actionCommand === 17) {
             try {
-              const balance = await getBalance(
-                stargateStakeToken,
-                gnosisAddress,
-              );
-              const decimals = await getDecimals(stargateStakeToken);
+              if (CHAIN_CONFIG[networkId].nativeToken === stargateStakeToken) {
+                const web3 = new Web3(Web3.givenProvider);
+                balance = await web3.eth.getBalance(gnosisAddress);
+                decimals = 18;
+              } else {
+                balance = await getBalance(stargateStakeToken, gnosisAddress);
+                decimals = await getDecimals(stargateStakeToken);
+              }
               if (
                 Number(value) <=
                   Number(convertFromWeiGovernance(balance, decimals)) &&
