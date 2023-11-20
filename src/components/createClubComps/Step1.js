@@ -7,9 +7,9 @@ export default function Step1(props) {
       <Typography variant="body" className="text-blue">
         Basic info
       </Typography>
-      <Typography variant="info" className="text-darkblue">
-        Give a name & token symbol for your station that best describes the
-        purpose or matches your tribe.
+      <Typography variant="info" className="text-light-gray">
+        {`Give a name & token symbol for your station that best describes it's
+        purpose or matches your community's tribe.`}
       </Typography>
 
       <br />
@@ -36,10 +36,7 @@ export default function Step1(props) {
 
       <Typography variant="body" className="text-blue b-pad-min">
         Symbol *{" "}
-        <Box
-          sx={{ color: "#6475A3", ml: 1 }}
-          fontWeight="Normal"
-          display="inline">
+        <Box sx={{ ml: 1 }} fontWeight="Normal" display="inline">
           (Ticker)
         </Box>
       </Typography>
@@ -60,7 +57,7 @@ export default function Step1(props) {
           }
         />
       </div>
-      <Typography variant="info" className="text-darkblue">
+      <Typography variant="info" className="text-light-gray">
         You can choose to make your token public or private along with other
         rules in the next steps.
       </Typography>
@@ -70,7 +67,7 @@ export default function Step1(props) {
       <Typography variant="body" className="text-blue">
         Set token type
       </Typography>
-      <Typography variant="info" className="text-darkblue">
+      <Typography variant="info" className="text-light-gray">
         Choose a Token type that best suits your objective. (For example: ERC721
         for NFT collectives or non-transferrable ERC20 for investment clubs)
       </Typography>
@@ -119,10 +116,7 @@ export default function Step1(props) {
 
       <Typography variant="body" className="text-blue">
         Email
-        <Box
-          sx={{ color: "#6475A3", ml: 1 }}
-          fontWeight="Normal"
-          display="inline">
+        <Box sx={{ ml: 1 }} fontWeight="Normal" display="inline">
           (Optional)
         </Box>
       </Typography>

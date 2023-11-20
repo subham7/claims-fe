@@ -36,12 +36,7 @@ import useClubFetch from "hooks/useClubFetch";
 import { NFT_STORAGE_TOKEN } from "api/token";
 
 const Create = () => {
-  const steps = [
-    "Add station info",
-    "Set token rules",
-    "Governance",
-    // "Treasury",
-  ];
+  const steps = ["Add basic info", "Configure token", "Set controls"];
   const dispatch = useDispatch();
   const uploadInputRef = useRef(null);
   const { chain } = useNetwork();

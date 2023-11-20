@@ -78,7 +78,7 @@ export default function Step3(props) {
       <Typography variant="body" className="text-blue">
         Configure Treasury
       </Typography>
-      <Typography variant="info" className="text-darkblue">
+      <Typography variant="info" className="text-light-gray">
         Where do you want to store funds/assets of this station?
       </Typography>
 
@@ -291,10 +291,7 @@ export default function Step3(props) {
                     number of signature needed
                   </Box>{" "}
                   to execute a proposal{" "}
-                  <Box
-                    sx={{ color: "#6475A3" }}
-                    fontWeight="fontWeightBold"
-                    display="inline">
+                  <Box fontWeight="fontWeightBold" display="inline">
                     (Safe threshold)
                   </Box>{" "}
                 </Typography>
@@ -330,7 +327,7 @@ export default function Step3(props) {
       <Typography variant="body" className="text-blue">
         Governance
       </Typography>
-      <Typography variant="info" className="text-darkblue">
+      <Typography variant="info" className="text-light-gray">
         Who can create transaction(s) inside your station?
       </Typography>
 
