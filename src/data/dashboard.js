@@ -64,10 +64,9 @@ export const tableHeader = ["Name", "Holding", "Value in USD"];
 
 export const baseLinks = [
   { icon: "home_icon", title: "Dashboard", routeHeader: "dashboard" },
-  { icon: "stats", title: "Activity", routeHeader: "proposals" },
-  { icon: "chart", title: "Deposit", routeHeader: "join" },
+  { icon: "workflows_icon", title: "Activity", routeHeader: "proposals" },
   {
-    icon: "workflows_icon",
+    icon: "stats",
     title: "Transactions",
     routeHeader: "transactions",
   },
