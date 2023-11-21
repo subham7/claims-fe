@@ -71,6 +71,6 @@ export const baseLinks = [
     routeHeader: "transactions",
   },
   { icon: "astronaut_icon", title: "Members", routeHeader: "members" },
-  { icon: "document_icon", title: "Documents", routeHeader: "documents" },
+  // { icon: "document_icon", title: "Documents", routeHeader: "documents" },
   { icon: "settings_icon", title: "Settings", routeHeader: "settings" },
 ];
