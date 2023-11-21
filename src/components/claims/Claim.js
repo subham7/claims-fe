@@ -366,6 +366,7 @@ const Claim = ({ claimAddress }) => {
           "",
         );
 
+        fetchContractData();
         const claimedAmt = await claimAmount(claimAddress, walletAddress);
 
         const remainingAmt = +maxClaimableAmount - +claimedAmt;
