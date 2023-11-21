@@ -206,6 +206,11 @@ export const CHAIN_CONFIG = {
     disburseContractAddress: "0xE6301e65e1371eeECFBB124872a6C3d0F8288DE1",
     gnosisTxUrl: "https://transaction.safe.linea.build",
     stargateStakingAddresses: ["0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"],
+    stargateRouterAddress: "0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590",
+    stargatNativeRouterAddress: "0x8731d54E9D02c286767d56ac03e8037C07e01e98",
+    stargatePoolIds: {
+      "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": 13,
+    },
   },
   "0x38": {
     chainName: "BNB Smart Chain",
