@@ -59,18 +59,23 @@ const SelectActionDialog = ({ open, onClose, daoAddress, networkId }) => {
   };
 
   const proposalMenuItems = (filterVal) => {
-    return PROPOSAL_MENU_ITEMS()
-      .filter((item) => item.section === filterVal)
-      .map((item, index) => {
-        return (
-          <div
-            onClick={() => onProposalClick(item.key)}
-            className={classes.proposal}
-            key={item.text}>
-            {item.text}
-          </div>
-        );
-      });
+    return PROPOSAL_MENU_ITEMS().filter((item) => item.section === filterVal)
+      .length > 0 ? (
+      PROPOSAL_MENU_ITEMS()
+        .filter((item) => item.section === filterVal)
+        .map((item, index) => {
+          return (
+            <div
+              onClick={() => onProposalClick(item.key)}
+              className={classes.proposal}
+              key={item.text}>
+              {item.text}
+            </div>
+          );
+        })
+    ) : (
+      <>Coming Soon</>
+    );
   };
 
   return (
