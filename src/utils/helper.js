@@ -377,8 +377,10 @@ export const convertToFullNumber = (expNotation) => {
         );
       }
     }
+    return expNotation;
+  } else {
+    expNotation;
   }
-  return expNotation;
 };
 
 export const processAmount = (amount) => {
