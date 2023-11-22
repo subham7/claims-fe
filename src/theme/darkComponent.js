@@ -164,7 +164,6 @@ export const darkComponents = {
         props: { variant: "settingText" },
         style: {
           fontSize: "1.375em",
-
           color: "#dcdcdc",
         },
       },

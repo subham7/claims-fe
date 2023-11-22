@@ -166,7 +166,7 @@ const Proposal = ({ daoAddress }) => {
 
   return (
     <>
-      <Grid container spacing={3} paddingTop={2}>
+      <Grid container spacing={3}>
         <Grid item md={9}>
           <Grid container>
             <div className={classes.headerDiv}>
