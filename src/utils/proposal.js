@@ -587,7 +587,6 @@ const unstakeErc20TokensToStargate = (
     stargateStakeABI,
     CHAIN_CONFIG[networkId].stargateRouterAddress,
   );
-  //
   return stakeInStargate.methods
     .instantRedeemLocal(
       CHAIN_CONFIG[networkId].stargatePoolIds[unstakeTokenAddress],
@@ -1010,6 +1009,7 @@ export const getTransaction = async ({
       }
       return { transaction, approvalTransaction };
     case 18:
+      console.log("here");
       approvalTransaction = {
         to: Web3.utils.toChecksumAddress(tokenData),
         data: approveDepositWithEncodeABI(
@@ -1020,6 +1020,7 @@ export const getTransaction = async ({
         ),
         value: "0",
       };
+      console.log(approvalTransaction);
       transaction = {
         to: Web3.utils.toChecksumAddress(
           CHAIN_CONFIG[networkId].stargateRouterAddress,
@@ -1033,6 +1034,7 @@ export const getTransaction = async ({
         ),
         value: "0",
       };
+      console.log(transaction);
       return { transaction, approvalTransaction };
   }
 };

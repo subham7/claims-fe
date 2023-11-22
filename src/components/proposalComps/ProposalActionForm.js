@@ -106,7 +106,6 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
 
   return (
     <Stack>
-      {console.log("formik.values.actionCommand", formik.values.actionCommand)}
       {proposalFormData({
         formik,
         tokenData,
