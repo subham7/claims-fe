@@ -3,6 +3,7 @@ import React from "react";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import classes from "./Claim.module.scss";
 import { AiFillInfoCircle } from "react-icons/ai";
+import { convertToFullNumber } from "utils/helper";
 
 const ClaimInput = ({
   inputAmount,
@@ -53,7 +54,7 @@ const ClaimInput = ({
               Available:{" "}
               {Number(
                 convertFromWeiGovernance(
-                  claimRemaining,
+                  convertToFullNumber(claimRemaining + ""),
                   tokenDetails.tokenDecimal,
                 ),
               ).toFixed(4)}
