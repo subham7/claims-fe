@@ -18,6 +18,7 @@ import { getDocumentsByClubId } from "api/document";
 import PublicPageLayout from "@components/common/PublicPageLayout";
 import DepositPreRequisites from "../DepositPreRequisites";
 import { CHAIN_CONFIG } from "utils/constants";
+import { whitelistOnDeposit } from "api/invite/invite";
 
 const DepositInputComponents = ({
   formik,
@@ -190,6 +191,7 @@ const ERC20 = ({
         });
         showMessageHandler();
         setMessage("Deposit Successful");
+        await whitelistOnDeposit(walletAddress);
         formik.values.tokenInput = 0;
       } catch (error) {
         console.log(error);

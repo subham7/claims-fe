@@ -1,8 +1,10 @@
 import { Button, Typography } from "@components/ui";
-import { TextField } from "@mui/material";
+import { CircularProgress, TextField } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import { whitelistUser } from "api/invite/invite";
 import Image from "next/image";
 import React, { useState } from "react";
+import { useAccount } from "wagmi";
 
 const useStyles = makeStyles({
   card: {
@@ -13,7 +15,8 @@ const useStyles = makeStyles({
     alignItems: "flex-start",
     justifyContent: "space-around",
     gap: "20px",
-    width: "75vw",
+    width: "70vw",
+    margin: "0px auto",
   },
   contentDiv: {
     display: "flex",
@@ -28,16 +31,34 @@ const useStyles = makeStyles({
   },
   img: {
     objectFit: "contain",
-    width: "50vh",
-    height: "50vh",
+    width: "60vh",
+    height: "60vh",
   },
 });
 
-const InviteCard = () => {
+const InviteCard = ({ setIsUserWhitelisted }) => {
   const classes = useStyles();
   const [value, setValue] = useState("");
+  const { address } = useAccount();
+  const [loading, setLoading] = useState(false);
 
-  const onClick = () => {};
+  const onClick = async () => {
+    try {
+      setLoading(true);
+      const response = await whitelistUser({
+        address,
+        referralCode: value.toUpperCase(),
+      });
+      if (response) {
+        setIsUserWhitelisted(true);
+      }
+    } catch (e) {
+      console.error("Error whitelisting user", e);
+      setIsUserWhitelisted(false);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className={classes.card}>
@@ -60,11 +81,14 @@ const InviteCard = () => {
             variant="outlined"
             value={value}
             onChange={(e) => setValue(e.target.value)}
+            inputProps={{ style: { textTransform: "uppercase" } }}
           />
           <Typography>{`I don't have an invite code`}</Typography>
         </div>
         <div>
-          <Button onClick={onClick}>Submit</Button>
+          <Button onClick={onClick}>
+            {loading ? <CircularProgress size={24} /> : "Submit"}{" "}
+          </Button>
         </div>
       </div>
     </div>

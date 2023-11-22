@@ -13,6 +13,7 @@ import { useRouter } from "next/router";
 import { getDocumentsByClubId } from "api/document";
 import PublicPageLayout from "@components/common/PublicPageLayout";
 import { CHAIN_CONFIG } from "utils/constants";
+import { whitelistOnDeposit } from "api/invite/invite";
 
 const DepositInputComponents = ({ depositPreRequisitesProps, mintProps }) => {
   return (
@@ -149,6 +150,7 @@ const ERC721 = ({
       });
       setMessage("Transaction Successful");
       showMessageHandler();
+      await whitelistOnDeposit(walletAddress);
     } catch (error) {
       console.log(error);
       setClaimSuccessfull(false);
