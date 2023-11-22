@@ -2,7 +2,6 @@
 
 .main {
   display: flex;
-  padding: 10px;
   height: 85vh;
   gap: 24px;
 
@@ -56,7 +55,9 @@
       }
 
       .treasuryContainer {
-        background: transparent linear-gradient(238deg, #2D55FF 0%, #D55439 100%) 0% 0% no-repeat padding-box;
+        background: transparent
+          linear-gradient(238deg, #2d55ff 0%, #d55439 100%) 0% 0% no-repeat
+          padding-box;
       }
 
       .ownershipContainer {
@@ -182,7 +183,7 @@
     height: 250px;
     overflow-y: scroll;
 
-    .noActivity{
+    .noActivity {
       color: $gray;
       display: flex;
       justify-content: center;
@@ -202,7 +203,7 @@
     align-items: center;
     padding: 12px 20px;
 
-    div{
+    div {
       display: flex;
       align-items: center;
       gap: 8px;

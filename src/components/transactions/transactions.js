@@ -21,6 +21,7 @@ import {
   Paper,
 } from "@mui/material";
 import { CHAIN_CONFIG } from "utils/constants";
+import ComponentHeader from "@components/common/ComponentHeader";
 
 dayjs.extend(relativeTime);
 
@@ -112,7 +113,7 @@ const Transactions = ({ networkId }) => {
     <>
       <div className="f-d f-vt f-h-c w-80">
         <div className="b-pad-1">
-          <Typography variant="heading">Station Transactions</Typography>
+          <ComponentHeader title={"Transactions"} />
         </div>
         {/* Table */}
         <div>

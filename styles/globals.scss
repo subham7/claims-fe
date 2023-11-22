@@ -51,6 +51,9 @@ input::-webkit-inner-spin-button {
 .text-error {
   color: red;
 }
+.text-light-gray {
+  color: $light-gray;
+}
 
 /* text weights*/
 .text-bold {
@@ -229,10 +232,13 @@ input::-webkit-inner-spin-button {
   cursor: pointer;
 }
 
-
 .step-buttons {
   display: flex;
   justify-content: flex-end;
   width: 100%;
   gap: 16px;
+}
+
+.w-full {
+  width: 100%;
 }

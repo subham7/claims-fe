@@ -315,9 +315,9 @@ const AdditionalSettings = ({
   return (
     <div className={classes.container}>
       <Typography className={classes.heading}>Additional Details</Typography>
-      <Stack spacing={3}>
-        <Divider />
+      <Stack spacing={1}>
         <Grid
+          py={2}
           container
           sx={{ display: "flex", justifyContent: "space-between" }}>
           <Grid item>
@@ -325,41 +325,39 @@ const AdditionalSettings = ({
               Token contract address
             </Typography>
           </Grid>
-          <Grid sx={{ display: "flex", alignItems: "center" }}>
-            <Grid item>
-              <IconButton
-                color="primary"
-                onClick={() => {
-                  navigator.clipboard.writeText(daoAddress);
-                }}>
-                <ContentCopyIcon className={classes.iconColor} />
-              </IconButton>
-            </Grid>
-            <Grid item>
-              <IconButton
-                color="primary"
-                onClick={() => {
-                  window.open(
-                    `${CHAIN_CONFIG[networkId].blockExplorerUrl}/address/${daoAddress}`,
-                  );
-                }}>
-                <OpenInNewIcon className={classes.iconColor} />
-              </IconButton>
-            </Grid>
-            <Grid item mr={4} mt={1}>
-              <Typography variant="p" className={classes.valuesStyle}>
-                {daoDetails ? (
-                  shortAddress(daoAddress)
-                ) : (
-                  <Skeleton variant="rectangular" width={100} height={25} />
-                )}
-              </Typography>
-            </Grid>
+          <Grid item sx={{ display: "flex", alignItems: "center" }}>
+            <IconButton
+              color="primary"
+              onClick={() => {
+                navigator.clipboard.writeText(daoAddress);
+              }}>
+              <ContentCopyIcon className={classes.iconColor} />
+            </IconButton>
+            <IconButton
+              color="primary"
+              onClick={() => {
+                window.open(
+                  `${CHAIN_CONFIG[networkId].blockExplorerUrl}/address/${daoAddress}`,
+                );
+              }}>
+              <OpenInNewIcon className={classes.iconColor} />
+            </IconButton>
+            <Typography variant="p" className={classes.valuesStyle}>
+              {daoDetails ? (
+                shortAddress(daoAddress)
+              ) : (
+                <Skeleton variant="rectangular" width={100} height={25} />
+              )}
+            </Typography>
           </Grid>
         </Grid>
 
         <Divider />
+      </Stack>
+
+      <Stack spacing={1}>
         <Grid
+          py={2}
           container
           sx={{ display: "flex", justifyContent: "space-between" }}>
           <Grid item>
@@ -388,7 +386,7 @@ const AdditionalSettings = ({
               </IconButton>
             </Grid>
 
-            <Grid item mr={4} mt={1}>
+            <Grid item mt={1}>
               <Typography variant="p" className={classes.valuesStyle}>
                 {daoDetails ? (
                   shortAddress(gnosisAddress)
@@ -407,7 +405,7 @@ const AdditionalSettings = ({
           container
           py={2}
           sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Grid item mt={3}>
+          <Grid item>
             <Typography variant="settingText">Admin fees</Typography>
           </Grid>
           <Grid
@@ -417,7 +415,7 @@ const AdditionalSettings = ({
               alignItems: "center",
             }}
             spacing={1}>
-            <Grid mr={4}>
+            <Grid>
               <Grid sx={{ display: "flex", alignItems: "center" }}>
                 <Typography className={classes.text} mr={1}>
                   {daoDetails.ownerFee}%
@@ -442,14 +440,14 @@ const AdditionalSettings = ({
           container
           py={2}
           sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Grid item mt={3}>
+          <Grid item>
             <Typography variant="settingText">Deposit deadline</Typography>
           </Grid>
           <Grid
             // container
             sx={{ display: "flex", alignItems: "center" }}
             spacing={1}>
-            <Grid mr={4}>
+            <Grid>
               <Grid sx={{ display: "flex", alignItems: "center" }}>
                 <Tooltip title={startingTimeInNum.toString()}>
                   <Typography className={classes.text} mr={1}>
@@ -485,7 +483,7 @@ const AdditionalSettings = ({
           container
           py={2}
           sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Grid item mt={3}>
+          <Grid item>
             <Typography variant="settingText">
               Enable subscription agreement signing
             </Typography>
@@ -494,7 +492,7 @@ const AdditionalSettings = ({
             // container
             sx={{ display: "flex", alignItems: "center" }}
             spacing={1}>
-            <Grid mr={4}>
+            <Grid>
               <Grid sx={{ display: "flex", alignItems: "center" }}>
                 <Switch
                   checked={checked}
@@ -521,14 +519,14 @@ const AdditionalSettings = ({
           container
           py={2}
           sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Grid item mt={3}>
+          <Grid item>
             <Typography variant="settingText">Collect tax form</Typography>
           </Grid>
           <Grid
             // container
             sx={{ display: "flex", alignItems: "center" }}
             spacing={1}>
-            <Grid mr={4}>
+            <Grid>
               <Grid sx={{ display: "flex", alignItems: "center" }}>
                 <Switch
                   checked={w8Checked}
@@ -555,14 +553,14 @@ const AdditionalSettings = ({
           container
           py={2}
           sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Grid item mt={3}>
+          <Grid item>
             <Typography variant="settingText">Enable KYC</Typography>
           </Grid>
           <Grid
             // container
             sx={{ display: "flex", alignItems: "center" }}
             spacing={1}>
-            <Grid mr={4}>
+            <Grid>
               <Grid sx={{ display: "flex", alignItems: "center" }}>
                 <Switch
                   checked={kycChecked}
@@ -588,6 +586,7 @@ const AdditionalSettings = ({
           loading={loading}
         />
       )}
+
       {showDepositTimeModal && (
         <DepositDeadline
           onClose={() => {

@@ -450,10 +450,7 @@ export const getProposalValidationSchema = ({
                   linkData[1],
                   linkData[2],
                 );
-                if (
-                  !nftdata?.data?.orders.length &&
-                  proposalData?.commands[0].executionId === 8
-                ) {
+                if (!nftdata?.data?.orders.length && actionCommand === 8) {
                   return false;
                 }
               }

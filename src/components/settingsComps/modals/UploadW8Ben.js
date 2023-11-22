@@ -78,11 +78,10 @@ const UploadW8Ben = ({ daoAddress, walletAddress, depositConfig }) => {
   return (
     <Grid
       container
-      py={2}
+      pb={2}
       sx={{
         display: "flex",
         justifyContent: "space-between",
-        paddingRight: "40px",
       }}>
       <Grid width={"80%"} item>
         <TextField

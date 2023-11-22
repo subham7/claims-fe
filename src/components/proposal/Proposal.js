@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Grid, MenuItem, OutlinedInput, Select } from "@mui/material";
-import { Button, Typography } from "@components/ui";
+import { Button } from "@components/ui";
 import { proposalDisplayOptions } from "data/dashboard";
 import DocsCard from "@components/common/DocsCard";
 import { fetchProposals } from "utils/proposal";
@@ -15,6 +15,7 @@ import { CHAIN_CONFIG } from "utils/constants";
 import { useAccount, useNetwork } from "wagmi";
 import BackdropLoader from "@components/common/BackdropLoader";
 import SelectActionDialog from "@components/proposalComps/SelectActionDialog";
+import ComponentHeader from "@components/common/ComponentHeader";
 
 const useStyles = makeStyles({
   noProposal_heading: {
@@ -34,7 +35,16 @@ const useStyles = makeStyles({
     border: "1px solid #FFFFFF1A",
     borderRadius: "10px",
     padding: "30px 30px",
-    marginTop: "50px",
+  },
+  headerDiv: {
+    display: "flex",
+    width: "100%",
+    gap: "16px",
+    marginBottom: "20px",
+  },
+  proposeBtn: {
+    paddingLeft: "40px !important",
+    paddingRight: "40px !important",
   },
 });
 
@@ -189,67 +199,50 @@ const Proposal = ({ daoAddress }) => {
 
   return (
     <>
-      <Grid container spacing={3} paddingTop={2}>
-        <Grid item md={8}>
-          <Grid
-            container
-            mb={5}
-            direction={{
-              xs: "column",
-              sm: "column",
-              md: "column",
-              lg: "row",
-            }}>
-            <Grid item mb={4}>
-              <Typography variant="heading">All Proposals</Typography>
-            </Grid>
-            <Grid
-              item
-              xs
-              sx={{
-                display: { lg: "flex" },
-                justifyContent: { md: "flex-center", lg: "flex-end" },
-              }}>
-              <Grid container direction="row" spacing={2}>
-                <Grid
-                  item
-                  xs
-                  sx={{ display: "flex", justifyContent: "flex-end" }}>
-                  <Select
-                    sx={{ height: "60%", textTransform: "capitalize" }}
-                    value={selectedListItem}
-                    onChange={handleFilterChange}
-                    input={<OutlinedInput />}
-                    renderValue={(selected) => {
-                      if (selected.length === 0) {
-                        return "Select a command";
-                      }
-                      return selected;
-                    }}
-                    MenuProps={proposalDisplayOptions}
-                    style={{
-                      borderRadius: "10px",
-                      background: "#111111 0% 0% no-repeat padding-box",
-                      width: "30%",
-                    }}>
-                    {proposalDisplayOptions.map((option) => (
-                      <MenuItem
-                        key={option.name}
-                        value={option.type}
-                        sx={{ textTransform: "capitalize" }}>
-                        {option.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </Grid>
+      <Grid container spacing={3}>
+        <Grid item md={9}>
+          <Grid container>
+            <div className={classes.headerDiv}>
+              <ComponentHeader
+                title={"Activity"}
+                subtext="Use actions to get done with your day-to-day stuff directly from the station 🛸"
+              />
 
-                {isGovernanceActive || isAdminUser ? (
-                  <Grid mt={"4px"} item>
-                    <Button onClick={handleClickOpen}>Propose</Button>
-                  </Grid>
-                ) : null}
-              </Grid>
-            </Grid>
+              <Select
+                sx={{ textTransform: "capitalize" }}
+                value={selectedListItem}
+                onChange={handleFilterChange}
+                input={<OutlinedInput />}
+                renderValue={(selected) => {
+                  if (selected.length === 0) {
+                    return "Select a command";
+                  }
+                  return selected;
+                }}
+                MenuProps={proposalDisplayOptions}
+                style={{
+                  borderRadius: "10px",
+                  background: "#111111 0% 0% no-repeat padding-box",
+                  width: "25%",
+                }}>
+                {proposalDisplayOptions.map((option) => (
+                  <MenuItem
+                    key={option.name}
+                    value={option.type}
+                    sx={{ textTransform: "capitalize" }}>
+                    {option.name}
+                  </MenuItem>
+                ))}
+              </Select>
+
+              {isGovernanceActive || isAdminUser ? (
+                <Button
+                  className={classes.proposeBtn}
+                  onClick={handleClickOpen}>
+                  Propose
+                </Button>
+              ) : null}
+            </div>
             <Grid container spacing={3}>
               {proposalList?.length > 0 ? (
                 <>

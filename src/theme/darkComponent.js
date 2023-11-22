@@ -44,8 +44,6 @@ export const darkComponents = {
       {
         props: { variant: "tableHeading" },
         style: {
-          fontSize: "1.375em",
-
           color: "#dcdcdc",
         },
       },
@@ -166,7 +164,6 @@ export const darkComponents = {
         props: { variant: "settingText" },
         style: {
           fontSize: "1.375em",
-
           color: "#dcdcdc",
         },
       },
