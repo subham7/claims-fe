@@ -334,43 +334,47 @@ export const addLineBreaks = (inputString, breakAfter = 40) => {
 };
 
 export const convertToFullNumber = (expNotation) => {
-  let [base, exponent] = expNotation?.split("e");
-  let [whole, fractional] = base?.split(".");
+  if (typeof expNotation === "string") {
+    let [base, exponent] = expNotation?.split("e");
+    let [whole, fractional] = base?.split(".");
 
-  if (exponent.includes("+")) {
-    let positiveExponent = parseInt(exponent?.replace("+", ""), 10);
-    if (fractional) {
-      let adjustedWhole =
-        whole +
-        fractional?.substring(
-          0,
-          Math.min(positiveExponent, fractional?.length),
+    if (exponent?.includes("+")) {
+      let positiveExponent = parseInt(exponent?.replace("+", ""), 10);
+      if (fractional) {
+        let adjustedWhole =
+          whole +
+          fractional?.substring(
+            0,
+            Math.min(positiveExponent, fractional?.length),
+          );
+        let remainingExponent = positiveExponent - fractional?.length;
+        return adjustedWhole + "0".repeat(Math.max(0, remainingExponent));
+      } else {
+        return whole + "0".repeat(positiveExponent);
+      }
+    } else if (exponent?.includes("-")) {
+      let negativeExponent = parseInt(exponent?.replace("-", ""), 10);
+      if (negativeExponent >= whole?.length) {
+        return (
+          "0." +
+          "0".repeat(negativeExponent - whole?.length) +
+          whole +
+          (fractional || "")
         );
-      let remainingExponent = positiveExponent - fractional?.length;
-      return adjustedWhole + "0".repeat(Math.max(0, remainingExponent));
-    } else {
-      return whole + "0".repeat(positiveExponent);
+      } else {
+        let decimalPlace = whole?.length - negativeExponent;
+        return (
+          whole?.substring(0, decimalPlace) +
+          "." +
+          whole?.substring(decimalPlace) +
+          (fractional || "")
+        );
+      }
     }
-  } else if (exponent?.includes("-")) {
-    let negativeExponent = parseInt(exponent?.replace("-", ""), 10);
-    if (negativeExponent >= whole?.length) {
-      return (
-        "0." +
-        "0".repeat(negativeExponent - whole?.length) +
-        whole +
-        (fractional || "")
-      );
-    } else {
-      let decimalPlace = whole?.length - negativeExponent;
-      return (
-        whole?.substring(0, decimalPlace) +
-        "." +
-        whole?.substring(decimalPlace) +
-        (fractional || "")
-      );
-    }
+    return expNotation;
+  } else {
+    expNotation;
   }
-  return expNotation;
 };
 
 export const processAmount = (amount) => {

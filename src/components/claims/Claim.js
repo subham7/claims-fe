@@ -19,7 +19,7 @@ import ClaimInput from "./ClaimInput";
 import { ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import PublicPageLayout from "@components/common/PublicPageLayout";
 import TwitterSharingModal from "@components/modals/TwitterSharingModal";
-import { processAmount } from "utils/helper";
+import { convertToFullNumber, processAmount } from "utils/helper";
 
 const ClaimInputComponent = ({
   claimInputProps,
@@ -407,7 +407,7 @@ const Claim = ({ claimAddress }) => {
 
   const maxHandler = async () => {
     if (
-      +claimRemaining === 0 &&
+      convertToFullNumber(claimRemaining + "") === 0 &&
       !alreadyClaimed &&
       convertFromWeiGovernance(remainingInUSD, tokenDetails.tokenDecimal)
     ) {
@@ -418,12 +418,17 @@ const Claim = ({ claimAddress }) => {
   };
 
   const isClaimButtonDisabled = () => {
-    return (claimRemaining == 0 && alreadyClaimed && claimed) ||
+    return (convertToFullNumber(claimRemaining + "") == 0 &&
+      alreadyClaimed &&
+      claimed) ||
       !isClaimActive ||
       !maxClaimableAmount ||
       +claimInput <= 0 ||
       claimInput >
-        +convertFromWeiGovernance(claimRemaining, tokenDetails.tokenDecimal) ||
+        +convertFromWeiGovernance(
+          convertToFullNumber(claimRemaining + ""),
+          tokenDetails.tokenDecimal,
+        ) ||
       (dropsData?.permission == 0 && !isEligibleForTokenGated) ||
       (dropsData?.permission === "3" && !isEligibleForTokenGated)
       ? true
