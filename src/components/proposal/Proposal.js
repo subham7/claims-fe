@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Grid, MenuItem, OutlinedInput, Select } from "@mui/material";
-import { Button } from "@components/ui";
+import { Grid } from "@mui/material";
 import { proposalDisplayOptions } from "data/dashboard";
+import DocsCard from "@components/common/DocsCard";
 import { fetchProposals } from "utils/proposal";
 import { useRouter } from "next/router";
 import ProposalCard from "./ProposalCard";
@@ -61,29 +61,39 @@ const Proposal = ({ daoAddress }) => {
   const [open, setOpen] = useState(false);
 
   const [proposalList, setProposalList] = useState([]);
+  const [owners, setOwners] = useState([]);
 
-  const gnosisAddress = useSelector((state) => {
-    return state.club.clubData.gnosisAddress;
-  });
-
-  const tokenType = useSelector((state) => {
-    return state.club.clubData.tokenType;
+  const { gnosisAddress, tokenType } = useSelector((state) => {
+    return state.club.clubData;
   });
 
   const isAdminUser = useSelector((state) => {
     return state.gnosis.adminUser;
   });
 
-  const isGovernanceERC20 = useSelector((state) => {
-    return state.club.erc20ClubDetails.isGovernanceActive;
+  const {
+    threshold: ERC721_Threshold,
+    quorum: ERC721_Quorum,
+    isGovernanceActive: isGovernanceERC721,
+  } = useSelector((state) => {
+    return state.club.erc721ClubDetails;
   });
 
-  const isGovernanceERC721 = useSelector((state) => {
-    return state.club.erc721ClubDetails.isGovernanceActive;
+  const {
+    threshold: ERC20_Threshold,
+    quorum: ERC20_Quorum,
+    isGovernanceActive: isGovernanceERC20,
+  } = useSelector((state) => {
+    return state.club.erc20ClubDetails;
   });
 
   const isGovernanceActive =
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
+
+  const Club_Threshold =
+    tokenType === "erc20" ? ERC20_Threshold : ERC721_Threshold;
+
+  const Club_Quorum = tokenType === "erc20" ? ERC20_Quorum : ERC721_Quorum;
 
   const [executionTransaction, setExecutionTransaction] = useState(null);
   const [loaderOpen, setLoaderOpen] = useState(false);
@@ -150,15 +160,37 @@ const Proposal = ({ daoAddress }) => {
       console.log(error);
     }
   };
+  const fetchOwners = async () => {
+    try {
+      const { safeSdk } = await getSafeSdk(
+        gnosisAddress,
+        walletAddress,
+        CHAIN_CONFIG[networkId].gnosisTxUrl,
+        networkId,
+      );
+      const addresses = [];
+      const ownerAddresses = await safeSdk?.getOwners();
+      ownerAddresses.map((owner) => {
+        addresses.push({
+          title: owner,
+        });
+      });
+      setOwners(addresses);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     setLoaderOpen(true);
-    if (gnosisAddress) {
+    if (gnosisAddress && walletAddress) {
+      fetchOwners();
+
       getExecutionTransaction();
       setLoaderOpen(false);
     }
     setLoaderOpen(false);
-  }, [gnosisAddress]);
+  }, [gnosisAddress, walletAddress]);
 
   useEffect(() => {
     fetchProposalList();
@@ -173,8 +205,11 @@ const Proposal = ({ daoAddress }) => {
               <ComponentHeader
                 title={"Activity"}
                 subtext="Use actions to get done with your day-to-day stuff directly from the station 🛸"
+                showButton={isGovernanceActive || isAdminUser}
+                buttonText="Propose"
+                onClickHandler={handleClickOpen}
               />
-
+              {/* 
               <Select
                 sx={{ textTransform: "capitalize" }}
                 value={selectedListItem}
@@ -200,15 +235,7 @@ const Proposal = ({ daoAddress }) => {
                     {option.name}
                   </MenuItem>
                 ))}
-              </Select>
-
-              {isGovernanceActive || isAdminUser ? (
-                <Button
-                  className={classes.proposeBtn}
-                  onClick={handleClickOpen}>
-                  Propose
-                </Button>
-              ) : null}
+              </Select> */}
             </div>
             <Grid container spacing={3}>
               {proposalList?.length > 0 ? (
@@ -269,6 +296,29 @@ const Proposal = ({ daoAddress }) => {
               )}
             </Grid>
           </Grid>
+        </Grid>
+        <Grid item md={4}>
+          <div className={classes.sticky}>
+            <DocsCard
+              heading="Signator(s)"
+              data={owners}
+              isGovernance={false}
+            />
+            <DocsCard
+              heading="Governance"
+              data={[
+                {
+                  title: "Quorum",
+                  value: Club_Quorum,
+                },
+                {
+                  title: "Threshold",
+                  value: Club_Threshold,
+                },
+              ]}
+              isGovernance
+            />
+          </div>
         </Grid>
       </Grid>
 

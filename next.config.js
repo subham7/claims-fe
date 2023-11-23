@@ -10,6 +10,7 @@ const nextConfig = {
       "cloudflare-ipfs.com",
       "logos.covalenthq.com",
       "cryptologos.cc",
+      "www.datocms-assets.com",
     ],
   },
   webpack: (config, { isServer }) => {
