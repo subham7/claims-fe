@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Grid, MenuItem, OutlinedInput, Select } from "@mui/material";
-import { Button } from "@components/ui";
+import { Grid } from "@mui/material";
 import { proposalDisplayOptions } from "data/dashboard";
 import DocsCard from "@components/common/DocsCard";
 import { fetchProposals } from "utils/proposal";
@@ -206,8 +205,11 @@ const Proposal = ({ daoAddress }) => {
               <ComponentHeader
                 title={"Activity"}
                 subtext="Use actions to get done with your day-to-day stuff directly from the station 🛸"
+                showButton={isGovernanceActive || isAdminUser}
+                buttonText="Propose"
+                onClickHandler={handleClickOpen}
               />
-
+              {/* 
               <Select
                 sx={{ textTransform: "capitalize" }}
                 value={selectedListItem}
@@ -233,15 +235,7 @@ const Proposal = ({ daoAddress }) => {
                     {option.name}
                   </MenuItem>
                 ))}
-              </Select>
-
-              {isGovernanceActive || isAdminUser ? (
-                <Button
-                  className={classes.proposeBtn}
-                  onClick={handleClickOpen}>
-                  Propose
-                </Button>
-              ) : null}
+              </Select> */}
             </div>
             <Grid container spacing={3}>
               {proposalList?.length > 0 ? (
