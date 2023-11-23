@@ -204,7 +204,7 @@ export const CHAIN_CONFIG = {
     airdropContractAddress: "0xd9b4bCCD76E4c35AFa4b473af723fBb19B3E65e8",
     blockExplorerUrl: "https://lineascan.build",
     disburseContractAddress: "0xE6301e65e1371eeECFBB124872a6C3d0F8288DE1",
-    gnosisTxUrl: "https://transaction.safe.linea.build/",
+    gnosisTxUrl: "https://transaction.safe.linea.build",
     stargateStakingAddresses: ["0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"],
     stargateUnstakingAddresses: ["0xaad094f6a75a14417d39f04e690fc216f080a41a"],
     stargateRouterAddress: "0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590",

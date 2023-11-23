@@ -568,7 +568,7 @@ const stakeErc20TokensToStargate = (
     .encodeABI();
 };
 
-const stakeNativeTokensToStargate = () => {
+const stakeNativeTokensToStargate = (web3Call, networkId) => {
   const stakeInStargate = new web3Call.eth.Contract(
     stargateNativeABI,
     CHAIN_CONFIG[networkId].stargatNativeRouterAddress,
@@ -976,15 +976,13 @@ export const getTransaction = async ({
     case 17:
       if (tokenData === CHAIN_CONFIG[networkId].nativeToken) {
         transaction = {
-          to: Web3.utils.toChecksumAddress(
-            CHAIN_CONFIG[networkId].stargatNativeRouterAddress,
-          ),
-          data: stakeNativeTokensToStargate(),
+          to: CHAIN_CONFIG[networkId].stargatNativeRouterAddress,
+          data: stakeNativeTokensToStargate(web3Call, networkId),
           value: stakeAmount,
         };
       } else {
         approvalTransaction = {
-          to: Web3.utils.toChecksumAddress(tokenData),
+          to: tokenData,
           data: approveDepositWithEncodeABI(
             tokenData,
             CHAIN_CONFIG[networkId].stargateRouterAddress,
@@ -994,9 +992,7 @@ export const getTransaction = async ({
           value: "0",
         };
         transaction = {
-          to: Web3.utils.toChecksumAddress(
-            CHAIN_CONFIG[networkId].stargateRouterAddress,
-          ),
+          to: CHAIN_CONFIG[networkId].stargateRouterAddress,
           data: stakeErc20TokensToStargate(
             tokenData,
             stakeAmount,
@@ -1009,9 +1005,8 @@ export const getTransaction = async ({
       }
       return { transaction, approvalTransaction };
     case 18:
-      console.log("here");
       approvalTransaction = {
-        to: Web3.utils.toChecksumAddress(tokenData),
+        to: tokenData,
         data: approveDepositWithEncodeABI(
           tokenData,
           CHAIN_CONFIG[networkId].stargateRouterAddress,
@@ -1020,11 +1015,8 @@ export const getTransaction = async ({
         ),
         value: "0",
       };
-      console.log(approvalTransaction);
       transaction = {
-        to: Web3.utils.toChecksumAddress(
-          CHAIN_CONFIG[networkId].stargateRouterAddress,
-        ),
+        to: CHAIN_CONFIG[networkId].stargateRouterAddress,
         data: unstakeErc20TokensToStargate(
           tokenData,
           unstakeAmount,
@@ -1034,7 +1026,6 @@ export const getTransaction = async ({
         ),
         value: "0",
       };
-      console.log(transaction);
       return { transaction, approvalTransaction };
   }
 };
