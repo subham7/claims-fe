@@ -2,9 +2,9 @@ import { Button, Typography } from "@components/ui";
 import { CircularProgress, TextField } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { whitelistUser } from "api/invite/invite";
-import Image from "next/image";
 import React, { useState } from "react";
 import { useAccount } from "wagmi";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 const useStyles = makeStyles({
   card: {
@@ -15,7 +15,7 @@ const useStyles = makeStyles({
     alignItems: "flex-start",
     justifyContent: "space-around",
     gap: "20px",
-    width: "70vw",
+    width: "80vw",
     margin: "0px auto",
   },
   contentDiv: {
@@ -29,10 +29,32 @@ const useStyles = makeStyles({
     gap: "4px",
     width: "100%",
   },
+  imgDiv: {
+    padding: "20px",
+    borderRadius: "20px",
+    width: "50vw",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "column",
+    background:
+      "transparent linear-gradient(45deg, #2E55FF 0%, #FF279C 100%) 0% 0% no-repeat padding-box",
+  },
   img: {
-    objectFit: "contain",
-    width: "60vh",
-    height: "60vh",
+    maxWidth: "70%",
+    marginBottom: "20px",
+  },
+  link: {
+    textDecoration: "underline",
+    color: "#2D55FF",
+    display: "flex",
+    alignItems: "center",
+    gap: "4px",
+    cursor: "pointer",
+  },
+  icon: {
+    height: "16px",
+    width: "16px",
   },
 });
 
@@ -62,8 +84,19 @@ const InviteCard = ({ setIsUserWhitelisted }) => {
 
   return (
     <div className={classes.card}>
-      <div>
-        <Image src="" className={classes.img} />
+      <div className={classes.imgDiv}>
+        <img
+          src="assets/icons/astronaut_laptop.png"
+          className={classes.img}
+          alt="whitelist img"
+        />
+        <div>
+          <Typography variant="heading">25,189 people ahead of you.</Typography>
+          <Typography variant="body">
+            {`To gain insights from users into how we can make StationX better,
+            we’re currently invite-only.`}
+          </Typography>
+        </div>
       </div>
       <div className={classes.contentDiv}>
         <div>
@@ -83,7 +116,12 @@ const InviteCard = ({ setIsUserWhitelisted }) => {
             onChange={(e) => setValue(e.target.value)}
             inputProps={{ style: { textTransform: "uppercase" } }}
           />
-          <Typography>{`I don't have an invite code`}</Typography>
+          <Typography
+            onClick={() => window.open("https://tally.so/r/nG64GQ", "_blank")}
+            className={classes.link}>
+            {`I don't have an invite code`}{" "}
+            <OpenInNewIcon className={classes.icon} />
+          </Typography>
         </div>
         <div>
           <Button onClick={onClick}>
