@@ -13,6 +13,21 @@ export const QUERY_ALL_DROPS_TRANSACTIONS = (claimAddress) => {
       }`;
 };
 
+export const QUERY_LATEST_TEN_DROPS_TRANSACTIONS = (claimAddress) => {
+  return `query{
+              airdrops(where: {claimAddress: "${claimAddress}"}, first: 10 ) {
+                id
+                txHash
+                claimAddress
+                claimerAddress
+                airdropToken
+                amountClaimed
+                totalAmountClaimed
+                timestamp
+              }
+      }`;
+};
+
 export const QUERY_WALLET_CLAIM_TRANSACTIONS = (claimAddress) => {
   return `query{
               claimers(where: {claimAddress: "${claimAddress}"}) {
