@@ -86,8 +86,7 @@ const Join = ({ daoAddress }) => {
     try {
       setLoading(true);
       const nftMinted = await getNftOwnersCount();
-
-      if (factoryData?.depositCloseTime && nftMinted) {
+      if (factoryData?.depositCloseTime && nftMinted >= 0) {
         setDaoDetails({
           depositDeadline: factoryData?.depositCloseTime,
           nftMinted: nftMinted,

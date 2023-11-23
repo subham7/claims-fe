@@ -20,6 +20,7 @@ import { erc20TokenABI } from "abis/usdcTokenContract.js";
 import { actionContractABI } from "abis/actionContract";
 import { erc20AaveABI } from "abis/erc20AaveABI";
 import { stargateStakeABI } from "abis/stargateStakeABI";
+import { stargateNativeABI } from "abis/stargateNativeABI";
 import { maticAaveABI } from "abis/MaticAaveABI";
 import { uniswapABI } from "abis/uniswapABI";
 import { encodeFunctionData } from "viem";
@@ -567,6 +568,14 @@ const stakeErc20TokensToStargate = (
     .encodeABI();
 };
 
+const stakeNativeTokensToStargate = (web3Call, networkId) => {
+  const stakeInStargate = new web3Call.eth.Contract(
+    stargateNativeABI,
+    CHAIN_CONFIG[networkId].stargatNativeRouterAddress,
+  );
+  return stakeInStargate.methods.addLiquidityETH().encodeABI();
+};
+
 const unstakeErc20TokensToStargate = (
   unstakeTokenAddress,
   unstakeAmount,
@@ -578,7 +587,6 @@ const unstakeErc20TokensToStargate = (
     stargateStakeABI,
     CHAIN_CONFIG[networkId].stargateRouterAddress,
   );
-
   return stakeInStargate.methods
     .instantRedeemLocal(
       CHAIN_CONFIG[networkId].stargatePoolIds[unstakeTokenAddress],
@@ -966,33 +974,39 @@ export const getTransaction = async ({
       };
       return { approvalTransaction, transaction };
     case 17:
-      approvalTransaction = {
-        to: Web3.utils.toChecksumAddress(tokenData),
-        data: approveDepositWithEncodeABI(
-          tokenData,
-          CHAIN_CONFIG[networkId].stargateRouterAddress,
-          stakeAmount,
-          web3Call,
-        ),
-        value: "0",
-      };
-      transaction = {
-        to: Web3.utils.toChecksumAddress(
-          CHAIN_CONFIG[networkId].stargateRouterAddress,
-        ),
-        data: stakeErc20TokensToStargate(
-          tokenData,
-          stakeAmount,
-          gnosisAddress,
-          web3Call,
-          networkId,
-        ),
-        value: "0",
-      };
+      if (tokenData === CHAIN_CONFIG[networkId].nativeToken) {
+        transaction = {
+          to: CHAIN_CONFIG[networkId].stargatNativeRouterAddress,
+          data: stakeNativeTokensToStargate(web3Call, networkId),
+          value: stakeAmount,
+        };
+      } else {
+        approvalTransaction = {
+          to: tokenData,
+          data: approveDepositWithEncodeABI(
+            tokenData,
+            CHAIN_CONFIG[networkId].stargateRouterAddress,
+            stakeAmount,
+            web3Call,
+          ),
+          value: "0",
+        };
+        transaction = {
+          to: CHAIN_CONFIG[networkId].stargateRouterAddress,
+          data: stakeErc20TokensToStargate(
+            tokenData,
+            stakeAmount,
+            gnosisAddress,
+            web3Call,
+            networkId,
+          ),
+          value: "0",
+        };
+      }
       return { transaction, approvalTransaction };
     case 18:
       approvalTransaction = {
-        to: Web3.utils.toChecksumAddress(tokenData),
+        to: tokenData,
         data: approveDepositWithEncodeABI(
           tokenData,
           CHAIN_CONFIG[networkId].stargateRouterAddress,
@@ -1002,9 +1016,7 @@ export const getTransaction = async ({
         value: "0",
       };
       transaction = {
-        to: Web3.utils.toChecksumAddress(
-          CHAIN_CONFIG[networkId].stargateRouterAddress,
-        ),
+        to: CHAIN_CONFIG[networkId].stargateRouterAddress,
         data: unstakeErc20TokensToStargate(
           tokenData,
           unstakeAmount,

@@ -578,14 +578,18 @@ export const getProposalValidationSchema = ({
         "Enter an amount less or equal to treasury balance",
         async (value, context) => {
           const { actionCommand, stargateStakeToken } = context.parent;
-
+          let balance;
+          let decimals;
           if (actionCommand === 17) {
             try {
-              const balance = await getBalance(
-                stargateStakeToken,
-                gnosisAddress,
-              );
-              const decimals = await getDecimals(stargateStakeToken);
+              if (CHAIN_CONFIG[networkId].nativeToken === stargateStakeToken) {
+                const publicClient = getPublicClient(networkId);
+                balance = await publicClient.getBalance(gnosisAddress);
+                decimals = 18;
+              } else {
+                balance = await getBalance(stargateStakeToken, gnosisAddress);
+                decimals = await getDecimals(stargateStakeToken);
+              }
               if (
                 Number(value) <=
                   Number(convertFromWeiGovernance(balance, decimals)) &&
