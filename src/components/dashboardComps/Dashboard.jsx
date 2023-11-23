@@ -24,7 +24,7 @@ import NoTokens from "./NoTokens";
 import TreasuryItem from "./TreasuryItem";
 import useAppContractMethods from "hooks/useAppContractMethods";
 
-const Dashboard = ({ daoAddress }) => {
+const Dashboard = ({ daoAddress, routeNeteworkId }) => {
   const [assetType, setAssetType] = useState("erc20");
   const [tokenDetails, setTokenDetails] = useState({
     treasuryAmount: 0,
@@ -270,6 +270,13 @@ const Dashboard = ({ daoAddress }) => {
           <ComponentHeader
             title={clubData?.name}
             subtext="Astronauts, welcome to your station"
+            showButton
+            buttonText="Join station"
+            onClickHandler={() =>
+              window.open(
+                `${window.location.origin}/join/${daoAddress}/${routeNeteworkId}`,
+              )
+            }
           />
         </div>
 
