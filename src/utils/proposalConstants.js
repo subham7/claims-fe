@@ -108,7 +108,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
     {
       key: 13,
       value: "Update price per share",
-      text: "Update Price per share",
+      text: "Update price per share",
       section: "Deposits",
       availableOnNetworkIds: [
         "0x89",

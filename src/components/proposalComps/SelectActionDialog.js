@@ -7,7 +7,7 @@ import Router from "next/router";
 
 const useStyles = makeStyles({
   modalStyle: {
-    width: "95vw",
+    maxWidth: "100vw",
     backgroundColor: "#151515",
   },
   dialogBox: {
@@ -44,6 +44,8 @@ const useStyles = makeStyles({
     padding: "1rem",
     background: "#151515",
     cursor: "pointer",
+    width: "300px",
+    gap: "1rem",
   },
 });
 
@@ -85,12 +87,11 @@ const SelectActionDialog = ({ open, onClose, daoAddress, networkId }) => {
   return (
     <>
       <Dialog
+        maxWidth="100vw"
         open={open}
         onClose={onClose}
         scroll="body"
-        PaperProps={{ classes: { root: classes.modalStyle } }}
-        fullWidth
-        maxWidth="lg">
+        PaperProps={{ classes: { root: classes.modalStyle } }}>
         <DialogContent
           sx={{
             overflow: "hidden",
@@ -104,7 +105,7 @@ const SelectActionDialog = ({ open, onClose, daoAddress, networkId }) => {
             <IoMdClose onClick={onClose} className={classes.icon} size={24} />
           </div>
           <div className={classes.list}>
-            <Typography variant="h5">Survey</Typography>
+            <Typography variant="h6">Survey</Typography>
             <div className={classes.section}>
               <div
                 onClick={() => onProposalClick("survey")}
@@ -113,19 +114,19 @@ const SelectActionDialog = ({ open, onClose, daoAddress, networkId }) => {
                 Create a Survey
               </div>
             </div>
-            <Typography variant="h5">Manage Assets</Typography>
+            <Typography variant="h6">Manage Assets</Typography>
             <div className={classes.section}>
               {proposalMenuItems("Manage Assets")}
             </div>
-            <Typography variant="h5">DeFi Pools</Typography>
+            <Typography variant="h6">DeFi Pools</Typography>
             <div className={classes.section}>
               {proposalMenuItems("DeFi Pools")}
             </div>
-            <Typography variant="h5">Deposits</Typography>
+            <Typography variant="h6">Deposits</Typography>
             <div className={classes.section}>
               {proposalMenuItems("Deposits")}
             </div>
-            <Typography variant="h5">Administrative</Typography>
+            <Typography variant="h6">Administrative</Typography>
             <div className={classes.section}>
               {proposalMenuItems("Administrative")}
             </div>
