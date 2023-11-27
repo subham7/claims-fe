@@ -62,7 +62,11 @@ const SelectActionDialog = ({ open, onClose, daoAddress, networkId }) => {
     return PROPOSAL_MENU_ITEMS().filter((item) => item.section === filterVal)
       .length > 0 ? (
       PROPOSAL_MENU_ITEMS()
-        .filter((item) => item.section === filterVal)
+        .filter(
+          (item) =>
+            item.section === filterVal &&
+            item.availableOnNetworkIds.includes(networkId),
+        )
         .map((item, index) => {
           return (
             <div
