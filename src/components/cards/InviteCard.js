@@ -109,7 +109,11 @@ const InviteCard = ({ setIsUserWhitelisted }) => {
     <div className={classes.card}>
       <div className={classes.imgDiv}>
         <img
-          src="assets/icons/astronaut_laptop.png"
+          src={
+            showInviteCode
+              ? "assets/icons/astronaut_station.png"
+              : "assets/icons/astronaut_laptop.png"
+          }
           className={classes.img}
           alt="whitelist img"
         />
