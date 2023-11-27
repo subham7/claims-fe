@@ -5,7 +5,7 @@ import {
   Link,
   Skeleton,
   Stack,
-  Switch,
+  // Switch,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -20,7 +20,7 @@ import { shortAddress } from "utils/helper";
 import DepositDocument from "./modals/DepositDocument";
 import { useNetwork } from "wagmi";
 import { CHAIN_CONFIG } from "utils/constants";
-import UploadW8Ben from "./modals/UploadW8Ben";
+// import UploadW8Ben from "./modals/UploadW8Ben";
 import { createStation, fetchClubByDaoAddress } from "api/club";
 import { editDepositConfig } from "api/deposit";
 import BackdropLoader from "@components/common/BackdropLoader";
@@ -478,7 +478,7 @@ const AdditionalSettings = ({
         <Divider />
       </Stack>
 
-      <Stack spacing={1}>
+      {/* <Stack spacing={1}>
         <Grid
           container
           py={2}
@@ -573,7 +573,7 @@ const AdditionalSettings = ({
             </Grid>
           </Grid>
         </Grid>
-      </Stack>
+      </Stack> */}
 
       <BackdropLoader isOpen={loading} />
 
