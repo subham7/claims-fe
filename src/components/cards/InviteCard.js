@@ -6,6 +6,8 @@ import React, { useState } from "react";
 import { useAccount } from "wagmi";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { AiFillInfoCircle } from "react-icons/ai";
+import Image from "next/image";
+import { BsTwitter } from "react-icons/bs";
 
 const useStyles = makeStyles({
   card: {
@@ -76,6 +78,20 @@ const useStyles = makeStyles({
     marginTop: "12px",
     fontSize: "10px",
   },
+  share: {
+    padding: "8px",
+    borderRadius: "12px",
+    background: "black",
+    display: "flex",
+    alignItems: "center",
+    maxWidth: "200px",
+    marginBottom: "12px",
+    gap: "8px",
+  },
+  lensImg: {
+    borderRadius: "4px",
+    background: "#8B5BF9",
+  },
 });
 
 const InviteCard = ({ setIsUserWhitelisted }) => {
@@ -84,7 +100,7 @@ const InviteCard = ({ setIsUserWhitelisted }) => {
   const { address } = useAccount();
   const [loading, setLoading] = useState(false);
   const [showInviteCode, setShowInviteCode] = useState(false);
-  const [newInviteCode, setNewInviteCode] = useState("");
+  const [newInviteCode, setNewInviteCode] = useState("NO CODE");
 
   const onClick = async () => {
     try {
@@ -160,11 +176,37 @@ const InviteCard = ({ setIsUserWhitelisted }) => {
             />
           )}
           {showInviteCode ? (
-            <div className={classes.warningContainer}>
-              <AiFillInfoCircle size={20} />
-              <Typography>
-                This code will never be shown to you again
-              </Typography>
+            <div>
+              <div className={classes.warningContainer}>
+                <AiFillInfoCircle size={20} />
+                <Typography>
+                  This code will never be shown to you again
+                </Typography>
+              </div>
+              <div className={classes.share}>
+                <BsTwitter size={18} />
+                <a
+                  href={`https://lenster.xyz/?text="Hey"`}
+                  target="_blank"
+                  rel="noreferrer">
+                  Tweet on X
+                </a>
+              </div>
+              <div className={classes.share}>
+                <Image
+                  className={classes.lensImg}
+                  src="/assets/icons/lenster-comp.jpeg"
+                  alt="Share on Lenster"
+                  height={20}
+                  width={20}
+                />
+                <a
+                  href={`https://lenster.xyz/?text="Hey"`}
+                  target="_blank"
+                  rel="noreferrer">
+                  Post on Lenster
+                </a>
+              </div>
             </div>
           ) : (
             <Typography
