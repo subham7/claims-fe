@@ -1,3 +1,15 @@
+import sendIcon from "../../public/assets/icons/send_icon.svg";
+import nftIcon from "../../public/assets/icons/NFT.svg";
+import piggyIcon from "../../public/assets/icons/piggy_icon.svg";
+import whitelistIcon from "../../public/assets/icons/whitelist_icon.svg";
+import lensIcon from "../../public/assets/icons/Lens_icon.svg";
+import rewardIcon from "../../public/assets/icons/reward_icon.svg";
+import walletIcon from "../../public/assets/icons/Wallet_icon.svg";
+import govIcon from "../../public/assets/icons/gov_icon.svg";
+import adduserIcon from "../../public/assets/icons/adduser_icon.svg";
+import removeUserIcon from "../../public/assets/icons/removeuser_icon.svg";
+import moneyIcon from "../../public/assets/icons/money_icon.svg";
+
 export const proposalActionCommands = {
   0: "Reward shares to members",
   1: "Mint club token",
@@ -25,8 +37,9 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
   return [
     {
       key: 0,
+      icon: rewardIcon,
       value: "Reward shares to members",
-      text: "Reward shares to members (Pro-rata)",
+      text: "Reward shares to member(s)",
       section: "Administrative",
       availableOnNetworkIds: [
         "0x89",
@@ -45,6 +58,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
     },
     {
       key: 1,
+      icon: walletIcon,
       value: "Mint club token",
       text: "Mint station tokens",
       section: "Administrative",
@@ -65,6 +79,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
     },
     {
       key: 2,
+      icon: govIcon,
       value: "Modify governance",
       text: "Modify governance",
       section: "Administrative",
@@ -86,6 +101,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
     },
     {
       key: 3,
+      icon: piggyIcon,
       value: "Update total raise amount",
       text: "Update total raise amount",
       section: "Deposits",
@@ -107,6 +123,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
     },
     {
       key: 13,
+      icon: moneyIcon,
       value: "Update price per share",
       text: "Update price per share",
       section: "Deposits",
@@ -127,6 +144,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
     },
     {
       key: 4,
+      icon: sendIcon,
       value: "Send assets to an address",
       text: "Send assets to an address",
       section: "Manage Assets",
@@ -148,6 +166,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
     {
       key: 5,
       value: "Send nft to an address",
+      icon: nftIcon,
       text: "Send NFT",
       section: "Manage Assets",
       availableOnNetworkIds: [
@@ -187,6 +206,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
     // },
     {
       key: 6,
+      icon: adduserIcon,
       value: "Add multisig signer",
       text: "Add multisig signer",
       section: "Administrative",
@@ -207,6 +227,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
     },
     {
       key: 7,
+      icon: removeUserIcon,
       value: "Remove multisig signer",
       text: "Remove multisig signer",
       section: "Administrative",
@@ -227,8 +248,9 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
     },
     {
       key: 10,
+      icon: whitelistIcon,
       value: "Whitelist addresses",
-      text: "Whitelist addresses",
+      text: "Whitelist custom addresses",
       section: "Deposits",
       availableOnNetworkIds: [
         "0x89",
@@ -247,6 +269,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
     },
     {
       key: 11,
+      icon: lensIcon,
       value: "Whitelist Lens profile followers",
       text: "Whitelist Lens profile followers",
       section: "Deposits",
@@ -267,8 +290,9 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
     },
     {
       key: 12,
+      icon: lensIcon,
       value: "Whitelist addresses who commented on Lens post",
-      text: "Whitelist addresses who commented on Lens post",
+      text: "Whitelist comments on Lens post",
       section: "Deposits",
       availableOnNetworkIds: [
         "0x89",
@@ -287,8 +311,9 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
     },
     {
       key: 16,
+      icon: lensIcon,
       value: "Whitelist addresses who mirrored Lens post",
-      text: "Whitelist addresses who mirrored Lens post",
+      text: "Whitelist Lens post mirrors",
       section: "Deposits",
       availableOnNetworkIds: [
         "0x89",
