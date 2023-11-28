@@ -186,7 +186,7 @@ const InviteCard = ({ setIsUserWhitelisted }) => {
               <div className={classes.share}>
                 <BsTwitter size={18} />
                 <a
-                  href={`https://lenster.xyz/?text="Hey"`}
+                  href={`https://twitter.com/intent/tweet?text=It's here!🛸%0AUse my invite code ${newInviteCode} to get access to @stationxnetwork`}
                   target="_blank"
                   rel="noreferrer">
                   Tweet on X
@@ -201,7 +201,7 @@ const InviteCard = ({ setIsUserWhitelisted }) => {
                   width={20}
                 />
                 <a
-                  href={`https://lenster.xyz/?text="Hey"`}
+                  href={`https://lenster.xyz/?text=It's here!🛸%0AUse my invite code ${newInviteCode} to get access to @stationxnetwork`}
                   target="_blank"
                   rel="noreferrer">
                   Post on Lenster
