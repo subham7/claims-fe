@@ -4,6 +4,7 @@ import { makeStyles } from "@mui/styles";
 import { IoMdClose } from "react-icons/io";
 import { PROPOSAL_MENU_ITEMS } from "utils/proposalConstants";
 import Router from "next/router";
+import Image from "next/image";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -13,7 +14,7 @@ const useStyles = makeStyles({
   dialogBox: {
     color: "#FFFFFF",
     opacity: 1,
-    fontStyle: "normal",
+    fontFamily: "inherit !important",
   },
   header: {
     display: "flex",
@@ -46,6 +47,16 @@ const useStyles = makeStyles({
     cursor: "pointer",
     width: "300px",
     gap: "1rem",
+    border: "1px solid #151515",
+    "&:hover": {
+      border: "1px solid #dcdcdc40",
+      borderRadius: "10px",
+      opacity: 1,
+    },
+  },
+  title: {
+    fontWeight: "bold !important",
+    fontSize: "16px !important",
   },
 });
 
@@ -75,7 +86,8 @@ const SelectActionDialog = ({ open, onClose, daoAddress, networkId }) => {
               onClick={() => onProposalClick(item.key)}
               className={classes.proposal}
               key={item.text}>
-              {item.text}
+              <Image src={item.icon} height={20} width={20} alt={item.text} />
+              <Typography variant="inherit">{item.text}</Typography>
             </div>
           );
         })
@@ -99,34 +111,50 @@ const SelectActionDialog = ({ open, onClose, daoAddress, networkId }) => {
             padding: "2rem",
           }}>
           <div className={classes.header}>
-            <Typography variant="h4" className={classes.dialogBox}>
+            <Typography variant="h5" className={classes.dialogBox}>
               Select Action
             </Typography>
             <IoMdClose onClick={onClose} className={classes.icon} size={24} />
           </div>
           <div className={classes.list}>
-            <Typography variant="h6">Survey</Typography>
+            <Typography variant="inherit" className={classes.title}>
+              Survey
+            </Typography>
             <div className={classes.section}>
               <div
                 onClick={() => onProposalClick("survey")}
                 className={classes.proposal}
                 key="survey">
+                <Image
+                  src="/assets/icons/Add_icon.svg"
+                  height={20}
+                  width={20}
+                  alt="survey"
+                />
                 Create a Survey
               </div>
             </div>
-            <Typography variant="h6">Manage Assets</Typography>
+            <Typography variant="inherit" className={classes.title}>
+              Manage Assets
+            </Typography>
             <div className={classes.section}>
               {proposalMenuItems("Manage Assets")}
             </div>
-            <Typography variant="h6">DeFi Pools</Typography>
+            <Typography variant="inherit" className={classes.title}>
+              DeFi Pools
+            </Typography>
             <div className={classes.section}>
               {proposalMenuItems("DeFi Pools")}
             </div>
-            <Typography variant="h6">Deposits</Typography>
+            <Typography variant="inherit" className={classes.title}>
+              Deposits
+            </Typography>
             <div className={classes.section}>
               {proposalMenuItems("Deposits")}
             </div>
-            <Typography variant="h6">Administrative</Typography>
+            <Typography variant="inherit" className={classes.title}>
+              Administrative
+            </Typography>
             <div className={classes.section}>
               {proposalMenuItems("Administrative")}
             </div>
