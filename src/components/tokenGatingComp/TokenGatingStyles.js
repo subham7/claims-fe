@@ -12,12 +12,10 @@ export const TokenGatingStyle = makeStyles({
   },
 
   heading: {
-    display: "flex",
-    color: "white",
-    alignItems: "center",
-    width: "100%",
-    justifyContent: "space-between",
-    marginBottom: "20px",
+    fontSize: "24px !important",
+    marginBottom: "30px  !important",
+    fontFamily: "inherit  !important",
+    fontWeight: "500  !important",
   },
 
   title: {
