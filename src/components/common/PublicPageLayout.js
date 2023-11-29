@@ -30,9 +30,12 @@ const PublicPageLayout = ({
       <div className={classes.leftContainer}>
         <div>
           <Header {...headerProps} />
-          {inputComponents}
+          <div className={classes.mainInputComponents}>{inputComponents}</div>
         </div>
-        <SocialButtons data={socialData} />
+
+        <div className={classes.mainSocials}>
+          <SocialButtons data={socialData} />
+        </div>
       </div>
 
       <div className={classes.rightContainer}>
@@ -57,7 +60,7 @@ const PublicPageLayout = ({
                 <Image
                   src={imgUrl}
                   fill
-                  alt="Banner Image"
+                  alt="NFT Image"
                   className={classes.nftImage}
                 />
               )}
@@ -84,6 +87,10 @@ const PublicPageLayout = ({
           )
         ) : null}
 
+        <div className={classes.secondaryInputComponents}>
+          {inputComponents}
+        </div>
+
         {bio && <About bio={bio} />}
 
         {clubData && tokenDetails && <Eligibility {...eligibilityProps} />}
@@ -93,6 +100,10 @@ const PublicPageLayout = ({
           activityDetails={members}
           tokenDetails={tokenDetails}
         />
+
+        <div className={classes.secondarySocials}>
+          <SocialButtons data={socialData} />
+        </div>
       </div>
 
       <BackdropLoader isOpen={loading} />
