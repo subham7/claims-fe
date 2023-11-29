@@ -111,7 +111,7 @@ const InviteCard = ({ setIsUserWhitelisted }) => {
       });
       if (response) {
         setShowInviteCode(true);
-        setNewInviteCode(response.referralCode);
+        setNewInviteCode(response);
       }
     } catch (e) {
       console.error("Error whitelisting user", e);
