@@ -4,16 +4,17 @@ import { makeStyles } from "@mui/styles";
 import { IoMdClose } from "react-icons/io";
 import { PROPOSAL_MENU_ITEMS } from "utils/proposalConstants";
 import Router from "next/router";
+import Image from "next/image";
 
 const useStyles = makeStyles({
   modalStyle: {
-    width: "95vw",
+    maxWidth: "100vw",
     backgroundColor: "#151515",
   },
   dialogBox: {
     color: "#FFFFFF",
     opacity: 1,
-    fontStyle: "normal",
+    fontFamily: "inherit !important",
   },
   header: {
     display: "flex",
@@ -44,6 +45,18 @@ const useStyles = makeStyles({
     padding: "1rem",
     background: "#151515",
     cursor: "pointer",
+    width: "300px",
+    gap: "1rem",
+    border: "1px solid #151515",
+    "&:hover": {
+      border: "1px solid #dcdcdc40",
+      borderRadius: "10px",
+      opacity: 1,
+    },
+  },
+  title: {
+    fontWeight: "bold !important",
+    fontSize: "16px !important",
   },
 });
 
@@ -62,14 +75,19 @@ const SelectActionDialog = ({ open, onClose, daoAddress, networkId }) => {
     return PROPOSAL_MENU_ITEMS().filter((item) => item.section === filterVal)
       .length > 0 ? (
       PROPOSAL_MENU_ITEMS()
-        .filter((item) => item.section === filterVal)
+        .filter(
+          (item) =>
+            item.section === filterVal &&
+            item.availableOnNetworkIds.includes(networkId),
+        )
         .map((item, index) => {
           return (
             <div
               onClick={() => onProposalClick(item.key)}
               className={classes.proposal}
               key={item.text}>
-              {item.text}
+              <Image src={item.icon} height={20} width={20} alt={item.text} />
+              <Typography variant="inherit">{item.text}</Typography>
             </div>
           );
         })
@@ -81,12 +99,11 @@ const SelectActionDialog = ({ open, onClose, daoAddress, networkId }) => {
   return (
     <>
       <Dialog
+        maxWidth="100vw"
         open={open}
         onClose={onClose}
         scroll="body"
-        PaperProps={{ classes: { root: classes.modalStyle } }}
-        fullWidth
-        maxWidth="lg">
+        PaperProps={{ classes: { root: classes.modalStyle } }}>
         <DialogContent
           sx={{
             overflow: "hidden",
@@ -94,34 +111,50 @@ const SelectActionDialog = ({ open, onClose, daoAddress, networkId }) => {
             padding: "2rem",
           }}>
           <div className={classes.header}>
-            <Typography variant="h4" className={classes.dialogBox}>
+            <Typography variant="h5" className={classes.dialogBox}>
               Select Action
             </Typography>
             <IoMdClose onClick={onClose} className={classes.icon} size={24} />
           </div>
           <div className={classes.list}>
-            <Typography variant="h5">Survey</Typography>
+            <Typography variant="inherit" className={classes.title}>
+              Survey
+            </Typography>
             <div className={classes.section}>
               <div
                 onClick={() => onProposalClick("survey")}
                 className={classes.proposal}
                 key="survey">
+                <Image
+                  src="/assets/icons/Add_icon.svg"
+                  height={20}
+                  width={20}
+                  alt="survey"
+                />
                 Create a Survey
               </div>
             </div>
-            <Typography variant="h5">Manage Assets</Typography>
+            <Typography variant="inherit" className={classes.title}>
+              Manage Assets
+            </Typography>
             <div className={classes.section}>
               {proposalMenuItems("Manage Assets")}
             </div>
-            <Typography variant="h5">DeFi Pools</Typography>
+            <Typography variant="inherit" className={classes.title}>
+              DeFi Pools
+            </Typography>
             <div className={classes.section}>
               {proposalMenuItems("DeFi Pools")}
             </div>
-            <Typography variant="h5">Deposits</Typography>
+            <Typography variant="inherit" className={classes.title}>
+              Deposits
+            </Typography>
             <div className={classes.section}>
               {proposalMenuItems("Deposits")}
             </div>
-            <Typography variant="h5">Administrative</Typography>
+            <Typography variant="inherit" className={classes.title}>
+              Administrative
+            </Typography>
             <div className={classes.section}>
               {proposalMenuItems("Administrative")}
             </div>

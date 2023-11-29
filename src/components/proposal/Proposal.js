@@ -297,7 +297,7 @@ const Proposal = ({ daoAddress }) => {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item md={4}>
+        <Grid item md={3}>
           <div className={classes.sticky}>
             <DocsCard
               heading="Signator(s)"
