@@ -87,6 +87,7 @@ const PublicPageLayout = ({
           )
         ) : null}
 
+        {/* For mobile screen */}
         <div className={classes.secondaryInputComponents}>
           {inputComponents}
         </div>
@@ -101,6 +102,7 @@ const PublicPageLayout = ({
           tokenDetails={tokenDetails}
         />
 
+        {/* For mobile screen */}
         <div className={classes.secondarySocials}>
           <SocialButtons data={socialData} />
         </div>
