@@ -1,57 +1,28 @@
-import {
-  FormControl,
-  FormHelperText,
-  Grid,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { FormHelperText, Grid, TextField, Typography } from "@mui/material";
 import React from "react";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import QuillEditor from "../quillEditor";
 import dayjs from "dayjs";
+import { makeStyles, useTheme } from "@mui/styles";
+
+const useStyles = makeStyles((theme) => ({
+  editor: {
+    width: "100%",
+    height: "auto",
+    backgroundColor: theme.palette.background.default,
+    fontSize: "18px",
+    margin: "0.5rem 0",
+  },
+}));
 
 const CommonProposalForm = ({ proposal }) => {
+  const theme = useTheme();
+  const classes = useStyles(theme);
+
   return (
     <>
-      {/* type of proposal and end time */}
-      <Grid container spacing={3} ml={0} width="100%">
-        <Grid item md={6} sx={{ paddingLeft: "0 !important" }}>
-          <Typography variant="proposalBody">Type of Proposal</Typography>
-          <FormControl sx={{ width: "100%", marginTop: "0.5rem" }}>
-            <Select
-              value={proposal.values.typeOfProposal}
-              onChange={proposal.handleChange}
-              inputProps={{ "aria-label": "Without label" }}
-              name="typeOfProposal"
-              id="typeOfProposal">
-              <MenuItem value={"survey"}>Survey</MenuItem>
-              <MenuItem value={"action"}>Action</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item md={6}>
-          <Typography variant="proposalBody">Proposal deadline</Typography>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateTimePicker
-              fullWidth
-              sx={{
-                width: "100%",
-                marginTop: "0.5rem",
-              }}
-              value={proposal.values.proposalDeadline}
-              minDateTime={dayjs(Date.now())}
-              onChange={(value) => {
-                proposal.setFieldValue("proposalDeadline", value);
-              }}
-            />
-          </LocalizationProvider>
-        </Grid>
-      </Grid>
-
       {/* proposal title */}
       <Grid
         container
@@ -59,7 +30,9 @@ const CommonProposalForm = ({ proposal }) => {
         ml={3}
         mt={2}
         sx={{ marginLeft: "0 !important" }}>
-        <Typography variant="proposalBody">Proposal Title*</Typography>
+        <Typography mb={1} variant="proposalBody">
+          Proposal Title*
+        </Typography>
 
         <TextField
           variant="outlined"
@@ -78,6 +51,25 @@ const CommonProposalForm = ({ proposal }) => {
         />
       </Grid>
 
+      {/* proposal end time */}
+      <Grid item md={6} mt={2}>
+        <Typography variant="proposalBody">Proposal deadline</Typography>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DateTimePicker
+            fullWidth
+            sx={{
+              width: "100%",
+              marginTop: "0.5rem",
+            }}
+            value={proposal.values.proposalDeadline}
+            minDateTime={dayjs(Date.now())}
+            onChange={(value) => {
+              proposal.setFieldValue("proposalDeadline", value);
+            }}
+          />
+        </LocalizationProvider>
+      </Grid>
+
       {/* proposal description */}
       <Grid
         container
@@ -92,13 +84,7 @@ const CommonProposalForm = ({ proposal }) => {
           multiline
           rows={10}
           placeholder="Add full description here"
-          style={{
-            width: "100%",
-            height: "auto",
-            backgroundColor: "#0f0f0f",
-            fontSize: "18px",
-            margin: "0.5rem 0",
-          }}
+          className={classes.editor}
           name="proposalDescription"
           id="proposalDescription"
           value={proposal.values.proposalDescription}
@@ -120,6 +106,27 @@ const CommonProposalForm = ({ proposal }) => {
               Description is required
             </FormHelperText>
           )}
+      </Grid>
+      <Grid
+        container
+        direction={"column"}
+        ml={3}
+        mt={2}
+        sx={{ marginLeft: "0 !important" }}>
+        <Typography variant="proposalBody">
+          Custom Block Number (optional)
+        </Typography>
+
+        <TextField
+          variant="outlined"
+          placeholder="Add a block number"
+          name="blockNum"
+          id="blockNum"
+          value={proposal.values.blockNum}
+          onChange={proposal.handleChange}
+          error={proposal.touched.blockNum && Boolean(proposal.errors.blockNum)}
+          helperText={proposal.touched.blockNum && proposal.errors.blockNum}
+        />
       </Grid>
     </>
   );

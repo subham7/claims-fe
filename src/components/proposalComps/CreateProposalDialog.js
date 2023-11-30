@@ -1,30 +1,37 @@
-import {
-  CircularProgress,
-  Dialog,
-  DialogContent,
-  Grid,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { CircularProgress, Grid, Stack, Typography } from "@mui/material";
 import { Button } from "@components/ui";
 import { makeStyles } from "@mui/styles";
 import { useFormik } from "formik";
-import React, { useState } from "react";
-
+import React, { useCallback, useEffect, useState } from "react";
 import dayjs from "dayjs";
 import ProposalActionForm from "./ProposalActionForm";
 import { createProposal } from "../../api/proposal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useAccount, useNetwork } from "wagmi";
 import { getProposalCommands } from "utils/proposalData";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { getProposalValidationSchema } from "@components/createClubComps/ValidationSchemas";
-import CustomAlert from "@components/common/CustomAlert";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import CommonProposalForm from "./CommonProposalForm";
 import SurveyProposalForm from "./SurveyProposalForm";
+import { getPublicClient } from "utils/viemConfig";
+import { handleSignMessage } from "utils/helper";
+import { setAlertData } from "redux/reducers/alert";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import { useRouter } from "next/router";
+import { proposalActionCommands } from "utils/proposalConstants";
+import { getNFTsByDaoAddress } from "api/assets";
+import { getUserTokenData } from "utils/helper";
+import { getTokensList } from "api/token";
+import { addNftsOwnedByDao } from "redux/reducers/club";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const useStyles = makeStyles({
+  main: {
+    display: "flex",
+    paddingLeft: "2rem",
+    paddingRight: "2rem",
+  },
   modalStyle: {
     width: "792px",
     backgroundColor: "#151515",
@@ -37,23 +44,26 @@ const useStyles = makeStyles({
   },
   textField: {
     width: "100%",
-    // margin: "16px 0 25px 0",
     fontSize: "18px",
-
     marginTop: "0.5rem",
+  },
+  leftDiv: {
+    width: "50%",
+  },
+  rightDiv: {
+    width: "50%",
+    height: "80vh",
+    overflowY: "auto",
   },
 });
 
-const CreateProposalDialog = ({
-  open,
-  setOpen,
-  onClose,
-  tokenData,
-  nftData,
-  daoAddress,
-  fetchProposalList,
-}) => {
+const CreateProposalDialog = ({ daoAddress }) => {
   const classes = useStyles();
+  const router = useRouter();
+  const [nftData, setNftData] = useState([]);
+  const [tokenData, setTokenData] = useState([]);
+
+  let { executionId } = router.query;
 
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
@@ -66,46 +76,85 @@ const CreateProposalDialog = ({
   const clubData = useSelector((state) => {
     return state.club.clubData;
   });
+  const dispatch = useDispatch();
 
-  const { getERC20TotalSupply, getNftOwnersCount } = useAppContractMethods();
+  const { getERC20TotalSupply, getNftOwnersCount } = useAppContractMethods({
+    daoAddress,
+  });
 
   const [loaderOpen, setLoaderOpen] = useState(false);
-  const [openSnackBar, setOpenSnackBar] = useState(false);
-  const [failed, setFailed] = useState(false);
-  const [message, setMessage] = useState("");
-
-  const showMessageHandler = () => {
-    setOpenSnackBar(true);
-    setTimeout(() => {
-      setOpenSnackBar(false);
-    }, 4000);
-  };
-
-  const handleSnackBarClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnackBar(false);
-    setLoaderOpen(false);
-  };
 
   const { getBalance, getDecimals } = useCommonContractMethods();
 
   const factoryData = useSelector((state) => {
     return state.club.factoryData;
   });
+
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
+
+  const isGovernanceERC20 = useSelector((state) => {
+    return state.club.erc20ClubDetails.isGovernanceActive;
+  });
+
+  const isGovernanceERC721 = useSelector((state) => {
+    return state.club.erc721ClubDetails.isGovernanceActive;
+  });
+
+  const isGovernanceActive =
+    tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
+
+  const fetchLatestBlockNumber = async () => {
+    const publicClient = getPublicClient(networkId);
+    const block = Number(await publicClient.getBlockNumber());
+
+    return block;
+  };
+
+  const fetchTokens = useCallback(async () => {
+    if (daoAddress && gnosisAddress && networkId) {
+      const tokensList = await getTokensList(
+        CHAIN_CONFIG[networkId].covalentNetworkName,
+        gnosisAddress,
+      );
+      const data = await getUserTokenData(
+        tokensList?.data?.items,
+        networkId,
+        true,
+      );
+
+      setTokenData(data?.filter((token) => token.symbol !== null));
+    }
+  }, [daoAddress, networkId, gnosisAddress]);
+
+  const fetchNfts = useCallback(async () => {
+    try {
+      const nftsData = await getNFTsByDaoAddress(gnosisAddress, networkId);
+      setNftData(nftsData?.data);
+      dispatch(addNftsOwnedByDao(nftsData?.data));
+    } catch (error) {
+      console.log(error);
+    }
+  }, [networkId, dispatch, gnosisAddress]);
+
+  useEffect(() => {
+    if (daoAddress) {
+      fetchTokens();
+      fetchNfts();
+    }
+  }, [daoAddress, fetchNfts, fetchTokens]);
+
   const proposal = useFormik({
     initialValues: {
       tokenType: tokenType,
-      typeOfProposal: "action",
+      typeOfProposal: executionId === "survey" ? "survey" : "action",
       proposalDeadline: dayjs(Date.now() + 3600 * 1000 * 24),
       proposalTitle: "",
       proposalDescription: "",
+      blockNum: "",
       optionList: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
-      actionCommand: "",
+      actionCommand: executionId === "survey" ? "" : Number(executionId),
       airdropToken: tokenData ? tokenData[0]?.address : "",
       amountToAirdrop: 0,
       carryFee: 0,
@@ -169,11 +218,10 @@ const CreateProposalDialog = ({
           usdcTokenDecimal: 6,
           usdcGovernanceTokenDecimal: 18,
         };
-
+        const blockNum = await fetchLatestBlockNumber();
         const payload = {
           clubId: daoAddress,
           name: values.proposalTitle,
-          description: values.proposalDescription,
           createdBy: walletAddress,
           votingDuration: dayjs(values.proposalDeadline).unix(),
           votingOptions: values.optionList,
@@ -181,102 +229,113 @@ const CreateProposalDialog = ({
           type: values.typeOfProposal,
           tokenType: clubData.tokenType,
           daoAddress: daoAddress,
+          block:
+            values.blockNum !== undefined &&
+            values.blockNum !== null &&
+            values.blockNum.length > 0
+              ? values.blockNum
+              : Number(blockNum),
+          // quorum: Number(clubData.quorum),
+          // threshold: Number(clubData.threshold),
+          networkId: networkId,
         };
-
-        const createRequest = createProposal(payload, networkId);
+        const { signature } = await handleSignMessage(
+          walletAddress,
+          JSON.stringify(payload),
+        );
+        const createRequest = createProposal(isGovernanceActive, {
+          ...payload,
+          description: values.proposalDescription,
+          signature,
+        });
         createRequest.then(async (result) => {
           if (result.status !== 201) {
-            setOpenSnackBar(true);
-            setFailed(true);
             setLoaderOpen(false);
+            dispatch(
+              setAlertData({
+                open: true,
+                message: "Proposal creation failed!",
+                severity: "error",
+              }),
+            );
           } else {
-            fetchProposalList();
-            setOpenSnackBar(true);
-            setMessage("Proposal created successfully!");
-            setFailed(true);
-            showMessageHandler();
-            setOpen(false);
+            dispatch(
+              setAlertData({
+                open: true,
+                message: "Proposal created successfully!",
+                severity: "success",
+              }),
+            );
             setLoaderOpen(false);
+            router.back();
           }
         });
       } catch (error) {
-        setMessage(error.message ?? error);
         setLoaderOpen(false);
-        setOpenSnackBar(true);
-        setFailed(false);
-        showMessageHandler();
+        dispatch(
+          setAlertData({
+            open: true,
+            message: "Proposal creation failed!",
+            severity: "error",
+          }),
+        );
       }
     },
   });
+
   return (
-    <>
-      <Dialog
-        open={open}
-        onClose={onClose}
-        scroll="body"
-        PaperProps={{ classes: { root: classes.modalStyle } }}
-        fullWidth
-        maxWidth="lg">
-        <DialogContent
-          sx={{
-            overflow: "hidden",
-            backgroundColor: "#151515",
-            padding: "3rem",
-          }}>
-          <form onSubmit={proposal.handleSubmit} className={classes.form}>
-            <Typography className={classes.dialogBox}>
-              Create proposal
+    <div className={classes.main}>
+      <div className={classes.leftDiv}>
+        <Grid
+          container
+          spacing={1}
+          ml={-4}
+          mb={2}
+          onClick={() => router.back()}>
+          <Grid item sx={{ "&:hover": { cursor: "pointer" } }}>
+            <KeyboardBackspaceIcon className={classes.listFont} />
+          </Grid>
+          <Grid item sx={{ "&:hover": { cursor: "pointer" } }}>
+            <Typography className={classes.listFont}>
+              Back to all proposals
             </Typography>
+          </Grid>
+        </Grid>
+        <Typography variant="h5">
+          {executionId === "survey"
+            ? "Create a survey proposal"
+            : proposalActionCommands[executionId]}
+        </Typography>
+      </div>
+      <div className={classes.rightDiv}>
+        <form onSubmit={proposal.handleSubmit} className={classes.form}>
+          <CommonProposalForm proposal={proposal} />
 
-            <CommonProposalForm proposal={proposal} />
+          {/* proposal forms */}
+          {proposal.values.typeOfProposal === "survey" ? (
+            <Stack mt={1}>
+              <SurveyProposalForm proposal={proposal} />
+            </Stack>
+          ) : (
+            <Stack>
+              <ProposalActionForm
+                formik={proposal}
+                tokenData={tokenData}
+                nftData={nftData}
+              />
+            </Stack>
+          )}
 
-            {/* proposal forms */}
-            {proposal.values.typeOfProposal === "survey" ? (
-              <Stack mt={1}>
-                <SurveyProposalForm proposal={proposal} />
-              </Stack>
-            ) : (
-              <Stack>
-                <ProposalActionForm
-                  formik={proposal}
-                  tokenData={tokenData}
-                  nftData={nftData}
-                />
-              </Stack>
-            )}
-
-            {/* Submit Button */}
-            <Grid container mt={2} spacing={3}>
-              <Grid
-                item
-                xs
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  alignItems: "center",
-                }}>
-                <Button
-                  onClick={() => {
-                    proposal.resetForm();
-                    setLoaderOpen(false);
-                    onClose(event, "cancel");
-                  }}>
-                  Cancel
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button type="submit">
-                  {loaderOpen ? <CircularProgress size={25} /> : "Submit"}
-                </Button>
-              </Grid>
+          <Grid container mt={2} spacing={3}>
+            <Grid item>
+              <Button type="submit">
+                {loaderOpen ? <CircularProgress size={25} /> : "Submit"}
+              </Button>
             </Grid>
-          </form>
-        </DialogContent>
-      </Dialog>
-      {openSnackBar ? (
-        <CustomAlert alertMessage={message} severity={failed} />
-      ) : null}
-    </>
+          </Grid>
+        </form>
+      </div>
+    </div>
   );
 };
 

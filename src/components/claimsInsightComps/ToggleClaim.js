@@ -1,19 +1,21 @@
 import BackdropLoader from "@components/common/BackdropLoader";
-import CustomAlert from "@components/common/CustomAlert";
 import { FormControlLabel, Switch } from "@mui/material";
+import { useTheme } from "@mui/styles";
 import useDropsContractMethods from "hooks/useDropsContractMethods";
 import React, { useEffect, useState } from "react";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
+import { useDispatch } from "react-redux";
+import { setAlertData } from "redux/reducers/alert";
 
 const ToggleClaim = ({ claimAddress, isActive }) => {
-  const [loading, setLoading] = useState(false);
-  const [isEnabled, setIsEnabled] = useState(true);
-  const [showMessage, setShowMessage] = useState(null);
-  const [message, setMessage] = useState("");
+  const theme = useTheme();
+  const classes = ClaimsInsightStyles(theme);
+  const dispatch = useDispatch();
 
   const { toggleClaim } = useDropsContractMethods();
 
-  const classes = ClaimsInsightStyles();
+  const [loading, setLoading] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(true);
 
   const claimsToggleHandler = async (e) => {
     setLoading(true);
@@ -22,21 +24,24 @@ const ToggleClaim = ({ claimAddress, isActive }) => {
       await toggleClaim(claimAddress);
       setLoading(false);
       setIsEnabled(!isEnabled);
-      setMessage("Claims turned on");
-      showMessageHandler();
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Claims turned on",
+          severity: "success",
+        }),
+      );
     } catch (error) {
       console.log(error);
       setLoading(false);
-      setMessage("Claims turned off");
-      showMessageHandler();
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Claims turned off",
+          severity: "error",
+        }),
+      );
     }
-  };
-
-  const showMessageHandler = () => {
-    setShowMessage(true);
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 4000);
   };
 
   const fetchContractDetails = async () => {
@@ -66,10 +71,6 @@ const ToggleClaim = ({ claimAddress, isActive }) => {
           />
         }
       />
-
-      {showMessage ? (
-        <CustomAlert severity={isEnabled} alertMessage={message} />
-      ) : null}
 
       <BackdropLoader isOpen={loading} />
     </div>

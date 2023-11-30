@@ -18,8 +18,9 @@ import { getUserTokenData } from "utils/helper";
 import { CHAIN_CONFIG, ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useDropsContractMethods from "hooks/useDropsContractMethods";
-import CustomAlert from "@components/common/CustomAlert";
 import { getPublicClient } from "utils/viemConfig";
+import { useDispatch } from "react-redux";
+import { setAlertData } from "redux/reducers/alert";
 
 const useStyles = makeStyles({
   container: {
@@ -31,25 +32,23 @@ const useStyles = makeStyles({
 });
 
 const CreateClaim = () => {
-  const [activeStep, setActiveStep] = useState(0);
-  const [tokensInWallet, setTokensInWallet] = useState(null);
-  const [showError, setShowError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [finish, setFinish] = useState(false);
-  const [message, setMessage] = useState("");
-  const [loadingTokens, setLoadingTokens] = useState(false);
-  const [snapshotMerkleData, setSnapshotMerkleData] = useState([]);
-
   const classes = useStyles();
-
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const { approveDeposit, getDecimals } = useCommonContractMethods();
 
   const { claimContract } = useDropsContractMethods();
+
+  const [activeStep, setActiveStep] = useState(0);
+  const [tokensInWallet, setTokensInWallet] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [finish, setFinish] = useState(false);
+  const [loadingTokens, setLoadingTokens] = useState(false);
+  const [snapshotMerkleData, setSnapshotMerkleData] = useState([]);
 
   const handleBack = () => {
     setActiveStep((prevStep) => prevStep - 1);
@@ -211,8 +210,13 @@ const CreateClaim = () => {
             data.blockNumber > 0 &&
             data.blockNumber > Number(latestBlockNumber)
           ) {
-            showMessageHandler(setShowError);
-            setMessage("Invalid block number!");
+            dispatch(
+              setAlertData({
+                open: true,
+                message: "Invalid block number!",
+                severity: "error",
+              }),
+            );
             setLoading(false);
             return;
           }
@@ -232,8 +236,13 @@ const CreateClaim = () => {
           setSnapshotMerkleData(snapshotData);
         } catch (error) {
           console.log(error);
-          setMessage("Unable to fetch snapshot data");
-          showMessageHandler(setShowError);
+          dispatch(
+            setAlertData({
+              open: true,
+              message: "Unable to fetch snapshot data",
+              severity: "error",
+            }),
+          );
           setLoading(false);
         }
       }
@@ -357,15 +366,26 @@ const CreateClaim = () => {
 
             setLoading(false);
             setFinish(true);
-            showMessageHandler(setFinish);
+            dispatch(
+              setAlertData({
+                open: true,
+                message: "Airdrop created successfully",
+                severity: "success",
+              }),
+            );
             setTimeout(() => {
               router.push(`/claims/`);
             }, 1000);
           } catch (err) {
             console.log(err);
             setLoading(false);
-            showMessageHandler(setShowError);
-            setMessage(err.message);
+            dispatch(
+              setAlertData({
+                open: true,
+                message: err.message,
+                severity: "error",
+              }),
+            );
           }
         };
 
@@ -460,15 +480,26 @@ const CreateClaim = () => {
 
             setLoading(false);
             setFinish(true);
-            showMessageHandler(setFinish);
+            dispatch(
+              setAlertData({
+                open: true,
+                message: "Airdrop created successfully",
+                severity: "success",
+              }),
+            );
             setTimeout(() => {
               router.push(`/claims/`);
             }, 3000);
           } catch (err) {
             console.log(err);
             setLoading(false);
-            showMessageHandler(setShowError);
-            setMessage(err.message);
+            dispatch(
+              setAlertData({
+                open: true,
+                message: err.message,
+                severity: "error",
+              }),
+            );
           }
         };
         loadClaimsContractFactoryData_CSV();
@@ -505,39 +536,19 @@ const CreateClaim = () => {
     }
   };
 
-  const showMessageHandler = (setState) => {
-    setState(true);
-    setTimeout(() => {
-      setState(false);
-    }, 4000);
-  };
-
   return (
-    <>
-      <div className={classes.container}>
-        <Grid container>
-          <Grid item xs={12} sx={{ padding: "20px" }}>
-            {formContent(activeStep)}
-          </Grid>
-          {formikStep1.errors.submit && (
-            <Grid item xs={12}>
-              <FormHelperText error>{formikStep1.errors.submit}</FormHelperText>
-            </Grid>
-          )}
+    <div className={classes.container}>
+      <Grid container>
+        <Grid item xs={12} sx={{ padding: "20px" }}>
+          {formContent(activeStep)}
         </Grid>
-
-        {showError ? (
-          <CustomAlert severity={false} alertMessage={message} />
-        ) : null}
-
-        {finish ? (
-          <CustomAlert
-            severity={true}
-            alertMessage={"Airdrop created successfully"}
-          />
-        ) : null}
-      </div>
-    </>
+        {formikStep1.errors.submit && (
+          <Grid item xs={12}>
+            <FormHelperText error>{formikStep1.errors.submit}</FormHelperText>
+          </Grid>
+        )}
+      </Grid>
+    </div>
   );
 };
 

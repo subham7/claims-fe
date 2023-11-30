@@ -5,8 +5,6 @@ import store from "../src/redux/store";
 import { Provider } from "react-redux";
 import "../styles/globals.scss";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
-// import { AnnouncementProvider } from "../src/components/AnnouncementContext";
-// import AnnouncementBar from "../src/components/AnnouncementBar";
 import {
   EthereumClient,
   w3mConnectors,
@@ -21,7 +19,7 @@ import {
   bsc,
   mantle,
   gnosis,
-  // taikoJolnir,
+  taikoJolnir,
   mainnet,
 } from "wagmi/chains";
 import {
@@ -46,7 +44,7 @@ const chains = [
   mantle,
   lineaMainnetWalletConnect,
   gnosis,
-  // taikoJolnir,
+  taikoJolnir,
   scrollMainnet,
   mantaMainnet,
 ];
@@ -80,7 +78,7 @@ function MyApp({ Component, pageProps }) {
             5000: "/assets/icons/mantle-mainnet.png",
             169: "/assets/icons/manta.png",
             534352: "/assets/icons/scroll.jpeg",
-            // 167007: "/assets/icons/taiko.jpeg",
+            167007: "/assets/icons/taiko.jpeg",
           }}
           themeMode="light"
           themeVariables={{

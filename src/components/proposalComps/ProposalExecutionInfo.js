@@ -143,7 +143,6 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
   }, [fetchAirDropContractDetails]);
 
   const getProposalDetailsData = () => {
-    debugger;
     const response = proposalDetailsData({
       data: proposalData?.commands[0],
       decimals: tokenDetails.decimals,

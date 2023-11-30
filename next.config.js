@@ -8,6 +8,9 @@ const nextConfig = {
       "safe-transaction-assets.safe.global",
       "./public/*",
       "cloudflare-ipfs.com",
+      "logos.covalenthq.com",
+      "cryptologos.cc",
+      "www.datocms-assets.com",
     ],
   },
   webpack: (config, { isServer }) => {

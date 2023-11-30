@@ -5,7 +5,7 @@ import {
   Link,
   Skeleton,
   Stack,
-  Switch,
+  // Switch,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -20,11 +20,13 @@ import { shortAddress } from "utils/helper";
 import DepositDocument from "./modals/DepositDocument";
 import { useNetwork } from "wagmi";
 import { CHAIN_CONFIG } from "utils/constants";
-import UploadW8Ben from "./modals/UploadW8Ben";
-import CustomAlert from "@components/common/CustomAlert";
+// import UploadW8Ben from "./modals/UploadW8Ben";
 import { createStation, fetchClubByDaoAddress } from "api/club";
 import { editDepositConfig } from "api/deposit";
 import BackdropLoader from "@components/common/BackdropLoader";
+import { setAlertData } from "redux/reducers/alert";
+import { useDispatch } from "react-redux";
+import { addFactoryData } from "redux/reducers/club";
 
 const AdditionalSettings = ({
   tokenType,
@@ -35,19 +37,18 @@ const AdditionalSettings = ({
   gnosisAddress,
   daoAddress,
   walletAddress,
+  factoryData,
 }) => {
   const classes = AdditionalSettingsStyles();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
+  const dispatch = useDispatch();
 
   const [showDepositTimeModal, setShowDepositTimeModal] = useState(false);
   const [showDepositDocumentLinkModal, setShowDepositDocumentLinkModal] =
     useState(false);
   const [showOwnerFeesModal, setShowOwnerFeesModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showMessage, setShowMessage] = useState(false);
-  const [message, setMessage] = useState("");
-  const [isSuccessFull, setIsSuccessFull] = useState(false);
   const [checked, setChecked] = useState(false);
   const [w8Checked, setW8Checked] = useState(false);
   const [kycChecked, setKycChecked] = useState(false);
@@ -56,16 +57,29 @@ const AdditionalSettings = ({
 
   const startingTimeInNum = new Date(+daoDetails?.depositDeadline * 1000);
 
-  const { updateDepositTime, updateOwnerFee } = useAppContractMethods();
+  const { updateDepositTime, updateOwnerFee } = useAppContractMethods({
+    daoAddress,
+  });
 
   const updateAdminFees = async (ownerFee) => {
     setLoading(true);
     try {
-      await updateOwnerFee(+ownerFee * 100, daoAddress);
+      await updateOwnerFee(+ownerFee * 100);
       setLoading(false);
-      showMessageHandler();
-      setIsSuccessFull(true);
-      setMessage("Owner Fee updated Successfully");
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Owner fee updated successfully",
+          severity: "success",
+        }),
+      );
+      dispatch(
+        addFactoryData({
+          ...factoryData,
+          ownerFeePerDepositPercent: ownerFee * 100,
+        }),
+      );
+
       if (tokenType === "erc20") {
         fetchErc20ContractDetails();
       } else {
@@ -73,35 +87,69 @@ const AdditionalSettings = ({
       }
     } catch (error) {
       console.log(error.code);
-      showMessageHandler();
       setLoading(false);
-      setIsSuccessFull(false);
       if (error.code === 4001) {
-        setMessage("Metamask Signature denied");
-      } else setMessage("Owner Fee updating failed");
+        dispatch(
+          setAlertData({
+            open: true,
+            message: "Metamask Signature denied",
+            severity: "error",
+          }),
+        );
+      } else {
+        dispatch(
+          setAlertData({
+            open: true,
+            message: "Owner fee updating failed",
+            severity: "error",
+          }),
+        );
+      }
     }
   };
 
   const updateDepositDeadline = async (depositTime) => {
     setLoading(true);
     try {
-      await updateDepositTime(+depositTime.toFixed(0).toString(), daoAddress);
+      await updateDepositTime(+depositTime.toFixed(0).toString());
       setLoading(false);
-      showMessageHandler();
-      setIsSuccessFull(true);
-      setMessage("Deposit Time updated Successfully");
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Deposit time updated successfully",
+          severity: "success",
+        }),
+      );
+      dispatch(
+        addFactoryData({
+          ...factoryData,
+          depositCloseTime: +depositTime.toFixed(0).toString(),
+        }),
+      );
       if (tokenType === "erc20") {
         fetchErc20ContractDetails();
       } else {
         fetchErc721ContractDetails();
       }
     } catch (error) {
-      showMessageHandler();
       setLoading(false);
-      setIsSuccessFull(false);
       if (error.code === 4001) {
-        setMessage("Metamask Signature denied");
-      } else setMessage("Deposit Time updating failed");
+        dispatch(
+          setAlertData({
+            open: true,
+            message: "Metamask Signature denied",
+            severity: "error",
+          }),
+        );
+      } else {
+        dispatch(
+          setAlertData({
+            open: true,
+            message: "Deposit time updating failed",
+            severity: "error",
+          }),
+        );
+      }
     }
   };
 
@@ -130,15 +178,23 @@ const AdditionalSettings = ({
         );
       }
       setLoading(false);
-      showMessageHandler();
-      setIsSuccessFull(true);
       setChecked(true);
-      setMessage("Subscription link updated Successfully");
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Subscription link updated successfully",
+          severity: "success",
+        }),
+      );
     } catch (error) {
-      showMessageHandler();
       setLoading(false);
-      setIsSuccessFull(false);
-      setMessage("Subscription link updating failed");
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Subscription link updating failed",
+          severity: "error",
+        }),
+      );
     }
   };
 
@@ -150,13 +206,6 @@ const AdditionalSettings = ({
     setShowOwnerFeesModal(true);
   };
 
-  const showMessageHandler = () => {
-    setShowMessage(true);
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 4000);
-  };
-
   const handleEnableSubscription = async () => {
     if (isAdminUser) {
       if (checked) {
@@ -166,15 +215,23 @@ const AdditionalSettings = ({
             daoAddress?.toLowerCase(),
           );
           setLoading(false);
-          showMessageHandler();
-          setIsSuccessFull(true);
           setChecked(!checked);
-          setMessage("Subscription link removed Successfully");
+          dispatch(
+            setAlertData({
+              open: true,
+              message: "Subscription link removed Successfully",
+              severity: "success",
+            }),
+          );
         } catch (error) {
-          showMessageHandler();
           setLoading(false);
-          setIsSuccessFull(false);
-          setMessage("Subscription link removing failed");
+          dispatch(
+            setAlertData({
+              open: true,
+              message: "Subscription link removing failed",
+              severity: "error",
+            }),
+          );
         }
       } else {
         handleDocumentLinkChange();
@@ -193,15 +250,23 @@ const AdditionalSettings = ({
         daoAddress.toLowerCase(),
       );
       setLoading(false);
-      showMessageHandler();
-      setIsSuccessFull(true);
       setKycChecked(!kycChecked);
-      setMessage("Kyc settings changed successfully");
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Kyc settings changed successfully",
+          severity: "success",
+        }),
+      );
     } catch (error) {
-      showMessageHandler();
       setLoading(false);
-      setIsSuccessFull(false);
-      setMessage("Kyc settings removing failed");
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Kyc settings removing failed",
+          severity: "error",
+        }),
+      );
     }
   };
 
@@ -231,9 +296,13 @@ const AdditionalSettings = ({
     if (w8Checked) {
       setLoading(true);
       await editDepositConfig({ uploadDocId: null }, daoAddress.toLowerCase());
-      showMessageHandler();
-      setIsSuccessFull(true);
-      setMessage("W-8Ben disabled");
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "W-8Ben disabled",
+          severity: "success",
+        }),
+      );
       setLoading(false);
     }
     setW8Checked(!w8Checked);
@@ -246,9 +315,9 @@ const AdditionalSettings = ({
   return (
     <div className={classes.container}>
       <Typography className={classes.heading}>Additional Details</Typography>
-      <Stack spacing={3}>
-        <Divider />
+      <Stack spacing={1}>
         <Grid
+          py={2}
           container
           sx={{ display: "flex", justifyContent: "space-between" }}>
           <Grid item>
@@ -256,41 +325,39 @@ const AdditionalSettings = ({
               Token contract address
             </Typography>
           </Grid>
-          <Grid sx={{ display: "flex", alignItems: "center" }}>
-            <Grid item>
-              <IconButton
-                color="primary"
-                onClick={() => {
-                  navigator.clipboard.writeText(daoAddress);
-                }}>
-                <ContentCopyIcon className={classes.iconColor} />
-              </IconButton>
-            </Grid>
-            <Grid item>
-              <IconButton
-                color="primary"
-                onClick={() => {
-                  window.open(
-                    `${CHAIN_CONFIG[networkId].blockExplorerUrl}/address/${daoAddress}`,
-                  );
-                }}>
-                <OpenInNewIcon className={classes.iconColor} />
-              </IconButton>
-            </Grid>
-            <Grid item mr={4} mt={1}>
-              <Typography variant="p" className={classes.valuesStyle}>
-                {daoDetails ? (
-                  shortAddress(daoAddress)
-                ) : (
-                  <Skeleton variant="rectangular" width={100} height={25} />
-                )}
-              </Typography>
-            </Grid>
+          <Grid item sx={{ display: "flex", alignItems: "center" }}>
+            <IconButton
+              color="primary"
+              onClick={() => {
+                navigator.clipboard.writeText(daoAddress);
+              }}>
+              <ContentCopyIcon className={classes.iconColor} />
+            </IconButton>
+            <IconButton
+              color="primary"
+              onClick={() => {
+                window.open(
+                  `${CHAIN_CONFIG[networkId].blockExplorerUrl}/address/${daoAddress}`,
+                );
+              }}>
+              <OpenInNewIcon className={classes.iconColor} />
+            </IconButton>
+            <Typography variant="p" className={classes.valuesStyle}>
+              {daoDetails ? (
+                shortAddress(daoAddress)
+              ) : (
+                <Skeleton variant="rectangular" width={100} height={25} />
+              )}
+            </Typography>
           </Grid>
         </Grid>
 
         <Divider />
+      </Stack>
+
+      <Stack spacing={1}>
         <Grid
+          py={2}
           container
           sx={{ display: "flex", justifyContent: "space-between" }}>
           <Grid item>
@@ -319,7 +386,7 @@ const AdditionalSettings = ({
               </IconButton>
             </Grid>
 
-            <Grid item mr={4} mt={1}>
+            <Grid item mt={1}>
               <Typography variant="p" className={classes.valuesStyle}>
                 {daoDetails ? (
                   shortAddress(gnosisAddress)
@@ -338,7 +405,7 @@ const AdditionalSettings = ({
           container
           py={2}
           sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Grid item mt={3}>
+          <Grid item>
             <Typography variant="settingText">Admin fees</Typography>
           </Grid>
           <Grid
@@ -348,7 +415,7 @@ const AdditionalSettings = ({
               alignItems: "center",
             }}
             spacing={1}>
-            <Grid mr={4}>
+            <Grid>
               <Grid sx={{ display: "flex", alignItems: "center" }}>
                 <Typography className={classes.text} mr={1}>
                   {daoDetails.ownerFee}%
@@ -373,14 +440,14 @@ const AdditionalSettings = ({
           container
           py={2}
           sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Grid item mt={3}>
+          <Grid item>
             <Typography variant="settingText">Deposit deadline</Typography>
           </Grid>
           <Grid
             // container
             sx={{ display: "flex", alignItems: "center" }}
             spacing={1}>
-            <Grid mr={4}>
+            <Grid>
               <Grid sx={{ display: "flex", alignItems: "center" }}>
                 <Tooltip title={startingTimeInNum.toString()}>
                   <Typography className={classes.text} mr={1}>
@@ -411,12 +478,12 @@ const AdditionalSettings = ({
         <Divider />
       </Stack>
 
-      <Stack spacing={1}>
+      {/* <Stack spacing={1}>
         <Grid
           container
           py={2}
           sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Grid item mt={3}>
+          <Grid item>
             <Typography variant="settingText">
               Enable subscription agreement signing
             </Typography>
@@ -425,7 +492,7 @@ const AdditionalSettings = ({
             // container
             sx={{ display: "flex", alignItems: "center" }}
             spacing={1}>
-            <Grid mr={4}>
+            <Grid>
               <Grid sx={{ display: "flex", alignItems: "center" }}>
                 <Switch
                   checked={checked}
@@ -452,14 +519,14 @@ const AdditionalSettings = ({
           container
           py={2}
           sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Grid item mt={3}>
+          <Grid item>
             <Typography variant="settingText">Collect tax form</Typography>
           </Grid>
           <Grid
             // container
             sx={{ display: "flex", alignItems: "center" }}
             spacing={1}>
-            <Grid mr={4}>
+            <Grid>
               <Grid sx={{ display: "flex", alignItems: "center" }}>
                 <Switch
                   checked={w8Checked}
@@ -486,14 +553,14 @@ const AdditionalSettings = ({
           container
           py={2}
           sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Grid item mt={3}>
+          <Grid item>
             <Typography variant="settingText">Enable KYC</Typography>
           </Grid>
           <Grid
             // container
             sx={{ display: "flex", alignItems: "center" }}
             spacing={1}>
-            <Grid mr={4}>
+            <Grid>
               <Grid sx={{ display: "flex", alignItems: "center" }}>
                 <Switch
                   checked={kycChecked}
@@ -506,7 +573,7 @@ const AdditionalSettings = ({
             </Grid>
           </Grid>
         </Grid>
-      </Stack>
+      </Stack> */}
 
       <BackdropLoader isOpen={loading} />
 
@@ -519,6 +586,7 @@ const AdditionalSettings = ({
           loading={loading}
         />
       )}
+
       {showDepositTimeModal && (
         <DepositDeadline
           onClose={() => {
@@ -538,10 +606,6 @@ const AdditionalSettings = ({
           loading={loading}
         />
       )}
-
-      {showMessage ? (
-        <CustomAlert severity={isSuccessFull} alertMessage={message} />
-      ) : null}
     </div>
   );
 };

@@ -50,7 +50,7 @@ const SettingsInfo = ({
 
   return (
     <>
-      <Grid container spacing={3} paddingTop={2}>
+      <Grid container spacing={3}>
         <Grid sx={{ width: "70%" }} item>
           <Card className={classes.cardRegular}>
             <Grid

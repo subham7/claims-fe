@@ -7,14 +7,13 @@ import {
   addFactoryData,
 } from "../redux/reducers/club";
 import {
-  addContractAddress,
+  // addContractAddress,
   setAdminUser,
   setMemberUser,
 } from "../redux/reducers/gnosis";
-import { fetchConfigById } from "../api/config";
+// import { fetchConfigById } from "../api/config";
 
-import { getCustomSafeSdk } from "../utils/helper";
-import useAppContract from "./useAppContract";
+import { getSafeSdk } from "../utils/helper";
 import { useAccount } from "wagmi";
 import { useRouter } from "next/router";
 import useAppContractMethods from "./useAppContractMethods";
@@ -24,7 +23,6 @@ const useClubFetch = ({ daoAddress, networkId }) => {
   const [clubData, setClubData] = useState();
 
   const dispatch = useDispatch();
-  useAppContract(daoAddress);
 
   const router = useRouter();
   const { address: walletAddress } = useAccount();
@@ -33,40 +31,38 @@ const useClubFetch = ({ daoAddress, networkId }) => {
     return state.club.clubData;
   });
 
-  const FACTORY_CONTRACT_ADDRESS = useSelector(
-    (state) => state.gnosis.factoryContractAddress,
-  );
-
   const {
     getDaoDetails,
     getERC20DAOdetails,
     getDaoBalance,
     getERC721DAOdetails,
-  } = useAppContractMethods();
+  } = useAppContractMethods({
+    daoAddress,
+  });
 
-  useEffect(() => {
-    const getNetworkConfig = async () => {
-      try {
-        const networkData = await fetchConfigById(networkId);
+  // useEffect(() => {
+  //   const getNetworkConfig = async () => {
+  //     try {
+  //       const networkData = await fetchConfigById(networkId);
 
-        dispatch(
-          addContractAddress({
-            factoryContractAddress: networkData?.data[0]?.factoryContract,
-            usdcContractAddress: networkData?.data[0]?.depositTokenContract,
-            actionContractAddress:
-              networkData?.data[0]?.tokenTransferActionContract,
-            subgraphUrl: networkData?.data[0]?.subgraph,
-            transactionUrl: networkData?.data[0]?.gnosisTransactionUrl,
-            networkHex: networkData?.data[0]?.networkHex,
-            networkId: networkData?.data[0]?.networkId,
-          }),
-        );
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    networkId && getNetworkConfig();
-  }, [networkId]);
+  //       dispatch(
+  //         addContractAddress({
+  //           factoryContractAddress: networkData?.data[0]?.factoryContract,
+  //           usdcContractAddress: networkData?.data[0]?.depositTokenContract,
+  //           actionContractAddress:
+  //             networkData?.data[0]?.tokenTransferActionContract,
+  //           subgraphUrl: networkData?.data[0]?.subgraph,
+  //           transactionUrl: networkData?.data[0]?.gnosisTransactionUrl,
+  //           networkHex: networkData?.data[0]?.networkHex,
+  //           networkId: networkData?.data[0]?.networkId,
+  //         }),
+  //       );
+  //     } catch (e) {
+  //       console.error(e);
+  //     }
+  //   };
+  //   networkId && getNetworkConfig();
+  // }, [networkId]);
 
   useEffect(() => {
     const fetchStationData = async () => {
@@ -118,7 +114,7 @@ const useClubFetch = ({ daoAddress, networkId }) => {
 
   const checkUserExists = async () => {
     try {
-      const factoryData = await getDaoDetails(daoAddress);
+      const factoryData = await getDaoDetails();
 
       if (factoryData) {
         dispatch(
@@ -140,7 +136,7 @@ const useClubFetch = ({ daoAddress, networkId }) => {
       }
 
       if (reduxClubData.tokenType === "erc20") {
-        const daoDetails = await getERC20DAOdetails(daoAddress);
+        const daoDetails = await getERC20DAOdetails();
 
         dispatch(
           addErc20ClubDetails({
@@ -153,7 +149,7 @@ const useClubFetch = ({ daoAddress, networkId }) => {
           }),
         );
       } else if (reduxClubData.tokenType === "erc721") {
-        const daoDetails = await getERC721DAOdetails(daoAddress);
+        const daoDetails = await getERC721DAOdetails();
         dispatch(
           addErc721ClubDetails({
             quorum: daoDetails.quorum / 100,
@@ -168,16 +164,13 @@ const useClubFetch = ({ daoAddress, networkId }) => {
         );
       }
 
-      const balance = await getDaoBalance(
-        daoAddress,
-        reduxClubData.tokenType === "erc721",
-      );
+      const balance = await getDaoBalance(reduxClubData.tokenType === "erc721");
 
-      const safeSdk = await getCustomSafeSdk(
+      const { safeSdk } = await getSafeSdk(
         reduxClubData.gnosisAddress,
         walletAddress,
-        networkId,
       );
+
       const ownerAddresses = await safeSdk.getOwners();
       const ownerAddressesArray = ownerAddresses.map((value) =>
         value.toLowerCase(),
@@ -205,19 +198,12 @@ const useClubFetch = ({ daoAddress, networkId }) => {
     if (
       walletAddress &&
       networkId &&
-      FACTORY_CONTRACT_ADDRESS &&
       daoAddress &&
       reduxClubData.gnosisAddress
     ) {
       checkUserExists();
     }
-  }, [
-    walletAddress,
-    networkId,
-    daoAddress,
-    FACTORY_CONTRACT_ADDRESS,
-    reduxClubData.gnosisAddress,
-  ]);
+  }, [walletAddress, networkId, daoAddress, reduxClubData.gnosisAddress]);
 };
 
 export default useClubFetch;

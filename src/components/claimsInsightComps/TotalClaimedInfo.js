@@ -1,3 +1,4 @@
+import { useTheme } from "@mui/styles";
 import React from "react";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 import { formatEpochTime } from "../../utils/helper";
@@ -10,7 +11,8 @@ const TotalClaimedInfo = ({
   endTime,
   claimType,
 }) => {
-  const classes = ClaimsInsightStyles();
+  const theme = useTheme();
+  const classes = ClaimsInsightStyles(theme);
 
   const percentage = Number(
     (Number(

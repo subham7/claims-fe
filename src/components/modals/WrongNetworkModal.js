@@ -1,15 +1,15 @@
 import BackdropLoader from "@components/common/BackdropLoader";
-import { makeStyles } from "@mui/styles";
+import { makeStyles, useTheme } from "@mui/styles";
 import Image from "next/image";
 import React from "react";
 import { CHAIN_CONFIG } from "utils/constants";
 import { requestEthereumChain } from "utils/helper";
 import img from "../../../public/assets/images/wrongNetwork.png";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   modal: {
     width: "450px",
-    background: "#0F0F0F",
+    background: theme.palette.background.default,
     // border: "1px solid #6475A3",
     position: "fixed",
     top: "50%",
@@ -44,10 +44,11 @@ const useStyles = makeStyles({
     margin: 0,
     color: "#fff",
   },
-});
+}));
 
 const WrongNetworkModal = ({ chainId = "0x89" }) => {
-  const classes = useStyles();
+  const theme = useTheme();
+  const classes = useStyles(theme);
 
   const switchNetworkHandler = async () => {
     if (typeof window !== "undefined") {

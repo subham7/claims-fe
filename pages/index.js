@@ -25,6 +25,9 @@ import {
 } from "utils/stationsSubgraphHelper";
 import { shortAddress } from "utils/helper";
 import { OMIT_DAOS } from "utils/constants";
+import useClubFetch from "hooks/useClubFetch";
+import { getReferralCode } from "api/invite/invite";
+import InviteCard from "@components/cards/InviteCard";
 
 const useStyles = makeStyles({
   container: {
@@ -126,17 +129,18 @@ const App = () => {
   const [clubListData, setClubListData] = useState([]);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [isMainLink, setIsMainLink] = useState(false);
+  const [isUserWhitelisted, setIsUserWhitelisted] = useState(false);
 
   const [manageStation, setManageStation] = useState(false);
 
   const [open, setOpen] = useState(false);
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
-
+  useClubFetch({ networkId });
   const router = useRouter();
 
   useEffect(() => {
-    setIsMainLink(window.location.origin.includes("app"));
+    setIsMainLink(window.location.origin.includes("app.stationx.network"));
   }, []);
 
   useEffect(() => {
@@ -232,6 +236,21 @@ const App = () => {
     router.push(`/claims/`);
   };
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const code = await getReferralCode(walletAddress);
+        if (code) {
+          setIsUserWhitelisted(true);
+        } else {
+          setIsUserWhitelisted(false);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+  }, [walletAddress]);
+
   return (
     <Layout showSidebar={false} faucet={false}>
       <div className={classes.container}>
@@ -293,95 +312,105 @@ const App = () => {
         )}
 
         {manageStation ? (
-          <Grid
-            container
-            direction="row"
-            justifyContent="center"
-            alignItems="start"
-            mt={2}
-            mb={0}>
-            <Grid item md={5}>
-              <Card>
-                <div className={classes.flex}>
-                  <Grid item>
-                    <Typography variant="heading">My Stations</Typography>
-                  </Grid>
-                  <Grid>
-                    <Button onClick={handleCreateButtonClick}>
-                      Create new
-                    </Button>
-                  </Grid>
-                </div>
-                <Divider className={classes.divider} />
-                <div>
-                  <div style={{ overflowY: "scroll", maxHeight: "60vh" }}>
-                    {walletAddress && clubListData.length ? (
-                      clubListData
-                        .reverse()
-                        .filter((club) => !OMIT_DAOS.includes(club.daoAddress))
-                        .map((club, key) => {
-                          return (
-                            <ListItemButton
-                              style={{ marginBottom: "8px" }}
-                              key={key}
-                              onClick={(e) => {
-                                handleItemClick(clubListData[key]);
+          <>
+            {isUserWhitelisted ? (
+              <Grid
+                container
+                direction="row"
+                justifyContent="center"
+                alignItems="start"
+                mt={2}
+                mb={0}>
+                <Grid item md={5}>
+                  <Card>
+                    <div className={classes.flex}>
+                      <Grid item>
+                        <Typography variant="heading">My Stations</Typography>
+                      </Grid>
+                      <Grid>
+                        <Button onClick={handleCreateButtonClick}>
+                          Create new
+                        </Button>
+                      </Grid>
+                    </div>
+                    <Divider className={classes.divider} />
+                    <div>
+                      <div style={{ overflowY: "scroll", maxHeight: "60vh" }}>
+                        {walletAddress && clubListData.length ? (
+                          clubListData
+                            .reverse()
+                            .filter(
+                              (club) => !OMIT_DAOS.includes(club.daoAddress),
+                            )
+                            .map((club, key) => {
+                              return (
+                                <ListItemButton
+                                  style={{ marginBottom: "8px" }}
+                                  key={key}
+                                  onClick={(e) => {
+                                    handleItemClick(clubListData[key]);
+                                  }}>
+                                  <Grid
+                                    container
+                                    className={classes.flexContainer}>
+                                    <Grid item md={6}>
+                                      <Stack spacing={0}>
+                                        <Typography variant="subheading">
+                                          {club.daoName}
+                                        </Typography>
+                                        <Typography
+                                          variant="body"
+                                          className="text-blue">
+                                          {shortAddress(club.userAddress)}
+                                        </Typography>
+                                      </Stack>
+                                    </Grid>
+                                    <Grid>
+                                      <Stack
+                                        spacing={0}
+                                        alignItems="flex-end"
+                                        justifyContent="flex-end">
+                                        <Typography
+                                          variant="body"
+                                          className="text-blue">
+                                          {club.isAdmin ? "Admin" : "Member"}
+                                        </Typography>
+                                      </Stack>
+                                    </Grid>
+                                  </Grid>
+                                </ListItemButton>
+                              );
+                            })
+                        ) : (
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              flexDirection: "column",
+                            }}>
+                            <h3
+                              style={{
+                                fontSize: "20px",
+                                fontWeight: "400",
+                                marginBottom: 0,
                               }}>
-                              <Grid container className={classes.flexContainer}>
-                                <Grid item md={6}>
-                                  <Stack spacing={0}>
-                                    <Typography variant="subheading">
-                                      {club.daoName}
-                                    </Typography>
-                                    <Typography
-                                      variant="body"
-                                      className="text-blue">
-                                      {shortAddress(club.userAddress)}
-                                    </Typography>
-                                  </Stack>
-                                </Grid>
-                                <Grid>
-                                  <Stack
-                                    spacing={0}
-                                    alignItems="flex-end"
-                                    justifyContent="flex-end">
-                                    <Typography
-                                      variant="body"
-                                      className="text-blue">
-                                      {club.isAdmin ? "Admin" : "Member"}
-                                    </Typography>
-                                  </Stack>
-                                </Grid>
-                              </Grid>
-                            </ListItemButton>
-                          );
-                        })
-                    ) : (
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexDirection: "column",
-                        }}>
-                        <h3
-                          style={{
-                            fontSize: "20px",
-                            fontWeight: "400",
-                            marginBottom: 0,
-                          }}>
-                          No stations found
-                        </h3>
-                        <p style={{ color: "#dcdcdc", fontWeight: "300" }}>
-                          Station(s) you created or a part of appear here
-                        </p>
+                              No stations found
+                            </h3>
+                            <p style={{ color: "#dcdcdc", fontWeight: "300" }}>
+                              Station(s) you created or a part of appear here
+                            </p>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                </div>
-              </Card>
-            </Grid>
-          </Grid>
+                    </div>
+                  </Card>
+                </Grid>
+              </Grid>
+            ) : (
+              <InviteCard setIsUserWhitelisted={setIsUserWhitelisted} />
+            )}
+          </>
         ) : null}
 
         <Dialog
@@ -423,6 +452,7 @@ const App = () => {
             </Grid>
           </DialogContent>
         </Dialog>
+
         {showVideoModal && (
           <VideoModal
             onClose={() => {

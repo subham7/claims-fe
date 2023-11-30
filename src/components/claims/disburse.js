@@ -12,7 +12,8 @@ import DisburseForm from "@components/claimsPageComps/DisburseForm";
 import { convertToWeiGovernance } from "utils/globalFunctions";
 import useDropsContractMethods from "hooks/useDropsContractMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
-import CustomAlert from "@components/common/CustomAlert";
+import { setAlertData } from "redux/reducers/alert";
+import { useDispatch } from "react-redux";
 
 const useStyles = makeStyles({
   container: {
@@ -24,24 +25,20 @@ const useStyles = makeStyles({
 });
 
 const CreateDisburse = () => {
-  const [tokensInWallet, setTokensInWallet] = useState(null);
-  const [message, setMessage] = useState("");
-  const [showMessage, setShowMessage] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [isSuccessFull, setIsSuccessFull] = useState(false);
-  const [loadingTokens, setLoadingTokens] = useState(false);
-
   const classes = useStyles();
-
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const { disburse } = useDropsContractMethods();
 
   const { approveDeposit } = useCommonContractMethods();
 
+  const [tokensInWallet, setTokensInWallet] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [loadingTokens, setLoadingTokens] = useState(false);
   const fetchTokens = async () => {
     try {
       if (networkId === "0xa9") {
@@ -118,17 +115,25 @@ const CreateDisburse = () => {
             disburseAmounts.push(Number(amount));
           } else {
             setLoading(false);
-            showMessageHandler();
-            setIsSuccessFull(false);
-            throw new Error("Invalid disburse list format");
+            dispatch(
+              setAlertData({
+                open: true,
+                message: "Invalid disburse list format",
+                severity: "error",
+              }),
+            );
           }
         });
 
         if (disburseAddresses.length !== disburseAmounts.length) {
           setLoading(false);
-          showMessageHandler();
-          setIsSuccessFull(false);
-          setMessage("Invalid disburse list format");
+          dispatch(
+            setAlertData({
+              open: true,
+              message: "Invalid disburse list format",
+              severity: "error",
+            }),
+          );
           return;
         }
 
@@ -142,10 +147,13 @@ const CreateDisburse = () => {
           Number(selectedToken.balance)
         ) {
           setLoading(false);
-          showMessageHandler();
-          setIsSuccessFull(false);
-          setMessage(
-            "Your wallet does not have enough balance for the disburse",
+          dispatch(
+            setAlertData({
+              open: true,
+              message:
+                "Your wallet does not have enough balance for the disburse",
+              severity: "error",
+            }),
           );
           return;
         }
@@ -167,28 +175,29 @@ const CreateDisburse = () => {
         );
 
         setLoading(false);
-        showMessageHandler();
-        setIsSuccessFull(true);
-        setMessage("Tokens disbursed successfully");
+        dispatch(
+          setAlertData({
+            open: true,
+            message: "Tokens disbursed successfully",
+            severity: "success",
+          }),
+        );
 
         setTimeout(() => {
           router.push(`/claims/`);
         }, 1000);
       } catch (e) {
-        showMessageHandler();
-        setIsSuccessFull(false);
         setLoading(false);
-        setMessage(e.message);
+        dispatch(
+          setAlertData({
+            open: true,
+            message: e.message,
+            severity: "error",
+          }),
+        );
       }
     },
   });
-
-  const showMessageHandler = () => {
-    setShowMessage(true);
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 4000);
-  };
 
   return (
     <>
@@ -202,11 +211,6 @@ const CreateDisburse = () => {
             />
           </Grid>
         </Grid>
-
-        {showMessage && (
-          <CustomAlert alertMessage={message} severity={isSuccessFull} />
-        )}
-
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={loading}>

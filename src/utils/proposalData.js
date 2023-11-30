@@ -11,11 +11,13 @@ import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "./globalFunctions";
-import { extractNftAdressAndId, shortAddress } from "./helper";
+import { extractNftAdressAndId, getSafeSdk, shortAddress } from "./helper";
 import Link from "next/link";
 import { getWhiteListMerkleRoot } from "api/whitelist";
 import { fetchLensActionAddresses, handleFetchFollowers } from "./lensHelper";
 import { proposalActionCommands } from "./proposalConstants";
+import { getProposalTxHash } from "api/proposal";
+import { createSafeTransactionData } from "./proposal";
 
 export const proposalData = ({ data, decimals, factoryData, symbol }) => {
   const {
@@ -80,7 +82,7 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
     case 6:
     case 7:
       return {
-        "Owner address": shortAddress(ownerAddress),
+        Address: shortAddress(ownerAddress),
       };
     case 8:
     case 9:
@@ -159,7 +161,7 @@ export const proposalFormData = ({
               onChange={(e) => {
                 formik.setFieldValue(
                   "airdropToken",
-                  tokenData.find((token) => token.symbol === e.target.value)
+                  tokenData?.find((token) => token.symbol === e.target.value)
                     .address,
                 );
               }}
@@ -173,7 +175,7 @@ export const proposalFormData = ({
               name="airdropToken"
               id="airdropToken">
               {tokenData
-                .filter((token) => token.address !== [networkId].nativeToken)
+                ?.filter((token) => token.address !== [networkId].nativeToken)
                 .map((token) => (
                   <MenuItem key={token.symbol} value={token.symbol}>
                     {token.symbol}
@@ -389,7 +391,7 @@ export const proposalFormData = ({
               onChange={(e) =>
                 formik.setFieldValue(
                   "customToken",
-                  tokenData.find((token) => token.symbol === e.target.value)
+                  tokenData?.find((token) => token.symbol === e.target.value)
                     .address,
                 )
               }
@@ -403,7 +405,7 @@ export const proposalFormData = ({
               inputProps={{ "aria-label": "Without label" }}
               name="customToken"
               id="customToken">
-              {tokenData.map((token) => (
+              {tokenData?.map((token) => (
                 <MenuItem key={token.symbol} value={token.symbol}>
                   {token.symbol}
                 </MenuItem>
@@ -475,7 +477,7 @@ export const proposalFormData = ({
               onChange={(e) =>
                 formik.setFieldValue(
                   "customNft",
-                  nftData.find(
+                  nftData?.find(
                     (token) => token.token_address === e.target.value,
                   ).token_address,
                 )
@@ -491,7 +493,7 @@ export const proposalFormData = ({
               name="customToken"
               id="customToken">
               {nftData
-                .filter((item, index, self) => {
+                ?.filter((item, index, self) => {
                   return (
                     index ===
                     self.findIndex(
@@ -525,7 +527,7 @@ export const proposalFormData = ({
               name="customNftToken"
               id="customNftToken">
               {nftData
-                .filter((nft) => nft.token_address === formik.values.customNft)
+                ?.filter((nft) => nft.token_address === formik.values.customNft)
                 .map((nft) => (
                   <MenuItem key={nft.token_hash} value={nft.token_id}>
                     {nft.token_id}
@@ -1164,7 +1166,7 @@ export const getProposalCommands = async ({
   let mirrorAddresses;
   switch (executionId) {
     case 0:
-      const airDropTokenDecimal = tokenData.find(
+      const airDropTokenDecimal = tokenData?.find(
         (token) => token.address === values.airdropToken,
       ).decimals;
       return {
@@ -1199,7 +1201,7 @@ export const getProposalCommands = async ({
       };
 
     case 4:
-      tokenDecimal = tokenData.find(
+      tokenDecimal = tokenData?.find(
         (token) => token.address === values.customToken,
       ).decimals;
       return {
@@ -1284,7 +1286,7 @@ export const getProposalCommands = async ({
       };
 
     case 14:
-      tokenDecimal = tokenData.find(
+      tokenDecimal = tokenData?.find(
         (token) => token.address === values.aaveDepositToken,
       ).decimals;
       return {
@@ -1296,7 +1298,7 @@ export const getProposalCommands = async ({
       };
 
     case 15:
-      tokenDecimal = tokenData.find(
+      tokenDecimal = tokenData?.find(
         (token) => token.address === values.aaveWithdrawToken,
       ).decimals;
 
@@ -1325,7 +1327,7 @@ export const getProposalCommands = async ({
         allowWhitelisting: true,
       };
     case 19:
-      tokenDecimal = tokenData.find(
+      tokenDecimal = tokenData?.find(
         (token) => token.address === values.uniswapSwapToken,
       ).decimals;
 
@@ -1338,7 +1340,7 @@ export const getProposalCommands = async ({
         destinationToken: values.uniswapRecieverToken,
       };
     case 17:
-      tokenDecimal = tokenData.find(
+      tokenDecimal = tokenData?.find(
         (token) => token.address === values.stargateStakeToken,
       ).decimals;
       return {
@@ -1349,7 +1351,7 @@ export const getProposalCommands = async ({
         ),
       };
     case 18:
-      tokenDecimal = tokenData.find(
+      tokenDecimal = tokenData?.find(
         (token) => token.address === values.stargateUnstakeToken,
       ).decimals;
       return {
@@ -1368,7 +1370,6 @@ export const proposalDetailsData = ({
   factoryData,
   symbol,
 }) => {
-  debugger;
   const {
     executionId,
     airDropAmount,
@@ -1510,4 +1511,64 @@ export const proposalDetailsData = ({
     default:
       return {};
   }
+};
+
+export const getSafeTransaction = async (
+  gnosisAddress,
+  walletAddress,
+  gnosisTxUrl,
+) => {
+  return await getSafeSdk(gnosisAddress, walletAddress, gnosisTxUrl);
+};
+
+export const getTransactionHash = async (pid) => {
+  const proposalTxHash = await getProposalTxHash(pid);
+  return proposalTxHash?.data[0]?.txHash ?? "";
+};
+
+export const createOrUpdateSafeTransaction = async ({
+  safeSdk,
+  executionId,
+  transaction,
+  approvalTransaction,
+  nonce,
+  executionStatus,
+}) => {
+  let safeTransaction;
+  let rejectionTransaction;
+
+  if (executionId === 6) {
+    safeTransaction = await safeSdk.createAddOwnerTx(transaction);
+  } else if (executionId === 7) {
+    safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
+  } else {
+    safeTransaction = await safeSdk.createTransaction({
+      safeTransactionData: createSafeTransactionData({
+        approvalTransaction,
+        transaction,
+        nonce,
+      }),
+    });
+    if (executionStatus === "cancel") {
+      rejectionTransaction = await safeSdk.createRejectionTransaction(nonce);
+    }
+  }
+
+  const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
+
+  return { safeTransaction, rejectionTransaction, safeTxHash: safeTxHash };
+};
+
+export const signAndConfirmTransaction = async ({
+  safeSdk,
+  safeService,
+  safeTransaction,
+  rejectionTransaction,
+  executionStatus,
+  safeTxHash,
+}) => {
+  const transactionToSign =
+    executionStatus === "cancel" ? rejectionTransaction : safeTransaction;
+  const senderSignature = await safeSdk.signTypedData(transactionToSign, "v4");
+  await safeService.confirmTransaction(safeTxHash, senderSignature.data);
 };

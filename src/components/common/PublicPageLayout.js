@@ -5,7 +5,6 @@ import classes from "../claims/Claim.module.scss";
 import About from "./About";
 import Activity from "./Activity";
 import BackdropLoader from "./BackdropLoader";
-import CustomAlert from "./CustomAlert";
 import Eligibility from "./Eligibility";
 import Header from "./Header";
 import SocialButtons from "./SocialButtons";
@@ -17,11 +16,9 @@ const PublicPageLayout = ({
   inputComponents,
   socialData,
   eligibilityProps,
-  message,
   isSuccessfull,
   loading,
   isDeposit,
-  showMessage,
   bio,
   imgUrl,
   claimDescription,
@@ -33,9 +30,12 @@ const PublicPageLayout = ({
       <div className={classes.leftContainer}>
         <div>
           <Header {...headerProps} />
-          {inputComponents}
+          <div className={classes.mainInputComponents}>{inputComponents}</div>
         </div>
-        <SocialButtons data={socialData} />
+
+        <div className={classes.mainSocials}>
+          <SocialButtons data={socialData} />
+        </div>
       </div>
 
       <div className={classes.rightContainer}>
@@ -60,7 +60,7 @@ const PublicPageLayout = ({
                 <Image
                   src={imgUrl}
                   fill
-                  alt="Banner Image"
+                  alt="NFT Image"
                   className={classes.nftImage}
                 />
               )}
@@ -87,6 +87,11 @@ const PublicPageLayout = ({
           )
         ) : null}
 
+        {/* For mobile screen */}
+        <div className={classes.secondaryInputComponents}>
+          {inputComponents}
+        </div>
+
         {bio && <About bio={bio} />}
 
         {clubData && tokenDetails && <Eligibility {...eligibilityProps} />}
@@ -96,11 +101,12 @@ const PublicPageLayout = ({
           activityDetails={members}
           tokenDetails={tokenDetails}
         />
-      </div>
 
-      {showMessage ? (
-        <CustomAlert alertMessage={message} severity={isSuccessfull} />
-      ) : null}
+        {/* For mobile screen */}
+        <div className={classes.secondarySocials}>
+          <SocialButtons data={socialData} />
+        </div>
+      </div>
 
       <BackdropLoader isOpen={loading} />
     </div>

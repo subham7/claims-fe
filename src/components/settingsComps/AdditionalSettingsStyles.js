@@ -11,14 +11,13 @@ export const AdditionalSettingsStyles = makeStyles({
     marginBottom: "40px",
   },
   heading: {
-    fontSize: "30px",
-    marginBottom: "30px",
+    fontSize: "30px !important",
+    marginBottom: "30px !important",
   },
   iconColor: {
     fontSize: "18px",
     color: "#dcdcdc",
   },
-
   valuesStyle: {
     fontSize: "20px",
     fontWeight: "normal",
