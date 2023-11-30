@@ -17,6 +17,8 @@ import DepositDetails from "./DepositDetails";
 import { getDocumentsByClubId } from "api/document";
 import PublicPageLayout from "@components/common/PublicPageLayout";
 import DepositPreRequisites from "../DepositPreRequisites";
+import { CHAIN_CONFIG } from "utils/constants";
+import { whitelistOnDeposit } from "api/invite/invite";
 
 const DepositInputComponents = ({
   formik,
@@ -69,18 +71,10 @@ const ERC20 = ({
     return state.club.clubData;
   });
 
-  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.factoryContractAddress;
-  });
-
-  const Deposit_Token_Address = useSelector((state) => {
-    return state.club.factoryData.depositTokenAddress;
-  });
-
   const { approveDeposit, getDecimals, getTokenSymbol, getBalance } =
     useCommonContractMethods();
 
-  const { buyGovernanceTokenERC20DAO } = useAppContractMethods();
+  const { buyGovernanceTokenERC20DAO } = useAppContractMethods({ daoAddress });
   const { address: walletAddress } = useAccount();
 
   const day = Math.floor(new Date().getTime() / 1000.0);
@@ -175,15 +169,14 @@ const ERC20 = ({
         );
 
         await approveDeposit(
-          Deposit_Token_Address,
-          FACTORY_CONTRACT_ADDRESS,
+          CHAIN_CONFIG[networkId].usdcAddress,
+          CHAIN_CONFIG[networkId].factoryContractAddress,
           values.tokenInput,
           tokenDetails?.tokenDecimal,
         );
 
         await buyGovernanceTokenERC20DAO(
           walletAddress,
-          daoAddress,
           convertToWeiGovernance(
             (inputValue / +clubData?.pricePerToken).toString(),
             18,
@@ -198,6 +191,7 @@ const ERC20 = ({
         });
         showMessageHandler();
         setMessage("Deposit Successful");
+        await whitelistOnDeposit(walletAddress);
         formik.values.tokenInput = 0;
       } catch (error) {
         console.log(error);
@@ -211,9 +205,10 @@ const ERC20 = ({
 
   const fetchTokenDetails = async () => {
     try {
-      const decimals = await getDecimals(Deposit_Token_Address);
-      const symbol = await getTokenSymbol(Deposit_Token_Address);
-      const userBalance = await getBalance(Deposit_Token_Address);
+      const depositTokenAddress = CHAIN_CONFIG[networkId].usdcAddress;
+      const decimals = await getDecimals(depositTokenAddress);
+      const symbol = await getTokenSymbol(depositTokenAddress);
+      const userBalance = await getBalance(depositTokenAddress);
 
       setTokenDetails({
         tokenSymbol: symbol,
@@ -265,8 +260,8 @@ const ERC20 = ({
   }, [daoAddress, depositConfig?.uploadDocId]);
 
   useEffect(() => {
-    if (Deposit_Token_Address) fetchTokenDetails();
-  }, [Deposit_Token_Address]);
+    fetchTokenDetails();
+  }, []);
 
   useEffect(() => {
     if (daoAddress) {

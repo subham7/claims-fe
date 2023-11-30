@@ -37,11 +37,13 @@ export default function NFTStep2(props) {
 
   return (
     <div className="f-d f-vt tb-pad-2 w-100">
-      <Typography variant="heading">Set Token Rules</Typography>
+      <Typography variant="body" className="text-blue">
+        Set deposit rules for members
+      </Typography>
 
-      <Typography variant="body" className="text-blue tb-pad-1">
-        All parameters (except token name, symbol & art) are modifiable later by
-        raising proposals.
+      <Typography variant="info" className="text-light-gray tb-pad-1">
+        Community members will receive membership token(s) when they join this
+        station.
       </Typography>
 
       <Typography variant="body" className="text-blue">
@@ -82,7 +84,7 @@ export default function NFTStep2(props) {
               />
             </div>
 
-            <Typography variant="info" className="text-darkblue">
+            <Typography variant="info" className="text-light-gray">
               This image can’t be changed after your station is created.
             </Typography>
           </div>
@@ -287,7 +289,7 @@ export default function NFTStep2(props) {
       </Card>
 
       <br />
-      <Typography variant="info" className="text-darkblue">
+      <Typography variant="info" className="text-light-gray">
         If you don’t limit the supply of your club token, your supply will be
         unlimited until the date deposits are open.
       </Typography>

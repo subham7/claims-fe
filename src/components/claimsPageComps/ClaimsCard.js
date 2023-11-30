@@ -7,7 +7,8 @@ import { useRouter } from "next/router";
 import Countdown from "react-countdown";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
-import CustomAlert from "@components/common/CustomAlert";
+import { useDispatch } from "react-redux";
+import { setAlertData } from "redux/reducers/alert";
 
 const useStyles = makeStyles({
   container: {
@@ -98,14 +99,16 @@ const ClaimsCard = ({
 }) => {
   const classes = useStyles();
   const router = useRouter();
+  const dispatch = useDispatch();
+
+  const { getDecimals, getTokenSymbol } = useCommonContractMethods();
+
   const [isActive, setIsActive] = useState(false);
   const [isClaimStarted, setIsClaimStarted] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [claimEnabled, setClaimEnabled] = useState(false);
   const [symbol, setSymbol] = useState("");
   const [decimals, setDecimals] = useState(0);
-
-  const { getDecimals, getTokenSymbol } = useCommonContractMethods();
 
   const startingTime = new Date(+startDate * 1000);
   const endingTime = new Date(+endDate * 1000);
@@ -188,11 +191,14 @@ const ClaimsCard = ({
               navigator.clipboard.writeText(
                 `${window.location.origin}/claim/${claimContract}/${claimsNetwork}`,
               );
-              setIsCopied(true);
 
-              setTimeout(() => {
-                setIsCopied(false);
-              }, 3000);
+              dispatch(
+                setAlertData({
+                  open: true,
+                  message: "Copied",
+                  severity: "success",
+                }),
+              );
             }}
             size={25}
             className={classes.icons}
@@ -228,8 +234,6 @@ const ClaimsCard = ({
           </p>
         </div>
       </div>
-
-      {isCopied && <CustomAlert alertMessage={"Copied"} severity={true} />}
     </div>
   );
 };

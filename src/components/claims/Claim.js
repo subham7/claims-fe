@@ -3,8 +3,8 @@ import Button from "@components/ui/button/Button";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import React, { useEffect, useState } from "react";
 import {
-  queryAllDropsTransactionsFromSubgraph,
   queryDropDetailsFromSubgraph,
+  queryLatestTenDropsTransactionsFromSubgraph,
 } from "utils/dropsSubgraphHelper";
 import {
   convertFromWeiGovernance,
@@ -19,6 +19,8 @@ import ClaimInput from "./ClaimInput";
 import { ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import PublicPageLayout from "@components/common/PublicPageLayout";
 import TwitterSharingModal from "@components/modals/TwitterSharingModal";
+import { setAlertData } from "redux/reducers/alert";
+import { useDispatch } from "react-redux";
 import { convertToFullNumber, processAmount } from "utils/helper";
 
 const ClaimInputComponent = ({
@@ -61,6 +63,8 @@ const ClaimInputComponent = ({
 const Claim = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState();
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+
   const [tokenDetails, setTokenDetails] = useState({
     tokenDecimal: 0,
     tokenSymbol: "",
@@ -84,8 +88,6 @@ const Claim = ({ claimAddress }) => {
   const [remainingInUSD, setRemainingInUSD] = useState(0);
   const [claimInput, setClaimInput] = useState(0);
   const [isClaiming, setIsClaiming] = useState(false);
-  const [showMessage, setShowMessage] = useState(false);
-  const [message, setMessage] = useState("");
   const [claimed, setClaimed] = useState(false);
   const [claimGeneralInfo, setClaimGeneralInfo] = useState();
 
@@ -145,7 +147,7 @@ const Claim = ({ claimAddress }) => {
 
   const fetchTransactionActivity = async () => {
     try {
-      const { airdrops } = await queryAllDropsTransactionsFromSubgraph(
+      const { airdrops } = await queryLatestTenDropsTransactionsFromSubgraph(
         claimAddress,
         networkId,
       );
@@ -351,8 +353,13 @@ const Claim = ({ claimAddress }) => {
         setAlreadyClaimed(true);
         setClaimed(true);
         setClaimInput(0);
-        showMessageHandler();
-        setMessage("Successfully Claimed!");
+        dispatch(
+          setAlertData({
+            open: true,
+            message: "Successfully Claimed!",
+            severity: "success",
+          }),
+        );
         setShowTwitterShareModal(true);
       } else {
         await claim(
@@ -385,24 +392,27 @@ const Claim = ({ claimAddress }) => {
         setAlreadyClaimed(true);
         setClaimInput(0);
 
-        showMessageHandler();
-        setMessage("Successfully Claimed!");
+        dispatch(
+          setAlertData({
+            open: true,
+            message: "Successfully Claimed!",
+            severity: "success",
+          }),
+        );
         setShowTwitterShareModal(true);
       }
     } catch (err) {
       console.log(err);
       setClaimed(false);
-      setMessage("Some Error Occured!");
-      showMessageHandler();
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Some error occured!",
+          severity: "error",
+        }),
+      );
       setIsClaiming(false);
     }
-  };
-
-  const showMessageHandler = () => {
-    setShowMessage(true);
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 4000);
   };
 
   const maxHandler = async () => {
@@ -512,10 +522,8 @@ const Claim = ({ claimAddress }) => {
           tokenDetails: tokenDetails,
         }}
         members={activityDetails}
-        message={message}
         isSuccessfull={claimed}
         loading={false}
-        showMessage={showMessage}
         claimDescription={claimsData?.description}
       />
       {showTwitterShareModal && claimAddress && claimsData && tokenDetails ? (

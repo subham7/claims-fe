@@ -19,7 +19,7 @@ import {
   bsc,
   mantle,
   gnosis,
-  // taikoJolnir,
+  taikoJolnir,
   mainnet,
 } from "wagmi/chains";
 import {
@@ -44,7 +44,7 @@ const chains = [
   mantle,
   lineaMainnetWalletConnect,
   gnosis,
-  // taikoJolnir,
+  taikoJolnir,
   scrollMainnet,
   mantaMainnet,
 ];
@@ -65,7 +65,10 @@ function MyApp({ Component, pageProps }) {
       <ApolloProvider client={apolloClient}>
         <WagmiConfig config={wagmiConfig}>
           <Provider store={store}>
+            {/* <AnnouncementProvider>
+              <AnnouncementBar /> */}
             <Component {...pageProps} />
+            {/* </AnnouncementProvider> */}
           </Provider>
         </WagmiConfig>
         <Web3Modal
@@ -75,7 +78,7 @@ function MyApp({ Component, pageProps }) {
             5000: "/assets/icons/mantle-mainnet.png",
             169: "/assets/icons/manta.png",
             534352: "/assets/icons/scroll.jpeg",
-            // 167007: "/assets/icons/taiko.jpeg",
+            167007: "/assets/icons/taiko.jpeg",
           }}
           themeMode="light"
           themeVariables={{

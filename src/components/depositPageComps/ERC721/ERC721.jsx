@@ -12,6 +12,8 @@ import Mint from "./Mint";
 import { useRouter } from "next/router";
 import { getDocumentsByClubId } from "api/document";
 import PublicPageLayout from "@components/common/PublicPageLayout";
+import { CHAIN_CONFIG } from "utils/constants";
+import { whitelistOnDeposit } from "api/invite/invite";
 
 const DepositInputComponents = ({ depositPreRequisitesProps, mintProps }) => {
   return (
@@ -66,18 +68,10 @@ const ERC721 = ({
   const { approveDeposit, getDecimals, getTokenSymbol, getBalance } =
     useCommonContractMethods();
 
-  const { buyGovernanceTokenERC721DAO } = useAppContractMethods();
-
-  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.factoryContractAddress;
-  });
+  const { buyGovernanceTokenERC721DAO } = useAppContractMethods({ daoAddress });
 
   const clubData = useSelector((state) => {
     return state.club.clubData;
-  });
-
-  const Deposit_Token_Address = useSelector((state) => {
-    return state.club.factoryData.depositTokenAddress;
   });
 
   const fetchActivities = async () => {
@@ -94,7 +88,7 @@ const ERC721 = ({
 
   const fetchTokenDetails = async () => {
     try {
-      if (Deposit_Token_Address && daoAddress) {
+      if (daoAddress) {
         const balance = await getBalance(daoAddress);
         setBalanceOfNft(balance);
 
@@ -103,10 +97,11 @@ const ERC721 = ({
         } else {
           setHasClaimed(false);
         }
-        const decimals = await getDecimals(Deposit_Token_Address);
-        const symbol = await getTokenSymbol(Deposit_Token_Address);
-        const name = await getTokenSymbol(Deposit_Token_Address);
-        const userBalance = await getBalance(Deposit_Token_Address);
+        const depositTokenAddress = CHAIN_CONFIG[networkId].usdcAddress;
+        const decimals = await getDecimals(depositTokenAddress);
+        const symbol = await getTokenSymbol(depositTokenAddress);
+        const name = await getTokenSymbol(depositTokenAddress);
+        const userBalance = await getBalance(depositTokenAddress);
 
         setTokenDetails({
           tokenSymbol: symbol,
@@ -130,9 +125,11 @@ const ERC721 = ({
   const claimNFTHandler = async () => {
     try {
       setLoading(true);
+      const depositTokenAddress = CHAIN_CONFIG[networkId].usdcAddress;
+
       await approveDeposit(
-        Deposit_Token_Address,
-        FACTORY_CONTRACT_ADDRESS,
+        depositTokenAddress,
+        CHAIN_CONFIG[networkId].factoryContractAddress,
         convertFromWeiGovernance(
           clubData?.pricePerToken,
           tokenDetails.tokenDecimal,
@@ -142,7 +139,6 @@ const ERC721 = ({
 
       await buyGovernanceTokenERC721DAO(
         walletAddress,
-        daoAddress,
         clubData?.imageUrl,
         count,
         whitelistUserData?.proof ? whitelistUserData.proof : [],
@@ -154,6 +150,7 @@ const ERC721 = ({
       });
       setMessage("Transaction Successful");
       showMessageHandler();
+      await whitelistOnDeposit(walletAddress);
     } catch (error) {
       console.log(error);
       setClaimSuccessfull(false);
@@ -190,7 +187,7 @@ const ERC721 = ({
 
   useEffect(() => {
     fetchTokenDetails();
-  }, [Deposit_Token_Address, daoAddress]);
+  }, [daoAddress]);
 
   useEffect(() => {
     const fetchSubgraphData = async () => {

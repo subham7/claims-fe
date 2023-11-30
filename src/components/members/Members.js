@@ -31,6 +31,7 @@ import { queryPaginatedMembersFromSubgraph } from "utils/stationsSubgraphHelper"
 import { CHAIN_CONFIG } from "utils/constants";
 import { getDefaultProfile } from "utils/lensHelper";
 import BackdropLoader from "@components/common/BackdropLoader";
+import ComponentHeader from "@components/common/ComponentHeader";
 
 const Members = ({ daoAddress }) => {
   const [membersData, setMembersData] = useState([]);
@@ -88,7 +89,7 @@ const Members = ({ daoAddress }) => {
           memberAddresses.forEach((address) => {
             memberProfiles.set(
               address,
-              profiles.find(
+              profiles?.find(
                 (profile) => profile.ownedBy.toLowerCase() === address,
               )?.handle,
             );
@@ -211,7 +212,7 @@ const Members = ({ daoAddress }) => {
         <Grid item md={9} mb={8}>
           <Grid container mb={4}>
             <Grid item>
-              <Typography variant="heading">Station Members</Typography>
+              <ComponentHeader title={"Members"} />
             </Grid>
           </Grid>
           <Grid

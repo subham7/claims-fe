@@ -1,6 +1,6 @@
 import { makeStyles } from "@mui/styles";
 
-export const ProposalCardStyles = makeStyles({
+export const ProposalCardStyles = makeStyles((theme) => ({
   proposalHeader: {
     display: "flex",
     justifyContent: "space-between",
@@ -36,7 +36,7 @@ export const ProposalCardStyles = makeStyles({
     paddingLeft: "8px",
   },
   timeLeftChip: {
-    background: "#0F0F0F",
+    background: theme.palette.background.default,
     borderRadius: "5px",
   },
   cardFontActive: {
@@ -70,7 +70,7 @@ export const ProposalCardStyles = makeStyles({
   },
   cardTextBox: {
     color: "#dcdcdc",
-    background: "#0F0F0F 0% 0% no-repeat padding-box",
+    background: "#111111 0% 0% no-repeat padding-box",
     border: "1px solid #dcdcdc40",
     borderRadius: "10px",
   },
@@ -93,7 +93,7 @@ export const ProposalCardStyles = makeStyles({
   },
   datePicker: {
     borderRadius: "10px",
-    backgroundColor: "#0F0F0F",
+    backgroundColor: theme.palette.background.default,
     width: "90%",
   },
   banner: {
@@ -104,4 +104,4 @@ export const ProposalCardStyles = makeStyles({
     alignItems: "center",
     justifyContent: "center",
   },
-});
+}));

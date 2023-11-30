@@ -2,18 +2,23 @@ import axios from "axios";
 import { MAIN_API_URL } from "../index";
 import { getJwtToken } from "../../utils/auth";
 
-export async function createProposal(data, networkId) {
+export async function createProposal(isGovernanceActive, data) {
   // create proposal API
-  return await axios.post(
-    MAIN_API_URL + `proposal/create?networkId=${networkId}`,
-    data,
-    {
+  if (isGovernanceActive) {
+    return await axios.post(MAIN_API_URL + `proposal`, data, {
       headers: {
         Authorization: "Bearer " + getJwtToken(),
         "Content-Type": "application/json",
       },
-    },
-  );
+    });
+  } else {
+    return await axios.post(MAIN_API_URL + `proposal/admin`, data, {
+      headers: {
+        Authorization: "Bearer " + getJwtToken(),
+        "Content-Type": "application/json",
+      },
+    });
+  }
 }
 
 export async function createCancelProposal(data, networkId) {
@@ -63,18 +68,14 @@ export async function getProposalDetail(proposalId) {
   });
 }
 
-export async function castVote(data, networkId) {
+export async function castVote(data) {
   // cast proposal vote API
-  return await axios.post(
-    MAIN_API_URL + `proposal/vote2?networkId=${networkId}`,
-    data,
-    {
-      headers: {
-        Authorization: "Bearer " + getJwtToken(),
-        "Content-Type": "application/json",
-      },
+  return await axios.post(MAIN_API_URL + `proposal/vote`, data, {
+    headers: {
+      Authorization: "Bearer " + getJwtToken(),
+      "Content-Type": "application/json",
     },
-  );
+  });
 }
 
 export async function patchProposalExecuted(proposalId) {

@@ -66,7 +66,6 @@ const Settings = ({ daoAddress }) => {
   const factoryData = useSelector((state) => {
     return state.club.factoryData;
   });
-
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
@@ -82,17 +81,16 @@ const Settings = ({ daoAddress }) => {
     getERC721DAOdetails,
     getERC20TotalSupply,
     getDaoBalance,
-    getERC721Balance,
     getNftOwnersCount,
-  } = useAppContractMethods();
+  } = useAppContractMethods({ daoAddress });
 
   const { getDecimals, getBalance, getTokenName, getTokenSymbol } =
     useCommonContractMethods();
 
   const fetchErc20ContractDetails = useCallback(async () => {
     try {
-      const balanceOfClubToken = await getDaoBalance(daoAddress);
-      const erc20Data = await getERC20DAOdetails(daoAddress);
+      const balanceOfClubToken = await getDaoBalance();
+      const erc20Data = await getERC20DAOdetails();
       const erc20DaoDecimal = await getDecimals(daoAddress);
       const clubTokensMinted = await getERC20TotalSupply();
 
@@ -149,9 +147,9 @@ const Settings = ({ daoAddress }) => {
 
   const fetchErc721ContractDetails = useCallback(async () => {
     try {
-      const erc721Data = await getERC721DAOdetails(daoAddress);
+      const erc721Data = await getERC721DAOdetails();
 
-      const balanceOfClubToken = await getDaoBalance(daoAddress, true);
+      const balanceOfClubToken = await getDaoBalance(true);
       const nftMinted = await getNftOwnersCount();
 
       if (erc721Data && factoryData) {
@@ -265,6 +263,7 @@ const Settings = ({ daoAddress }) => {
         fetchErc721ContractDetails={fetchErc721ContractDetails}
         isAdminUser={isAdminUser}
         daoAddress={daoAddress}
+        factoryData={factoryData}
       />
       <TokenGating daoAddress={daoAddress} />
     </>

@@ -1,6 +1,6 @@
 import { makeStyles } from "@mui/styles";
 
-export const ClaimsStyles = makeStyles({
+export const ClaimsStyles = makeStyles((theme) => ({
   container: {
     display: "flex",
     alignItems: "center",
@@ -96,7 +96,7 @@ export const ClaimsStyles = makeStyles({
     justifyContent: "space-between",
     alignItems: "center",
     padding: "28px 20px",
-    background: "#0f0f0f",
+    background: theme.palette.background.default,
     borderRadius: "12px",
   },
   amount: {
@@ -186,4 +186,4 @@ export const ClaimsStyles = makeStyles({
     flexDirection: "column",
     gap: "-3px",
   },
-});
+}));

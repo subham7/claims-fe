@@ -1,6 +1,5 @@
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import Web3 from "web3";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -21,6 +20,8 @@ import {
   Paper,
 } from "@mui/material";
 import { CHAIN_CONFIG } from "utils/constants";
+import ComponentHeader from "@components/common/ComponentHeader";
+import { getTransactionsByNetworkId } from "api/transactions";
 
 dayjs.extend(relativeTime);
 
@@ -49,35 +50,11 @@ const Transactions = ({ networkId }) => {
 
   const fetchTransactions = async () => {
     setLoading(true);
-    const address = Web3.utils.toChecksumAddress(gnosisAddress);
-    const res = await axios.get(
-      `https://safe-transaction-polygon.safe.global/api/v1/safes/${address}/all-transactions/?executed=true&queued=false`,
-    );
-    const results = res.data.results;
-    let transfers = [];
 
-    /*      (1) filter for type 'ETHER_TRANSFER' & 'ERC20_TRANSFER' 
-            (2) In case of 'ETHER_TRANSFER' decimals = 18 else its already present */
-    results.forEach((item) => {
-      item.transfers?.forEach((res) => {
-        if (res?.type === "ETHER_TRANSFER") {
-          transfers = [
-            ...transfers,
-            {
-              ...res,
-              tokenInfo: {
-                decimals: 18,
-                name: "MATIC",
-                logoUri: "https://cryptologos.cc/logos/polygon-matic-logo.svg",
-              },
-            },
-          ];
-        }
-        if (res?.type === "ERC20_TRANSFER") {
-          transfers = [...transfers, res];
-        }
-      });
-    });
+    const transfers = await getTransactionsByNetworkId(
+      Web3.utils.toChecksumAddress(gnosisAddress),
+      networkId,
+    );
     setLoading(false);
     setTransactions(transfers);
   };
@@ -112,7 +89,7 @@ const Transactions = ({ networkId }) => {
     <>
       <div className="f-d f-vt f-h-c w-80">
         <div className="b-pad-1">
-          <Typography variant="heading">Station Transactions</Typography>
+          <ComponentHeader title={"Transactions"} />
         </div>
         {/* Table */}
         <div>
@@ -160,7 +137,7 @@ const Transactions = ({ networkId }) => {
                                   onError={({ target }) => {
                                     target.onerror = null;
                                     target.src =
-                                      "https://cryptologos.cc/logos/ethereum-eth-logo.svg";
+                                      "/assets/images/fallbackUSDC.png";
                                   }}
                                 />
                                 <Typography variant="info">

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Button } from "@mui/material";
 import { fetchConfig } from "../api/config";
-import { updateDynamicAddress } from "../api";
 import Web3 from "web3";
 import { useCallback } from "react";
 import { useAccount } from "wagmi";
@@ -69,7 +68,6 @@ export default function ProtectRoute(Component) {
               if (!networksAvailable.includes(networkId)) {
                 setOpen(true);
               }
-              updateDynamicAddress(networkId, dispatch);
             })
             .catch((err) => {
               console.log(err);

@@ -2,6 +2,7 @@ import { retrieveNftListing } from "api/assets";
 import { CHAIN_CONFIG } from "utils/constants";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { isMember } from "utils/stationsSubgraphHelper";
+import { getPublicClient } from "utils/viemConfig";
 import * as yup from "yup";
 
 export const step1ValidationSchema = yup.object({
@@ -90,10 +91,6 @@ export const step4ValidationSchema = yup.object({
 
 export const ERC721Step2ValidationSchema = yup.object({
   nftImage: yup.mixed().required("File is required"),
-  // pricePerToken: yup
-  //   .number()
-  //   .required("Price per token is required")
-  //   .moreThan(0, "Price should be greater than 0"),
   pricePerToken: yup
     .number("Enter amount of tokens")
     .required("Price per token is required")
@@ -101,7 +98,7 @@ export const ERC721Step2ValidationSchema = yup.object({
       "invalidPricePerToken",
       "Invalid price per token value",
       async (value, context) => {
-        const { isNftTotalSupplylimited, totalTokenSupply } = context.parent;
+        const { isNftTotalSupplylimited } = context.parent;
         if (isNftTotalSupplylimited === true) {
           try {
             if (Number(value) >= 0) {
@@ -176,6 +173,27 @@ export const getProposalValidationSchema = ({
         text: yup.string().required("Option is required"),
       }),
     ),
+    blockNum: yup
+      .number()
+      .test(
+        "invalidBlockNum",
+        "Enter a block num less than current block number",
+        async (value, context) => {
+          try {
+            const publicClient = getPublicClient(networkId);
+            const block = Number(await publicClient.getBlockNumber());
+            if (
+              Number(value) <= block ||
+              value === undefined ||
+              value.length === 0
+            ) {
+              return true;
+            } else return false;
+          } catch (error) {
+            return false;
+          }
+        },
+      ),
     actionCommand: yup.string("Enter proposal action").when("typeOfProposal", {
       is: "action",
       then: () =>
@@ -431,10 +449,7 @@ export const getProposalValidationSchema = ({
                   linkData[1],
                   linkData[2],
                 );
-                if (
-                  !nftdata?.data?.orders.length &&
-                  proposalData?.commands[0].executionId === 8
-                ) {
+                if (!nftdata?.data?.orders.length && actionCommand === 8) {
                   return false;
                 }
               }
@@ -563,14 +578,18 @@ export const getProposalValidationSchema = ({
         "Enter an amount less or equal to treasury balance",
         async (value, context) => {
           const { actionCommand, stargateStakeToken } = context.parent;
-
+          let balance;
+          let decimals;
           if (actionCommand === 17) {
             try {
-              const balance = await getBalance(
-                stargateStakeToken,
-                gnosisAddress,
-              );
-              const decimals = await getDecimals(stargateStakeToken);
+              if (CHAIN_CONFIG[networkId].nativeToken === stargateStakeToken) {
+                const publicClient = getPublicClient(networkId);
+                balance = await publicClient.getBalance(gnosisAddress);
+                decimals = 18;
+              } else {
+                balance = await getBalance(stargateStakeToken, gnosisAddress);
+                decimals = await getDecimals(stargateStakeToken);
+              }
               if (
                 Number(value) <=
                   Number(convertFromWeiGovernance(balance, decimals)) &&
