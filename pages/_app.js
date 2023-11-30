@@ -3,16 +3,12 @@ import { ThemeProvider } from "@mui/material/styles";
 import theme from "../src/theme/theme";
 import store from "../src/redux/store";
 import { Provider } from "react-redux";
-import "../styles/globals.scss";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { AnnouncementProvider } from "../src/components/AnnouncementContext";
-import {
-  EthereumClient,
-  w3mConnectors,
-  w3mProvider,
-} from "@web3modal/ethereum";
-import { Web3Modal } from "@web3modal/react";
-import { configureChains, createConfig, WagmiConfig } from "wagmi";
+import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi/react";
+import "../styles/globals.scss";
+
+import { WagmiConfig } from "wagmi";
 import {
   polygon,
   base,
@@ -36,6 +32,17 @@ export const apolloClient = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
+const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
+
+const metadata = {
+  name: "StationX",
+  description: "StationX App",
+  url: "https://www.stationx.network/",
+  icons: [
+    "https://www.stationx.network/_next/image?url=%2Fassets%2Ficons%2Flogo.png&w=384&q=75",
+  ],
+};
+
 const chains = [
   mainnet,
   polygon,
@@ -49,16 +56,17 @@ const chains = [
   scrollMainnet,
   mantaMainnet,
 ];
-const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 
-const { publicClient } = configureChains(chains, [w3mProvider({ projectId })]);
-const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors: w3mConnectors({ projectId, chains }),
-  publicClient,
+const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
+
+createWeb3Modal({
+  wagmiConfig,
+  projectId,
+  chains,
+  themeVariables: {
+    "--w3m-accent": "#2d55ff",
+  },
 });
-
-const ethereumClient = new EthereumClient(wagmiConfig, chains);
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -71,24 +79,6 @@ function MyApp({ Component, pageProps }) {
             </AnnouncementProvider>
           </Provider>
         </WagmiConfig>
-        <Web3Modal
-          chainImages={{
-            59144: "/assets/icons/linea-mainnet.webp",
-            8453: "/assets/icons/base-mainnet.png",
-            5000: "/assets/icons/mantle-mainnet.png",
-            169: "/assets/icons/manta.png",
-            534352: "/assets/icons/scroll.jpeg",
-            167007: "/assets/icons/taiko.jpeg",
-          }}
-          themeMode="light"
-          themeVariables={{
-            "--w3m-overlay-background-color": "#00000088",
-            "--w3m-accent-color": "#000",
-            "--w3m-background-color": "#000",
-          }}
-          projectId={projectId}
-          ethereumClient={ethereumClient}
-        />
       </ApolloProvider>
     </ThemeProvider>
   );

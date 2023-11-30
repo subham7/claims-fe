@@ -78,6 +78,7 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
   const signDocumentHandler = async () => {
     try {
       const web3 = await web3InstanceEthereum();
+      // const web3 = await web3InstanceCustomRPC();
 
       // current account
       const accounts = await web3.eth.getAccounts();

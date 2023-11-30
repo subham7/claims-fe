@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { Web3Button, Web3NetworkSwitch } from "@web3modal/react";
 import classes from "./Navbar.module.scss";
 import { useRouter } from "next/router";
 
@@ -18,8 +17,7 @@ const Navbar = () => {
         }}
       />
       <div className={classes["wallet-div"]}>
-        <Web3NetworkSwitch className={classes.switch} />
-        <Web3Button />
+        <w3m-button />
       </div>
     </nav>
   );
