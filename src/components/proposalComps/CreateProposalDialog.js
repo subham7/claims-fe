@@ -159,6 +159,7 @@ const CreateProposalDialog = ({ daoAddress }) => {
       amountToAirdrop: 0,
       carryFee: 0,
       pricePerToken: 0,
+      nftSupply: 0,
       quorum: 0,
       threshold: 0,
       totalDeposit: 0,

@@ -1148,6 +1148,30 @@ export const proposalFormData = ({
           </Grid>
         </>
       );
+    case 20:
+      return (
+        <Grid
+          container
+          direction={"column"}
+          ml={3}
+          mt={2}
+          sx={{ marginLeft: "0 !important" }}>
+          <Typography variant="proposalBody">Changed NFT supply *</Typography>
+          <TextField
+            variant="outlined"
+            className={classes.textField}
+            placeholder="0"
+            type="number"
+            name="nftSupply"
+            id="nftSupply"
+            value={formik.values.nftSupply}
+            onChange={formik.handleChange}
+            error={formik.touched.nftSupply && Boolean(formik.errors.nftSupply)}
+            helperText={formik.touched.nftSupply && formik.errors.nftSupply}
+            onWheel={(event) => event.target.blur()}
+          />
+        </Grid>
+      );
   }
 };
 
