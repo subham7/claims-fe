@@ -524,7 +524,6 @@ const Claim = ({ claimAddress }) => {
         members={activityDetails}
         isSuccessfull={claimed}
         loading={false}
-        showMessage={showMessage}
         claimDescription={claimsData?.description}
       />
       {showTwitterShareModal && claimAddress && claimsData && tokenDetails ? (
