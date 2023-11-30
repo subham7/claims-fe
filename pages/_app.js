@@ -65,7 +65,10 @@ function MyApp({ Component, pageProps }) {
       <ApolloProvider client={apolloClient}>
         <WagmiConfig config={wagmiConfig}>
           <Provider store={store}>
+            {/* <AnnouncementProvider>
+              <AnnouncementBar /> */}
             <Component {...pageProps} />
+            {/* </AnnouncementProvider> */}
           </Provider>
         </WagmiConfig>
         <Web3Modal

@@ -3,8 +3,8 @@ import Button from "@components/ui/button/Button";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import React, { useEffect, useState } from "react";
 import {
-  queryAllDropsTransactionsFromSubgraph,
   queryDropDetailsFromSubgraph,
+  queryLatestTenDropsTransactionsFromSubgraph,
 } from "utils/dropsSubgraphHelper";
 import {
   convertFromWeiGovernance,
@@ -147,7 +147,7 @@ const Claim = ({ claimAddress }) => {
 
   const fetchTransactionActivity = async () => {
     try {
-      const { airdrops } = await queryAllDropsTransactionsFromSubgraph(
+      const { airdrops } = await queryLatestTenDropsTransactionsFromSubgraph(
         claimAddress,
         networkId,
       );
