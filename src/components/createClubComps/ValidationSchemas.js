@@ -336,6 +336,29 @@ export const getProposalValidationSchema = ({
           return true;
         },
       ),
+    nftSupply: yup
+      .number("Enter new nft supply")
+      .test(
+        "invalidNFTSupply",
+        "NFT supply is unlimited or should be greater than current supply",
+        async (value, context) => {
+          const { actionCommand } = context.parent;
+          if (actionCommand === 20) {
+            try {
+              const { distributionAmount } = factoryData;
+              if (
+                distributionAmount > 0 &&
+                Number(value) > Number(distributionAmount)
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
 
     amountToSend: yup
       .number("Enter amount to be sent")
