@@ -5,7 +5,6 @@ import store from "../src/redux/store";
 import { Provider } from "react-redux";
 import "../styles/globals.scss";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
-import { AnnouncementProvider } from "../src/components/AnnouncementContext";
 import {
   EthereumClient,
   w3mConnectors,
@@ -66,9 +65,10 @@ function MyApp({ Component, pageProps }) {
       <ApolloProvider client={apolloClient}>
         <WagmiConfig config={wagmiConfig}>
           <Provider store={store}>
-            <AnnouncementProvider>
-              <Component {...pageProps} />
-            </AnnouncementProvider>
+            {/* <AnnouncementProvider>
+              <AnnouncementBar /> */}
+            <Component {...pageProps} />
+            {/* </AnnouncementProvider> */}
           </Provider>
         </WagmiConfig>
         <Web3Modal

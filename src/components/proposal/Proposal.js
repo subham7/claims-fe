@@ -45,6 +45,13 @@ const useStyles = makeStyles({
     paddingLeft: "40px !important",
     paddingRight: "40px !important",
   },
+  sticky: {
+    position: "sticky",
+    top: "90px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "20px",
+  },
 });
 
 const Proposal = ({ daoAddress }) => {
