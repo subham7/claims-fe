@@ -42,6 +42,7 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
     destinationToken,
     stakeAmount,
     unstakeAmount,
+    nftSupply,
   } = data ?? {};
 
   switch (executionId) {
@@ -125,6 +126,8 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
         "Unstake token": symbol,
         "Unstake amount": convertFromWeiGovernance(unstakeAmount, decimals),
       };
+    case 20:
+      return { "New nft supply": `${nftSupply}` };
     default:
       return {};
   }
@@ -1385,6 +1388,10 @@ export const getProposalCommands = async ({
           tokenDecimal,
         ),
       };
+    case 20:
+      return {
+        nftSupply: values.nftSupply,
+      };
   }
 };
 
@@ -1419,6 +1426,7 @@ export const proposalDetailsData = ({
     customNftToken,
     whitelistAddresses,
     airDropCarryFee,
+    nftSupply,
   } = data ?? {};
 
   let responseData = {
@@ -1531,7 +1539,9 @@ export const proposalDetailsData = ({
         "Unstake amount": convertFromWeiGovernance(unstakeAmount, decimals),
       };
       return responseData;
-
+    case 20:
+      responseData.data = { "New nft supply": nftSupply };
+      return responseData;
     default:
       return {};
   }
