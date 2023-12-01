@@ -42,6 +42,7 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
     destinationToken,
     stakeAmount,
     unstakeAmount,
+    nftSupply,
   } = data ?? {};
 
   switch (executionId) {
@@ -125,6 +126,8 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
         "Unstake token": symbol,
         "Unstake amount": convertFromWeiGovernance(unstakeAmount, decimals),
       };
+    case 20:
+      return { "New nft supply": `${nftSupply}` };
     default:
       return {};
   }
@@ -1148,6 +1151,30 @@ export const proposalFormData = ({
           </Grid>
         </>
       );
+    case 20:
+      return (
+        <Grid
+          container
+          direction={"column"}
+          ml={3}
+          mt={2}
+          sx={{ marginLeft: "0 !important" }}>
+          <Typography variant="proposalBody">Changed NFT supply *</Typography>
+          <TextField
+            variant="outlined"
+            className={classes.textField}
+            placeholder="0"
+            type="number"
+            name="nftSupply"
+            id="nftSupply"
+            value={formik.values.nftSupply}
+            onChange={formik.handleChange}
+            error={formik.touched.nftSupply && Boolean(formik.errors.nftSupply)}
+            helperText={formik.touched.nftSupply && formik.errors.nftSupply}
+            onWheel={(event) => event.target.blur()}
+          />
+        </Grid>
+      );
   }
 };
 
@@ -1361,6 +1388,10 @@ export const getProposalCommands = async ({
           tokenDecimal,
         ),
       };
+    case 20:
+      return {
+        nftSupply: values.nftSupply,
+      };
   }
 };
 
@@ -1395,6 +1426,7 @@ export const proposalDetailsData = ({
     customNftToken,
     whitelistAddresses,
     airDropCarryFee,
+    nftSupply,
   } = data ?? {};
 
   let responseData = {
@@ -1507,7 +1539,9 @@ export const proposalDetailsData = ({
         "Unstake amount": convertFromWeiGovernance(unstakeAmount, decimals),
       };
       return responseData;
-
+    case 20:
+      responseData.data = { "New nft supply": nftSupply };
+      return responseData;
     default:
       return {};
   }
