@@ -26,7 +26,7 @@ export const getTokensList = async (networkName, walletAddress) => {
 export const getTokensListOfManta = async (walletAddress) => {
   try {
     return await axios.get(
-      `${MANTA_API_URL}/v1/external/manta/?walletAddress=${walletAddress}`,
+      `${MANTA_API_URL}?module=account&action=tokenlist&address=${walletAddress}`,
     );
   } catch (error) {
     console.log(error);
