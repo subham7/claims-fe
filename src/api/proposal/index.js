@@ -4,7 +4,7 @@ import { getJwtToken } from "../../utils/auth";
 
 export async function createProposal(isGovernanceActive, data) {
   // create proposal API
-  if (isGovernanceActive) {
+  if (isGovernanceActive || data?.type === "survey") {
     return await axios.post(MAIN_API_URL + `proposal`, data, {
       headers: {
         Authorization: "Bearer " + getJwtToken(),
@@ -33,29 +33,6 @@ export async function createCancelProposal(data, networkId) {
       },
     },
   );
-}
-
-export async function getProposal(clubId, filter) {
-  // get proposals by club id API
-  if (filter) {
-    // if a filter value is passed, then the api with filter will be used
-    return await axios.get(MAIN_API_URL + `proposal/club/${clubId}`, {
-      params: {
-        status: `\"${filter}\"`,
-      },
-      headers: {
-        Authorization: "Bearer " + getJwtToken(),
-        "Content-Type": "application/json",
-      },
-    });
-  } else {
-    return await axios.get(MAIN_API_URL + `proposal/club/${clubId}`, {
-      headers: {
-        Authorization: "Bearer " + getJwtToken(),
-        "Content-Type": "application/json",
-      },
-    });
-  }
 }
 
 export async function getProposalDetail(proposalId) {

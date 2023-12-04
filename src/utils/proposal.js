@@ -1,4 +1,4 @@
-import { getProposal } from "../api/proposal";
+import { getProposalByDaoAddress } from "../api/proposal";
 import { createCancelProposal, getProposalTxHash } from "api/proposal";
 import Web3 from "web3";
 import { getIncreaseGasPrice, getSafeSdk } from "./helper";
@@ -25,10 +25,10 @@ import { maticAaveABI } from "abis/MaticAaveABI";
 import { uniswapABI } from "abis/uniswapABI";
 import { encodeFunctionData } from "viem";
 
-export const fetchProposals = async (clubId, type) => {
+export const fetchProposals = async (daoAddress, type) => {
   let proposalData;
-  if (type === "all") proposalData = await getProposal(clubId);
-  else proposalData = await getProposal(clubId, type);
+  if (type === "all") proposalData = await getProposalByDaoAddress(daoAddress);
+  else proposalData = await getProposalByDaoAddress(daoAddress, type);
 
   if (proposalData.status !== 200) {
     return null;
