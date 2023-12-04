@@ -12,14 +12,15 @@ import { BsTwitter } from "react-icons/bs";
 const useStyles = makeStyles({
   card: {
     display: "flex",
-    padding: "30px 40px",
-    borderRadius: "20px",
+    padding: "32px",
+    borderRadius: "12px",
     background: "#151515",
     alignItems: "flex-start",
     justifyContent: "space-around",
     gap: "20px",
-    width: "80vw",
+    width: "70vw",
     margin: "0px auto",
+    marginTop: "40px",
   },
   contentDiv: {
     display: "flex",
@@ -34,7 +35,7 @@ const useStyles = makeStyles({
   },
   imgDiv: {
     padding: "20px",
-    borderRadius: "20px",
+    borderRadius: "12px",
     width: "50vw",
     display: "flex",
     justifyContent: "center",
@@ -45,7 +46,8 @@ const useStyles = makeStyles({
   },
   img: {
     maxWidth: "60%",
-    marginBottom: "20px",
+    marginBottom: "40px",
+    marginTop: "20px",
   },
   link: {
     textDecoration: "underline",
@@ -135,12 +137,10 @@ const InviteCard = ({ setIsUserWhitelisted }) => {
         />
         {!showInviteCode && (
           <div>
-            <Typography variant="heading">
-              25,189 people ahead of you.
-            </Typography>
+            <Typography variant="heading">25k+ people ahead of you</Typography>
             <Typography variant="body">
               {`To gain insights from users into how we can make StationX better,
-            we’re currently invite-only.`}
+            we’re currently invite-only`}
             </Typography>
           </div>
         )}
