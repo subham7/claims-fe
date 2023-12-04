@@ -139,9 +139,9 @@ const App = () => {
   useClubFetch({ networkId });
   const router = useRouter();
 
-  useEffect(() => {
-    setIsMainLink(window.location.origin.includes("app.stationx.network"));
-  }, []);
+  // useEffect(() => {
+  //   setIsMainLink(window.location.origin.includes("app.stationx.network"));
+  // }, []);
 
   useEffect(() => {
     try {
