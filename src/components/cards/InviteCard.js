@@ -17,15 +17,16 @@ const useStyles = makeStyles({
     background: "#151515",
     alignItems: "flex-start",
     justifyContent: "space-around",
-    gap: "20px",
+    gap: "32px",
     width: "70vw",
     margin: "0px auto",
-    marginTop: "40px",
+    marginTop: "20px",
   },
   contentDiv: {
     display: "flex",
     flexDirection: "column",
     gap: "32px",
+    marginTop: "20px",
   },
   inputDiv: {
     display: "flex",
@@ -78,7 +79,7 @@ const useStyles = makeStyles({
     gap: "8px",
     marginBottom: "20px",
     marginTop: "12px",
-    fontSize: "10px",
+    fontSize: "14px",
   },
   share: {
     padding: "8px",
@@ -93,6 +94,13 @@ const useStyles = makeStyles({
   lensImg: {
     borderRadius: "4px",
     background: "#8B5BF9",
+  },
+  textHeading: {
+    marginBottom: "8px",
+  },
+  subText: {
+    fontSize: "16px",
+    lineHeight: "20px",
   },
 });
 
@@ -137,8 +145,10 @@ const InviteCard = ({ setIsUserWhitelisted }) => {
         />
         {!showInviteCode && (
           <div>
-            <Typography variant="heading">25k+ people ahead of you</Typography>
-            <Typography variant="body">
+            <Typography className={classes.textHeading} variant="subheading">
+              <b>25k+ people ahead of you</b>
+            </Typography>
+            <Typography className={classes.subText} variant="body">
               {`To gain insights from users into how we can make StationX better,
             we’re currently invite-only`}
             </Typography>
@@ -147,12 +157,12 @@ const InviteCard = ({ setIsUserWhitelisted }) => {
       </div>
       <div className={classes.contentDiv}>
         <div>
-          <Typography variant="heading">
-            {showInviteCode
-              ? "You've been whitelisted!"
-              : "Already got your invite?"}
+          <Typography className={classes.textHeading} variant="subheading">
+            <b>
+              {showInviteCode ? "You've been whitelisted!" : "Got your invite?"}
+            </b>
           </Typography>
-          <Typography variant="body">
+          <Typography className={classes.subText} variant="body">
             {showInviteCode
               ? "Share this code to whitelist a friend with a beta access to create stations on StationX"
               : `If you don't have an invite code, ask an existing user to invite you or
@@ -179,9 +189,7 @@ const InviteCard = ({ setIsUserWhitelisted }) => {
             <div>
               <div className={classes.warningContainer}>
                 <AiFillInfoCircle size={20} />
-                <Typography>
-                  This code will never be shown to you again
-                </Typography>
+                This code will never be shown to you again
               </div>
               <div className={classes.share}>
                 <BsTwitter size={18} />
