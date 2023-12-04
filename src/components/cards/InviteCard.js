@@ -227,9 +227,13 @@ const InviteCard = ({ setIsUserWhitelisted }) => {
         </div>
         <div>
           {showInviteCode ? (
-            <Button onClick={() => setIsUserWhitelisted(true)}>Done</Button>
+            <Button
+              onClick={() => setIsUserWhitelisted(true)}
+              variant="contained">
+              Done
+            </Button>
           ) : (
-            <Button onClick={onClick}>
+            <Button onClick={onClick} variant="contained">
               {loading ? <CircularProgress size={24} /> : "Submit"}{" "}
             </Button>
           )}
