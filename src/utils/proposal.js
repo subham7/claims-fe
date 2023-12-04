@@ -184,6 +184,7 @@ export const fetchABI = async (executionId, tokenType) => {
     case 12:
     case 16:
     case 13:
+    case 20:
       return factoryContractABI;
     case 8:
       return seaportABI;
@@ -228,11 +229,10 @@ export const getEncodedData = async ({
     nftLink,
     merkleRoot,
     pricePerToken,
+    nftSupply,
   } = proposalData.commands[0];
   let iface;
-
   if (contractABI) iface = new Interface(contractABI);
-
   switch (executionId) {
     case 0:
       const membersData = await subgraphQuery(
@@ -463,7 +463,13 @@ export const getEncodedData = async ({
         daoAddress,
       ]);
       return { data };
-
+    case 20:
+      data = iface.encodeFunctionData("updateTotalRaiseAmount", [
+        nftSupply,
+        convertToWeiGovernance(factoryData?.pricePerToken, 6),
+        daoAddress,
+      ]);
+      return { data };
     default:
       return {};
   }
@@ -752,6 +758,7 @@ export const getTransaction = async ({
     case 2:
     case 3:
     case 13:
+    case 20:
       transaction = {
         //dao
         to: Web3.utils.toChecksumAddress(daoAddress),

@@ -5,6 +5,7 @@ import { IoMdClose } from "react-icons/io";
 import { PROPOSAL_MENU_ITEMS } from "utils/proposalConstants";
 import Router from "next/router";
 import Image from "next/image";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles({
   modalStyle: {
@@ -63,6 +64,21 @@ const useStyles = makeStyles({
 const SelectActionDialog = ({ open, onClose, daoAddress, networkId }) => {
   const classes = useStyles();
 
+  const isGovernanceERC20 = useSelector((state) => {
+    return state.club.erc20ClubDetails.isGovernanceActive;
+  });
+
+  const isGovernanceERC721 = useSelector((state) => {
+    return state.club.erc721ClubDetails.isGovernanceActive;
+  });
+
+  const tokenType = useSelector((state) => {
+    return state.club.clubData.tokenType;
+  });
+
+  const isGovernanceActive =
+    tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
+
   const onProposalClick = (key) => {
     Router.push({
       pathname:
@@ -74,11 +90,13 @@ const SelectActionDialog = ({ open, onClose, daoAddress, networkId }) => {
   const proposalMenuItems = (filterVal) => {
     return PROPOSAL_MENU_ITEMS().filter((item) => item.section === filterVal)
       .length > 0 ? (
-      PROPOSAL_MENU_ITEMS()
+      PROPOSAL_MENU_ITEMS(isGovernanceActive, tokenType)
         .filter(
           (item) =>
             item.section === filterVal &&
-            item.availableOnNetworkIds.includes(networkId),
+            item.availableOnNetworkIds.includes(networkId) &&
+            (!item.condition ||
+              (typeof item.condition === "function" && item.condition())),
         )
         .map((item, index) => {
           return (

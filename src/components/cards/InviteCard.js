@@ -12,19 +12,21 @@ import { BsTwitter } from "react-icons/bs";
 const useStyles = makeStyles({
   card: {
     display: "flex",
-    padding: "30px 40px",
-    borderRadius: "20px",
+    padding: "32px",
+    borderRadius: "12px",
     background: "#151515",
     alignItems: "flex-start",
     justifyContent: "space-around",
-    gap: "20px",
-    width: "80vw",
+    gap: "32px",
+    width: "70vw",
     margin: "0px auto",
+    marginTop: "20px",
   },
   contentDiv: {
     display: "flex",
     flexDirection: "column",
     gap: "32px",
+    marginTop: "20px",
   },
   inputDiv: {
     display: "flex",
@@ -34,7 +36,7 @@ const useStyles = makeStyles({
   },
   imgDiv: {
     padding: "20px",
-    borderRadius: "20px",
+    borderRadius: "12px",
     width: "50vw",
     display: "flex",
     justifyContent: "center",
@@ -45,7 +47,8 @@ const useStyles = makeStyles({
   },
   img: {
     maxWidth: "60%",
-    marginBottom: "20px",
+    marginBottom: "40px",
+    marginTop: "20px",
   },
   link: {
     textDecoration: "underline",
@@ -76,7 +79,7 @@ const useStyles = makeStyles({
     gap: "8px",
     marginBottom: "20px",
     marginTop: "12px",
-    fontSize: "10px",
+    fontSize: "14px",
   },
   share: {
     padding: "8px",
@@ -91,6 +94,13 @@ const useStyles = makeStyles({
   lensImg: {
     borderRadius: "4px",
     background: "#8B5BF9",
+  },
+  textHeading: {
+    marginBottom: "8px",
+  },
+  subText: {
+    fontSize: "16px",
+    lineHeight: "20px",
   },
 });
 
@@ -135,24 +145,24 @@ const InviteCard = ({ setIsUserWhitelisted }) => {
         />
         {!showInviteCode && (
           <div>
-            <Typography variant="heading">
-              25,189 people ahead of you.
+            <Typography className={classes.textHeading} variant="subheading">
+              <b>25k+ people ahead of you</b>
             </Typography>
-            <Typography variant="body">
+            <Typography className={classes.subText} variant="body">
               {`To gain insights from users into how we can make StationX better,
-            we’re currently invite-only.`}
+            we’re currently invite-only`}
             </Typography>
           </div>
         )}
       </div>
       <div className={classes.contentDiv}>
         <div>
-          <Typography variant="heading">
-            {showInviteCode
-              ? "You've been whitelisted!"
-              : "Already got your invite?"}
+          <Typography className={classes.textHeading} variant="subheading">
+            <b>
+              {showInviteCode ? "You've been whitelisted!" : "Got your invite?"}
+            </b>
           </Typography>
-          <Typography variant="body">
+          <Typography className={classes.subText} variant="body">
             {showInviteCode
               ? "Share this code to whitelist a friend with a beta access to create stations on StationX"
               : `If you don't have an invite code, ask an existing user to invite you or
@@ -179,9 +189,7 @@ const InviteCard = ({ setIsUserWhitelisted }) => {
             <div>
               <div className={classes.warningContainer}>
                 <AiFillInfoCircle size={20} />
-                <Typography>
-                  This code will never be shown to you again
-                </Typography>
+                This code will never be shown to you again
               </div>
               <div className={classes.share}>
                 <BsTwitter size={18} />
@@ -219,9 +227,13 @@ const InviteCard = ({ setIsUserWhitelisted }) => {
         </div>
         <div>
           {showInviteCode ? (
-            <Button onClick={() => setIsUserWhitelisted(true)}>Done</Button>
+            <Button
+              onClick={() => setIsUserWhitelisted(true)}
+              variant="contained">
+              Done
+            </Button>
           ) : (
-            <Button onClick={onClick}>
+            <Button onClick={onClick} variant="contained">
               {loading ? <CircularProgress size={24} /> : "Submit"}{" "}
             </Button>
           )}
