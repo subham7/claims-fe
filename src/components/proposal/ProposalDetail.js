@@ -1157,7 +1157,7 @@ Cast your vote before ${new Date(
                             </Stack>
                           </Card>
                         )
-                      ) : proposalData[0].status === "failed" ? (
+                      ) : proposalData[0]?.status === "failed" ? (
                         <Card sx={{ width: "100%" }}>
                           <Grid
                             container
@@ -1184,7 +1184,7 @@ Cast your vote before ${new Date(
                             </Grid>
                           </Grid>
                         </Card>
-                      ) : proposalData[0].status === "closed" ? (
+                      ) : proposalData[0]?.status === "closed" ? (
                         <Card sx={{ width: "100%" }}>
                           <Grid
                             container
