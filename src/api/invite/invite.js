@@ -2,7 +2,7 @@ import axios from "axios";
 
 const REFERRAL_ROOT_URL = "https://cjjbrk3fq7.us-east-1.awsapprunner.com/v1/";
 
-const DEFAULT_CODE = "2VMXVF";
+const DEFAULT_CODE = "UECVXT";
 
 export const whitelistUser = async ({ address, referralCode }) => {
   try {
