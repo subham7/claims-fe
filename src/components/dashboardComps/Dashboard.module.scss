@@ -115,6 +115,11 @@
         .nft {
           border-radius: 12px;
           object-fit: cover;
+          cursor: pointer;
+
+          &:hover {
+            scale: 1.01;
+          }
         }
       }
 
