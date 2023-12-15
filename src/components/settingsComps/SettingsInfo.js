@@ -146,7 +146,7 @@ const SettingsInfo = ({
                       )}
                     </Typography>
                   </Grid>
-                  <Grid item ml={1} mt={1}>
+                  <Grid item mt={1}>
                     {walletAddress ? (
                       daoDetails ? (
                         remainingDays >= 0 && remainingTimeInSecs > 0 ? (
