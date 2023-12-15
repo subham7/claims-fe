@@ -1,4 +1,4 @@
-import { Switch } from "@mui/material";
+import { Switch, Typography } from "@mui/material";
 import { Button } from "@components/ui";
 import React, { useCallback, useEffect, useState } from "react";
 import { TokenGatingStyle } from "./TokenGatingStyles";
@@ -166,7 +166,7 @@ const TokenGating = ({ daoAddress }) => {
   return (
     <div className={classes.container}>
       <div className={classes.heading}>
-        <p className={classes.title}>Token Gating</p>
+        <Typography className={classes.heading}>Token Gating</Typography>
 
         {isAdminUser && fetchedDetails?.tokenA?.length ? (
           <div

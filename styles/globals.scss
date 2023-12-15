@@ -4,7 +4,7 @@
   font-family: "Avenir";
   src: url("https://github.com/platanus/fonts/blob/master/Avenir/Avenir-Medium.woff2")
     format("woff2");
-  background-color: #111111;
+  background-color: #0f0f0f;
 }
 
 html,
@@ -50,9 +50,6 @@ input::-webkit-inner-spin-button {
 }
 .text-error {
   color: red;
-}
-.text-light-gray {
-  color: $light-gray;
 }
 
 /* text weights*/
@@ -232,13 +229,42 @@ input::-webkit-inner-spin-button {
   cursor: pointer;
 }
 
+.ml-1 {
+  margin-left: 1rem;
+}
+
+.heading {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.subheading {
+  font-size: 20px;
+  font-weight: 400;
+  color: $typography-gray;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 32px;
+  align-items: center;
+  position: fixed;
+  width: 100vw;
+  background-color: #0f0f0f;
+  z-index: 1;
+}
+
+.wallet-div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
 .step-buttons {
   display: flex;
   justify-content: flex-end;
   width: 100%;
   gap: 16px;
-}
-
-.w-full {
-  width: 100%;
 }

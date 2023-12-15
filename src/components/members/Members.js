@@ -212,7 +212,10 @@ const Members = ({ daoAddress }) => {
         <Grid item md={9} mb={8}>
           <Grid container mb={4}>
             <Grid item>
-              <ComponentHeader title={"Members"} />
+              <ComponentHeader
+                title={"Station Members"}
+                subtext="See all your members here on this very page"
+              />
             </Grid>
           </Grid>
           <Grid
@@ -278,7 +281,11 @@ const Members = ({ daoAddress }) => {
                 <TableRow>
                   {header?.map((data, key) => {
                     return (
-                      <TableCell align="left" variant="tableHeading" key={key}>
+                      <TableCell
+                        align="left"
+                        variant="tableHeading"
+                        key={key}
+                        sx={{ fontFamily: "inherit" }}>
                         {data}
                       </TableCell>
                     );
@@ -293,10 +300,10 @@ const Members = ({ daoAddress }) => {
                       "&:last-child td, &:last-child th": { border: 0 },
                     }}>
                     <TableCell align="left">
-                      <Typography variant="body" className="text-blue">
+                      <Typography>
                         <Tooltip title={data.userAddress}>
                           <div
-                            className="f-d f-v-c  f-gap-8 c-pointer"
+                            className="f-d f-v-c f-gap-8 c-pointer"
                             onClick={(e) => {
                               handleAddressClick(e, data.userAddress);
                             }}>
@@ -304,14 +311,19 @@ const Members = ({ daoAddress }) => {
                             memberProfiles?.get(data.userAddress) !== undefined
                               ? memberProfiles?.get(data.userAddress)
                               : shortAddress(data.userAddress)}
-                            <OpenInNewIcon style={{ marginBottom: "12px" }} />
+                            <OpenInNewIcon
+                              sx={{
+                                fontSize: "16px",
+                              }}
+                            />
                           </div>
                         </Tooltip>
                       </Typography>
                     </TableCell>
 
                     <TableCell align="left">
-                      <Typography variant="body">
+                      <Typography
+                        sx={{ fontSize: "14px !important", fontWeight: "400" }}>
                         {Number(
                           convertFromWeiGovernance(data.depositAmount, 6),
                         ).toFixed(2)}{" "}
@@ -320,7 +332,7 @@ const Members = ({ daoAddress }) => {
                     </TableCell>
 
                     <TableCell align="left">
-                      <Typography variant="body">
+                      <Typography>
                         {tokenType === "erc20"
                           ? Number(
                               convertFromWeiGovernance(data?.gtAmount, 18),
@@ -330,7 +342,7 @@ const Members = ({ daoAddress }) => {
                     </TableCell>
 
                     <TableCell align="left">
-                      <Typography variant="body">
+                      <Typography>
                         {new Date(+data.timeStamp * 1000).toLocaleDateString()}
                       </Typography>
                     </TableCell>
