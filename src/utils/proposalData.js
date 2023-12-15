@@ -481,8 +481,8 @@ export const proposalFormData = ({
                 formik.setFieldValue(
                   "customNft",
                   nftData?.find(
-                    (token) => token.token_address === e.target.value,
-                  ).token_address,
+                    (token) => token.contract_address === e.target.value,
+                  ).contract_address,
                 )
               }
               renderValue={(selected) => {
@@ -500,13 +500,13 @@ export const proposalFormData = ({
                   return (
                     index ===
                     self.findIndex(
-                      (t) => t.token_address === item.token_address,
+                      (t) => t.contract_address === item.contract_address,
                     )
                   );
                 })
                 .map((nft) => (
-                  <MenuItem key={nft.token_hash} value={nft.token_address}>
-                    {nft.token_address}
+                  <MenuItem key={nft.token_hash} value={nft.contract_address}>
+                    {nft.contract_address}
                   </MenuItem>
                 ))}
             </Select>
@@ -530,10 +530,14 @@ export const proposalFormData = ({
               name="customNftToken"
               id="customNftToken">
               {nftData
-                ?.filter((nft) => nft.token_address === formik.values.customNft)
+                ?.filter(
+                  (nft) => nft.contract_address === formik.values.customNft,
+                )
                 .map((nft) => (
-                  <MenuItem key={nft.token_hash} value={nft.token_id}>
-                    {nft.token_id}
+                  <MenuItem
+                    key={nft.token_hash}
+                    value={nft.nft_data[0].token_id}>
+                    {nft.nft_data[0].token_id}
                   </MenuItem>
                 ))}
             </Select>
