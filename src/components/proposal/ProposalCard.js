@@ -1,5 +1,4 @@
-import { Card, CardActionArea, Chip, Grid } from "@mui/material";
-import { Typography } from "@components/ui";
+import { Card, CardActionArea, Chip, Grid, Typography } from "@mui/material";
 import { calculateDays } from "utils/globalFunctions";
 import SvgTickerIcon from "../../../public/assets/icons/ticker_icon.js";
 import SvgActionIcon from "../../../public/assets/icons/action_icon.js";
@@ -125,7 +124,7 @@ const ProposalCard = ({ proposal, daoAddress }) => {
       <Card className={classes.mainCard}>
         <div className={classes.proposalHeader}>
           <div>
-            <Typography variant="body" className="text-blue">
+            <Typography fontSize={16} fontFamily={"avenir"} fontWeight={500}>
               Proposed by {shortAddress(proposal?.createdBy)} on{" "}
               {new Date(String(proposal?.updateDate)).toLocaleDateString()}
             </Typography>
@@ -173,7 +172,13 @@ const ProposalCard = ({ proposal, daoAddress }) => {
           </div>
         </div>
         <div className="b-mar-1">
-          <Typography variant="subheading">{proposal?.name}</Typography>
+          <Typography
+            fontSize={24}
+            fontFamily={"avenir"}
+            fontWeight={600}
+            mt={-2}>
+            {proposal?.name}
+          </Typography>
         </div>
         <Grid container spacing={1}>
           {proposalDetails &&

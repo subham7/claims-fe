@@ -376,7 +376,7 @@ const AdditionalSettings = ({
           </Grid>
 
           <Grid sx={{ display: "flex", alignItems: "center" }}>
-            <Grid item mt={1} sx={{ display: "flex", alignItems: "center" }}>
+            <Grid item sx={{ display: "flex", alignItems: "center" }}>
               <Typography variant="p" className={classes.valuesStyle}>
                 {daoDetails ? (
                   shortAddress(gnosisAddress)

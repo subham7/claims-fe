@@ -311,20 +311,23 @@ const Proposal = ({ daoAddress }) => {
               data={owners}
               isGovernance={false}
             />
-            <DocsCard
-              heading="Governance"
-              data={[
-                {
-                  title: "Quorum",
-                  value: Club_Quorum,
-                },
-                {
-                  title: "Threshold",
-                  value: Club_Threshold,
-                },
-              ]}
-              isGovernance
-            />
+
+            {isGovernanceActive && (
+              <DocsCard
+                heading="Governance"
+                data={[
+                  {
+                    title: "Quorum",
+                    value: Club_Quorum,
+                  },
+                  {
+                    title: "Threshold",
+                    value: Club_Threshold,
+                  },
+                ]}
+                isGovernance
+              />
+            )}
           </div>
         </Grid>
       </Grid>
