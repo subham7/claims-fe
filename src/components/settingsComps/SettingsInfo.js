@@ -127,51 +127,51 @@ const SettingsInfo = ({
                   <Typography variant="p" className={classes.valuesDimStyle}>
                     Deposits deadline
                   </Typography>
-                  <Grid container>
-                    <Grid item mt={1}>
-                      <Typography variant="p" className={classes.valuesStyle}>
-                        {daoDetails.depositDeadline ? (
-                          new Date(parseInt(daoDetails.depositDeadline) * 1000)
-                            ?.toJSON()
-                            ?.slice(0, 10)
-                            .split("-")
-                            .reverse()
-                            .join("/")
-                        ) : (
-                          <Skeleton
-                            variant="rectangular"
-                            width={100}
-                            height={25}
-                          />
-                        )}
-                      </Typography>
-                    </Grid>
-                    <Grid item ml={1} mt={1}>
-                      {walletAddress ? (
-                        daoDetails ? (
-                          remainingDays >= 0 && remainingTimeInSecs > 0 ? (
-                            <Card className={classes.openTag}>
-                              <Typography className={classes.openTagFont}>
-                                Open
-                              </Typography>
-                            </Card>
-                          ) : (
-                            <Card className={classes.closeTag}>
-                              <Typography className={classes.closeTagFont}>
-                                Closed
-                              </Typography>
-                            </Card>
-                          )
-                        ) : (
-                          <Skeleton
-                            variant="rectangular"
-                            width={100}
-                            height={25}
-                          />
-                        )
-                      ) : null}
-                    </Grid>
+                  {/* <Grid container> */}
+                  <Grid item mt={1}>
+                    <Typography variant="p" className={classes.valuesStyle}>
+                      {daoDetails.depositDeadline ? (
+                        new Date(parseInt(daoDetails.depositDeadline) * 1000)
+                          ?.toJSON()
+                          ?.slice(0, 10)
+                          .split("-")
+                          .reverse()
+                          .join("/")
+                      ) : (
+                        <Skeleton
+                          variant="rectangular"
+                          width={100}
+                          height={25}
+                        />
+                      )}
+                    </Typography>
                   </Grid>
+                  <Grid item ml={1} mt={1}>
+                    {walletAddress ? (
+                      daoDetails ? (
+                        remainingDays >= 0 && remainingTimeInSecs > 0 ? (
+                          <Card className={classes.openTag}>
+                            <Typography className={classes.openTagFont}>
+                              Open
+                            </Typography>
+                          </Card>
+                        ) : (
+                          <Card className={classes.closeTag}>
+                            <Typography className={classes.closeTagFont}>
+                              Closed
+                            </Typography>
+                          </Card>
+                        )
+                      ) : (
+                        <Skeleton
+                          variant="rectangular"
+                          width={100}
+                          height={25}
+                        />
+                      )
+                    ) : null}
+                  </Grid>
+                  {/* </Grid> */}
                 </Grid>
 
                 <Grid item md={3}>
@@ -305,7 +305,7 @@ const SettingsInfo = ({
                         Members
                       </Typography>
                     </Grid>
-                    <Grid item mt={{ lg: 5, xl: 1 }}>
+                    <Grid item mt={1}>
                       <Typography variant="p" className={classes.valuesStyle}>
                         {members ? members.length : 0}
                       </Typography>
