@@ -134,9 +134,11 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
 
   const fetchNfts = async () => {
     try {
+      let nftArr = [];
       const nftsData = await getNFTsByDaoAddress(gnosisAddress, networkId);
-      setNftData(nftsData.data);
-      dispatch(addNftsOwnedByDao(nftsData.data));
+      nftArr.push(nftsData.data);
+      setNftData(nftArr);
+      dispatch(addNftsOwnedByDao(nftArr));
     } catch (error) {
       console.log(error);
     }
