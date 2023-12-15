@@ -134,11 +134,9 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
 
   const fetchNfts = async () => {
     try {
-      let nftArr = [];
       const nftsData = await getNFTsByDaoAddress(gnosisAddress, networkId);
-      nftArr.push(nftsData.data);
-      setNftData(nftArr);
-      dispatch(addNftsOwnedByDao(nftArr));
+      setNftData(nftsData.data.items);
+      dispatch(addNftsOwnedByDao(nftsData.data.items));
     } catch (error) {
       console.log(error);
     }
@@ -155,43 +153,6 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
 
   const handleChange = (e) => {
     setAssetType(e.target.value);
-  };
-
-  const NFTImage = ({ tokenUri }) => {
-    const [imageUrl, setImageUrl] = useState(null);
-
-    useEffect(() => {
-      const fetchImageUrl = async () => {
-        try {
-          const response = await fetch(
-            `/api/proxy?url=${encodeURIComponent(tokenUri)}`,
-          );
-
-          const metadata = await response.json();
-
-          if (metadata.image) {
-            setImageUrl(metadata.image);
-          } else {
-            setImageUrl("/assets/NFT_IMAGES/3.png");
-          }
-        } catch (error) {
-          console.error("Failed to fetch data:", error);
-        }
-      };
-      fetchImageUrl();
-    }, [tokenUri]);
-
-    if (!imageUrl) return;
-
-    return (
-      <img
-        src={imageUrl}
-        height={230}
-        width={230}
-        alt="NFT"
-        className={classes.nft}
-      />
-    );
   };
 
   const treasuryData = [
@@ -347,8 +308,29 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
           ) : (
             <div className={classes.collectiblesContainer}>
               {nftData.length ? (
-                nftData.map((nft) => (
-                  <NFTImage key={nft.token_address} tokenUri={nft.token_uri} />
+                nftData.map((nft, index) => (
+                  <img
+                    onClick={() => {
+                      window.open(
+                        `https://opensea.io/assets/matic/${nft.contract_address}/${nft?.nft_data[0]?.token_id}`,
+                        "_blank",
+                      );
+                    }}
+                    key={
+                      nft?.nft_data[0]?.token_id
+                        ? nft?.nft_data[0]?.token_id
+                        : index
+                    }
+                    src={
+                      nft?.nft_data[0]?.external_data?.image_1024
+                        ? nft?.nft_data[0]?.external_data?.image_1024
+                        : "/assets/NFT_IMAGES/3.png"
+                    }
+                    alt={nft?.contract_name ? nft?.contract_name : "NFT"}
+                    height={230}
+                    width={230}
+                    className={classes.nft}
+                  />
                 ))
               ) : (
                 <NoTokens
