@@ -31,32 +31,39 @@ export default function Step3(props) {
   const networkId = "0x" + chain?.id.toString(16);
 
   const fetchOwners = async (gnosisAddress) => {
-    const { safeSdk } = await getSafeSdk(
-      gnosisAddress,
-      walletAddress,
-      "",
-      networkId,
-    );
+    try {
+      const { safeSdk } = await getSafeSdk(
+        gnosisAddress,
+        walletAddress,
+        "",
+        networkId,
+      );
 
-    const owners = await safeSdk.getOwners();
+      const owners = await safeSdk.getOwners();
 
-    const ownerAddressesArray = owners?.map((value) =>
-      Web3.utils.toChecksumAddress(value),
-    );
+      const ownerAddressesArray = owners?.map((value) =>
+        Web3.utils.toChecksumAddress(value),
+      );
 
-    setOwnerAddresses(ownerAddressesArray);
+      setOwnerAddresses(ownerAddressesArray);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const getAllSafes = async () => {
-    const { safeService } = await getSafeSdk(
-      "",
-      walletAddress,
-      CHAIN_CONFIG[networkId].gnosisTxUrl,
-    );
-    const safes = await safeService.getSafesByOwner(
-      localStorage.getItem("wallet"),
-    );
-    setAllSafeAddresses(safes?.safes);
+    try {
+      const { safeService } = await getSafeSdk(
+        "",
+        walletAddress,
+        CHAIN_CONFIG[networkId].gnosisTxUrl,
+        networkId,
+      );
+      const safes = await safeService.getSafesByOwner(walletAddress);
+      setAllSafeAddresses(safes?.safes);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   useEffect(() => {

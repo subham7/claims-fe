@@ -1,6 +1,15 @@
 import { makeStyles } from "@mui/styles";
 
 export const SettingsInfoStlyes = makeStyles((theme) => ({
+  heading: {
+    fontSize: "28px !important",
+    fontWeight: "600 !important",
+  },
+  subHeading: {
+    fontSize: "20px !important",
+    fontWeight: "400 !important",
+    color: "#d3d3d3",
+  },
   icon: {
     marginRight: "0.5rem",
   },
@@ -9,8 +18,9 @@ export const SettingsInfoStlyes = makeStyles((theme) => ({
     fontWeight: "normal",
   },
   valuesDimStyle: {
-    fontSize: "22px",
+    fontSize: "16px",
     color: "#dcdcdc",
+    fontWeight: "500",
   },
   cardRegular: {
     borderRadius: "10px",
