@@ -102,7 +102,7 @@ export const SettingsInfoStlyes = makeStyles((theme) => ({
     backgroundColor: "#0ABB9233",
   },
   openTagFont: {
-    paddingTop: "5px",
+    padding: "5px 0",
     fontSize: "12px",
     textTransform: "uppercase",
     color: "#0ABB92",
