@@ -23,7 +23,7 @@ import {
   queryStationDataFromSubgraph,
   queryStationListFromSubgraph,
 } from "utils/stationsSubgraphHelper";
-import { shortAddress } from "utils/helper";
+import { requestEthereumChain, shortAddress } from "utils/helper";
 import { OMIT_DAOS } from "utils/constants";
 import useClubFetch from "hooks/useClubFetch";
 import { getReferralCode } from "api/invite/invite";
@@ -224,9 +224,13 @@ const App = () => {
     setOpen(false);
   };
 
-  const showStationsHandler = () => {
+  const showStationsHandler = async () => {
     if (isMainLink) {
       window.open("https://tally.so/r/nG64GQ", "_blank");
+    } else if (networkId !== "0x89") {
+      await requestEthereumChain("wallet_switchEthereumChain", [
+        { chainId: "0x89" },
+      ]);
     } else {
       setManageStation(true);
     }
@@ -268,7 +272,9 @@ const App = () => {
                 subtitle={
                   "Creating a Station is the easiest way to start managing money/assets towards shared goals"
                 }
-                buttonText={isMainLink ? "Join Waitlist" : "Enter App"}
+                buttonText={
+                  networkId === "0x89" ? "Enter App" : "Switch to polygon"
+                }
               />
               <NewCard
                 onClick={claimsHandler}
