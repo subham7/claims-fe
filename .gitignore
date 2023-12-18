@@ -42,3 +42,6 @@ yarn.local
 yarn.lock
 
 .eslintcache
+
+# Sentry Config File
+.sentryclirc
