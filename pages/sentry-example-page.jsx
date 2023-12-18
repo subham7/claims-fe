@@ -66,7 +66,7 @@ export default function Page() {
 
         <p>
           Next, look for the error on the{" "}
-          <a href="https://stationx.sentry.io/issues/?project=4506320088858624">
+          <a href="https://stationx-nq.sentry.io/issues/?project=4506416528818176">
             Issues Page
           </a>
           .
