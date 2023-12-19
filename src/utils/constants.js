@@ -552,12 +552,12 @@ export const stationNetworksChainId = [
     chainId: 1,
     networkId: "0x1",
   },
-  {
-    chainId: 100,
-    networkId: "0x64",
-  },
-  {
-    chainId: 59144,
-    networkId: "0xe708",
-  },
+  // {
+  //   chainId: 100,
+  //   networkId: "0x64",
+  // },
+  // {
+  //   chainId: 59144,
+  //   networkId: "0xe708",
+  // },
 ];

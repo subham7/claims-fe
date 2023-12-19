@@ -2,7 +2,7 @@ import Image from "next/image";
 import classes from "./Navbar.module.scss";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import NetworkSwitcher from "@components/modals/NetworkSwitcher";
+import NetworkSwitcher from "@components/modals/NetworkSwitcher/NetworkSwitcher";
 import {
   CHAIN_CONFIG,
   dropsNetworksChaindId,
@@ -57,8 +57,7 @@ const Navbar = () => {
               </Typography>
             </div>
           )}
-
-          <w3m-button />
+          <w3m-account-button balance="hide" />
         </div>
       </nav>
 
