@@ -120,7 +120,7 @@ export default function Step3(props) {
       {props.formik.values.deploySafe === "oldSafe" &&
         allSafeAddresses?.length > 0 && (
           <>
-            <Typography variant="body" className="text-blue t-pad-d">
+            <Typography variant="body" className="text-blue t-pad-d b-pad-1">
               Select from existing multi-sig wallet(s)
             </Typography>
             <Autocomplete
@@ -132,6 +132,7 @@ export default function Step3(props) {
               }}
               renderInput={(params) => (
                 <TextField
+                  className="b-pad-1"
                   name="safeAddress"
                   {...params}
                   label="Safe address"
@@ -175,7 +176,7 @@ export default function Step3(props) {
                 {ownerAddresses.map((data, key) => {
                   return (
                     <>
-                      <div className="f-d f-v-c tb-pad-1">
+                      <div className="f-d f-v-c b-pad-1">
                         <TextField
                           label="Owner address"
                           // error={!/^0x[a-zA-Z0-9]+/gm.test(addressList[key])}
