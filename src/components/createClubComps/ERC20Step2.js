@@ -11,7 +11,7 @@ export default function ERC20Step2(props) {
 
   return (
     <>
-      <div className="f-d f-vt t-pad-d w-full">
+      <div className="f-d f-vt t-pad-d w-100">
         <Typography variant="body" className="text-blue">
           Set deposit rules for members
         </Typography>
