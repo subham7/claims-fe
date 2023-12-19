@@ -82,10 +82,10 @@ export default function Step3(props) {
         works for you.
       </Typography>
       <br />
-      <Typography variant="body" className="text-blue">
+      <Typography variant="body" className="text-blue b-pad-1">
         Configure Treasury
       </Typography>
-      <Typography variant="info" className="text-light-gray">
+      <Typography variant="body" className="text-light-gray">
         Where do you want to store funds/assets of this station?
       </Typography>
 
@@ -97,7 +97,7 @@ export default function Step3(props) {
         aria-label="deploySafe"
         name="deploySafe"
         id="deploySafe"
-        className="b-pad-1"
+        className="tb-pad-1"
         // className={classes.selectContainer}
       >
         <ToggleButton
@@ -117,51 +117,52 @@ export default function Step3(props) {
       </ToggleButtonGroup>
 
       {/* {props.formik.values.deploySafe} */}
-      {props.formik.values.deploySafe === "oldSafe" && (
-        <>
-          <Typography variant="body" className="text-blue">
-            Select from existing multi-sig wallet(s)
-          </Typography>
-          <Autocomplete
-            name="safeAddress"
-            className={classes.textField}
-            options={allSafeAddresses}
-            onChange={(e, newValue) => {
-              props.formik.setFieldValue("safeAddress", newValue);
-            }}
-            renderInput={(params) => (
-              <TextField
-                name="safeAddress"
-                {...params}
-                label="Safe address"
-                variant="outlined"
-                placeholder="0x00"
-                error={
-                  props.formik.touched.safeAddress &&
-                  Boolean(props.formik.errors.safeAddress)
-                }
-                helperText={
-                  props.formik.touched.safeAddress &&
-                  props.formik.errors.safeAddress
-                }
-              />
-            )}
-          />
+      {props.formik.values.deploySafe === "oldSafe" &&
+        allSafeAddresses?.length > 0 && (
+          <>
+            <Typography variant="body" className="text-blue t-pad-d">
+              Select from existing multi-sig wallet(s)
+            </Typography>
+            <Autocomplete
+              name="safeAddress"
+              className={classes.textField}
+              options={allSafeAddresses}
+              onChange={(e, newValue) => {
+                props.formik.setFieldValue("safeAddress", newValue);
+              }}
+              renderInput={(params) => (
+                <TextField
+                  name="safeAddress"
+                  {...params}
+                  label="Safe address"
+                  variant="outlined"
+                  placeholder="0x00"
+                  error={
+                    props.formik.touched.safeAddress &&
+                    Boolean(props.formik.errors.safeAddress)
+                  }
+                  helperText={
+                    props.formik.touched.safeAddress &&
+                    props.formik.errors.safeAddress
+                  }
+                />
+              )}
+            />
 
-          <p
-            style={{
-              margin: "0",
-              color:
-                props.ownerHelperText ===
-                  "Owners of the safe does not match with the admins of the DAO" ||
-                props.ownerHelperText === "Invalid gnosis address"
-                  ? "red"
-                  : "#dcdcdc",
-            }}>
-            {props.ownerHelperText}
-          </p>
-        </>
-      )}
+            <p
+              style={{
+                margin: "0",
+                color:
+                  props.ownerHelperText ===
+                    "Owners of the safe does not match with the admins of the DAO" ||
+                  props.ownerHelperText === "Invalid gnosis address"
+                    ? "red"
+                    : "#dcdcdc",
+              }}>
+              {props.ownerHelperText}
+            </p>
+          </>
+        )}
 
       {props.formik.values.deploySafe === "oldSafe" &&
         props.formik.values.safeAddress?.length > 0 && (

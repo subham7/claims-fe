@@ -88,7 +88,6 @@ export const ERC20Step2Styles = makeStyles((theme) => ({
   },
   smallText: {
     fontSize: "16px",
-
     color: "#6475A3",
   },
 }));
@@ -133,7 +132,6 @@ export const Step3Styles = makeStyles((theme) => ({
   },
   textField: {
     width: "100%",
-    margin: "16px 0 25px 0",
     fontSize: "18px",
   },
   image: {
