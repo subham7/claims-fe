@@ -320,7 +320,7 @@ export const CHAIN_CONFIG = {
     usdcAddress: "0xb73603C5d87fA094B7314C74ACE2e64D165016fb",
     airdropContractAddress: "",
     blockExplorerUrl: "https://pacific-explorer.manta.network/",
-    disburseContractAddress: "0x3DA9Fb55Ab77b10F99C1C1f52C150280dbd5a611",
+    disburseContractAddress: "0x7aA33CC623Db79d5fFa859bA6cBE2Fb93c237401",
   },
   "0x28c5f": {
     chainName: "Taiko",

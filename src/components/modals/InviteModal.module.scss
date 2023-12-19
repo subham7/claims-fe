@@ -1,0 +1,16 @@
+.modal {
+  width: 500px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  z-index: 2002;
+  padding: 28px 25px;
+  border-radius: 12px;
+  background: #0F0F0F;
+
+  .buttons {
+    display: flex;
+    justify-content: space-between;
+  }
+}

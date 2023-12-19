@@ -50,7 +50,7 @@ const SettingsInfo = ({
 
   return (
     <>
-      <Grid container spacing={3}>
+      <Grid container spacing={3} paddingTop={2}>
         <Grid sx={{ width: "70%" }} item>
           <Card className={classes.cardRegular}>
             <Grid
@@ -59,10 +59,10 @@ const SettingsInfo = ({
               sx={{ display: "flex", justifyContent: "space-between" }}>
               <Grid item ml={2} mt={4}>
                 <Stack spacing={0}>
-                  <Typography variant="h4">
+                  <Typography className={classes.heading}>
                     {daoDetails.daoName ? daoDetails.daoName : null}
                   </Typography>
-                  <Typography variant="h6" className={classes.dimColor}>
+                  <Typography className={classes.subHeading}>
                     {daoDetails.daoSymbol ? "$" + daoDetails.daoSymbol : null}
                   </Typography>
                 </Stack>
@@ -124,55 +124,56 @@ const SettingsInfo = ({
               }}>
               <Grid container spacing={7}>
                 <Grid item md={3}>
-                  <Typography variant="settingText">
+                  <Typography variant="p" className={classes.valuesDimStyle}>
                     Deposits deadline
                   </Typography>
-                  <Grid container>
-                    <Grid item mt={1}>
-                      <Typography variant="p" className={classes.valuesStyle}>
-                        {daoDetails.depositDeadline ? (
-                          new Date(parseInt(daoDetails.depositDeadline) * 1000)
-                            ?.toJSON()
-                            ?.slice(0, 10)
-                            .split("-")
-                            .reverse()
-                            .join("/")
-                        ) : (
-                          <Skeleton
-                            variant="rectangular"
-                            width={100}
-                            height={25}
-                          />
-                        )}
-                      </Typography>
-                    </Grid>
-                    <Grid item ml={1} mt={1}>
-                      {walletAddress ? (
-                        daoDetails ? (
-                          remainingDays >= 0 && remainingTimeInSecs > 0 ? (
-                            <Card className={classes.openTag}>
-                              <Typography className={classes.openTagFont}>
-                                Open
-                              </Typography>
-                            </Card>
-                          ) : (
-                            <Card className={classes.closeTag}>
-                              <Typography className={classes.closeTagFont}>
-                                Closed
-                              </Typography>
-                            </Card>
-                          )
-                        ) : (
-                          <Skeleton
-                            variant="rectangular"
-                            width={100}
-                            height={25}
-                          />
-                        )
-                      ) : null}
-                    </Grid>
+                  {/* <Grid container> */}
+                  <Grid item mt={1}>
+                    <Typography variant="p" className={classes.valuesStyle}>
+                      {daoDetails.depositDeadline ? (
+                        new Date(parseInt(daoDetails.depositDeadline) * 1000)
+                          ?.toJSON()
+                          ?.slice(0, 10)
+                          .split("-")
+                          .reverse()
+                          .join("/")
+                      ) : (
+                        <Skeleton
+                          variant="rectangular"
+                          width={100}
+                          height={25}
+                        />
+                      )}
+                    </Typography>
                   </Grid>
+                  <Grid item mt={1}>
+                    {walletAddress ? (
+                      daoDetails ? (
+                        remainingDays >= 0 && remainingTimeInSecs > 0 ? (
+                          <Card className={classes.openTag}>
+                            <Typography className={classes.openTagFont}>
+                              Open
+                            </Typography>
+                          </Card>
+                        ) : (
+                          <Card className={classes.closeTag}>
+                            <Typography className={classes.closeTagFont}>
+                              Closed
+                            </Typography>
+                          </Card>
+                        )
+                      ) : (
+                        <Skeleton
+                          variant="rectangular"
+                          width={100}
+                          height={25}
+                        />
+                      )
+                    ) : null}
+                  </Grid>
+                  {/* </Grid> */}
                 </Grid>
+
                 <Grid item md={3}>
                   <Grid container direction="column">
                     {tokenType === "erc721" ? (
@@ -304,7 +305,7 @@ const SettingsInfo = ({
                         Members
                       </Typography>
                     </Grid>
-                    <Grid item mt={{ lg: 5, xl: 1 }}>
+                    <Grid item mt={1}>
                       <Typography variant="p" className={classes.valuesStyle}>
                         {members ? members.length : 0}
                       </Typography>
@@ -314,7 +315,9 @@ const SettingsInfo = ({
                 <Grid item md={3}>
                   <Grid container direction="column">
                     <Grid item>
-                      <Typography variant="settingText">
+                      <Typography
+                        variant="p"
+                        className={classes.valuesDimStyle}>
                         Treasury wallet
                       </Typography>
                     </Grid>
@@ -339,7 +342,9 @@ const SettingsInfo = ({
                     <Grid item md={3}>
                       <Grid container direction="column">
                         <Grid item>
-                          <Typography variant="settingText">
+                          <Typography
+                            variant="p"
+                            className={classes.valuesDimStyle}>
                             Threshold
                           </Typography>
                         </Grid>
@@ -364,7 +369,11 @@ const SettingsInfo = ({
                     <Grid item md={3}>
                       <Grid container direction="column">
                         <Grid item>
-                          <Typography variant="settingText">Quorum</Typography>
+                          <Typography
+                            variant="p"
+                            className={classes.valuesDimStyle}>
+                            Quorum
+                          </Typography>
                         </Grid>
                         <Grid item mt={2}>
                           <Typography
@@ -391,7 +400,9 @@ const SettingsInfo = ({
                       <Grid item md={3}>
                         <Grid container direction="column">
                           <Grid item>
-                            <Typography variant="settingText">
+                            <Typography
+                              variant="p"
+                              className={classes.valuesDimStyle}>
                               Total Raise Amount
                             </Typography>
                           </Grid>
@@ -475,7 +486,7 @@ const SettingsInfo = ({
               {tokenType === "erc721" ? (
                 <Grid item ml={1} mt={1} mb={2}>
                   <Stack spacing={1}>
-                    <Typography variant="settingText">
+                    <Typography variant="p" className={classes.valuesDimStyle}>
                       NFTs Minted so far
                     </Typography>
                     <Typography variant="p" className={classes.valuesStyle}>
@@ -494,7 +505,7 @@ const SettingsInfo = ({
               ) : (
                 <Grid item ml={1} mt={1} mb={2}>
                   <Stack spacing={1}>
-                    <Typography variant="settingText">
+                    <Typography variant="p" className={classes.valuesDimStyle}>
                       Amount raised so far
                     </Typography>
                     <Typography variant="p" className={classes.valuesStyle}>
@@ -529,7 +540,7 @@ const SettingsInfo = ({
                 xs
                 sx={{ display: "flex", justifyContent: "flex-end" }}>
                 <Stack spacing={1}>
-                  <Typography variant="settingText">
+                  <Typography variant="p" className={classes.valuesDimStyle}>
                     {tokenType === "erc721"
                       ? "Total NFT Supply"
                       : "Total Raise Amount"}

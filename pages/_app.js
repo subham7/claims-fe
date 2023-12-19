@@ -4,7 +4,6 @@ import theme from "../src/theme/theme";
 import store from "../src/redux/store";
 import { Provider } from "react-redux";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
-import { AnnouncementProvider } from "../src/components/AnnouncementContext";
 import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi/react";
 import { WagmiConfig } from "wagmi";
 import {
@@ -23,6 +22,7 @@ import {
   mantaMainnet,
 } from "utils/constants";
 import "../styles/globals.scss";
+import Script from "next/script";
 
 const API_URL = "https://api.lens.dev";
 
@@ -78,17 +78,29 @@ createWeb3Modal({
 
 function MyApp({ Component, pageProps }) {
   return (
-    <ThemeProvider theme={theme()}>
-      <ApolloProvider client={apolloClient}>
-        <WagmiConfig config={wagmiConfig}>
-          <Provider store={store}>
-            <AnnouncementProvider>
+    <>
+      <Script
+        src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}`}
+      />
+      <Script id="google-analytics">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+ 
+          gtag('config', ${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS});
+        `}
+      </Script>
+      <ThemeProvider theme={theme()}>
+        <ApolloProvider client={apolloClient}>
+          <WagmiConfig config={wagmiConfig}>
+            <Provider store={store}>
               <Component {...pageProps} />
-            </AnnouncementProvider>
-          </Provider>
-        </WagmiConfig>
-      </ApolloProvider>
-    </ThemeProvider>
+            </Provider>
+          </WagmiConfig>
+        </ApolloProvider>
+      </ThemeProvider>
+    </>
   );
 }
 

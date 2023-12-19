@@ -321,11 +321,25 @@ const AdditionalSettings = ({
           container
           sx={{ display: "flex", justifyContent: "space-between" }}>
           <Grid item>
-            <Typography variant="settingText">
+            <Typography
+              className={classes.valuesDimStyle}
+              variant="settingText">
               Token contract address
             </Typography>
           </Grid>
+
           <Grid item sx={{ display: "flex", alignItems: "center" }}>
+            <Typography
+              variant="p"
+              className={classes.valuesStyle}
+              sx={{ display: "flex", alignItems: "center" }}>
+              {daoDetails ? (
+                shortAddress(daoAddress)
+              ) : (
+                <Skeleton variant="rectangular" width={100} height={25} />
+              )}
+            </Typography>
+
             <IconButton
               color="primary"
               onClick={() => {
@@ -342,13 +356,6 @@ const AdditionalSettings = ({
               }}>
               <OpenInNewIcon className={classes.iconColor} />
             </IconButton>
-            <Typography variant="p" className={classes.valuesStyle}>
-              {daoDetails ? (
-                shortAddress(daoAddress)
-              ) : (
-                <Skeleton variant="rectangular" width={100} height={25} />
-              )}
-            </Typography>
           </Grid>
         </Grid>
 
@@ -361,11 +368,23 @@ const AdditionalSettings = ({
           container
           sx={{ display: "flex", justifyContent: "space-between" }}>
           <Grid item>
-            <Typography variant="settingText">Treasury address</Typography>
+            <Typography
+              className={classes.valuesDimStyle}
+              variant="settingText">
+              Treasury address
+            </Typography>
           </Grid>
 
           <Grid sx={{ display: "flex", alignItems: "center" }}>
-            <Grid item>
+            <Grid item sx={{ display: "flex", alignItems: "center" }}>
+              <Typography variant="p" className={classes.valuesStyle}>
+                {daoDetails ? (
+                  shortAddress(gnosisAddress)
+                ) : (
+                  <Skeleton variant="rectangular" width={100} height={25} />
+                )}
+              </Typography>
+
               <IconButton
                 color="primary"
                 onClick={() => {
@@ -373,8 +392,7 @@ const AdditionalSettings = ({
                 }}>
                 <ContentCopyIcon className={classes.iconColor} />
               </IconButton>
-            </Grid>
-            <Grid item>
+
               <IconButton
                 color="primary"
                 onClick={() => {
@@ -385,16 +403,6 @@ const AdditionalSettings = ({
                 <OpenInNewIcon className={classes.iconColor} />
               </IconButton>
             </Grid>
-
-            <Grid item mt={1}>
-              <Typography variant="p" className={classes.valuesStyle}>
-                {daoDetails ? (
-                  shortAddress(gnosisAddress)
-                ) : (
-                  <Skeleton variant="rectangular" width={100} height={25} />
-                )}
-              </Typography>
-            </Grid>
           </Grid>
         </Grid>
         <Divider />
@@ -406,7 +414,11 @@ const AdditionalSettings = ({
           py={2}
           sx={{ display: "flex", justifyContent: "space-between" }}>
           <Grid item>
-            <Typography variant="settingText">Admin fees</Typography>
+            <Typography
+              variant="settingText"
+              className={classes.valuesDimStyle}>
+              Admin fees
+            </Typography>
           </Grid>
           <Grid
             sx={{
@@ -441,7 +453,11 @@ const AdditionalSettings = ({
           py={2}
           sx={{ display: "flex", justifyContent: "space-between" }}>
           <Grid item>
-            <Typography variant="settingText">Deposit deadline</Typography>
+            <Typography
+              variant="settingText"
+              className={classes.valuesDimStyle}>
+              Deposit deadline
+            </Typography>
           </Grid>
           <Grid
             // container

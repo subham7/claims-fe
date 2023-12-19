@@ -131,8 +131,8 @@ const CreateProposalDialog = ({ daoAddress }) => {
   const fetchNfts = useCallback(async () => {
     try {
       const nftsData = await getNFTsByDaoAddress(gnosisAddress, networkId);
-      setNftData(nftsData?.data);
-      dispatch(addNftsOwnedByDao(nftsData?.data));
+      setNftData(nftsData.data?.items);
+      dispatch(addNftsOwnedByDao(nftsData.data?.items));
     } catch (error) {
       console.log(error);
     }
@@ -159,6 +159,7 @@ const CreateProposalDialog = ({ daoAddress }) => {
       amountToAirdrop: 0,
       carryFee: 0,
       pricePerToken: 0,
+      nftSupply: 0,
       quorum: 0,
       threshold: 0,
       totalDeposit: 0,

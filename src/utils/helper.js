@@ -340,11 +340,11 @@ export const addLineBreaks = (inputString, breakAfter = 40) => {
 };
 
 export const convertToFullNumber = (expNotation) => {
-  if (expNotation.includes("e")) {
+  if (typeof expNotation === "string") {
     let [base, exponent] = expNotation?.split("e");
     let [whole, fractional] = base?.split(".");
 
-    if (exponent.includes("+")) {
+    if (exponent?.includes("+")) {
       let positiveExponent = parseInt(exponent?.replace("+", ""), 10);
       if (fractional) {
         let adjustedWhole =

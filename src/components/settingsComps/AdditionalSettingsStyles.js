@@ -11,11 +11,13 @@ export const AdditionalSettingsStyles = makeStyles({
     marginBottom: "40px",
   },
   heading: {
-    fontSize: "30px !important",
-    marginBottom: "30px !important",
+    fontSize: "24px !important",
+    marginBottom: "30px  !important",
+    fontFamily: "inherit  !important",
+    fontWeight: "500  !important",
   },
   iconColor: {
-    fontSize: "18px",
+    fontSize: "18px !important",
     color: "#dcdcdc",
   },
   valuesStyle: {
@@ -33,5 +35,10 @@ export const AdditionalSettingsStyles = makeStyles({
   text: {
     fontSize: "20px",
     fontWeight: "normal",
+  },
+  valuesDimStyle: {
+    fontSize: "20px",
+    color: "#dcdcdc",
+    fontWeight: "500",
   },
 });
