@@ -41,8 +41,8 @@ module.exports = withSentryConfig(
 
     // Suppresses source map uploading logs during build
     silent: true,
-    org: "stationx",
-    project: "javascript-nextjs",
+    org: "stationx-nq",
+    project: "stationx-app",
   },
   {
     // For all available options, see:
