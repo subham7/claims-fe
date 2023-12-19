@@ -3,8 +3,13 @@ import classes from "./Navbar.module.scss";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import NetworkSwitcher from "@components/modals/NetworkSwitcher";
-import { dropsNetworksChaindId, stationNetworksChainId } from "utils/constants";
-import { useAccount } from "wagmi";
+import {
+  CHAIN_CONFIG,
+  dropsNetworksChaindId,
+  stationNetworksChainId,
+} from "utils/constants";
+import { useAccount, useNetwork } from "wagmi";
+import { Typography } from "@mui/material";
 
 const Navbar = () => {
   const [showModal, setShowModal] = useState(false);
@@ -12,6 +17,8 @@ const Navbar = () => {
 
   const router = useRouter();
   const { address } = useAccount();
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   const showNetworkModalHandler = () => {
     setShowModal(!showModal);
@@ -38,7 +45,16 @@ const Navbar = () => {
         <div className={classes["wallet-div"]}>
           {address && (
             <div onClick={showNetworkModalHandler} className={classes.switch}>
-              Switch Network
+              <Image
+                src={CHAIN_CONFIG[networkId].logoUri}
+                height={25}
+                width={25}
+                alt={CHAIN_CONFIG[networkId].shortName}
+                className={classes.networkImg}
+              />
+              <Typography variant="inherit">
+                {CHAIN_CONFIG[networkId].shortName}
+              </Typography>
             </div>
           )}
 
