@@ -16,5 +16,27 @@
     align-items: center;
     justify-content: center;
     gap: 16px;
+
+    .switch {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      background: #161616;
+      padding: 7px 20px;
+      border-radius: 20px;
+      border: 1px solid #222222;
+      cursor: pointer;
+      color: $typography-gray;
+      &:hover {
+        background: #1b1b1b;
+      }
+
+      .networkImg{
+        border-radius: 25px;
+        border: 1px solid #222222;
+      }
+    
+    }
   }
 }

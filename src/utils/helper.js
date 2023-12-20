@@ -393,6 +393,7 @@ export const processAmount = (amount) => {
 export const handleSignMessage = async (userAddress, data) => {
   try {
     const web3 = await web3InstanceEthereum();
+    // const web3 = await web3InstanceCustomRPC();
 
     const signature = await web3?.eth.personal.sign(data, userAddress, "");
 
