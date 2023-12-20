@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { CHAIN_CONFIG } from "utils/constants";
 import classes from "./NetworkSwitcher.module.scss";
 import { requestEthereumChain } from "utils/helper";
+import { IoClose } from "react-icons/io5";
 
 const Backdrop = ({ onClose }) => {
   return <div onClick={onClose} className={classes.backdrop}></div>;
@@ -54,6 +55,8 @@ const NetworkSwitcher = ({ onClose, supportedNetworks }) => {
         <Typography className={classes.header} variant="inherit">
           {loading ? "Switching Network" : " Supported Networks"}
         </Typography>
+
+        <IoClose onClick={onClose} size={20} className={classes.close} />
 
         <div className={classes.networksContainer}>
           {loading ? (
