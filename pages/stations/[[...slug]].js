@@ -16,6 +16,7 @@ import { getReferralCode } from "api/invite/invite";
 import { OMIT_DAOS } from "utils/constants";
 import { shortAddress } from "utils/helper";
 import { useRouter } from "next/router";
+import BackdropLoader from "@components/common/BackdropLoader";
 
 const useStyles = makeStyles({
   container: {
@@ -117,8 +118,9 @@ const StationsPage = () => {
   const networkId = "0x" + chain?.id.toString(16);
   const dispatch = useDispatch();
   const [clubListData, setClubListData] = useState([]);
-  const [isUserWhitelisted, setIsUserWhitelisted] = useState(false);
+  const [isUserWhitelisted, setIsUserWhitelisted] = useState(null);
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleCreateButtonClick = async () => {
     const { pathname } = router;
@@ -192,12 +194,15 @@ const StationsPage = () => {
   useEffect(() => {
     const fetchClubs = async () => {
       try {
+        setIsLoading(true);
         const data = await queryStationListFromSubgraph(
           walletAddress,
           networkId,
         );
 
         if (data.users) setClubListData(data.users);
+
+        setIsLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -205,6 +210,14 @@ const StationsPage = () => {
 
     if (walletAddress && networkId) fetchClubs();
   }, [networkId, walletAddress]);
+
+  if (isUserWhitelisted === null || isLoading) {
+    return (
+      <Layout showSidebar={false} faucet={false}>
+        <BackdropLoader isOpen={true} showLoading={true} />
+      </Layout>
+    );
+  }
 
   return (
     <Layout showSidebar={false} faucet={false}>
