@@ -16,7 +16,7 @@ import { tokenType, useStationForType } from "../../src/data/create";
 import ERC20Step2 from "../../src/components/createClubComps/ERC20Step2";
 import NFTStep2 from "../../src/components/createClubComps/NFTStep2";
 import dayjs from "dayjs";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 // import ErrorModal from "../../src/components/createClubComps/ErrorModal";
 // import SafeDepositLoadingModal from "../../src/components/createClubComps/SafeDepositLoadingModal";
 import {
@@ -51,10 +51,6 @@ const Create = () => {
   const [loader, setLoader] = useState(false);
 
   const { initiateConnection } = useSafe();
-
-  const GNOSIS_DATA = useSelector((state) => {
-    return state.gnosis;
-  });
 
   const handleStep = (step) => () => {
     setActiveStep(step);
