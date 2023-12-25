@@ -1,7 +1,7 @@
 import { getProposalByDaoAddress } from "../api/proposal";
 import { createCancelProposal, getProposalTxHash } from "api/proposal";
 import Web3 from "web3";
-import { getIncreaseGasPrice, getSafeSdk } from "./helper";
+import { convertToFullNumber, getIncreaseGasPrice, getSafeSdk } from "./helper";
 import { factoryContractABI } from "abis/factoryContract.js";
 import { erc721DaoABI } from "abis/erc721Dao";
 import { erc20DaoABI } from "abis/erc20Dao";
@@ -458,7 +458,7 @@ export const getEncodedData = async ({
       return { data, approvalData };
     case 13:
       data = iface.encodeFunctionData("updateTotalRaiseAmount", [
-        factoryData?.distributionAmount,
+        convertToFullNumber(factoryData?.distributionAmount + ""),
         convertToWeiGovernance(pricePerToken, 6),
         daoAddress,
       ]);
