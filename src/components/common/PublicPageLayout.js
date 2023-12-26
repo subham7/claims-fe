@@ -36,6 +36,14 @@ const PublicPageLayout = ({
         <div className={classes.mainSocials}>
           <SocialButtons data={socialData} />
         </div>
+
+        {clubData && clubData.tokenType === "erc721" ? (
+          <></>
+        ) : (
+          <div className={classes.secondaryInputComponents}>
+            {inputComponents}
+          </div>
+        )}
       </div>
 
       <div className={classes.rightContainer}>
@@ -87,10 +95,11 @@ const PublicPageLayout = ({
           )
         ) : null}
 
-        {/* For mobile screen */}
-        <div className={classes.secondaryInputComponents}>
-          {inputComponents}
-        </div>
+        {clubData && clubData.tokenType === "erc721" && (
+          <div className={classes.secondaryInputComponents}>
+            {inputComponents}
+          </div>
+        )}
 
         {bio && <About bio={bio} />}
 
