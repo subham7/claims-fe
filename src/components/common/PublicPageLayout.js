@@ -16,7 +16,6 @@ const PublicPageLayout = ({
   inputComponents,
   socialData,
   eligibilityProps,
-  isSuccessfull,
   loading,
   isDeposit,
   bio,

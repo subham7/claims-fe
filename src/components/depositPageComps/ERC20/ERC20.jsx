@@ -12,13 +12,13 @@ import * as yup from "yup";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import { useAccount } from "wagmi";
-import { useRouter } from "next/router";
 import DepositDetails from "./DepositDetails";
 import { getDocumentsByClubId } from "api/document";
 import PublicPageLayout from "@components/common/PublicPageLayout";
 import DepositPreRequisites from "../DepositPreRequisites";
 import { CHAIN_CONFIG } from "utils/constants";
 import { whitelistOnDeposit } from "api/invite/invite";
+import SuccessModal from "@components/modals/SuccessModal/SuccessModal";
 
 const DepositInputComponents = ({
   formik,
@@ -52,10 +52,9 @@ const ERC20 = ({
   gatedTokenDetails,
   depositConfig,
 }) => {
-  const [showMessage, setShowMessage] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [depositSuccessfull, setDepositSuccessfull] = useState(false);
-  const [message, setMessage] = useState("");
+  const [depositSuccessfull, setDepositSuccessfull] = useState(null);
+  const [failed, setFailed] = useState(null);
   const [active, setActive] = useState(false);
   const [tokenDetails, setTokenDetails] = useState({
     tokenDecimal: 6,
@@ -80,7 +79,6 @@ const ERC20 = ({
   const day = Math.floor(new Date().getTime() / 1000.0);
   const day1 = dayjs.unix(day);
   const day2 = dayjs.unix(daoDetails.depositDeadline);
-  const router = useRouter();
   const remainingDays = day2.diff(day1, "day");
   const remainingTimeInSecs = day2.diff(day1, "seconds");
 
@@ -94,13 +92,6 @@ const ERC20 = ({
     } catch (error) {
       console.log(error);
     }
-  };
-
-  const showMessageHandler = () => {
-    setShowMessage(true);
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 4000);
   };
 
   const handleIsSignedChange = (newValue) => {
@@ -186,19 +177,12 @@ const ERC20 = ({
 
         setLoading(false);
         setDepositSuccessfull(true);
-        router.push(`/dashboard/${daoAddress}/${networkId}`, undefined, {
-          shallow: true,
-        });
-        showMessageHandler();
-        setMessage("Deposit Successful");
         await whitelistOnDeposit(walletAddress);
         formik.values.tokenInput = 0;
       } catch (error) {
         console.log(error);
-        setDepositSuccessfull(false);
+        setFailed(true);
         setLoading(false);
-        setMessage("Deposit Failed");
-        showMessageHandler();
       }
     },
   });
@@ -278,45 +262,65 @@ const ERC20 = ({
   }, [day2, day1]);
 
   return (
-    <PublicPageLayout
-      clubData={clubData}
-      tokenDetails={tokenDetails}
-      headerProps={{
-        contractData: clubData,
-        deadline: daoDetails?.depositDeadline,
-        tokenDetails: tokenDetails,
-        isDeposit: true,
-        isActive: active,
-      }}
-      inputComponents={
-        <DepositInputComponents
-          clubData={clubData}
-          formik={formik}
-          isDepositDisabled={isDepositDisabled()}
-          tokenDetails={tokenDetails}
-          depositPreRequisitesProps={{
-            uploadedDocInfo: uploadedDocInfo,
-            daoAddress: daoAddress,
-            onIsSignedChange: handleIsSignedChange,
-            onIsW8BenSignedChange: handleIsW8BenSignedChange,
+    <>
+      <PublicPageLayout
+        clubData={clubData}
+        tokenDetails={tokenDetails}
+        headerProps={{
+          contractData: clubData,
+          deadline: daoDetails?.depositDeadline,
+          tokenDetails: tokenDetails,
+          isDeposit: true,
+          isActive: active,
+        }}
+        inputComponents={
+          <DepositInputComponents
+            clubData={clubData}
+            formik={formik}
+            isDepositDisabled={isDepositDisabled()}
+            tokenDetails={tokenDetails}
+            depositPreRequisitesProps={{
+              uploadedDocInfo: uploadedDocInfo,
+              daoAddress: daoAddress,
+              onIsSignedChange: handleIsSignedChange,
+              onIsW8BenSignedChange: handleIsW8BenSignedChange,
+            }}
+          />
+        }
+        socialData={clubInfo}
+        isDeposit={true}
+        bio={clubInfo?.bio}
+        eligibilityProps={{
+          gatedTokenDetails: gatedTokenDetails,
+          isDeposit: true,
+          isTokenGated: isTokenGated,
+          isWhitelist: whitelistUserData?.setWhitelist,
+        }}
+        members={members}
+        loading={loading}
+      />
+
+      {depositSuccessfull ? (
+        <SuccessModal
+          heading={"Hurray! We made it"}
+          subheading="Deposited $USDC onchain successfully."
+          isError={false}
+          dashboardRoute={`/dashboard/${daoAddress}/${networkId}`}
+          onClose={() => {
+            setDepositSuccessfull(false);
           }}
         />
-      }
-      socialData={clubInfo}
-      isDeposit={true}
-      bio={clubInfo?.bio}
-      eligibilityProps={{
-        gatedTokenDetails: gatedTokenDetails,
-        isDeposit: true,
-        isTokenGated: isTokenGated,
-        isWhitelist: whitelistUserData?.setWhitelist,
-      }}
-      members={members}
-      message={message}
-      isSuccessfull={depositSuccessfull}
-      loading={loading}
-      showMessage={showMessage}
-    />
+      ) : failed ? (
+        <SuccessModal
+          heading={"Something went wrong"}
+          subheading="Looks like we hit a bump here, try again?"
+          isError={true}
+          onClose={() => {
+            setFailed(false);
+          }}
+        />
+      ) : null}
+    </>
   );
 };
 

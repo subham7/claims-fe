@@ -14,6 +14,7 @@ import { getDocumentsByClubId } from "api/document";
 import PublicPageLayout from "@components/common/PublicPageLayout";
 import { CHAIN_CONFIG } from "utils/constants";
 import { whitelistOnDeposit } from "api/invite/invite";
+import SuccessModal from "@components/modals/SuccessModal/SuccessModal";
 
 const DepositInputComponents = ({ depositPreRequisitesProps, mintProps }) => {
   return (
@@ -44,14 +45,13 @@ const ERC721 = ({
   });
   const [active, setActive] = useState(false);
   const [members, setMembers] = useState([]);
-  const [showMessage, setShowMessage] = useState(false);
   const [loading, setLoading] = useState(false);
   const [hasClaimed, setHasClaimed] = useState(false);
   const [balanceOfNft, setBalanceOfNft] = useState();
-  const [message, setMessage] = useState("");
   const [imgUrl, setImgUrl] = useState("");
   const [count, setCount] = useState(1);
-  const [claimSuccessfull, setClaimSuccessfull] = useState(false);
+  const [claimSuccessfull, setClaimSuccessfull] = useState(null);
+  const [failed, setFailed] = useState(null);
   const [isSigned, setIsSigned] = useState(false);
   const [isW8BenSigned, setIsW8BenSigned] = useState(false);
   const [uploadedDocInfo, setUploadedDocInfo] = useState({});
@@ -115,13 +115,6 @@ const ERC721 = ({
     }
   };
 
-  const showMessageHandler = () => {
-    setShowMessage(true);
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 4000);
-  };
-
   const claimNFTHandler = async () => {
     try {
       setLoading(true);
@@ -145,18 +138,11 @@ const ERC721 = ({
       );
       setLoading(false);
       setClaimSuccessfull(true);
-      router.push(`/dashboard/${daoAddress}/${networkId}`, undefined, {
-        shallow: true,
-      });
-      setMessage("Transaction Successful");
-      showMessageHandler();
       await whitelistOnDeposit(walletAddress);
     } catch (error) {
       console.log(error);
-      setClaimSuccessfull(false);
       setLoading(false);
-      setMessage("Transaction Failed");
-      showMessageHandler();
+      setFailed(true);
     }
   };
 
@@ -224,59 +210,80 @@ const ERC721 = ({
   }, [day2, day1, daoDetails?.depositDeadline]);
 
   return (
-    <PublicPageLayout
-      clubData={clubData}
-      tokenDetails={tokenDetails}
-      headerProps={{
-        contractData: clubData,
-        deadline: daoDetails?.depositDeadline,
-        tokenDetails: tokenDetails,
-        isDeposit: true,
-        isActive: active,
-      }}
-      inputComponents={
-        <DepositInputComponents
-          depositPreRequisitesProps={{
-            uploadedDocInfo: uploadedDocInfo,
-            daoAddress: daoAddress,
-            onIsSignedChange: handleIsSignedChange,
-            onIsW8BenSignedChange: handleIsW8BenSignedChange,
-          }}
-          mintProps={{
-            claimNFTHandler: claimNFTHandler,
-            clubData: clubData,
-            count: count,
-            hasClaimed: hasClaimed,
-            remainingDays: remainingDays,
-            remainingTimeInSecs: remainingTimeInSecs,
-            setCount: setCount,
-            balanceOfNft: balanceOfNft,
-            isEligibleForTokenGating: isEligibleForTokenGating,
-            isTokenGated: isTokenGated,
-            whitelistUserData: whitelistUserData,
-            isSigned: isSigned,
-            isW8BenSigned: isW8BenSigned,
-            isSignable: isSignable,
+    <>
+      <PublicPageLayout
+        clubData={clubData}
+        tokenDetails={tokenDetails}
+        headerProps={{
+          contractData: clubData,
+          deadline: daoDetails?.depositDeadline,
+          tokenDetails: tokenDetails,
+          isDeposit: true,
+          isActive: active,
+        }}
+        inputComponents={
+          <DepositInputComponents
+            depositPreRequisitesProps={{
+              uploadedDocInfo: uploadedDocInfo,
+              daoAddress: daoAddress,
+              onIsSignedChange: handleIsSignedChange,
+              onIsW8BenSignedChange: handleIsW8BenSignedChange,
+            }}
+            mintProps={{
+              claimNFTHandler: claimNFTHandler,
+              clubData: clubData,
+              count: count,
+              hasClaimed: hasClaimed,
+              remainingDays: remainingDays,
+              remainingTimeInSecs: remainingTimeInSecs,
+              setCount: setCount,
+              balanceOfNft: balanceOfNft,
+              isEligibleForTokenGating: isEligibleForTokenGating,
+              isTokenGated: isTokenGated,
+              whitelistUserData: whitelistUserData,
+              isSigned: isSigned,
+              isW8BenSigned: isW8BenSigned,
+              isSignable: isSignable,
+            }}
+          />
+        }
+        socialData={clubInfo}
+        imgUrl={imgUrl}
+        isDeposit={true}
+        bio={clubInfo?.bio}
+        eligibilityProps={{
+          gatedTokenDetails: gatedTokenDetails,
+          isDeposit: true,
+          isTokenGated: isTokenGated,
+          isWhitelist: whitelistUserData?.setWhitelist,
+        }}
+        members={members}
+        isSuccessfull={claimSuccessfull}
+        loading={loading}
+        nftMinted={daoDetails?.nftMinted}
+      />
+
+      {claimSuccessfull ? (
+        <SuccessModal
+          heading={"Hurray! We made it"}
+          subheading="Minted DAO's NFT successfully."
+          isError={false}
+          dashboardRoute={`/dashboard/${daoAddress}/${networkId}`}
+          onClose={() => {
+            setClaimSuccessfull(false);
           }}
         />
-      }
-      socialData={clubInfo}
-      imgUrl={imgUrl}
-      isDeposit={true}
-      bio={clubInfo?.bio}
-      eligibilityProps={{
-        gatedTokenDetails: gatedTokenDetails,
-        isDeposit: true,
-        isTokenGated: isTokenGated,
-        isWhitelist: whitelistUserData?.setWhitelist,
-      }}
-      members={members}
-      message={message}
-      isSuccessfull={claimSuccessfull}
-      loading={loading}
-      showMessage={showMessage}
-      nftMinted={daoDetails?.nftMinted}
-    />
+      ) : failed ? (
+        <SuccessModal
+          heading={"Something went wrong"}
+          subheading="Looks like we hit a bump here, try again?"
+          isError={true}
+          onClose={() => {
+            setFailed(false);
+          }}
+        />
+      ) : null}
+    </>
   );
 };
 
