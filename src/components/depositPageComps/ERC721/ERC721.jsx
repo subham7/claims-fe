@@ -14,7 +14,7 @@ import { getDocumentsByClubId } from "api/document";
 import PublicPageLayout from "@components/common/PublicPageLayout";
 import { CHAIN_CONFIG } from "utils/constants";
 import { whitelistOnDeposit } from "api/invite/invite";
-import SuccessModal from "@components/modals/SuccessModal/SuccessModal";
+import StatusModal from "@components/modals/StatusModal/StatusModal";
 
 const DepositInputComponents = ({ depositPreRequisitesProps, mintProps }) => {
   return (
@@ -264,21 +264,28 @@ const ERC721 = ({
       />
 
       {claimSuccessfull ? (
-        <SuccessModal
+        <StatusModal
           heading={"Hurray! We made it"}
           subheading="Minted DAO's NFT successfully."
           isError={false}
-          dashboardRoute={`/dashboard/${daoAddress}/${networkId}`}
           onClose={() => {
             setClaimSuccessfull(false);
           }}
+          buttonText="Go to Dashboard"
+          onButtonClick={() => {
+            router.push(`/dashboard/${daoAddress}/${networkId}`);
+          }}
         />
       ) : failed ? (
-        <SuccessModal
+        <StatusModal
           heading={"Something went wrong"}
           subheading="Looks like we hit a bump here, try again?"
           isError={true}
           onClose={() => {
+            setFailed(false);
+          }}
+          buttonText="Try Again?"
+          onButtonClick={() => {
             setFailed(false);
           }}
         />

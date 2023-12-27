@@ -3,19 +3,20 @@ import { Button, Typography } from "@mui/material";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React from "react";
-import classes from "./SuccessModal.module.scss";
+import classes from "./StatusModal.module.scss";
 
-const SuccessModal = ({
+const StatusModal = ({
   heading,
   subheading,
   isError,
   onClose,
-  dashboardRoute = "",
+  buttonText,
+  onButtonClick,
 }) => {
   const router = useRouter();
 
   return (
-    <Modal onClose={onClose} className={classes.successModal}>
+    <Modal onClose={onClose} className={classes.statusModal}>
       <div className={classes.image}>
         <Image
           src={
@@ -36,18 +37,19 @@ const SuccessModal = ({
       </Typography>
 
       <Button
-        onClick={() => {
-          if (isError) {
-            onClose();
-          } else router.push(dashboardRoute);
-        }}
+        // onClick={() => {
+        //   if (isError) {
+        //     onClose();
+        //   } else router.push(dashboardRoute);
+        // }}
+        onClick={onButtonClick}
         variant="outlined"
         color={isError ? "error" : "primary"}
         className={classes.button}>
-        {isError ? "Try Again?" : " Go to Dashboard"}
+        {buttonText}
       </Button>
     </Modal>
   );
 };
 
-export default SuccessModal;
+export default StatusModal;

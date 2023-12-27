@@ -18,7 +18,8 @@ import PublicPageLayout from "@components/common/PublicPageLayout";
 import DepositPreRequisites from "../DepositPreRequisites";
 import { CHAIN_CONFIG } from "utils/constants";
 import { whitelistOnDeposit } from "api/invite/invite";
-import SuccessModal from "@components/modals/SuccessModal/SuccessModal";
+import StatusModal from "@components/modals/StatusModal/StatusModal";
+import { useRouter } from "next/router";
 
 const DepositInputComponents = ({
   formik,
@@ -70,6 +71,7 @@ const ERC20 = ({
     return state.club.clubData;
   });
 
+  const router = useRouter();
   const { approveDeposit, getDecimals, getTokenSymbol, getBalance } =
     useCommonContractMethods();
 
@@ -301,21 +303,28 @@ const ERC20 = ({
       />
 
       {depositSuccessfull ? (
-        <SuccessModal
+        <StatusModal
           heading={"Hurray! We made it"}
           subheading="Deposited $USDC onchain successfully."
           isError={false}
-          dashboardRoute={`/dashboard/${daoAddress}/${networkId}`}
           onClose={() => {
             setDepositSuccessfull(false);
           }}
+          buttonText="Go to Dashboard"
+          onButtonClick={() => {
+            router.push(`/dashboard/${daoAddress}/${networkId}`);
+          }}
         />
       ) : failed ? (
-        <SuccessModal
+        <StatusModal
           heading={"Something went wrong"}
           subheading="Looks like we hit a bump here, try again?"
           isError={true}
           onClose={() => {
+            setFailed(false);
+          }}
+          buttonText="Try Again?"
+          onButtonClick={() => {
             setFailed(false);
           }}
         />
