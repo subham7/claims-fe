@@ -5,10 +5,7 @@ import { CHAIN_CONFIG } from "utils/constants";
 import classes from "./NetworkSwitcher.module.scss";
 import { requestEthereumChain } from "utils/helper";
 import { IoClose } from "react-icons/io5";
-
-const Backdrop = ({ onClose }) => {
-  return <div onClick={onClose} className={classes.backdrop}></div>;
-};
+import Backdrop from "@components/common/Backdrop/Backdrop";
 
 const NetworkSwitcher = ({ onClose, supportedNetworks }) => {
   const [loading, setLoading] = useState(false);
