@@ -16,28 +16,44 @@ const useStyles = makeStyles({
     fontWeight: "500  !important",
   },
   textGray: {
-    fontSize: "21px !important",
+    fontSize: "16px !important",
     color: "#707070",
     padding: "10px 0px",
   },
   textWhite: {
-    fontSize: "21px !important",
+    fontSize: "16px !important",
   },
   link: {
     textDecoration: "underline",
     color: "#2E55FF",
   },
   button: { width: "100%" },
+  codeblock: {
+    margin: "12px 0px",
+    padding: "10px",
+    borderRadius: "6px",
+    backgroundColor: "#000",
+  },
+  redCode: {
+    color: "#f22c3d",
+  },
+  blueCode: {
+    color: "#2e95d3",
+  },
+  greenCode: {
+    color: "#00a67d",
+    fontStyle: "italic",
+  },
 });
 const NotificationsModal = ({ open, onClose }) => {
   const classes = useStyles();
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm">
+    <Dialog open={open} onClose={onClose} maxWidth="xs">
       <DialogContent
         sx={{
           overflow: "hidden",
-          backgroundColor: "#151515",
+          backgroundColor: "#202020",
           padding: "1.5rem",
         }}>
         <div>
@@ -71,14 +87,24 @@ const NotificationsModal = ({ open, onClose }) => {
             Step 2: Type the subscribe command to start receiving notifications
             from your station{" "}
           </Typography>
-          <Typography className={classes.textGray}>
-            SUBSCRIBE COMMAND: /subscribe &lt;Insert station’s contract
-            address&gt;{" "}
-          </Typography>
-          <Typography className={classes.textGray}>
-            UNSUBSCRIBE COMMAND: /unsubscribe &lt;Insert station’s contract
-            address&gt;{" "}
-          </Typography>
+          <div className={classes.codeblock}>
+            <Typography>
+              $ <span className={classes.redCode}>SUBSCRIBE COMMAND: </span>{" "}
+              <span className={classes.blueCode}>/subscribe</span>
+              <span className={classes.greenCode}>
+                {" "}
+                &lt;Insert station’s contract address&gt;{" "}
+              </span>
+            </Typography>
+            <Typography>
+              $ <span className={classes.redCode}>UNSUBSCRIBE COMMAND: </span>
+              <span className={classes.blueCode}>/unsubscribe</span>
+              <span className={classes.greenCode}>
+                {" "}
+                &lt;Insert station’s contract address&gt;{" "}
+              </span>
+            </Typography>
+          </div>
           <Button onClick={onClose} className={classes.button}>
             FINISH
           </Button>
