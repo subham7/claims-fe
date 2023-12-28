@@ -3,6 +3,12 @@ import { useRouter } from "next/router";
 import Layout from "@components/layouts/layout";
 import Join from "@components/join/Join";
 
+export const metadata = {
+  title: "Join Station",
+  description:
+    "Join this station and become a member to participate and contribute.",
+};
+
 const JoinPage = () => {
   const router = useRouter();
 
