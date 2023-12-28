@@ -22,9 +22,20 @@ const JoinPage = () => {
           content="Join this station and become a member to participate and contribute."
         />
         <meta
-          name="cover"
+          content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover"
+          name="viewport"
+        />
+        <meta
           property="og:image"
-          content="/assets/images/monogram.png"
+          content="https://app.stationx.network/assets/images/monogram.png"
+        />
+        <link href="https://app.stationx.network" rel="canonical" />
+        <meta content="https://app.stationx.network" property="og:url" />
+        <meta content="Join Station" property="og:title" />
+        <meta content="Join Station" property="og:site_name" />
+        <meta
+          property="og:description"
+          content="Join this station and become a member to participate and contribute."
         />
       </Head>
       <Layout
