@@ -1,0 +1,54 @@
+.container {
+  width: 660px;
+}
+
+.modal {
+  background-color: #151515;
+}
+.heading {
+  font-size: 24px !important;
+}
+.textGray {
+  font-size: 16px !important;
+  color: #707070;
+  padding: 10px 0px;
+}
+.textWhite {
+  font-size: 16px !important;
+}
+.link {
+  text-decoration: underline;
+  color: #2e55ff;
+}
+.button {
+  width: 100%;
+}
+.codeblock {
+  margin: 12px 0px;
+  padding: 10px;
+  border-radius: 6px;
+  background-color: #282828;
+}
+.redCode {
+  color: #f22c3d;
+}
+.blueCode {
+  color: #2e95d3;
+}
+.greenCode {
+  color: #00a67d;
+  font-style: italic;
+}
+
+.dialogContent {
+  overflow: hidden;
+  background-color: #181818;
+  padding: 1.5rem;
+}
+
+.iconButton {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  color: grey;
+}
