@@ -2,7 +2,7 @@ import React from "react";
 import { useRouter } from "next/router";
 import Layout from "@components/layouts/layout";
 import Join from "@components/join/Join";
-import Head from "next/head";
+import CustomHead from "@components/common/Head";
 
 const JoinPage = () => {
   const router = useRouter();
@@ -15,29 +15,12 @@ const JoinPage = () => {
 
   return (
     <>
-      <Head>
-        <title>Join Station</title>
-        <meta
-          name="description"
-          content="Join this station and become a member to participate and contribute."
-        />
-        <meta
-          content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover"
-          name="viewport"
-        />
-        <meta
-          property="og:image"
-          content="https://app.stationx.network/assets/images/monogram.png"
-        />
-        <link href="https://app.stationx.network" rel="canonical" />
-        <meta content="https://app.stationx.network" property="og:url" />
-        <meta content="Join Station" property="og:title" />
-        <meta content="Join Station" property="og:site_name" />
-        <meta
-          property="og:description"
-          content="Join this station and become a member to participate and contribute."
-        />
-      </Head>
+      <CustomHead
+        title={"Join Station"}
+        description={
+          "Join this station and become a member to participate and contribute."
+        }
+      />
       <Layout
         showSidebar={false}
         daoAddress={daoAddress}
