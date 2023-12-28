@@ -7,6 +7,7 @@ export const metadata = {
   title: "Join Station",
   description:
     "Join this station and become a member to participate and contribute.",
+  cover: "/assets/images/monogram.png",
 };
 
 const JoinPage = () => {
