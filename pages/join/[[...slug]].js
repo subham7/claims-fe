@@ -2,13 +2,7 @@ import React from "react";
 import { useRouter } from "next/router";
 import Layout from "@components/layouts/layout";
 import Join from "@components/join/Join";
-
-export const metadata = {
-  title: "Join Station",
-  description:
-    "Join this station and become a member to participate and contribute.",
-  cover: "/assets/images/monogram.png",
-};
+import Head from "next/head";
 
 const JoinPage = () => {
   const router = useRouter();
@@ -20,13 +14,27 @@ const JoinPage = () => {
   }
 
   return (
-    <Layout
-      showSidebar={false}
-      daoAddress={daoAddress}
-      page={4}
-      networkId={networkId}>
-      <Join daoAddress={daoAddress} />
-    </Layout>
+    <>
+      <Head>
+        <title>Join Station</title>
+        <meta
+          name="description"
+          content="Join this station and become a member to participate and contribute."
+        />
+        <meta
+          name="cover"
+          property="og:image"
+          content="/assets/images/monogram.png"
+        />
+      </Head>
+      <Layout
+        showSidebar={false}
+        daoAddress={daoAddress}
+        page={4}
+        networkId={networkId}>
+        <Join daoAddress={daoAddress} />
+      </Layout>
+    </>
   );
 };
 
