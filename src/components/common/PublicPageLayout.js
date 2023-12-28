@@ -49,8 +49,8 @@ const PublicPageLayout = ({
         <div className={classes.bannerContainer}>
           {isDeposit && clubData.tokenType === "erc721" ? (
             <div className={classes.nftContainer}>
-              {(imgUrl && imgUrl.includes(".mp4")) ||
-              imgUrl.includes(".MP4") ? (
+              {(imgUrl && imgUrl?.includes(".mp4")) ||
+              imgUrl?.includes(".MP4") ? (
                 <video
                   style={{
                     height: "100%",
