@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DepositPreRequisites from "../DepositPreRequisites";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getUploadedNFT } from "api/assets";
 import { convertFromWeiGovernance, getImageURL } from "utils/globalFunctions";
 import { queryLatestMembersFromSubgraph } from "utils/stationsSubgraphHelper";
@@ -15,6 +15,7 @@ import PublicPageLayout from "@components/common/PublicPageLayout";
 import { CHAIN_CONFIG } from "utils/constants";
 import { whitelistOnDeposit } from "api/invite/invite";
 import StatusModal from "@components/modals/StatusModal/StatusModal";
+import { setAlertData } from "redux/reducers/alert";
 
 const DepositInputComponents = ({ depositPreRequisitesProps, mintProps }) => {
   return (
@@ -67,6 +68,7 @@ const ERC721 = ({
 
   const { address: walletAddress } = useAccount();
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const { approveDeposit, getDecimals, getTokenSymbol, getBalance } =
     useCommonContractMethods();
@@ -124,10 +126,12 @@ const ERC721 = ({
       await approveDeposit(
         depositTokenAddress,
         CHAIN_CONFIG[networkId].factoryContractAddress,
-        convertFromWeiGovernance(
-          clubData?.pricePerToken,
-          tokenDetails.tokenDecimal,
-        ),
+        Number(
+          convertFromWeiGovernance(
+            clubData?.pricePerToken,
+            tokenDetails.tokenDecimal,
+          ),
+        ) * count,
         tokenDetails.tokenDecimal,
       );
 
@@ -155,16 +159,6 @@ const ERC721 = ({
   const claimNFTHandler = async () => {
     try {
       setLoading(true);
-
-      await approveDeposit(
-        depositTokenAddress,
-        CHAIN_CONFIG[networkId].factoryContractAddress,
-        convertFromWeiGovernance(
-          clubData?.pricePerToken,
-          tokenDetails.tokenDecimal,
-        ),
-        tokenDetails.tokenDecimal,
-      );
 
       await buyGovernanceTokenERC721DAO(
         walletAddress,
@@ -266,22 +260,22 @@ const ERC721 = ({
               onIsW8BenSignedChange: handleIsW8BenSignedChange,
             }}
             mintProps={{
-              claimNFTHandler: claimNFTHandler,
-              clubData: clubData,
-              count: count,
-              hasClaimed: hasClaimed,
-              remainingDays: remainingDays,
-              remainingTimeInSecs: remainingTimeInSecs,
-              setCount: setCount,
-              balanceOfNft: balanceOfNft,
-              isEligibleForTokenGating: isEligibleForTokenGating,
-              isTokenGated: isTokenGated,
-              whitelistUserData: whitelistUserData,
-              isSigned: isSigned,
-              isW8BenSigned: isW8BenSigned,
-              isSignable: isSignable,
-              approveERC721Handler: approveERC721Handler,
-              allowanceValue: allowanceValue,
+              claimNFTHandler,
+              clubData,
+              count,
+              hasClaimed,
+              remainingDays,
+              remainingTimeInSecs,
+              setCount,
+              balanceOfNft,
+              isEligibleForTokenGating,
+              isTokenGated,
+              whitelistUserData,
+              isSigned,
+              isW8BenSigned,
+              isSignable,
+              approveERC721Handler,
+              allowanceValue,
             }}
           />
         }

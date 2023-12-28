@@ -47,6 +47,8 @@ const Mint = ({
     return false;
   };
 
+  const inputValue = clubData.pricePerToken * count;
+
   return (
     <div className={classes.mintContainer}>
       <Typography variant="inherit">Price per piece</Typography>
@@ -73,13 +75,21 @@ const Mint = ({
           </div>
         </div>
         <Button
-          onClick={approveERC721Handler}
+          onClick={
+            Number(inputValue) > allowanceValue
+              ? approveERC721Handler
+              : claimNFTHandler
+          }
           sx={{
             width: "130px",
           }}
           disabled={isButtonDisabled()}
           variant="contained">
-          {hasClaimed ? "Minted" : "Mint"}
+          {hasClaimed
+            ? "Minted"
+            : Number(inputValue) > allowanceValue
+            ? "Approve"
+            : "Mint"}
         </Button>
       </div>
 
