@@ -36,12 +36,14 @@ const ERC721 = ({
   gatedTokenDetails,
   depositConfig,
   isSignable,
+  allowanceValue,
+  fetchCurrentAllowance,
 }) => {
   const [tokenDetails, setTokenDetails] = useState({
     tokenDecimal: 6,
     tokenSymbol: "USDC",
     userBalance: 0,
-    tokenName: name,
+    tokenName: "USDC (Pos)",
   });
   const [active, setActive] = useState(false);
   const [members, setMembers] = useState([]);
@@ -61,6 +63,7 @@ const ERC721 = ({
   const day2 = dayjs.unix(daoDetails?.depositDeadline);
   const remainingDays = day2.diff(day1, "day");
   const remainingTimeInSecs = day2.diff(day1, "seconds");
+  const depositTokenAddress = CHAIN_CONFIG[networkId].usdcAddress;
 
   const { address: walletAddress } = useAccount();
   const router = useRouter();
@@ -115,10 +118,43 @@ const ERC721 = ({
     }
   };
 
+  const approveERC721Handler = async () => {
+    setLoading(true);
+    try {
+      await approveDeposit(
+        depositTokenAddress,
+        CHAIN_CONFIG[networkId].factoryContractAddress,
+        convertFromWeiGovernance(
+          clubData?.pricePerToken,
+          tokenDetails.tokenDecimal,
+        ),
+        tokenDetails.tokenDecimal,
+      );
+
+      fetchCurrentAllowance();
+      setLoading(false);
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Approved Successfully!",
+          severity: "success",
+        }),
+      );
+    } catch (error) {
+      setLoading(false);
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Approval failed!",
+          severity: "error",
+        }),
+      );
+    }
+  };
+
   const claimNFTHandler = async () => {
     try {
       setLoading(true);
-      const depositTokenAddress = CHAIN_CONFIG[networkId].usdcAddress;
 
       await approveDeposit(
         depositTokenAddress,
@@ -244,6 +280,8 @@ const ERC721 = ({
               isSigned: isSigned,
               isW8BenSigned: isW8BenSigned,
               isSignable: isSignable,
+              approveERC721Handler: approveERC721Handler,
+              allowanceValue: allowanceValue,
             }}
           />
         }

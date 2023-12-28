@@ -84,6 +84,24 @@ const useCommonContractMethods = () => {
     }
   };
 
+  const checkCurrentAllowance = async (contractAddress, approvalContract) => {
+    try {
+      if (contractAddress) {
+        const currentAllowance = await readContractFunction({
+          address: contractAddress,
+          abi: erc20TokenABI,
+          functionName: "allowance",
+          args: [walletAddress, approvalContract],
+          networkId,
+        });
+
+        return currentAllowance;
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const approveDeposit = async (
     contractAddress,
     approvalContract,
@@ -138,6 +156,7 @@ const useCommonContractMethods = () => {
     getTokenName,
     approveDeposit,
     encode,
+    checkCurrentAllowance,
   };
 };
 

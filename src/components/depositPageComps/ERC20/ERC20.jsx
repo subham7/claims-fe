@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { queryLatestMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 import dayjs from "dayjs";
 import DepositInput from "./DepositInput";
@@ -20,6 +20,7 @@ import { CHAIN_CONFIG } from "utils/constants";
 import { whitelistOnDeposit } from "api/invite/invite";
 import StatusModal from "@components/modals/StatusModal/StatusModal";
 import { useRouter } from "next/router";
+import { setAlertData } from "redux/reducers/alert";
 
 const DepositInputComponents = ({
   formik,
@@ -27,6 +28,8 @@ const DepositInputComponents = ({
   isDepositDisabled,
   clubData,
   depositPreRequisitesProps,
+  approveERC20Handler,
+  allowanceValue,
 }) => {
   return (
     <>
@@ -35,6 +38,8 @@ const DepositInputComponents = ({
         formik={formik}
         tokenDetails={tokenDetails}
         isDisabled={isDepositDisabled}
+        approveERC20Handler={approveERC20Handler}
+        allowanceValue={allowanceValue}
       />
       <DepositDetails contractData={clubData} tokenDetails={tokenDetails} />
     </>
@@ -52,6 +57,8 @@ const ERC20 = ({
   networkId,
   gatedTokenDetails,
   depositConfig,
+  allowanceValue,
+  fetchCurrentAllowance,
 }) => {
   const [loading, setLoading] = useState(false);
   const [depositSuccessfull, setDepositSuccessfull] = useState(null);
@@ -72,6 +79,7 @@ const ERC20 = ({
   });
 
   const router = useRouter();
+  const dispatch = useDispatch();
   const { approveDeposit, getDecimals, getTokenSymbol, getBalance } =
     useCommonContractMethods();
 
@@ -147,6 +155,37 @@ const ERC20 = ({
       ),
   });
 
+  const approveERC20Handler = async () => {
+    setLoading(true);
+    try {
+      await approveDeposit(
+        CHAIN_CONFIG[networkId].usdcAddress,
+        CHAIN_CONFIG[networkId].factoryContractAddress,
+        formik.values.tokenInput,
+        tokenDetails?.tokenDecimal,
+      );
+
+      fetchCurrentAllowance();
+      setLoading(false);
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Approved Successfully!",
+          severity: "success",
+        }),
+      );
+    } catch (error) {
+      setLoading(false);
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Approval failed!",
+          severity: "error",
+        }),
+      );
+    }
+  };
+
   const formik = useFormik({
     initialValues: {
       tokenInput: 0,
@@ -157,13 +196,6 @@ const ERC20 = ({
       try {
         setLoading(true);
         const inputValue = convertToWeiGovernance(
-          values.tokenInput,
-          tokenDetails?.tokenDecimal,
-        );
-
-        await approveDeposit(
-          CHAIN_CONFIG[networkId].usdcAddress,
-          CHAIN_CONFIG[networkId].factoryContractAddress,
           values.tokenInput,
           tokenDetails?.tokenDecimal,
         );
@@ -279,6 +311,8 @@ const ERC20 = ({
           <DepositInputComponents
             clubData={clubData}
             formik={formik}
+            approveERC20Handler={approveERC20Handler}
+            allowanceValue={allowanceValue}
             isDepositDisabled={isDepositDisabled()}
             tokenDetails={tokenDetails}
             depositPreRequisitesProps={{

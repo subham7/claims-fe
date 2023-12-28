@@ -19,6 +19,8 @@ const Mint = ({
   isSigned,
   isW8BenSigned,
   isSignable,
+  approveERC721Handler,
+  allowanceValue,
 }) => {
   const isButtonDisabled = () => {
     if (isSignable) {
@@ -71,7 +73,7 @@ const Mint = ({
           </div>
         </div>
         <Button
-          onClick={claimNFTHandler}
+          onClick={approveERC721Handler}
           sx={{
             width: "130px",
           }}
