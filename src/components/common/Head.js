@@ -9,8 +9,8 @@ const CustomHead = ({ title, description }) => {
         content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover"
         name="viewport"
       />
-      <link href="https://hey.xyz" rel="canonical" />
-      <meta content="https://hey.xyz" property="og:url" />
+      <link href="https://app.stationx.network" rel="canonical" />
+      <meta content="https://app.stationx.network" property="og:url" />
       <meta content={"StationX"} property="og:site_name" />
       <meta content={title} property="og:title" />
       <meta content={description} property="og:description" />
@@ -28,7 +28,7 @@ const CustomHead = ({ title, description }) => {
       />
       <meta content="400" property="twitter:image:width" />
       <meta content="400" property="twitter:image:height" />
-      <meta content="heydotxyz" property="twitter:creator" />
+      <meta content="appstationxnetwork" property="twitter:creator" />
       <link
         href="/opensearch.xml"
         rel="search"
