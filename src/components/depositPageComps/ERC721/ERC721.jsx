@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DepositPreRequisites from "../DepositPreRequisites";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getUploadedNFT } from "api/assets";
 import { convertFromWeiGovernance, getImageURL } from "utils/globalFunctions";
 import { queryLatestMembersFromSubgraph } from "utils/stationsSubgraphHelper";
@@ -15,6 +15,7 @@ import PublicPageLayout from "@components/common/PublicPageLayout";
 import { CHAIN_CONFIG } from "utils/constants";
 import { whitelistOnDeposit } from "api/invite/invite";
 import StatusModal from "@components/modals/StatusModal/StatusModal";
+import { setAlertData } from "redux/reducers/alert";
 
 const DepositInputComponents = ({ depositPreRequisitesProps, mintProps }) => {
   return (
@@ -36,12 +37,14 @@ const ERC721 = ({
   gatedTokenDetails,
   depositConfig,
   isSignable,
+  allowanceValue,
+  fetchCurrentAllowance,
 }) => {
   const [tokenDetails, setTokenDetails] = useState({
     tokenDecimal: 6,
     tokenSymbol: "USDC",
     userBalance: 0,
-    tokenName: name,
+    tokenName: "USDC (Pos)",
   });
   const [active, setActive] = useState(false);
   const [members, setMembers] = useState([]);
@@ -61,9 +64,11 @@ const ERC721 = ({
   const day2 = dayjs.unix(daoDetails?.depositDeadline);
   const remainingDays = day2.diff(day1, "day");
   const remainingTimeInSecs = day2.diff(day1, "seconds");
+  const depositTokenAddress = CHAIN_CONFIG[networkId].usdcAddress;
 
   const { address: walletAddress } = useAccount();
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const { approveDeposit, getDecimals, getTokenSymbol, getBalance } =
     useCommonContractMethods();
@@ -115,20 +120,45 @@ const ERC721 = ({
     }
   };
 
-  const claimNFTHandler = async () => {
+  const approveERC721Handler = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const depositTokenAddress = CHAIN_CONFIG[networkId].usdcAddress;
-
       await approveDeposit(
         depositTokenAddress,
         CHAIN_CONFIG[networkId].factoryContractAddress,
-        convertFromWeiGovernance(
-          clubData?.pricePerToken,
-          tokenDetails.tokenDecimal,
-        ),
+        Number(
+          convertFromWeiGovernance(
+            clubData?.pricePerToken,
+            tokenDetails.tokenDecimal,
+          ),
+        ) * count,
         tokenDetails.tokenDecimal,
       );
+
+      fetchCurrentAllowance();
+      setLoading(false);
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Approved Successfully!",
+          severity: "success",
+        }),
+      );
+    } catch (error) {
+      setLoading(false);
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Approval failed!",
+          severity: "error",
+        }),
+      );
+    }
+  };
+
+  const claimNFTHandler = async () => {
+    try {
+      setLoading(true);
 
       await buyGovernanceTokenERC721DAO(
         walletAddress,
@@ -230,20 +260,22 @@ const ERC721 = ({
               onIsW8BenSignedChange: handleIsW8BenSignedChange,
             }}
             mintProps={{
-              claimNFTHandler: claimNFTHandler,
-              clubData: clubData,
-              count: count,
-              hasClaimed: hasClaimed,
-              remainingDays: remainingDays,
-              remainingTimeInSecs: remainingTimeInSecs,
-              setCount: setCount,
-              balanceOfNft: balanceOfNft,
-              isEligibleForTokenGating: isEligibleForTokenGating,
-              isTokenGated: isTokenGated,
-              whitelistUserData: whitelistUserData,
-              isSigned: isSigned,
-              isW8BenSigned: isW8BenSigned,
-              isSignable: isSignable,
+              claimNFTHandler,
+              clubData,
+              count,
+              hasClaimed,
+              remainingDays,
+              remainingTimeInSecs,
+              setCount,
+              balanceOfNft,
+              isEligibleForTokenGating,
+              isTokenGated,
+              whitelistUserData,
+              isSigned,
+              isW8BenSigned,
+              isSignable,
+              approveERC721Handler,
+              allowanceValue,
             }}
           />
         }

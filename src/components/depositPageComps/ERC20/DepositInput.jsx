@@ -1,8 +1,15 @@
 import { Button, Skeleton, TextField, Typography } from "@mui/material";
 import React from "react";
+import { convertToWeiGovernance } from "utils/globalFunctions";
 import classes from "../../claims/Claim.module.scss";
 
-const DepositInput = ({ formik, tokenDetails, isDisabled }) => {
+const DepositInput = ({
+  formik,
+  tokenDetails,
+  isDisabled,
+  allowanceValue,
+  approveERC20Handler,
+}) => {
   const ClaimInputShimmer = () => {
     return (
       <div>
@@ -11,6 +18,11 @@ const DepositInput = ({ formik, tokenDetails, isDisabled }) => {
       </div>
     );
   };
+
+  const inputValue = convertToWeiGovernance(
+    formik.values.tokenInput,
+    tokenDetails?.tokenDecimal,
+  );
 
   return (
     <>
@@ -54,14 +66,18 @@ const DepositInput = ({ formik, tokenDetails, isDisabled }) => {
 
       <Button
         disabled={isDisabled}
-        onClick={formik.handleSubmit}
+        onClick={
+          Number(inputValue) > allowanceValue
+            ? approveERC20Handler
+            : formik.handleSubmit
+        }
         variant="contained"
         sx={{
           width: "100%",
           padding: "10px 0",
           margin: "10px 0",
         }}>
-        Deposit
+        {Number(inputValue) > allowanceValue ? "Approve" : "Deposit"}
       </Button>
     </>
   );

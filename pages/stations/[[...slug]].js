@@ -124,7 +124,8 @@ const StationsPage = () => {
 
   const handleCreateButtonClick = async () => {
     const { pathname } = router;
-    if (pathname == "/") {
+
+    if (pathname.includes("/stations")) {
       router.push("/create");
     }
   };

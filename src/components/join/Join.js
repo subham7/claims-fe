@@ -10,6 +10,7 @@ import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 import ERC20 from "@components/depositPageComps/ERC20/ERC20";
 import BackdropLoader from "@components/common/BackdropLoader";
 import ERC721 from "@components/depositPageComps/ERC721/ERC721";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const Join = ({ daoAddress }) => {
   const [daoDetails, setDaoDetails] = useState({
@@ -27,6 +28,7 @@ const Join = ({ daoAddress }) => {
   const [whitelistUserData, setWhitelistUserData] = useState();
   const [depositConfig, setDepositConfig] = useState({});
   const [isSignable, setIsSignable] = useState(false);
+  const [allowanceValue, setAllowanceValue] = useState(0);
 
   const [gatedTokenDetails, setGatedTokenDetails] = useState({
     tokenASymbol: "",
@@ -52,7 +54,7 @@ const Join = ({ daoAddress }) => {
     return state.club.factoryData;
   });
 
-  const { getDecimals, getBalance, getTokenSymbol } =
+  const { getDecimals, getBalance, getTokenSymbol, checkCurrentAllowance } =
     useCommonContractMethods();
 
   const { getTokenGatingDetails, getNftOwnersCount } = useAppContractMethods({
@@ -177,6 +179,19 @@ const Join = ({ daoAddress }) => {
     }
   };
 
+  const fetchCurrentAllowance = async () => {
+    try {
+      const currentAllowance = await checkCurrentAllowance(
+        CHAIN_CONFIG[networkId].usdcAddress,
+        CHAIN_CONFIG[networkId].factoryContractAddress,
+      );
+
+      setAllowanceValue(Number(currentAllowance));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const getDepositPreRequisites = async (daoAddress) => {
     const res = await fetchClubByDaoAddress(daoAddress?.toLowerCase());
     setDepositConfig(res?.data?.depositConfig);
@@ -263,6 +278,13 @@ const Join = ({ daoAddress }) => {
     fetchMerkleProof();
   }, [daoAddress, walletAddress]);
 
+  useEffect(() => {
+    fetchCurrentAllowance();
+  }, [
+    CHAIN_CONFIG[networkId].usdcAddress,
+    CHAIN_CONFIG[networkId].factoryContractAddress,
+  ]);
+
   return (
     <>
       {TOKEN_TYPE === "erc20" ? (
@@ -278,6 +300,8 @@ const Join = ({ daoAddress }) => {
           gatedTokenDetails={gatedTokenDetails}
           depositConfig={depositConfig}
           isSignable={isSignable}
+          allowanceValue={allowanceValue}
+          fetchCurrentAllowance={fetchCurrentAllowance}
         />
       ) : TOKEN_TYPE === "erc721" ? (
         <ERC721
@@ -291,6 +315,8 @@ const Join = ({ daoAddress }) => {
           gatedTokenDetails={gatedTokenDetails}
           depositConfig={depositConfig}
           isSignable={isSignable}
+          allowanceValue={allowanceValue}
+          fetchCurrentAllowance={fetchCurrentAllowance}
         />
       ) : null}
 
