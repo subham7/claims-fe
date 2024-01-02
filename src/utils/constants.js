@@ -125,7 +125,11 @@ export const CHAIN_CONFIG = {
     },
     rpcUrls: ["https://eth-rpc.gateway.pokt.network"],
     appRpcUrl: `https://mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
-    factoryContractAddress: "",
+    factoryContractAddress: "0x3b0496DdFdC063E880630252Cabff2eEa6e8AA9e",
+    //  stationSubgraphUrl:
+    //   "https://api.thegraph.com/subgraphs/name/subham7/stnx-be-polygon",
+    usdcAddress: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    airdropContractAddress: "0x22F3BDb0B4122dcDe2bFCb164ccD67650c630Ab3",
     claimFactoryAddress: "0x7aA33CC623Db79d5fFa859bA6cBE2Fb93c237401",
     claimsSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-eth/prod/gn",

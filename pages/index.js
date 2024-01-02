@@ -119,7 +119,7 @@ const App = () => {
   const showStationsHandler = async () => {
     if (isMainLink) {
       window.open("https://tally.so/r/nG64GQ", "_blank");
-    } else if (networkId !== "0x89") {
+    } else if (networkId !== "0x89" && networkId !== "0x1") {
       await requestEthereumChain("wallet_switchEthereumChain", [
         { chainId: "0x89" },
       ]);
@@ -166,7 +166,9 @@ const App = () => {
                 "Creating a Station is the easiest way to start managing money/assets towards shared goals"
               }
               buttonText={
-                networkId === "0x89" ? "Enter App" : "Switch to polygon"
+                networkId === "0x89" || networkId === "0x1"
+                  ? "Enter App"
+                  : "Switch to polygon"
               }
             />
             <NewCard
