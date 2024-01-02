@@ -10,6 +10,7 @@ import { useAccount, useNetwork } from "wagmi";
 import { requestEthereumChain } from "utils/helper";
 import useClubFetch from "hooks/useClubFetch";
 import { getReferralCode } from "api/invite/invite";
+import { ALLOWED_NETWORKS_FOR_STATION } from "utils/constants";
 
 const useStyles = makeStyles({
   container: {
@@ -119,7 +120,7 @@ const App = () => {
   const showStationsHandler = async () => {
     if (isMainLink) {
       window.open("https://tally.so/r/nG64GQ", "_blank");
-    } else if (networkId !== "0x89" && networkId !== "0x1") {
+    } else if (!ALLOWED_NETWORKS_FOR_STATION.includes(networkId)) {
       await requestEthereumChain("wallet_switchEthereumChain", [
         { chainId: "0x89" },
       ]);
@@ -166,7 +167,7 @@ const App = () => {
                 "Creating a Station is the easiest way to start managing money/assets towards shared goals"
               }
               buttonText={
-                networkId === "0x89" || networkId === "0x1"
+                ALLOWED_NETWORKS_FOR_STATION.includes(networkId)
                   ? "Enter App"
                   : "Switch to polygon"
               }

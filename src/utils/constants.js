@@ -565,3 +565,5 @@ export const stationNetworksChainId = [
   //   networkId: "0xe708",
   // },
 ];
+
+export const ALLOWED_NETWORKS_FOR_STATION = ["0x89", "0x1"];
