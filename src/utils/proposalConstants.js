@@ -11,7 +11,7 @@ import removeUserIcon from "../../public/assets/icons/removeuser_icon.svg";
 import moneyIcon from "../../public/assets/icons/money_icon.svg";
 
 export const proposalActionCommands = {
-  0: "Reward shares to members",
+  0: "Distribute tokens to members",
   // 1: "Mint club token",
   2: "Modify governance",
   3: "Update total raise amount",
@@ -39,8 +39,8 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
     {
       key: 0,
       icon: rewardIcon,
-      value: "Reward shares to members",
-      text: "Reward shares to member(s)",
+      value: "Distribute tokens to members",
+      text: "Distribute tokens to member(s)",
       section: "Administrative",
       availableOnNetworkIds: [
         "0x89",
