@@ -4,7 +4,7 @@ import piggyIcon from "../../public/assets/icons/piggy_icon.svg";
 import whitelistIcon from "../../public/assets/icons/whitelist_icon.svg";
 // import lensIcon from "../../public/assets/icons/Lens_icon.svg";
 import rewardIcon from "../../public/assets/icons/reward_icon.svg";
-// import walletIcon from "../../public/assets/icons/Wallet_icon.svg";
+import walletIcon from "../../public/assets/icons/Wallet_icon.svg";
 import govIcon from "../../public/assets/icons/gov_icon.svg";
 import adduserIcon from "../../public/assets/icons/adduser_icon.svg";
 import removeUserIcon from "../../public/assets/icons/removeuser_icon.svg";
@@ -12,7 +12,7 @@ import moneyIcon from "../../public/assets/icons/money_icon.svg";
 
 export const proposalActionCommands = {
   0: "Distribute tokens to members",
-  // 1: "Mint club token",
+  1: "Mint club token",
   2: "Modify governance",
   3: "Update total raise amount",
   4: "Send assets to an address",
@@ -57,27 +57,27 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
         "0x28c5f",
       ],
     },
-    // {
-    //   key: 1,
-    //   icon: walletIcon,
-    //   value: "Mint club token",
-    //   text: "Mint station tokens",
-    //   section: "Administrative",
-    //   availableOnNetworkIds: [
-    //     "0x89",
-    //     "0x5",
-    //     "0x1",
-    //     "0x2105",
-    //     "0xa4b1",
-    //     "0xe708",
-    //     "0x38",
-    //     "0x1388",
-    //     "0x64",
-    //     "0x82750",
-    //     "0xa9",
-    //     "0x28c5f",
-    //   ],
-    // },
+    {
+      key: 1,
+      icon: walletIcon,
+      value: "Mint club token",
+      text: "Mint station tokens",
+      section: "Administrative",
+      availableOnNetworkIds: [
+        "0x89",
+        "0x5",
+        "0x1",
+        "0x2105",
+        "0xa4b1",
+        "0xe708",
+        "0x38",
+        "0x1388",
+        "0x64",
+        "0x82750",
+        "0xa9",
+        "0x28c5f",
+      ],
+    },
     {
       key: 2,
       icon: govIcon,

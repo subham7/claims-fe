@@ -1,6 +1,7 @@
 import { retrieveNftListing } from "api/assets";
 import { CHAIN_CONFIG } from "utils/constants";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
+import { convertToFullNumber } from "utils/helper";
 import { isMember } from "utils/stationsSubgraphHelper";
 import { getPublicClient } from "utils/viemConfig";
 import * as yup from "yup";
@@ -177,7 +178,7 @@ export const getProposalValidationSchema = ({
       .number()
       .test(
         "invalidBlockNum",
-        "Enter a block num less than current block number",
+        "Enter a block number less than current block number",
         async (value, context) => {
           try {
             const publicClient = getPublicClient(networkId);
@@ -236,26 +237,29 @@ export const getProposalValidationSchema = ({
 
           try {
             const { distributionAmount } = factoryData;
-
             const totalAmount = value.reduce(
               (partialSum, a) => partialSum + Number(a),
               0,
             );
-
             if (totalAmount <= 0) return false;
 
             let availableAmount;
             if (tokenType === "erc20") {
               const clubTokensMinted = await getERC20TotalSupply();
+
               availableAmount = convertFromWeiGovernance(
-                distributionAmount - clubTokensMinted,
+                convertToFullNumber(
+                  (distributionAmount - clubTokensMinted).toString(),
+                ),
                 18,
               );
             } else if (tokenType === "erc721") {
-              if (distributionAmount === 0) return true;
+              if (distributionAmount == 0) return true;
 
               const clubTokensMinted = await getNftOwnersCount();
-              availableAmount = distributionAmount - clubTokensMinted;
+              availableAmount = convertToFullNumber(
+                (distributionAmount - clubTokensMinted).toString(),
+              );
             } else {
               return true;
             }

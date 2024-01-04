@@ -755,6 +755,17 @@ export const getTransaction = async ({
       }
 
     case 1:
+      transaction = {
+        //dao
+        to: Web3.utils.toChecksumAddress(daoAddress),
+        data: encodeFunctionData({
+          abi: erc20DaoABI,
+          functionName: "updateProposalAndExecution",
+          args: [daoAddress, parameters],
+        }),
+        value: "0",
+      };
+      return { transaction };
     case 2:
     case 3:
     case 13:
