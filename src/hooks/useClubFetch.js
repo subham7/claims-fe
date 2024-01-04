@@ -13,7 +13,7 @@ import {
 } from "../redux/reducers/gnosis";
 // import { fetchConfigById } from "../api/config";
 
-import { getSafeSdk } from "../utils/helper";
+import { convertToFullNumber, getSafeSdk } from "../utils/helper";
 import { useAccount } from "wagmi";
 import { useRouter } from "next/router";
 import useAppContractMethods from "./useAppContractMethods";
@@ -122,7 +122,9 @@ const useClubFetch = ({ daoAddress, networkId }) => {
             assetsStoredOnGnosis: factoryData?.assetsStoredOnGnosis,
             depositCloseTime: factoryData.depositCloseTime,
             depositTokenAddress: factoryData.depositTokenAddress,
-            distributionAmount: factoryData.distributionAmount,
+            distributionAmount: convertToFullNumber(
+              factoryData.distributionAmount.toString(),
+            ),
             gnosisAddress: factoryData.gnosisAddress,
             isDeployedByFactory: factoryData.isDeployedByFactory,
             isTokenGatingApplied: factoryData.isTokenGatingApplied,
