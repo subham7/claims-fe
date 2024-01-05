@@ -11,6 +11,7 @@ import { useAccount, useNetwork } from "wagmi";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
+import WalletTracker from "@components/settingsComps/walletTracker/WalletTracker";
 
 const Settings = ({ daoAddress }) => {
   const [daoDetails, setDaoDetails] = useState({
@@ -265,6 +266,7 @@ const Settings = ({ daoAddress }) => {
         daoAddress={daoAddress}
         factoryData={factoryData}
       />
+      <WalletTracker />
       <TokenGating daoAddress={daoAddress} />
     </>
   );

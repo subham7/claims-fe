@@ -65,7 +65,7 @@ export const CHAIN_CONFIG = {
     aaveWrappedUsdcAddress: "0x625E7708f30cA75bfd92586e17077590C60eb4cD",
     aaveWrappedMaticAddress: "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97",
     blockExplorerUrl: "https://polygonscan.com",
-    logoUri: "/assets/networks/pol.jpeg",
+    logoUri: "/assets/networks/polygon.jpeg",
     stargateStakingAddresses: [
       "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
       "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
