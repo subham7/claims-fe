@@ -29,6 +29,7 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
     customTokenAmounts,
     customTokenAddresses,
     mintGTAddresses,
+    mintGTAmounts,
     customNft,
     ownerAddress,
     nftLink,
@@ -53,6 +54,9 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
     case 1:
       return {
         "No of recipients :": mintGTAddresses?.length,
+        "Tokens to be minted: ":
+          mintGTAmounts?.reduce((partialSum, a) => partialSum + Number(a), 0) /
+          10 ** decimals,
       };
     case 2:
       return {
@@ -1582,6 +1586,7 @@ export const proposalDetailsData = ({
     customTokenAmounts,
     customTokenAddresses,
     mintGTAddresses,
+    mintGTAmounts,
     customNft,
     ownerAddress,
     nftLink,
@@ -1615,7 +1620,14 @@ export const proposalDetailsData = ({
       };
       return responseData;
     case 1:
-      responseData.data = { "No of recipients :": mintGTAddresses };
+      responseData.data = {
+        "Total Amount":
+          mintGTAmounts?.reduce((partialSum, a) => partialSum + Number(a), 0) /
+          10 ** 18,
+        Recipients: mintGTAddresses
+          ?.map((address) => shortAddress(address))
+          .join(", "),
+      };
       return responseData;
     case 2:
       responseData.data = { Quorum: quorum, Threshold: threshold };
