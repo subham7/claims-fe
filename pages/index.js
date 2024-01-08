@@ -7,10 +7,13 @@ import Layout from "../src/components/layouts/layout";
 import { BsFillPlayFill } from "react-icons/bs";
 import VideoModal from "../src/components/modals/VideoModal";
 import { useAccount, useNetwork } from "wagmi";
-import { requestEthereumChain } from "utils/helper";
 import useClubFetch from "hooks/useClubFetch";
 import { getReferralCode } from "api/invite/invite";
-import { ALLOWED_NETWORKS_FOR_STATION } from "utils/constants";
+import {
+  ALLOWED_NETWORKS_FOR_STATION,
+  stationNetworksChainId,
+} from "utils/constants";
+import NetworkSwitcher from "@components/modals/NetworkSwitcher/NetworkSwitcher";
 
 const useStyles = makeStyles({
   container: {
@@ -111,6 +114,7 @@ const App = () => {
 
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [isMainLink, setIsMainLink] = useState(false);
+  const [showNetworkModal, setShowNetworkModal] = useState(false);
 
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
@@ -121,9 +125,7 @@ const App = () => {
     if (isMainLink) {
       window.open("https://tally.so/r/nG64GQ", "_blank");
     } else if (!ALLOWED_NETWORKS_FOR_STATION.includes(networkId)) {
-      await requestEthereumChain("wallet_switchEthereumChain", [
-        { chainId: "0x89" },
-      ]);
+      setShowNetworkModal(true);
     } else {
       router.push("/stations");
     }
@@ -169,7 +171,7 @@ const App = () => {
               buttonText={
                 ALLOWED_NETWORKS_FOR_STATION.includes(networkId)
                   ? "Enter App"
-                  : "Switch to polygon"
+                  : "Switch to supported network"
               }
             />
             <NewCard
@@ -217,6 +219,15 @@ const App = () => {
             onClose={() => {
               setShowVideoModal(false);
             }}
+          />
+        )}
+
+        {showNetworkModal && (
+          <NetworkSwitcher
+            onClose={() => {
+              setShowNetworkModal(false);
+            }}
+            supportedNetworks={stationNetworksChainId}
           />
         )}
       </div>
