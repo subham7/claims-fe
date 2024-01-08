@@ -32,6 +32,9 @@ export const proposalActionCommands = {
   // 17: "Stake tokens through stargate",
   // 18: "Unstake tokens through stargate",
   // 19: "Swap tokens through uniswap",
+  21: "Send tokens through csv",
+  22: "Send tokens to all members",
+  23: "Send tokens pro rata basis",
 };
 
 export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
@@ -388,5 +391,29 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
     //   section: "Manage Assets",
     //   availableOnNetworkIds: ["0x89"],
     // },
+    {
+      key: 21,
+      value: "Send tokens through csv",
+      text: "Send tokens through csv",
+      section: "Manage Assets",
+      icon: sendIcon,
+      availableOnNetworkIds: ["0x89"],
+    },
+    {
+      key: 22,
+      value: "Send tokens to all members",
+      text: "Send tokens to all members",
+      section: "Manage Assets",
+      icon: sendIcon,
+      availableOnNetworkIds: ["0x89"],
+    },
+    {
+      key: 23,
+      value: "Send tokens pro rata basis",
+      text: "Send tokens pro rata basis",
+      section: "Manage Assets",
+      icon: sendIcon,
+      availableOnNetworkIds: ["0x89"],
+    },
   ];
 };

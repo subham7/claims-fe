@@ -188,6 +188,10 @@ const CreateProposalDialog = ({ daoAddress }) => {
       stargateStakeAmount: 0,
       stargateUnstakeToken: "",
       stargateUnstakeAmount: 0,
+      sendToken: "",
+      csvObject: [],
+      sendTokenAddresses: [],
+      sendTokenAmounts: [],
     },
     validationSchema: getProposalValidationSchema({
       networkId,
@@ -211,6 +215,7 @@ const CreateProposalDialog = ({ daoAddress }) => {
           daoAddress,
           networkId,
         });
+        console.log("here", commands);
 
         commands = {
           executionId: values.actionCommand,
@@ -240,6 +245,7 @@ const CreateProposalDialog = ({ daoAddress }) => {
           // threshold: Number(clubData.threshold),
           networkId: networkId,
         };
+        console.log(payload);
         const { signature } = await handleSignMessage(
           walletAddress,
           JSON.stringify(payload),
