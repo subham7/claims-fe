@@ -82,3 +82,32 @@
     }
   }
 }
+
+.walletTrackerModal {
+  width: 600px;
+
+  .heading {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+
+    svg {
+      cursor: pointer;
+    }
+  }
+
+  .subtext {
+    color: $light-gray;
+  }
+
+  .textFields {
+    width: 100%;
+  }
+
+  .saveButton {
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    border-radius: 12px;
+  }
+}

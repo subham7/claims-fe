@@ -1,8 +1,9 @@
 import { Typography } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import WalletItem from "./WalletItem";
 import { FaCirclePlus } from "react-icons/fa6";
 import classes from "./WalletTracker.module.scss";
+import WalletTrackerModal from "./WalletTrackerModal";
 
 const DUMMY_DATA = [
   {
@@ -18,26 +19,42 @@ const DUMMY_DATA = [
 ];
 
 const WalletTracker = () => {
+  const [showModal, setShowModal] = useState(false);
+
+  const showModalHandler = () => {
+    setShowModal(true);
+  };
+
   return (
-    <div className={classes.container}>
-      <Typography fontSize={24} fontWeight={500} mb={5} variant="inherit">
-        Track wallets
-      </Typography>
-      <div>
-        {DUMMY_DATA.map((wallet) => (
-          <WalletItem
-            key={wallet.walletAddress}
-            walletAddress={wallet.walletAddress}
-            walletName={wallet.walletName}
-            chainName={wallet.chainName}
-          />
-        ))}
+    <>
+      <div className={classes.container}>
+        <Typography fontSize={24} fontWeight={500} mb={5} variant="inherit">
+          Track wallets
+        </Typography>
+        <div>
+          {DUMMY_DATA.map((wallet) => (
+            <WalletItem
+              key={wallet.walletAddress}
+              walletAddress={wallet.walletAddress}
+              walletName={wallet.walletName}
+              chainName={wallet.chainName}
+            />
+          ))}
+        </div>
+        <button onClick={showModalHandler} className={classes.addButton}>
+          <FaCirclePlus />
+          <Typography>Add</Typography>
+        </button>
       </div>
-      <button className={classes.addButton}>
-        <FaCirclePlus />
-        <Typography>Add</Typography>
-      </button>
-    </div>
+
+      {showModal ? (
+        <WalletTrackerModal
+          onClose={() => {
+            setShowModal(false);
+          }}
+        />
+      ) : null}
+    </>
   );
 };
 
