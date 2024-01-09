@@ -74,3 +74,29 @@ export const createStation = async (data) => {
     console.log(error);
   }
 };
+
+export const addWalletAddressToTrack = async (data, daoAddress) => {
+  try {
+    const res = await axios.post(
+      `${MAIN_API_URL}club/${daoAddress}/hot-wallets`,
+      data,
+    );
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const removeWalletAddressToTrack = async (data, daoAddress) => {
+  try {
+    const res = await axios.delete(
+      `${MAIN_API_URL}club/${daoAddress}/hot-wallets`,
+      {
+        data,
+      },
+    );
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};

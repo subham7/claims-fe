@@ -65,7 +65,7 @@ export const CHAIN_CONFIG = {
     aaveWrappedUsdcAddress: "0x625E7708f30cA75bfd92586e17077590C60eb4cD",
     aaveWrappedMaticAddress: "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97",
     blockExplorerUrl: "https://polygonscan.com",
-    logoUri: "/assets/networks/polygon.jpeg",
+    logoUri: "/assets/networks/0x89.png",
     stargateStakingAddresses: [
       "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
       "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
@@ -134,7 +134,7 @@ export const CHAIN_CONFIG = {
     blockExplorerUrl: "https://etherscan.io",
     disburseContractAddress: "0x8b41c0aa45c86cebcfed5fb3744bf99ac8fb45c3",
     gnosisTxUrl: "https://safe-transaction-mainnet.safe.global/",
-    logoUri: "/assets/networks/eth.png",
+    logoUri: "/assets/networks/0x1.png",
   },
   "0x2105": {
     chainName: "Base Mainnet",
@@ -160,7 +160,7 @@ export const CHAIN_CONFIG = {
     blockExplorerUrl: "https://explorer.base.org",
     disburseContractAddress: "0x9e812abE64b47FFB970ea908Db27a1E7Ca2f15b6",
     gnosisTxUrl: "https://safe-transaction-base.safe.global/",
-    logoUri: "/assets/networks/base-mainnet.png",
+    logoUri: "/assets/networks/0x2105.png",
   },
   "0xa4b1": {
     chainName: "Arbitrum One",
@@ -182,7 +182,7 @@ export const CHAIN_CONFIG = {
     blockExplorerUrl: "https://arbiscan.io",
     disburseContractAddress: "",
     gnosisTxUrl: "https://safe-transaction-arbitrum.safe.global/",
-    logoUri: "/assets/networks/arbitrum.png",
+    logoUri: "/assets/networks/0xa4b1.png",
   },
   "0xe708": {
     chainName: "Linea Mainnet",
@@ -216,7 +216,7 @@ export const CHAIN_CONFIG = {
       "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": 13,
       "0xaad094f6a75a14417d39f04e690fc216f080a41a": 13,
     },
-    logoUri: "/assets/networks/linea-mainnet.webp",
+    logoUri: "/assets/networks/0xe708.webp",
   },
   "0x38": {
     chainName: "BNB Smart Chain",
@@ -238,7 +238,7 @@ export const CHAIN_CONFIG = {
     blockExplorerUrl: "https://bscscan.com",
     disburseContractAddress: "0x2105929127a1e57c5D6FBb4136ADe15771503963",
     gnosisTxUrl: "https://safe-transaction-bsc.safe.global/",
-    logoUri: "/assets/networks/bnb.jpeg",
+    logoUri: "/assets/networks/0x38.png",
   },
   "0x1388": {
     chainName: "Mantle Mainnet",
@@ -259,7 +259,7 @@ export const CHAIN_CONFIG = {
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     blockExplorerUrl: "https://explorer.mantle.xyz",
     disburseContractAddress: "0x8d122Ab1a05b780D45C4334948604264Bc4845DD",
-    logoUri: "/assets/networks/mantle-mainnet.png",
+    logoUri: "/assets/networks/0x1388.png",
   },
   "0x64": {
     chainName: "Gnosis Chain",
@@ -281,7 +281,7 @@ export const CHAIN_CONFIG = {
     blockExplorerUrl: "https://gnosisscan.io/",
     disburseContractAddress: "",
     gnosisTxUrl: "https://safe-transaction-gnosis-chain.safe.global/",
-    logoUri: "/assets/networks/gnosis.png",
+    logoUri: "/assets/networks/0x64.png",
   },
   "0x82750": {
     chainName: "Scroll",
@@ -305,7 +305,7 @@ export const CHAIN_CONFIG = {
     airdropContractAddress: "",
     blockExplorerUrl: "https://blockscout.scroll.io/",
     disburseContractAddress: "0x3DA9Fb55Ab77b10F99C1C1f52C150280dbd5a611",
-    logoUri: "/assets/networks/scroll.jpeg",
+    logoUri: "/assets/networks/0x82750.png",
   },
   "0xa9": {
     chainName: "Manta",
@@ -329,7 +329,7 @@ export const CHAIN_CONFIG = {
     airdropContractAddress: "",
     blockExplorerUrl: "https://pacific-explorer.manta.network/",
     disburseContractAddress: "0x7aA33CC623Db79d5fFa859bA6cBE2Fb93c237401",
-    logoUri: "/assets/networks/manta.png",
+    logoUri: "/assets/networks/0xa9.png",
   },
   "0x28c5f": {
     chainName: "Taiko",
@@ -353,7 +353,7 @@ export const CHAIN_CONFIG = {
     airdropContractAddress: "",
     blockExplorerUrl: "https://explorer.jolnir.taiko.xyz/",
     disburseContractAddress: "0x3DA9Fb55Ab77b10F99C1C1f52C150280dbd5a611",
-    logoUri: "/assets/networks/taiko.jpeg",
+    logoUri: "/assets/networks/0x28c5f.png",
   },
 };
 

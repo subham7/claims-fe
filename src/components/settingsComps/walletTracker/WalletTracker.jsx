@@ -1,29 +1,36 @@
 import { Typography } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import WalletItem from "./WalletItem";
 import { FaCirclePlus } from "react-icons/fa6";
 import classes from "./WalletTracker.module.scss";
 import WalletTrackerModal from "./WalletTrackerModal";
+import { fetchClubByDaoAddress } from "api/club";
+import { useSelector } from "react-redux";
 
-const DUMMY_DATA = [
-  {
-    walletName: "Treasury",
-    walletAddress: "0xD9A5A56eE4eCAD795B274015e3c90884402b2138",
-    chainName: "polygon",
-  },
-  {
-    walletName: "Wallet 1",
-    walletAddress: "0xD9A5A56eE4eCAD795B274015e3c90884402b2138",
-    chainName: "bnb",
-  },
-];
-
-const WalletTracker = () => {
+const WalletTracker = ({ daoAddress }) => {
   const [showModal, setShowModal] = useState(false);
+  const [allWallets, setAllWallets] = useState([]);
+
+  const gnosisAddress = useSelector((state) => {
+    return state.club.clubData.gnosisAddress;
+  });
 
   const showModalHandler = () => {
     setShowModal(true);
   };
+
+  const fetchAllWalletsHandler = async () => {
+    try {
+      const data = await fetchClubByDaoAddress(daoAddress);
+      setAllWallets(data.data?.hotWallets);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (daoAddress) fetchAllWalletsHandler();
+  }, [daoAddress]);
 
   return (
     <>
@@ -32,12 +39,20 @@ const WalletTracker = () => {
           Track wallets
         </Typography>
         <div>
-          {DUMMY_DATA.map((wallet) => (
+          <WalletItem
+            walletAddress={gnosisAddress}
+            walletName={"Treasury"}
+            networkId={"0x89"}
+          />
+          {allWallets.map((wallet) => (
             <WalletItem
-              key={wallet.walletAddress}
+              key={`${wallet.walletAddress}${wallet.networkId}`}
               walletAddress={wallet.walletAddress}
               walletName={wallet.walletName}
-              chainName={wallet.chainName}
+              networkId={wallet.networkId}
+              isRemovable={true}
+              daoAddress={daoAddress}
+              onRemoveSuccess={fetchAllWalletsHandler}
             />
           ))}
         </div>
@@ -49,6 +64,8 @@ const WalletTracker = () => {
 
       {showModal ? (
         <WalletTrackerModal
+          onAddSuccess={fetchAllWalletsHandler}
+          daoAddress={daoAddress}
           onClose={() => {
             setShowModal(false);
           }}

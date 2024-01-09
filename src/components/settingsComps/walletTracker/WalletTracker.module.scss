@@ -49,6 +49,15 @@
       gap: 8px;
       padding-right: 20px;
 
+      .remove {
+        cursor: pointer;
+        color: $inactive-text;
+
+        &:hover {
+          color: white;
+        }
+      }
+
       img {
         cursor: pointer;
       }
