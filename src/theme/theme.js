@@ -32,6 +32,16 @@ const theme = () =>
     },
     components: {
       ...darkComponents,
+      MuiTab: {
+        styleOverrides: {
+          textColorInherit: {
+            color: "gray",
+            "&.Mui-selected": {
+              color: "white",
+            },
+          },
+        },
+      },
     },
   });
 

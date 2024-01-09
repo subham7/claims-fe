@@ -1,5 +1,5 @@
 import ComponentHeader from "@components/common/ComponentHeader";
-import { FormControl, MenuItem, Select, Typography } from "@mui/material";
+import { Tab, Tabs } from "@mui/material";
 import {
   getAssetsByDaoAddress,
   getNFTsByDaoAddress,
@@ -8,13 +8,12 @@ import {
 import { getProposalByDaoAddress } from "api/proposal";
 import { getTotalNumberOfTokenHolders } from "api/token";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
-// import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addNftsOwnedByDao } from "redux/reducers/club";
 import { CHAIN_CONFIG } from "utils/constants";
 import { convertFromWeiGovernance, getImageURL } from "utils/globalFunctions";
-import { convertToFullNumber, formatCash, shortAddress } from "utils/helper";
+import { convertToFullNumber, formatCash } from "utils/helper";
 import { useNetwork } from "wagmi";
 import AssetsTable from "./AssetsTable";
 import classes from "./Dashboard.module.scss";
@@ -24,7 +23,7 @@ import NoTokens from "./NoTokens";
 import TreasuryItem from "./TreasuryItem";
 import InviteModal from "@components/modals/InviteModal";
 import { fetchClubByDaoAddress } from "api/club";
-import Image from "next/image";
+import WalletsTabs from "./WalletsTabs";
 
 const Dashboard = ({ daoAddress, routeNeteworkId }) => {
   const gnosisAddress = useSelector((state) => {
@@ -169,8 +168,8 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
     }
   };
 
-  const handleChange = (e) => {
-    setAssetType(e.target.value);
+  const handleChange = (event, newValue) => {
+    setAssetType(newValue);
   };
 
   const currentEOAWalletChangeHandler = (e) => {
@@ -260,97 +259,39 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
         </div>
 
         <div className={classes.assetsContainer}>
-          <div className={classes.assetsType}>
-            {/* <Typography className={classes.title} variant="inherit">
-              Assets
-            </Typography> */}
+          <WalletsTabs
+            allEOAWallets={allEOAWallets}
+            classes={classes}
+            currentEOAWallet={currentEOAWallet}
+            currentEOAWalletChangeHandler={currentEOAWalletChangeHandler}
+            gnosisAddress={gnosisAddress}
+            networkId={networkId}
+          />
 
-            <FormControl sx={{ minWidth: 150 }}>
-              <Select
-                sx={{
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    border: "none",
-                  },
-                  fontFamily: "inherit",
-                }}
-                value={currentEOAWallet}
-                onChange={currentEOAWalletChangeHandler}
-                displayEmpty>
-                <MenuItem
-                  sx={{
-                    fontFamily: "inherit",
-                  }}
-                  value={{
-                    walletAddress: gnosisAddress,
-                    walletName: "Treasury",
-                    networkId,
-                  }}
-                  selected>
-                  Treasury
-                </MenuItem>
-                {allEOAWallets.map((wallet) => (
-                  <MenuItem
-                    key={`${wallet.walletAddress}${wallet.networkId}`}
-                    sx={{
-                      fontFamily: "inherit",
-                    }}
-                    value={wallet}>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "12px",
-                        padding: "4px",
-                      }}>
-                      <Image
-                        src={`/assets/networks/${wallet.networkId}.png`}
-                        height={20}
-                        width={20}
-                        alt={wallet.networkId}
-                        style={{
-                          borderRadius: "50%",
-                        }}
-                      />
-                      <Typography variant="inherit" fontSize={14}>
-                        {wallet.walletName
-                          ? wallet.walletName
-                          : shortAddress(wallet.walletAddress)}
-                      </Typography>
-                    </div>
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl sx={{ minWidth: 150 }}>
-              <Select
-                sx={{
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    border: "none",
-                  },
-                  fontFamily: "inherit",
-                }}
-                value={assetType}
-                onChange={handleChange}
-                displayEmpty>
-                <MenuItem
-                  sx={{
-                    fontFamily: "inherit",
-                  }}
-                  value={"erc20"}
-                  selected>
-                  Tokens
-                </MenuItem>
-                <MenuItem
-                  sx={{
-                    fontFamily: "inherit",
-                  }}
-                  value={"erc721"}>
-                  Collectibles
-                </MenuItem>
-              </Select>
-            </FormControl>
-          </div>
+          <Tabs
+            TabIndicatorProps={{
+              style: { backgroundColor: "#fff" },
+            }}
+            textColor="inherit"
+            value={assetType}
+            onChange={handleChange}>
+            <Tab
+              sx={{
+                fontFamily: "inherit",
+                textTransform: "none",
+              }}
+              value="erc20"
+              label="Crypto"
+            />
+            <Tab
+              sx={{
+                fontFamily: "inherit",
+                textTransform: "none",
+              }}
+              value="erc721"
+              label="NFTs"
+            />
+          </Tabs>
 
           {assetType === "erc20" ? (
             <>

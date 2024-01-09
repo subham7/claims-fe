@@ -198,7 +198,6 @@ const Settings = ({ daoAddress }) => {
   const getClubInfoFn = async () => {
     const info = await getClubInfo(daoAddress);
     if (info.status === 200) {
-      console.log("xxx", info.data);
       setClubInfo(info.data[0]);
     }
   };

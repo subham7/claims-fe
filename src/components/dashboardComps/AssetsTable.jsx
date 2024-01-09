@@ -39,6 +39,9 @@ const AssetsTable = ({ tableHeader, tableData }) => {
                           alt="token name"
                           height={25}
                           width={25}
+                          style={{
+                            borderRadius: "50%",
+                          }}
                         />
                         <Typography
                           className={classes.tokenName}

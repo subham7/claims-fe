@@ -38,7 +38,6 @@ const WalletItem = ({
         JSON.stringify(data),
       );
 
-      debugger;
       await removeWalletAddressToTrack(
         {
           ...data,
