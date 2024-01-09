@@ -60,7 +60,7 @@ const WalletsTabs = ({
               </Typography>
             </div>
           </MenuItem>
-          {allEOAWallets.map((wallet) => (
+          {allEOAWallets?.map((wallet) => (
             <MenuItem
               key={`${wallet.walletAddress}${wallet.networkId}`}
               sx={{

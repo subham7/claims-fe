@@ -269,7 +269,9 @@ const Settings = ({ daoAddress }) => {
         daoAddress={daoAddress}
         factoryData={factoryData}
       />
-      <WalletTracker daoAddress={daoAddress} />
+
+      <WalletTracker isAdminUser={isAdminUser} daoAddress={daoAddress} />
+
       <TokenGating daoAddress={daoAddress} />
     </>
   );

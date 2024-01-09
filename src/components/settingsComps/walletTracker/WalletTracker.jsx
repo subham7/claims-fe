@@ -7,7 +7,7 @@ import WalletTrackerModal from "./WalletTrackerModal";
 import { fetchClubByDaoAddress } from "api/club";
 import { useSelector } from "react-redux";
 
-const WalletTracker = ({ daoAddress }) => {
+const WalletTracker = ({ daoAddress, isAdminUser }) => {
   const [showModal, setShowModal] = useState(false);
   const [allWallets, setAllWallets] = useState([]);
 
@@ -44,8 +44,9 @@ const WalletTracker = ({ daoAddress }) => {
             walletName={"Treasury"}
             networkId={"0x89"}
           />
-          {allWallets.map((wallet) => (
+          {allWallets?.map((wallet) => (
             <WalletItem
+              isAdminUser={isAdminUser}
               key={`${wallet.walletAddress}${wallet.networkId}`}
               walletAddress={wallet.walletAddress}
               walletName={wallet.walletName}
@@ -56,10 +57,13 @@ const WalletTracker = ({ daoAddress }) => {
             />
           ))}
         </div>
-        <button onClick={showModalHandler} className={classes.addButton}>
-          <FaCirclePlus />
-          <Typography>Add</Typography>
-        </button>
+
+        {isAdminUser && (
+          <button onClick={showModalHandler} className={classes.addButton}>
+            <FaCirclePlus />
+            <Typography>Add</Typography>
+          </button>
+        )}
       </div>
 
       {showModal ? (

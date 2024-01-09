@@ -10,6 +10,7 @@ import BackdropLoader from "@components/common/BackdropLoader";
 import { useAccount } from "wagmi";
 import { setAlertData } from "redux/reducers/alert";
 import { useDispatch } from "react-redux";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const WalletItem = ({
   networkId,
@@ -18,6 +19,7 @@ const WalletItem = ({
   isRemovable = false,
   daoAddress,
   onRemoveSuccess,
+  isAdminUser,
 }) => {
   const { address } = useAccount();
   const [loading, setLoading] = useState(false);
@@ -82,20 +84,37 @@ const WalletItem = ({
           className={classes.walletAddress}
           variant="inherit"
           fontSize={14}>
-          {walletName ? walletName : ""} {walletName.length ? "/" : null}
+          {walletName ? walletName : ""} {walletName.length ? "/ " : null}
           <span>{walletAddress}</span>
         </Typography>
       </div>
 
       <div className={classes.icons}>
-        <FaCopy />
+        <FaCopy
+          onClick={() => {
+            navigator.clipboard.writeText(walletAddress);
+            dispatch(
+              setAlertData({
+                open: true,
+                message: "Copied!",
+                severity: "success",
+              }),
+            );
+          }}
+        />
         <Image
+          onClick={() => {
+            window.open(
+              `${CHAIN_CONFIG[networkId].blockExplorerUrl}/address/${walletAddress}`,
+              "_blank",
+            );
+          }}
           src={"/assets/icons/etherscan.png"}
           height={18}
           width={18}
           alt="Etherscan link"
         />
-        {isRemovable && (
+        {isRemovable && isAdminUser && (
           <AiFillMinusCircle
             className={classes.remove}
             onClick={removeWalletHandler}
