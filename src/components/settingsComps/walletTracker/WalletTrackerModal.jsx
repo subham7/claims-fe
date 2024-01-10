@@ -46,14 +46,19 @@ const WalletTrackerModal = ({ onClose, daoAddress, onAddSuccess }) => {
           JSON.stringify(data),
         );
 
-        await addWalletAddressToTrack(
+        const res = await addWalletAddressToTrack(
           {
             ...data,
             signature,
           },
           daoAddress,
         );
-        onAddSuccess();
+
+        console.log("xxxx", res);
+        if (res.code === 404) {
+          throw Error;
+        }
+
         setLoading(false);
         onClose();
         dispatch(
