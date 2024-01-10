@@ -54,11 +54,6 @@ const WalletTrackerModal = ({ onClose, daoAddress, onAddSuccess }) => {
           daoAddress,
         );
 
-        console.log("xxxx", res);
-        if (res.code === 404) {
-          throw Error;
-        }
-
         setLoading(false);
         onClose();
         dispatch(
