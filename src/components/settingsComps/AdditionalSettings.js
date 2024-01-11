@@ -27,6 +27,7 @@ import BackdropLoader from "@components/common/BackdropLoader";
 import { setAlertData } from "redux/reducers/alert";
 import { useDispatch } from "react-redux";
 import { addFactoryData } from "redux/reducers/club";
+import NotificationsModal from "./modals/NotificationsModal";
 
 const AdditionalSettings = ({
   tokenType,
@@ -48,6 +49,7 @@ const AdditionalSettings = ({
   const [showDepositDocumentLinkModal, setShowDepositDocumentLinkModal] =
     useState(false);
   const [showOwnerFeesModal, setShowOwnerFeesModal] = useState(false);
+  const [showNotificationsModal, setShowNotificationsModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [checked, setChecked] = useState(false);
   const [w8Checked, setW8Checked] = useState(false);
@@ -494,6 +496,35 @@ const AdditionalSettings = ({
         <Divider />
       </Stack>
 
+      <Stack spacing={1}>
+        <Grid
+          container
+          py={2}
+          sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Grid item>
+            <Typography
+              variant="settingText"
+              className={classes.valuesDimStyle}>
+              Notifications
+            </Typography>
+          </Grid>
+          <Grid
+            // container
+            sx={{ display: "flex", alignItems: "center" }}
+            spacing={1}>
+            <Grid>
+              <Grid sx={{ display: "flex", alignItems: "center" }}>
+                <Link
+                  className={classes.link}
+                  onClick={() => setShowNotificationsModal(true)}>
+                  Learn more
+                </Link>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Stack>
+
       {/* <Stack spacing={1}>
         <Grid
           container
@@ -620,6 +651,12 @@ const AdditionalSettings = ({
           }}
           updateDocumentLink={updateDocumentLink}
           loading={loading}
+        />
+      )}
+      {showNotificationsModal && (
+        <NotificationsModal
+          open={showNotificationsModal}
+          onClose={() => setShowNotificationsModal(false)}
         />
       )}
     </div>
