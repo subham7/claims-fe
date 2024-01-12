@@ -72,7 +72,7 @@ const Create = () => {
         if (
           formikStep1.values.clubTokenType === "Non Transferable ERC20 Token"
         ) {
-          return <ERC20Step2 formik={formikERC20Step2} />;
+          return <ERC20Step2 formik={formikERC20Step2} networkId={networkId} />;
         } else {
           return (
             <NFTStep2
@@ -104,6 +104,7 @@ const Create = () => {
 
   const formikERC20Step2 = useFormik({
     initialValues: {
+      depositToken: "",
       depositClose: dayjs(Date.now() + 3600 * 1000 * 24),
       minDepositPerUser: "",
       maxDepositPerUser: "",
@@ -239,7 +240,8 @@ const Create = () => {
             quorum: formikStep3.values.quorum * 100,
             threshold: formikStep3.values.threshold * 100,
             safeThreshold: formikStep3.values.safeThreshold ?? 0,
-            depositTokenAddress: CHAIN_CONFIG[networkId].usdcAddress,
+            // depositTokenAddress: CHAIN_CONFIG[networkId].usdcAddress,
+            depositToken: formikERC20Step2.values.depositToken,
             treasuryAddress:
               formikStep3.values.safeAddress.length > 0
                 ? formikStep3.values.safeAddress

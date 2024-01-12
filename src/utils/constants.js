@@ -104,12 +104,15 @@ export const CHAIN_CONFIG = {
     },
     rpcUrls: ["https://rpc.goerli.mudit.blog/"],
     appRpcUrl: `https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
-    factoryContractAddress: "",
+    factoryContractAddress: "0x833087e80EA04b5127Ac7F13511C65AAC2ef3BBf",
+    stationSubgraphUrl:
+      "https://api.thegraph.com/subgraphs/name/subham7/stnx-be-goerli",
     claimFactoryAddress: "0x14E92a30fc70F8544b0DDB5fd87B773bC0DD68e6",
     claimsSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim",
     covalentNetworkName: "goerli-testnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    usdcAddress: "0x07865c6E87B9F70255377e024ace6630C1Eaa37F",
     blockExplorerUrl: "https://goerli.etherscan.io",
     disburseContractAddress: "0x63D57d534a44f486EE2cCDcd53EbB7FA988cA5d5",
     gnosisTxUrl: "https://safe-transaction-goerli.safe.global/",
@@ -131,6 +134,7 @@ export const CHAIN_CONFIG = {
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-eth/prod/gn",
     covalentNetworkName: "eth-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    usdcAddress: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
     blockExplorerUrl: "https://etherscan.io",
     disburseContractAddress: "0x8b41c0aa45c86cebcfed5fb3744bf99ac8fb45c3",
     gnosisTxUrl: "https://safe-transaction-mainnet.safe.global/",
@@ -551,6 +555,10 @@ export const stationNetworksChainId = [
   {
     chainId: 1,
     networkId: "0x1",
+  },
+  {
+    chainId: 5,
+    networkId: "0x5",
   },
   // {
   //   chainId: 100,

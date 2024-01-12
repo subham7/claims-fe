@@ -1,7 +1,6 @@
 import { Box, CssBaseline, Grid, Typography } from "@mui/material";
 import { useAccount, useNetwork } from "wagmi";
 import useClubFetch from "hooks/useClubFetch";
-import { showWrongNetworkModal } from "utils/helper";
 import { makeStyles } from "@mui/styles";
 import Navbar from "@components/ui/Navbar/Navbar";
 import Sidebar from "@components/ui/Sidebar/Sidebar";
@@ -78,7 +77,7 @@ export default function Layout(props) {
                 {props.children}
               </div>
             </Box>
-            {showWrongNetworkModal(networkId, routeNetworkId)}
+            {/* {showWrongNetworkModal(networkId, routeNetworkId)} */}
           </>
         )}
         <CustomAlert />

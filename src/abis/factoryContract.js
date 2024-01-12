@@ -198,7 +198,7 @@ export const factoryContractABI = [
     ],
     name: "buyGovernanceTokenERC20DAO",
     outputs: [],
-    stateMutability: "nonpayable",
+    stateMutability: "payable",
     type: "function",
   },
   {
@@ -231,7 +231,7 @@ export const factoryContractABI = [
     ],
     name: "buyGovernanceTokenERC721DAO",
     outputs: [],
-    stateMutability: "nonpayable",
+    stateMutability: "payable",
     type: "function",
   },
   {

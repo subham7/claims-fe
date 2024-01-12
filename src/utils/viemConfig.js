@@ -7,6 +7,7 @@ import {
   mainnet,
   gnosis,
   taikoJolnir,
+  goerli,
 } from "viem/chains";
 import {
   CHAIN_CONFIG,
@@ -18,6 +19,7 @@ import {
 
 const viemChains = {
   "0x89": polygon,
+  "0x5": goerli,
   "0xe708": lineaMainnetWalletConnect,
   "0x2105": base,
   "0xa4b1": arbitrum,

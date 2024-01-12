@@ -1,10 +1,18 @@
-import { Card, InputAdornment } from "@mui/material";
+import {
+  Card,
+  FormControl,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
 import { TextField, Typography } from "@components/ui";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { ERC20Step2Styles } from "./CreateClubStyles";
+import { CHAIN_CONFIG } from "utils/constants";
 
 export default function ERC20Step2(props) {
   const classes = ERC20Step2Styles();
@@ -20,6 +28,52 @@ export default function ERC20Step2(props) {
           Community members will receive membership token(s) when they join this
           station.
         </Typography>
+
+        <Card>
+          <div className="f-d f-v-c f-h-sb">
+            <div>
+              <Typography variant="body" className="text-blue">
+                Deposit Token
+              </Typography>
+            </div>
+
+            {/* <FormControl sx={{ width: "50%" }}>
+              <Select
+                value={props.formik.values.depositToken}
+                onChange={props.formik.handleChange}
+                inputProps={{ "aria-label": "Without label" }}
+                name="depositToken"
+                id="depositToken">
+                <MenuItem value={CHAIN_CONFIG[props.networkId].usdcAddress}>
+                  USDC
+                </MenuItem>
+                <MenuItem value={CHAIN_CONFIG[props.networkId].nativeToken}>
+                  {CHAIN_CONFIG[props.networkId].nativeCurrency.symbol}
+                </MenuItem>
+              </Select>
+            </FormControl> */}
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">Token</InputLabel>
+              <Select
+                labelId="depositToken-label"
+                id="depositToken"
+                name="depositToken"
+                value={props.formik.values.depositToken}
+                label="Token"
+                onChange={props.formik.handleChange}>
+                <MenuItem value={CHAIN_CONFIG[props.networkId].usdcAddress}>
+                  USDC
+                </MenuItem>
+                <MenuItem value={CHAIN_CONFIG[props.networkId].nativeToken}>
+                  {" "}
+                  {CHAIN_CONFIG[props.networkId].nativeCurrency.symbol}
+                </MenuItem>
+              </Select>
+            </FormControl>
+          </div>
+        </Card>
+
+        <br />
 
         <Card>
           <div className="f-d f-v-c f-h-sb">

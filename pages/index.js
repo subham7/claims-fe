@@ -166,7 +166,9 @@ const App = () => {
                 "Creating a Station is the easiest way to start managing money/assets towards shared goals"
               }
               buttonText={
-                networkId === "0x89" ? "Enter App" : "Switch to polygon"
+                networkId === "0x89" || networkId === "0x5"
+                  ? "Enter App"
+                  : "Switch to polygon"
               }
             />
             <NewCard
