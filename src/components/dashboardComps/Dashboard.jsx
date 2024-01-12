@@ -91,10 +91,10 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
 
           const myBalance = await getBalance(daoAddress);
 
-          const decimals = await getDecimals(daoAddress);
+          // const decimals = await getDecimals(daoAddress);
           const balance = convertFromWeiGovernance(
             convertToFullNumber(myBalance + ""),
-            decimals,
+            18,
           );
 
           if (tokenType === "erc721") {
@@ -106,7 +106,12 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
           }
 
           clubDetails.noOfMembers = noOfHolders ?? 1;
-          setMyShare(balance);
+
+          setMyShare(
+            tokenType === "erc721"
+              ? convertToFullNumber(myBalance.toString())
+              : balance,
+          );
           setClubDetails(clubDetails);
         }
       }
