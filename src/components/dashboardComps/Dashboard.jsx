@@ -106,7 +106,12 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
           }
 
           clubDetails.noOfMembers = noOfHolders ?? 1;
-          setMyShare(balance);
+
+          setMyShare(
+            tokenType === "erc721"
+              ? convertToFullNumber(myBalance.toString())
+              : balance,
+          );
           setClubDetails(clubDetails);
         }
       }
