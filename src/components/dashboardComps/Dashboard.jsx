@@ -91,10 +91,10 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
 
           const myBalance = await getBalance(daoAddress);
 
-          const decimals = await getDecimals(daoAddress);
+          // const decimals = await getDecimals(daoAddress);
           const balance = convertFromWeiGovernance(
             convertToFullNumber(myBalance + ""),
-            decimals,
+            18,
           );
 
           if (tokenType === "erc721") {
