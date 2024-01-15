@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from "react";
+import { React, useState } from "react";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 
@@ -6,9 +6,8 @@ import NewCard from "../src/components/cards/card";
 import Layout from "../src/components/layouts/layout";
 import { BsFillPlayFill } from "react-icons/bs";
 import VideoModal from "../src/components/modals/VideoModal";
-import { useAccount, useNetwork } from "wagmi";
+import { useNetwork } from "wagmi";
 import useClubFetch from "hooks/useClubFetch";
-import { getReferralCode } from "api/invite/invite";
 import {
   ALLOWED_NETWORKS_FOR_STATION,
   stationNetworksChainId,
@@ -110,8 +109,6 @@ const useStyles = makeStyles({
 
 const App = () => {
   const classes = useStyles();
-  const { address: walletAddress } = useAccount();
-
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [isMainLink, setIsMainLink] = useState(false);
   const [showNetworkModal, setShowNetworkModal] = useState(false);
@@ -134,23 +131,6 @@ const App = () => {
   const claimsHandler = () => {
     router.push(`/claims/`);
   };
-
-  useEffect(() => {
-    (async () => {
-      try {
-        if (walletAddress) {
-          const code = await getReferralCode(walletAddress);
-          if (code) {
-            setIsUserWhitelisted(true);
-          } else {
-            setIsUserWhitelisted(false);
-          }
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    })();
-  }, [walletAddress]);
 
   return (
     <Layout showSidebar={false} faucet={false}>
