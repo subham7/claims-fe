@@ -151,7 +151,7 @@ const DashboardActivities = ({ proposals, daoAddress, networkId }) => {
             className={
               isTransaction ? classes.transactionList : classes.proposalList
             }>
-            {data.length ? (
+            {data?.length ? (
               data.map((item, index) =>
                 isTransaction ? (
                   item && <TransactionItem key={index} item={item} />
