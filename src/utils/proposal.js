@@ -317,9 +317,16 @@ export const getEncodedData = async ({
           QUERY_STATION_DETAILS(daoAddress),
         );
         const tokenURI = clubDetails?.stations[0].imageUrl;
+
+        const tokenURIArr = [];
+
+        for (let i = 0; i < mintGTAddresses.length; i++) {
+          tokenURIArr.push(tokenURI);
+        }
+
         data = iface.encodeFunctionData("mintGTToAddress", [
           mintGTAmounts,
-          [tokenURI],
+          tokenURIArr,
           mintGTAddresses,
         ]);
       }
