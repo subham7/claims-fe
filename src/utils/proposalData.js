@@ -1445,7 +1445,7 @@ export const proposalDetailsData = ({
       };
       return responseData;
     case 1:
-      responseData.data = { "No of recipients :": mintGTAddresses };
+      responseData.data = { "No of recipients :": mintGTAddresses.length };
       return responseData;
     case 2:
       responseData.data = { Quorum: quorum, Threshold: threshold };
