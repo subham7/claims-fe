@@ -165,7 +165,7 @@ const TokenGating = ({ daoAddress }) => {
 
   return (
     <div className={classes.container}>
-      <div className={classes.heading}>
+      <div>
         <Typography className={classes.heading}>Token Gating</Typography>
 
         {isAdminUser && fetchedDetails?.tokenA?.length ? (
