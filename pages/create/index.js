@@ -79,6 +79,7 @@ const Create = () => {
             <NFTStep2
               formik={formikERC721Step2}
               uploadInputRef={uploadInputRef}
+              networkId={networkId}
             />
           );
         }
@@ -122,6 +123,7 @@ const Create = () => {
     initialValues: {
       nftImage: "",
       isNftTransferable: false,
+      depositToken: "",
       pricePerToken: "",
       maxTokensPerUser: "",
       isNftTotalSupplylimited: false,
@@ -166,6 +168,13 @@ const Create = () => {
           description: "nft image",
           image: formikERC721Step2.values.nftImage,
         });
+        const depositTokenAddress = formikERC721Step2.values.depositToken;
+        const isNativeToken =
+          depositTokenAddress ===
+          CHAIN_CONFIG[networkId].nativeToken.toLowerCase();
+        const decimals = isNativeToken
+          ? 18
+          : await getDecimals(depositTokenAddress);
 
         // dispatch(setUploadNFTLoading(false));
         try {
@@ -177,7 +186,7 @@ const Create = () => {
             quorum: formikStep3.values.quorum * 100,
             threshold: formikStep3.values.threshold * 100,
             safeThreshold: formikStep3.values.safeThreshold ?? 0,
-            depositTokenAddress: CHAIN_CONFIG[networkId].usdcAddress,
+            depositTokenAddress: depositTokenAddress,
             treasuryAddress:
               formikStep3.values.safeAddress.length > 0
                 ? formikStep3.values.safeAddress
@@ -188,7 +197,7 @@ const Create = () => {
               : 0,
             pricePerToken: convertToWeiGovernance(
               formikERC721Step2.values.pricePerToken,
-              6,
+              decimals,
             ),
             isNftTransferable: formikERC721Step2.values.isNftTransferable,
             isNftTotalSupplyUnlimited:
@@ -217,7 +226,6 @@ const Create = () => {
         }
       } else {
         try {
-          debugger;
           const depositTokenAddress = formikERC20Step2.values.depositToken;
           const isNativeToken =
             depositTokenAddress ===
