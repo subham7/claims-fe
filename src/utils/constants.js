@@ -2292,10 +2292,10 @@ export const stationNetworksChainId = [
   //   chainId: 100,
   //   networkId: "0x64",
   // },
-  // {
-  //   chainId: 59144,
-  //   networkId: "0xe708",
-  // },
+  {
+    chainId: 59144,
+    networkId: "0xe708",
+  },
 ];
 
-export const ALLOWED_NETWORKS_FOR_STATION = ["0x89", "0x1"];
+export const ALLOWED_NETWORKS_FOR_STATION = ["0x89", "0x1", "0xe708"];
