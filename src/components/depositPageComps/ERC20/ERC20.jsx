@@ -212,7 +212,7 @@ const ERC20 = ({
           whitelistUserData?.proof ? whitelistUserData.proof : [],
           clubData.depositTokenAddress ===
             CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
-            ? convertToWeiGovernance(inputValue, 18).toString()
+            ? inputValue
             : "0",
         );
 

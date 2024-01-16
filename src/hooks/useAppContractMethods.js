@@ -160,6 +160,7 @@ const useAppContractMethods = (params) => {
     tokenUriOfNFT,
     numOfTokens,
     merkleProof,
+    value,
   ) => {
     try {
       const res = await writeContractFunction({
@@ -174,6 +175,7 @@ const useAppContractMethods = (params) => {
           merkleProof,
         ],
         account: walletAddress,
+        value: value,
         networkId,
       });
       return res;

@@ -193,6 +193,10 @@ const ERC721 = ({
         clubData?.imageUrl,
         count,
         whitelistUserData?.proof ? whitelistUserData.proof : [],
+        clubData.depositTokenAddress ===
+          CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
+          ? (clubData?.pricePerToken * count).toString()
+          : "0",
       );
       setLoading(false);
       setClaimSuccessfull(true);

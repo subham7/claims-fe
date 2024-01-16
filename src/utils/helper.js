@@ -231,6 +231,7 @@ export const writeContractFunction = async ({
   args,
   account,
   networkId,
+  value,
 }) => {
   try {
     const publicClient = getPublicClient(networkId);
@@ -242,6 +243,7 @@ export const writeContractFunction = async ({
       functionName,
       args,
       account,
+      value,
     });
 
     const txHash = await walletClient.writeContract(request);
