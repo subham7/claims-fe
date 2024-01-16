@@ -22,7 +22,7 @@ import DashboardActivities from "./DashboardActivities";
 import NoTokens from "./NoTokens";
 import TreasuryItem from "./TreasuryItem";
 import InviteModal from "@components/modals/InviteModal";
-import { fetchClubByDaoAddress } from "api/club";
+import { fetchClubByDaoAddress, getTotalTreasuryAmount } from "api/club";
 import WalletsTabs from "./WalletsTabs";
 
 const Dashboard = ({ daoAddress, routeNeteworkId }) => {
@@ -156,12 +156,9 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
   const fetchTreasuryDetails = async () => {
     try {
       if (networkId !== "undefined") {
-        const assetsData = await getAssetsByDaoAddress(
-          gnosisAddress,
-          networkId,
-        );
+        const assetsData = await getTotalTreasuryAmount(daoAddress);
 
-        setTreasuryAmount(assetsData?.data?.treasuryAmount);
+        setTreasuryAmount(assetsData?.balance);
       }
     } catch (error) {
       console.log(error);

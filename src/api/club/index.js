@@ -100,3 +100,14 @@ export const removeWalletAddressToTrack = async (data, daoAddress) => {
     console.log(error);
   }
 };
+
+export const getTotalTreasuryAmount = async (daoAddress) => {
+  try {
+    const res = await axios.get(
+      `${MAIN_API_URL}club/${daoAddress}/hot-wallets/balance`,
+    );
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};

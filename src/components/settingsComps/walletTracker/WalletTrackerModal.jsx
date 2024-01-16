@@ -55,7 +55,9 @@ const WalletTrackerModal = ({ onClose, daoAddress, onAddSuccess }) => {
         );
 
         setLoading(false);
+
         onClose();
+        onAddSuccess();
         dispatch(
           setAlertData({
             open: true,
