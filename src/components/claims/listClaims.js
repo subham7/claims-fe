@@ -25,6 +25,11 @@ const useStyles = makeStyles({
     justifyContent: "space-between",
     alignItems: "center",
   },
+  headerBtns: {
+    display: "flex",
+    alignItems: "center",
+    gap: "16px",
+  },
   claimDoc: {
     width: "130px",
     fontSize: "16px",
@@ -63,7 +68,7 @@ const useStyles = makeStyles({
     border: "1px solid #FFFFFF1A",
     borderRadius: "10px",
     padding: "10px 30px",
-    marginTop: "20px",
+    marginTop: "100px",
   },
   proposalInfoCard: {
     background: settingsImg,
@@ -81,8 +86,12 @@ const ListClaims = () => {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
 
-  const createClaimHandler = () => {
+  const createClaim = () => {
     router.push("/claims/create");
+  };
+
+  const createDisburse = () => {
+    router.push("/claims/disburse");
   };
 
   const { address: walletAddress } = useAccount();
@@ -95,7 +104,11 @@ const ListClaims = () => {
           networkId,
         );
 
-        if (claims.length) setClaimData(claims?.reverse());
+        if (claims.length) {
+          setClaimData(claims?.reverse());
+        } else {
+          setClaimData([]);
+        }
       } catch (error) {
         console.log(error);
       }
@@ -112,9 +125,14 @@ const ListClaims = () => {
             <Typography color="textPrimary" variant="h4">
               Welcome to Drops
             </Typography>
-            <Button variant="contained" onClick={createClaimHandler}>
-              Create
-            </Button>
+            <div className={classes.headerBtns}>
+              <Button variant="contained" onClick={createDisburse}>
+                Disburse
+              </Button>
+              <Button variant="contained" onClick={createClaim}>
+                Create
+              </Button>
+            </div>
           </div>
 
           {!claimData.length && (

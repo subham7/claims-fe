@@ -1,16 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import {
-  Alert,
-  Backdrop,
   Button,
   Card,
   CardActionArea,
   Chip,
-  CircularProgress,
   Divider,
   Grid,
-  Snackbar,
   Stack,
   Typography,
 } from "@mui/material";
@@ -22,7 +18,7 @@ import {
   getProposalTxHash,
   patchProposalExecuted,
 } from "api/proposal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CloseIcon from "@mui/icons-material/Close";
 import tickerIcon from "../../../public/assets/icons/ticker_icon.svg";
@@ -32,14 +28,12 @@ import surveyIcon from "../../../public/assets/icons/survey_icon.svg";
 import ReactHtmlParser from "react-html-parser";
 
 import Web3 from "web3";
-import { Web3Adapter } from "@safe-global/protocol-kit";
-import SafeApiKit from "@safe-global/api-kit";
 import ProposalExecutionInfo from "@components/proposalComps/ProposalExecutionInfo";
 import Signators from "@components/proposalComps/Signators";
 import ProposalInfo from "@components/proposalComps/ProposalInfo";
 import CurrentResults from "@components/proposalComps/CurrentResults";
 import ProposalVotes from "@components/proposalComps/ProposalVotes";
-import { getCustomSafeSdk, web3InstanceEthereum } from "utils/helper";
+import { getSafeSdk, handleSignMessage } from "utils/helper";
 import { retrieveNftListing } from "api/assets";
 import SafeAppsSDK from "@safe-global/safe-apps-sdk";
 import { useAccount, useNetwork } from "wagmi";
@@ -48,12 +42,17 @@ import {
   executeRejectTx,
   fetchABI,
   getEncodedData,
+  getTokenTypeByExecutionId,
   signRejectTx,
 } from "utils/proposal";
 import { BsInfoCircleFill } from "react-icons/bs";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 import { ProposalDetailStyles } from "./ProposalDetailStyles";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
+import BackdropLoader from "@components/common/BackdropLoader";
+import { setAlertData } from "redux/reducers/alert";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const ProposalDetail = ({ pid, daoAddress }) => {
   const classes = ProposalDetailStyles();
@@ -62,6 +61,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
+  const dispatch = useDispatch();
 
   const sdk = new SafeAppsSDK({
     allowedDomains: [/gnosis-safe.io$/, /safe.global$/, /5afe.dev$/],
@@ -87,20 +87,12 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     return state.gnosis.adminUser;
   });
 
-  const NETWORK_HEX = useSelector((state) => {
-    return state.gnosis.networkHex;
-  });
-
   const clubData = useSelector((state) => {
     return state.club.clubData;
   });
 
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
-  });
-
-  const airdropContractAddress = useSelector((state) => {
-    return state.gnosis.actionContractAddress;
   });
 
   const ERC721_Threshold = useSelector((state) => {
@@ -128,10 +120,6 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   const [txHash, setTxHash] = useState();
   const [cancelTxHash, setCancelTxHash] = useState();
   const [signedOwners, setSignedOwners] = useState([]);
-
-  const [openSnackBar, setOpenSnackBar] = useState(false);
-  const [message, setMessage] = useState("");
-  const [failed, setFailed] = useState(false);
   const [fetched, setFetched] = useState(false);
   const [members, setMembers] = useState([]);
   const [isNftSold, setIsNftSold] = useState(false);
@@ -140,46 +128,30 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   const [isCancelExecuted, setIsCancelExecuted] = useState(false);
   const [isRejectTxnSigned, setIsRejectTxnSigned] = useState(false);
 
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
-  });
-
-  const FACTORY_CONTRACT_ADDRESS = useSelector((state) => {
-    return state.gnosis.factoryContractAddress;
-  });
-
   const factoryData = useSelector((state) => {
     return state.club.factoryData;
   });
 
-  const { getNftBalance, getERC20TotalSupply, updateProposalAndExecution } =
-    useAppContractMethods();
+  const { getERC20TotalSupply, updateProposalAndExecution, getNftOwnersCount } =
+    useAppContractMethods({ daoAddress });
 
-  const getSafeService = useCallback(async () => {
-    const web3 = await web3InstanceEthereum();
-    const ethAdapter = new Web3Adapter({
-      web3,
-      signerAddress: Web3.utils.toChecksumAddress(walletAddress),
-    });
-    const safeService = new SafeApiKit({
-      txServiceUrl: GNOSIS_TRANSACTION_URL,
-      ethAdapter,
-    });
-    return safeService;
-  }, [GNOSIS_TRANSACTION_URL, walletAddress]);
+  const { getBalance } = useCommonContractMethods();
 
   const isOwner = useCallback(async () => {
     if (gnosisAddress) {
-      const safeSdk = await getCustomSafeSdk(
-        Web3.utils.toChecksumAddress(gnosisAddress),
-        Web3.utils.toChecksumAddress(walletAddress),
+      const { safeSdk, safeService } = await getSafeSdk(
+        gnosisAddress,
+        walletAddress,
+        CHAIN_CONFIG[networkId].gnosisTxUrl,
         networkId,
       );
+
       const owners = await safeSdk.getOwners();
 
       const ownerAddressesArray = owners.map((value) =>
         Web3.utils.toChecksumAddress(value),
       );
+
       setOwnerAddresses(ownerAddressesArray);
 
       if (isGovernanceActive === false) {
@@ -202,9 +174,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
           ) {
             setCancelTxHash("");
           } else {
-            // txHash = result.data[0].txHash;
             setCancelTxHash(result.data[0].txHash);
-            const safeService = await getSafeService();
             const tx = await safeService.getTransaction(result.data[0].txHash);
             const ownerAddresses = tx.confirmations.map(
               (confirmOwners) => confirmOwners.owner,
@@ -237,9 +207,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         ) {
           setTxHash("");
         } else {
-          // txHash = result.data[0].txHash;
           setTxHash(result.data[0].txHash);
-          const safeService = await getSafeService();
           const tx = await safeService.getTransaction(result.data[0].txHash);
           const ownerAddresses = tx.confirmations.map(
             (confirmOwners) => confirmOwners.owner,
@@ -262,14 +230,19 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         setLoaderOpen(false);
       });
     }
-  }, [
-    getSafeService,
-    gnosisAddress,
-    isAdmin,
-    isGovernanceActive,
-    pid,
-    walletAddress,
-  ]);
+  }, [gnosisAddress, isAdmin, isGovernanceActive, pid, walletAddress]);
+
+  const shareOnLensterHandler = () => {
+    const lensterUrl = `https://lenster.xyz/?text=${`
+Lads, a new proposal has been added 🥳%0A%0A
+Community vote is now LIVE in the ${clubData?.name} station.%0A%0A
+Cast your vote before ${new Date(
+      proposalData?.votingDuration,
+    ).toLocaleDateString()} here: 
+`}&url=${window.location.origin}/proposals/${daoAddress}/${pid}`;
+
+    window.open(lensterUrl, "_blank");
+  };
 
   const checkUserVoted = () => {
     if (walletAddress) {
@@ -281,7 +254,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     }
   };
 
-  const submitVote = () => {
+  const submitVote = async () => {
     setLoaderOpen(true);
     const payload = {
       proposalId: pid,
@@ -290,17 +263,45 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       clubId: daoAddress,
       daoAddress: daoAddress,
     };
-    const voteSubmit = castVote(payload, NETWORK_HEX);
-    voteSubmit.then((result) => {
+    const { signature } = await handleSignMessage(
+      walletAddress,
+      JSON.stringify(payload),
+    );
+    try {
+      const result = await castVote({ ...payload, signature });
+
       if (result.status !== 201) {
         setVoted(false);
         setLoaderOpen(false);
       } else {
-        fetchData();
+        await fetchData();
         setVoted(true);
         setLoaderOpen(false);
+        dispatch(
+          setAlertData({
+            open: true,
+            message: "Voted successfully",
+            severity: "success",
+          }),
+        );
       }
-    });
+    } catch (error) {
+      setVoted(false);
+      setLoaderOpen(false);
+
+      const errorMessage =
+        error.response && error.response.data
+          ? error.response.data.msg
+          : "Voting failed!";
+
+      dispatch(
+        setAlertData({
+          open: true,
+          message: errorMessage,
+          severity: "error",
+        }),
+      );
+    }
   };
 
   const fetchData = useCallback(async () => {
@@ -359,50 +360,32 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       airDropAmountArray,
     } = await getEncodedData({
       getERC20TotalSupply,
-      getNftBalance,
+      getBalance,
       proposalData,
       daoAddress,
       clubData,
       factoryData,
       contractABI: ABI,
       setMembers,
+      getNftOwnersCount,
       networkId,
+      gnosisAddress,
     });
 
-    const response = updateProposalAndExecution(
+    const tokenData = getTokenTypeByExecutionId(proposalData.commands);
+
+    const response = updateProposalAndExecution({
       data,
       approvalData,
-      daoAddress,
-      Web3.utils.toChecksumAddress(gnosisAddress),
-      txHash,
+      gnosisAddress: Web3.utils.toChecksumAddress(gnosisAddress),
       pid,
-      proposalData.commands[0]?.executionId === 0
-        ? proposalData.commands[0]?.airDropToken
-        : proposalData.commands[0]?.executionId === 4
-        ? proposalData.commands[0]?.customToken
-        : proposalData.commands[0]?.executionId === 5
-        ? proposalData.commands[0]?.customNft
-        : proposalData.commands[0]?.executionId === 14
-        ? proposalData.commands[0]?.depositToken
-        : proposalData.commands[0]?.executionId === 15
-        ? proposalData.commands[0]?.withdrawToken
-        : "",
+      tokenData,
       proposalStatus,
-      airdropContractAddress,
-      proposalData.commands[0]?.executionId === 3 ||
-        proposalData.commands[0]?.executionId === 10 ||
-        proposalData.commands[0]?.executionId === 11 ||
-        proposalData?.commands[0]?.executionId === 12 ||
-        proposalData.commands[0]?.executionId === 13 ||
-        proposalData.commands[0]?.executionId === 14
-        ? FACTORY_CONTRACT_ADDRESS
-        : "",
-      GNOSIS_TRANSACTION_URL,
       proposalData,
       membersArray,
       airDropAmountArray,
       transactionData,
-    );
+    });
 
     if (proposalStatus === "executed") {
       // fetchData()
@@ -413,16 +396,24 @@ const ProposalDetail = ({ pid, daoAddress }) => {
             updateStatus.then((result) => {
               if (result.status !== 200) {
                 setExecuted(false);
-                setOpenSnackBar(true);
-                setMessage("execution status update failed!");
-                setFailed(true);
+                dispatch(
+                  setAlertData({
+                    open: true,
+                    message: "Execution status update failed!",
+                    severity: "error",
+                  }),
+                );
                 setLoaderOpen(false);
               } else {
                 fetchData();
                 setExecuted(true);
-                setOpenSnackBar(true);
-                setMessage("execution successful!");
-                setFailed(false);
+                dispatch(
+                  setAlertData({
+                    open: true,
+                    message: "Execution successful!",
+                    severity: "success",
+                  }),
+                );
                 setLoaderOpen(false);
               }
             });
@@ -431,9 +422,13 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         (error) => {
           console.error(error);
           setExecuted(false);
-          setOpenSnackBar(true);
-          setMessage("execution failed!");
-          setFailed(true);
+          dispatch(
+            setAlertData({
+              open: true,
+              message: "Execution failed!",
+              severity: "error",
+            }),
+          );
           setLoaderOpen(false);
         },
       );
@@ -446,9 +441,13 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         .catch((err) => {
           console.error(err);
           setSigned(false);
-          setOpenSnackBar(true);
-          setMessage("Signature failed!");
-          setFailed(true);
+          dispatch(
+            setAlertData({
+              open: true,
+              message: "Signature failed!",
+              severity: "error",
+            }),
+          );
           setLoaderOpen(false);
         });
     }
@@ -458,9 +457,9 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     setLoaderOpen(true);
     const response = await createRejectSafeTx({
       pid,
-      gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
+      gnosisTransactionUrl: CHAIN_CONFIG[networkId].gnosisTxUrl,
       gnosisAddress,
-      NETWORK_HEX,
+      networkId,
       daoAddress,
       walletAddress,
       networkId,
@@ -468,15 +467,23 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     if (response) {
       fetchData();
       setIsCancelSigned(true);
-      setOpenSnackBar(true);
-      setMessage("Signature successful!");
-      setFailed(false);
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Signature successful!",
+          severity: "success",
+        }),
+      );
       isOwner();
     } else {
       setIsCancelSigned(false);
-      setOpenSnackBar(true);
-      setMessage("Signature failed!");
-      setFailed(true);
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Signature failed!",
+          severity: "error",
+        }),
+      );
       setLoaderOpen(false);
     }
   };
@@ -488,22 +495,30 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     const response = await signRejectTx({
       pid: cancelPid,
       walletAddress,
-      gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
+      gnosisTransactionUrl: CHAIN_CONFIG[networkId].gnosisTxUrl,
       gnosisAddress,
       networkId,
     });
     if (response) {
       fetchData();
       setIsCancelSigned(true);
-      setOpenSnackBar(true);
-      setMessage("Signature successful!");
-      setFailed(false);
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Signature successful!",
+          severity: "success",
+        }),
+      );
       isOwner();
     } else {
       setIsCancelSigned(false);
-      setOpenSnackBar(true);
-      setMessage("Signature failed!");
-      setFailed(true);
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Signature failed!",
+          severity: "error",
+        }),
+      );
       setLoaderOpen(false);
     }
   };
@@ -512,7 +527,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
     setLoaderOpen(true);
     const response = executeRejectTx({
       pid: proposalData?.cancelProposalId,
-      gnosisTransactionUrl: GNOSIS_TRANSACTION_URL,
+      gnosisTransactionUrl: CHAIN_CONFIG[networkId].gnosisTxUrl,
       gnosisAddress,
       walletAddress,
       networkId,
@@ -524,16 +539,24 @@ const ProposalDetail = ({ pid, daoAddress }) => {
           updateStatus.then((result) => {
             if (result.status !== 200) {
               setExecuted(false);
-              setOpenSnackBar(true);
-              setMessage("execution status update failed!");
-              setFailed(true);
+              dispatch(
+                setAlertData({
+                  open: true,
+                  message: "Execution status update failed!",
+                  severity: "error",
+                }),
+              );
               setLoaderOpen(false);
             } else {
               fetchData();
               setExecuted(true);
-              setOpenSnackBar(true);
-              setMessage("execution successful!");
-              setFailed(false);
+              dispatch(
+                setAlertData({
+                  open: true,
+                  message: "Execution successful!",
+                  severity: "success",
+                }),
+              );
               setLoaderOpen(false);
             }
           });
@@ -542,19 +565,17 @@ const ProposalDetail = ({ pid, daoAddress }) => {
       (error) => {
         console.error(error);
         setExecuted(false);
-        setOpenSnackBar(true);
-        setMessage("execution failed!");
-        setFailed(true);
+        dispatch(
+          setAlertData({
+            open: true,
+            message: "Execution failed!",
+            severity: "error",
+          }),
+        );
+
         setLoaderOpen(false);
       },
     );
-  };
-
-  const handleSnackBarClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnackBar(false);
   };
 
   useEffect(() => {
@@ -668,13 +689,27 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                     }
                   />
                 </Grid>
+                <Grid onClick={shareOnLensterHandler} item>
+                  <Chip
+                    className={classes.shareOnLens}
+                    label={"Share on Lens"}
+                    icon={
+                      <Image
+                        src="/assets/icons/lenster-comp.jpeg"
+                        alt="Share on Lenster"
+                        height={25}
+                        width={25}
+                      />
+                    }
+                  />
+                </Grid>
               </Grid>
             </Grid>
           </Grid>
 
           {/* Proposal Info and Signators */}
           <Grid container spacing={2} mt={4} mb={3}>
-            {proposalData && factoryData && (
+            {proposalData && factoryData && proposalData.type !== "survey" && (
               <ProposalExecutionInfo
                 proposalData={proposalData}
                 fetched={fetched}
@@ -835,7 +870,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                     ) : proposalData?.status === "passed" ? (
                       isAdmin ? (
                         <Card>
-                          {proposalData?.cancelProposalId === undefined && (
+                          {proposalData?.cancelProposalId === undefined ? (
                             <Button
                               style={{
                                 width: "100%",
@@ -853,10 +888,13 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                                         executeFunction("executed");
                                       }
                                     : () => {
-                                        setOpenSnackBar(true);
-                                        setFailed(true);
-                                        setMessage(
-                                          "execute txns with smaller nonce first",
+                                        dispatch(
+                                          setAlertData({
+                                            open: true,
+                                            message:
+                                              "Execute txns with smaller nonce first",
+                                            severity: "error",
+                                          }),
                                         );
                                       }
                                   : () => {
@@ -903,8 +941,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                                 ) : null}
                               </Grid>
                             </Button>
-                          )}
-
+                          ) : null}
                           {(signed ||
                             isRejectTxnSigned ||
                             signedOwners.length) &&
@@ -932,10 +969,13 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                                         executeRejectSafeTransaction();
                                       }
                                     : () => {
-                                        setOpenSnackBar(true);
-                                        setFailed(true);
-                                        setMessage(
-                                          "execute txns with smaller nonce first",
+                                        dispatch(
+                                          setAlertData({
+                                            open: true,
+                                            message:
+                                              "Execute txns with smaller nonce first",
+                                            severity: "error",
+                                          }),
                                         );
                                       }
                                   : !isRejectTxnSigned
@@ -1117,7 +1157,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                             </Stack>
                           </Card>
                         )
-                      ) : proposalData[0].status === "failed" ? (
+                      ) : proposalData[0]?.status === "failed" ? (
                         <Card sx={{ width: "100%" }}>
                           <Grid
                             container
@@ -1144,7 +1184,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
                             </Grid>
                           </Grid>
                         </Card>
-                      ) : proposalData[0].status === "closed" ? (
+                      ) : proposalData[0]?.status === "closed" ? (
                         <Card sx={{ width: "100%" }}>
                           <Grid
                             container
@@ -1202,32 +1242,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
         </Grid>
       </Grid>
 
-      <Snackbar
-        open={openSnackBar}
-        autoHideDuration={6000}
-        onClose={handleSnackBarClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
-        {!failed ? (
-          <Alert
-            onClose={handleSnackBarClose}
-            severity="success"
-            sx={{ width: "100%" }}>
-            {message}
-          </Alert>
-        ) : (
-          <Alert
-            onClose={handleSnackBarClose}
-            severity="error"
-            sx={{ width: "100%" }}>
-            {message}
-          </Alert>
-        )}
-      </Snackbar>
-      <Backdrop
-        sx={{ color: "#000", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loaderOpen}>
-        <CircularProgress />
-      </Backdrop>
+      <BackdropLoader isOpen={loaderOpen} />
     </>
   );
 };

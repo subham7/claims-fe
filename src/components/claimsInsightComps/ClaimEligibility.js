@@ -1,5 +1,7 @@
+import { useTheme } from "@mui/styles";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import React, { useEffect, useState } from "react";
+import { ZERO_ADDRESS } from "utils/constants";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
 
@@ -12,7 +14,8 @@ const ClaimEligibility = ({
     symbol: "",
   });
 
-  const classes = ClaimsInsightStyles();
+  const theme = useTheme();
+  const classes = ClaimsInsightStyles(theme);
   const { getDecimals, getTokenSymbol } = useCommonContractMethods();
 
   useEffect(() => {
@@ -53,8 +56,7 @@ const ClaimEligibility = ({
         /> */}
       </div>
 
-      {whitelistTokenAddress !==
-      "0x0000000000000000000000000000000000000000" ? (
+      {whitelistTokenAddress !== ZERO_ADDRESS ? (
         <>
           <div className={classes.eligibleToken}>
             <p>

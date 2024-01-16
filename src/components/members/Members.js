@@ -1,6 +1,5 @@
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import {
-  Backdrop,
   CircularProgress,
   Grid,
   Paper,
@@ -30,9 +29,14 @@ import { saveAs } from "file-saver";
 import { useNetwork } from "wagmi";
 import { queryPaginatedMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 import { CHAIN_CONFIG } from "utils/constants";
+import { getDefaultProfile } from "utils/lensHelper";
+import BackdropLoader from "@components/common/BackdropLoader";
+import ComponentHeader from "@components/common/ComponentHeader";
 
 const Members = ({ daoAddress }) => {
   const [membersData, setMembersData] = useState([]);
+  const [memberProfiles, setMemberProfiles] = useState();
+
   const [loading, setLoading] = useState(false);
   const [downloadLoading, setDownloadLoading] = useState(false);
 
@@ -61,13 +65,7 @@ const Members = ({ daoAddress }) => {
   const handleAddressClick = (event, address) => {
     event.preventDefault();
     window.open(
-      `https://${
-        networkId === "0x5"
-          ? "goerli.etherscan.io/"
-          : networkId === "0x89"
-          ? "polygonscan.com"
-          : ""
-      }/address/${address}`,
+      `${CHAIN_CONFIG[networkId].blockExplorerUrl}/address/${address}`,
     );
   };
   useEffect(() => {
@@ -78,12 +76,26 @@ const Members = ({ daoAddress }) => {
           daoAddress,
           20,
           0,
-          deployedTime,
-          Date.now(),
           networkId,
         );
 
-        if (data?.users) setMembersData(data?.users);
+        if (data?.users) {
+          setMembersData(data?.users);
+          const memberAddresses = data?.users.map((item) => item.userAddress);
+
+          const profiles = await getDefaultProfile(memberAddresses);
+
+          const memberProfiles = new Map();
+          memberAddresses.forEach((address) => {
+            memberProfiles.set(
+              address,
+              profiles?.find(
+                (profile) => profile.ownedBy.toLowerCase() === address,
+              )?.handle,
+            );
+          });
+          setMemberProfiles(memberProfiles);
+        }
       };
 
       if (daoAddress && networkId && deployedTime) fetchData();
@@ -106,12 +118,26 @@ const Members = ({ daoAddress }) => {
         daoAddress,
         20,
         newSkip,
-        1685613616,
-        Date.now(),
         networkId,
       );
 
-      if (data.users) setMembersData(data?.users);
+      if (data?.users) {
+        setMembersData(data?.users);
+        const memberAddresses = data?.users.map((item) => item.userAddress);
+
+        const profiles = await getDefaultProfile(memberAddresses);
+
+        const memberProfiles = new Map();
+        memberAddresses.forEach((address) => {
+          memberProfiles.set(
+            address,
+            profiles.find(
+              (profile) => profile.ownedBy.toLowerCase() === address,
+            )?.handle,
+          );
+        });
+        setMemberProfiles(memberProfiles);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -123,13 +149,7 @@ const Members = ({ daoAddress }) => {
   };
 
   const MembersValidationSchema = yup.object({
-    startDate: yup
-      .date()
-      .min(
-        deployedTime ? dayjs(deployedTime * 1000) : dayjs(Date.now()),
-        "Date-time must be after the station is deployed.",
-      )
-      .required("Start date is required"),
+    startDate: yup.date().required("Start date is required"),
     endDate: yup
       .date()
       .max(dayjs(Date.now()), "Date-time must be less than now.")
@@ -138,12 +158,12 @@ const Members = ({ daoAddress }) => {
 
   const formik = useFormik({
     initialValues: {
-      startDate: deployedTime ? dayjs(deployedTime * 1000) : dayjs(Date.now()),
+      startDate: deployedTime
+        ? dayjs(deployedTime * 1000)
+        : dayjs(Date.now() - 86400000),
       endDate: dayjs(Date.now()),
     },
-
     validationSchema: MembersValidationSchema,
-
     onSubmit: async (values) => {
       setDownloadLoading(true);
       const membersData = await getAllEntities(
@@ -192,7 +212,10 @@ const Members = ({ daoAddress }) => {
         <Grid item md={9} mb={8}>
           <Grid container mb={4}>
             <Grid item>
-              <Typography variant="heading">Station Members</Typography>
+              <ComponentHeader
+                title={"Station Members"}
+                subtext="See all your members here on this very page"
+              />
             </Grid>
           </Grid>
           <Grid
@@ -207,7 +230,6 @@ const Members = ({ daoAddress }) => {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   value={formik.values.startDate}
-                  minDateTime={dayjs(deployedTime * 1000)}
                   onChange={(value) => {
                     formik.setFieldValue("startDate", value);
                   }}
@@ -259,7 +281,11 @@ const Members = ({ daoAddress }) => {
                 <TableRow>
                   {header?.map((data, key) => {
                     return (
-                      <TableCell align="left" variant="tableHeading" key={key}>
+                      <TableCell
+                        align="left"
+                        variant="tableHeading"
+                        key={key}
+                        sx={{ fontFamily: "inherit" }}>
                         {data}
                       </TableCell>
                     );
@@ -274,22 +300,30 @@ const Members = ({ daoAddress }) => {
                       "&:last-child td, &:last-child th": { border: 0 },
                     }}>
                     <TableCell align="left">
-                      <Typography variant="body" className="text-blue">
+                      <Typography>
                         <Tooltip title={data.userAddress}>
                           <div
-                            className="f-d f-v-c  f-gap-8 c-pointer"
+                            className="f-d f-v-c f-gap-8 c-pointer"
                             onClick={(e) => {
                               handleAddressClick(e, data.userAddress);
                             }}>
-                            {shortAddress(data.userAddress)}
-                            <OpenInNewIcon style={{ marginBottom: "12px" }} />
+                            {memberProfiles?.has(data.userAddress) &&
+                            memberProfiles?.get(data.userAddress) !== undefined
+                              ? memberProfiles?.get(data.userAddress)
+                              : shortAddress(data.userAddress)}
+                            <OpenInNewIcon
+                              sx={{
+                                fontSize: "16px",
+                              }}
+                            />
                           </div>
                         </Tooltip>
                       </Typography>
                     </TableCell>
 
                     <TableCell align="left">
-                      <Typography variant="body">
+                      <Typography
+                        sx={{ fontSize: "14px !important", fontWeight: "400" }}>
                         {Number(
                           convertFromWeiGovernance(data.depositAmount, 6),
                         ).toFixed(2)}{" "}
@@ -298,7 +332,7 @@ const Members = ({ daoAddress }) => {
                     </TableCell>
 
                     <TableCell align="left">
-                      <Typography variant="body">
+                      <Typography>
                         {tokenType === "erc20"
                           ? Number(
                               convertFromWeiGovernance(data?.gtAmount, 18),
@@ -308,7 +342,7 @@ const Members = ({ daoAddress }) => {
                     </TableCell>
 
                     <TableCell align="left">
-                      <Typography variant="body">
+                      <Typography>
                         {new Date(+data.timeStamp * 1000).toLocaleDateString()}
                       </Typography>
                     </TableCell>
@@ -329,11 +363,7 @@ const Members = ({ daoAddress }) => {
         </Grid>
       </Grid>
 
-      <Backdrop
-        sx={{ color: "#000", zIndex: (theme) => theme?.zIndex?.drawer + 1 }}
-        open={loading}>
-        <CircularProgress />
-      </Backdrop>
+      <BackdropLoader isOpen={loading} />
     </>
   );
 };

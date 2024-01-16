@@ -1,6 +1,9 @@
 import { retrieveNftListing } from "api/assets";
 import { CHAIN_CONFIG } from "utils/constants";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
+import { convertToFullNumber } from "utils/helper";
+import { isMember } from "utils/stationsSubgraphHelper";
+import { getPublicClient } from "utils/viemConfig";
 import * as yup from "yup";
 
 export const step1ValidationSchema = yup.object({
@@ -90,13 +93,51 @@ export const step4ValidationSchema = yup.object({
 export const ERC721Step2ValidationSchema = yup.object({
   nftImage: yup.mixed().required("File is required"),
   pricePerToken: yup
-    .number()
+    .number("Enter amount of tokens")
     .required("Price per token is required")
-    .moreThan(0, "Price should be greater than 0"),
+    .test(
+      "invalidPricePerToken",
+      "Invalid price per token value",
+      async (value, context) => {
+        const { isNftTotalSupplylimited } = context.parent;
+        if (isNftTotalSupplylimited === true) {
+          try {
+            if (Number(value) >= 0) {
+              return true;
+            } else return false;
+          } catch (error) {
+            return false;
+          }
+        } else {
+          try {
+            if (Number(value) > 0) {
+              return true;
+            } else return false;
+          } catch (error) {
+            return false;
+          }
+        }
+      },
+    ),
   maxTokensPerUser: yup
-    .number()
-    .required("Max token min limit per user is required")
-    .moreThan(0, "Max tokens should be greater than 0"),
+    .number("Enter amount of tokens")
+    .test(
+      "invalidMaxTokenPerUser",
+      "Enter token less than total supply",
+      async (value, context) => {
+        const { isNftTotalSupplylimited, totalTokenSupply } = context.parent;
+        if (isNftTotalSupplylimited === true) {
+          try {
+            if (Number(value) <= totalTokenSupply && Number(value) > 0) {
+              return true;
+            } else return false;
+          } catch (error) {
+            return false;
+          }
+        }
+        return true;
+      },
+    ),
   isNftTotalSupplylimited: yup.boolean(),
   totalTokenSupply: yup.number().when("isNftTotalSupplylimited", {
     is: true,
@@ -114,6 +155,11 @@ export const getProposalValidationSchema = ({
   getDecimals,
   gnosisAddress,
   factoryData,
+  walletAddress,
+  daoAddress,
+  getERC20TotalSupply,
+  getNftOwnersCount,
+  tokenType,
 }) => {
   return yup.object({
     proposalDeadline: yup.date().required("Deposit close date is required"),
@@ -128,6 +174,27 @@ export const getProposalValidationSchema = ({
         text: yup.string().required("Option is required"),
       }),
     ),
+    blockNum: yup
+      .number()
+      .test(
+        "invalidBlockNum",
+        "Enter a block number less than current block number",
+        async (value, context) => {
+          try {
+            const publicClient = getPublicClient(networkId);
+            const block = Number(await publicClient.getBlockNumber());
+            if (
+              Number(value) <= block ||
+              value === undefined ||
+              value.length === 0
+            ) {
+              return true;
+            } else return false;
+          } catch (error) {
+            return false;
+          }
+        },
+      ),
     actionCommand: yup.string("Enter proposal action").when("typeOfProposal", {
       is: "action",
       then: () =>
@@ -160,13 +227,57 @@ export const getProposalValidationSchema = ({
           return true;
         },
       ),
+    mintGTAmounts: yup
+      .array()
+      .test(
+        "invalidMintGTAmount",
+        "Enter an amount less or equal to total supply",
+        async (value, context) => {
+          if (context.parent.actionCommand !== 1) return true;
+
+          try {
+            const { distributionAmount } = factoryData;
+            const totalAmount = value.reduce(
+              (partialSum, a) => partialSum + Number(a),
+              0,
+            );
+            if (totalAmount <= 0) return false;
+
+            let availableAmount;
+            if (tokenType === "erc20") {
+              const clubTokensMinted = await getERC20TotalSupply();
+
+              availableAmount = convertFromWeiGovernance(
+                convertToFullNumber(
+                  (distributionAmount - clubTokensMinted).toString(),
+                ),
+                18,
+              );
+            } else if (tokenType === "erc721") {
+              if (distributionAmount == 0) return true;
+
+              const clubTokensMinted = await getNftOwnersCount();
+              availableAmount = convertToFullNumber(
+                (distributionAmount - clubTokensMinted).toString(),
+              );
+            } else {
+              return true;
+            }
+
+            return Number(totalAmount) <= Number(availableAmount);
+          } catch (error) {
+            return false;
+          }
+        },
+      ),
+
     quorum: yup.number("Enter Quorum in percentage").when("actionCommand", {
       is: 2,
       then: () =>
         yup
           .number("Enter Quorum in percentage")
           .required("Quorum is required")
-          .moreThan(0, "Quorum should be greater than 0")
+          .moreThan(51, "Quorum should be greater than 51")
           .max(100, "Quorum should be less than 100"),
     }),
     threshold: yup
@@ -210,7 +321,7 @@ export const getProposalValidationSchema = ({
       .number("Enter price per token")
       .test(
         "invalidPricePerToken",
-        "Enter deposit amount should be greater than current amount",
+        "price of token should be greater than current price",
         async (value, context) => {
           const { actionCommand } = context.parent;
           if (actionCommand === 13) {
@@ -219,6 +330,29 @@ export const getProposalValidationSchema = ({
               if (
                 Number(value) >
                 Number(convertFromWeiGovernance(pricePerToken, 6))
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
+    nftSupply: yup
+      .number("Enter new nft supply")
+      .test(
+        "invalidNFTSupply",
+        "NFT supply is unlimited or should be greater than current supply",
+        async (value, context) => {
+          const { actionCommand } = context.parent;
+          if (actionCommand === 20) {
+            try {
+              const { distributionAmount } = factoryData;
+              if (
+                distributionAmount > 0 &&
+                Number(value) > Number(distributionAmount)
               ) {
                 return true;
               } else return false;
@@ -281,17 +415,43 @@ export const getProposalValidationSchema = ({
             .required("Reciever address is required"),
       }),
 
-    safeThreshold: yup
-      .number("Enter threshold")
-      .when(["actionCommand", "ownerChangeAction"], {
-        is: (actionCommand, ownerChangeAction) =>
-          actionCommand === 7 && ownerChangeAction === "remove",
-        then: () =>
-          yup
-            .number("Enter threshold")
-            .required("Safe Threshold is required")
-            .moreThan(1, "Safe Threshold should be greater than 1"),
-      }),
+    safeThreshold: yup.number("Enter threshold").when(["actionCommand"], {
+      is: (actionCommand) => actionCommand === 7 || actionCommand === 6,
+      then: () =>
+        yup
+          .number("Enter threshold")
+          .required("Safe Threshold is required")
+          .moreThan(0, "Safe threshold can't be less than 1"),
+    }),
+    ownerAddress: yup
+      .string()
+      .test(
+        "validate-owner",
+        "Address is not a member of a club",
+        async (value, context) => {
+          const { actionCommand } = context.parent;
+
+          if (actionCommand === 6) {
+            try {
+              // Make your API call here and check the response
+              const isStationMember = await isMember(
+                value,
+                daoAddress,
+                networkId,
+              );
+
+              if (isStationMember?.users?.length > 0) {
+                return true;
+              } else return false;
+            } catch (error) {
+              console.error(error);
+              return false; // Return false for any error
+            }
+          }
+
+          return true; // Return true for other cases or successful API response
+        },
+      ),
     nftLink: yup.string("Please enter nft Link").when("actionCommand", {
       is: 8,
       then: () => yup.string("Enter nft link").required("Nft link is required"),
@@ -316,10 +476,7 @@ export const getProposalValidationSchema = ({
                   linkData[1],
                   linkData[2],
                 );
-                if (
-                  !nftdata?.data?.orders.length &&
-                  proposalData?.commands[0].executionId === 8
-                ) {
+                if (!nftdata?.data?.orders.length && actionCommand === 8) {
                   return false;
                 }
               }
@@ -392,8 +549,135 @@ export const getProposalValidationSchema = ({
           return true;
         },
       ),
+
+    uniswapRecieverToken: yup
+      .string("Please enter token address")
+      .test(
+        "invalidUniswapRecieverToken",
+        "Reciever chain address should be same as sender chain ",
+        async (value, context) => {
+          const { actionCommand } = context.parent;
+
+          if (actionCommand === 19) {
+            try {
+              const decimals = await getDecimals(value);
+              if (decimals > 0) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
+
+    uniswapSwapAmount: yup
+      .number("Please enter amount")
+      .test(
+        "invalidUniswapSwapAmount",
+        "Enter an amount less or equal to treasury balance",
+        async (value, context) => {
+          const { actionCommand, uniswapSwapToken } = context.parent;
+          if (actionCommand === 19) {
+            try {
+              const balance = await getBalance(uniswapSwapToken, gnosisAddress);
+              const decimals = await getDecimals(uniswapSwapToken);
+              if (
+                Number(value) <=
+                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                Number(value) > 0
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
+
+    stargateStakeAmount: yup
+      .number("Please enter amount")
+      .test(
+        "invalidStargateStakeAmt",
+        "Enter an amount less or equal to treasury balance",
+        async (value, context) => {
+          const { actionCommand, stargateStakeToken } = context.parent;
+          let balance;
+          let decimals;
+          if (actionCommand === 17) {
+            try {
+              if (CHAIN_CONFIG[networkId].nativeToken === stargateStakeToken) {
+                const publicClient = getPublicClient(networkId);
+                balance = await publicClient.getBalance(gnosisAddress);
+                decimals = 18;
+              } else {
+                balance = await getBalance(stargateStakeToken, gnosisAddress);
+                decimals = await getDecimals(stargateStakeToken);
+              }
+              if (
+                Number(value) <=
+                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                Number(value) > 0
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
+
+    stargateUnstakeToken: yup
+      .string("Enter stargate unstaking token")
+      .when("actionCommand", {
+        is: 18,
+        then: () =>
+          yup
+            .string("Enter stargate unstaking token")
+            .required("Token is required"),
+      }),
+    stargateUnstakeAmount: yup
+      .number("Please enter amount")
+      .test(
+        "invalidStargateUnstakeAmt",
+        "Enter an amount less or equal to treasury balance",
+        async (value, context) => {
+          const { actionCommand, stargateUnstakeToken } = context.parent;
+
+          if (actionCommand === 18) {
+            try {
+              const balance = await getBalance(
+                stargateUnstakeToken,
+                gnosisAddress,
+              );
+              const decimals = await getDecimals(stargateUnstakeToken);
+
+              if (
+                Number(value) <=
+                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                Number(value) > 0
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
   });
 };
+
+export const disburseFormValidation = yup.object({
+  selectedToken: yup.object({}).required("Token is required"),
+  disburseList: yup.string().required("Disburse info required"),
+});
 
 export const claimStep1ValidationSchema = yup.object({
   description: yup

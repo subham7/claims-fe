@@ -9,26 +9,36 @@ import DocumentCreate from "@components/documents/documentCreate";
 const DocumentsPage = () => {
   const router = useRouter();
 
-  const [daoAddress, networkId, flow, membersSign] = router?.query?.slug ?? [];
+  const [daoAddress, networkId = "0x89", flow, membersSign] =
+    router?.query?.slug ?? [];
 
   if (!daoAddress) {
     return null;
   }
 
   return (
-    <Layout daoAddress={daoAddress} networkId={networkId} page={7}>
+    <Layout
+      showSidebar={flow === "create" || flow === undefined ? true : false}
+      daoAddress={daoAddress}
+      networkId={networkId}
+      page={7}>
       {flow === undefined ? (
-        <Documents daoAddress={daoAddress} />
+        <Documents daoAddress={daoAddress} networkId={networkId} />
       ) : flow === "create" ? (
-        <DocumentCreate daoAddress={daoAddress} />
+        <DocumentCreate daoAddress={daoAddress} networkId={networkId} />
       ) : flow === "sign" &&
         (membersSign === "true" || membersSign === undefined) ? (
         <SignDoc
           daoAddress={daoAddress}
           isAdmin={membersSign === undefined ? false : true}
+          networkId={networkId}
         />
       ) : (
-        <MembersSign daoAddress={daoAddress} membersSign={membersSign} />
+        <MembersSign
+          networkId={networkId}
+          daoAddress={daoAddress}
+          membersSign={membersSign}
+        />
       )}
     </Layout>
   );

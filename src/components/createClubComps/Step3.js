@@ -14,21 +14,15 @@ import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Step3Styles } from "./CreateClubStyles";
 import Web3 from "web3";
-import { useCallback, useEffect } from "react";
-import { getCustomSafeSdk, web3InstanceEthereum } from "../../utils/helper";
+import { useEffect } from "react";
+import { getSafeSdk } from "../../utils/helper";
 import { useState } from "react";
-import { useSelector } from "react-redux";
-import SafeApiKit from "@safe-global/api-kit";
-import { Web3Adapter } from "@safe-global/protocol-kit";
 import { useAccount, useNetwork } from "wagmi";
+import { CHAIN_CONFIG } from "utils/constants";
 
 export default function Step3(props) {
   const classes = Step3Styles();
   const { address: walletAddress } = useAccount();
-
-  const GNOSIS_DATA = useSelector((state) => {
-    return state.gnosis;
-  });
 
   const [ownerAddresses, setOwnerAddresses] = useState();
   const [allSafeAddresses, setAllSafeAddresses] = useState();
@@ -36,51 +30,45 @@ export default function Step3(props) {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
 
-  // const index = props.formik.values.addressList.indexOf(
-  //   Web3.utils.toChecksumAddress(walletAddress),
-  // );
-  // if (index >= 0) props.formik.values.addressList.splice(index, 1);
-
   const fetchOwners = async (gnosisAddress) => {
-    const safeSdk = await getCustomSafeSdk(
-      Web3.utils.toChecksumAddress(gnosisAddress),
-      Web3.utils.toChecksumAddress(walletAddress),
-      networkId,
-    );
-    const owners = await safeSdk.getOwners();
+    try {
+      const { safeSdk } = await getSafeSdk(
+        gnosisAddress,
+        walletAddress,
+        "",
+        networkId,
+      );
 
-    const ownerAddressesArray = owners.map((value) =>
-      Web3.utils.toChecksumAddress(value),
-    );
-    setOwnerAddresses(ownerAddressesArray);
+      const owners = await safeSdk.getOwners();
+
+      const ownerAddressesArray = owners?.map((value) =>
+        Web3.utils.toChecksumAddress(value),
+      );
+
+      setOwnerAddresses(ownerAddressesArray);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
-  const getSafeService = useCallback(async () => {
-    if (GNOSIS_DATA.transactionUrl) {
-      const web3 = await web3InstanceEthereum();
-      const ethAdapter = new Web3Adapter({
-        web3,
-        signerAddress: localStorage.getItem("wallet"),
-      });
-      const safeService = new SafeApiKit({
-        txServiceUrl: GNOSIS_DATA.transactionUrl,
-        ethAdapter,
-      });
-      return safeService;
-    }
-  }, [GNOSIS_DATA.transactionUrl]);
-
   const getAllSafes = async () => {
-    const safeService = await getSafeService();
-    const safes = await safeService.getSafesByOwner(
-      localStorage.getItem("wallet"),
-    );
-    setAllSafeAddresses(safes.safes);
+    try {
+      const { safeService } = await getSafeSdk(
+        "",
+        walletAddress,
+        CHAIN_CONFIG[networkId].gnosisTxUrl,
+        networkId,
+      );
+      const safes = await safeService.getSafesByOwner(walletAddress);
+      setAllSafeAddresses(safes?.safes);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   useEffect(() => {
     if (props.formik.values.deploySafe === "oldSafe") getAllSafes();
-  }, [props.formik.values.deploySafe, GNOSIS_DATA.transactionUrl]);
+  }, [props.formik.values.deploySafe]);
 
   useEffect(() => {
     if (props.formik.values.safeAddress?.length)
@@ -94,10 +82,10 @@ export default function Step3(props) {
         works for you.
       </Typography>
       <br />
-      <Typography variant="body" className="text-blue">
+      <Typography variant="body" className="text-blue b-pad-1">
         Configure Treasury
       </Typography>
-      <Typography variant="info" className="text-darkblue">
+      <Typography variant="body" className="text-light-gray">
         Where do you want to store funds/assets of this station?
       </Typography>
 
@@ -109,7 +97,7 @@ export default function Step3(props) {
         aria-label="deploySafe"
         name="deploySafe"
         id="deploySafe"
-        className="b-pad-1"
+        className="tb-pad-1"
         // className={classes.selectContainer}
       >
         <ToggleButton
@@ -129,55 +117,57 @@ export default function Step3(props) {
       </ToggleButtonGroup>
 
       {/* {props.formik.values.deploySafe} */}
-      {props.formik.values.deploySafe === "oldSafe" && (
-        <>
-          <Typography variant="body" className="text-blue">
-            Select from existing multi-sig wallet(s)
-          </Typography>
-          <Autocomplete
-            name="safeAddress"
-            className={classes.textField}
-            options={allSafeAddresses}
-            onChange={(e, newValue) => {
-              props.formik.setFieldValue("safeAddress", newValue);
-            }}
-            renderInput={(params) => (
-              <TextField
-                name="safeAddress"
-                {...params}
-                label="Safe address"
-                variant="outlined"
-                placeholder="0x00"
-                error={
-                  props.formik.touched.safeAddress &&
-                  Boolean(props.formik.errors.safeAddress)
-                }
-                helperText={
-                  props.formik.touched.safeAddress &&
-                  props.formik.errors.safeAddress
-                }
-              />
-            )}
-          />
-
-          <p
-            style={{
-              margin: "0",
-              color:
-                props.ownerHelperText ===
-                  "Owners of the safe does not match with the admins of the DAO" ||
-                props.ownerHelperText === "Invalid gnosis address"
-                  ? "red"
-                  : "#dcdcdc",
-            }}>
-            {props.ownerHelperText}
-          </p>
-        </>
-      )}
+      {props.formik.values.deploySafe === "oldSafe" &&
+        allSafeAddresses?.length > 0 && (
+          <>
+            <Typography variant="body" className="text-blue t-pad-d b-pad-1">
+              Select from existing multi-sig wallet(s)
+            </Typography>
+            <Autocomplete
+              name="safeAddress"
+              className={classes.textField}
+              options={allSafeAddresses}
+              onChange={(e, newValue) => {
+                props.formik.setFieldValue("safeAddress", newValue);
+              }}
+              renderInput={(params) => (
+                <TextField
+                  className="b-pad-1"
+                  name="safeAddress"
+                  {...params}
+                  label="Safe address"
+                  variant="outlined"
+                  placeholder="0x00"
+                  error={
+                    props.formik.touched.safeAddress &&
+                    Boolean(props.formik.errors.safeAddress)
+                  }
+                  helperText={
+                    props.formik.touched.safeAddress &&
+                    props.formik.errors.safeAddress
+                  }
+                />
+              )}
+            />
+            <p
+              style={{
+                margin: "0",
+                color:
+                  props.ownerHelperText ===
+                    "Owners of the safe does not match with the admins of the DAO" ||
+                  props.ownerHelperText === "Invalid gnosis address"
+                    ? "red"
+                    : "#dcdcdc",
+              }}>
+              {props.ownerHelperText}
+            </p>
+          </>
+        )}
 
       {props.formik.values.deploySafe === "oldSafe" &&
         props.formik.values.safeAddress?.length > 0 && (
           <>
+            <br />
             <Typography variant="body" className="text-blue">
               Signators
             </Typography>
@@ -186,7 +176,7 @@ export default function Step3(props) {
                 {ownerAddresses.map((data, key) => {
                   return (
                     <>
-                      <div className="f-d f-v-c tb-pad-1">
+                      <div className="f-d f-v-c b-pad-1">
                         <TextField
                           label="Owner address"
                           // error={!/^0x[a-zA-Z0-9]+/gm.test(addressList[key])}
@@ -213,9 +203,9 @@ export default function Step3(props) {
           </>
         )}
 
-      <br />
       {props.formik.values.deploySafe === "newSafe" && (
         <>
+          <br />
           <Typography variant="body" className="text-blue">
             Wallet Signators
           </Typography>
@@ -310,10 +300,7 @@ export default function Step3(props) {
                     number of signature needed
                   </Box>{" "}
                   to execute a proposal{" "}
-                  <Box
-                    sx={{ color: "#6475A3" }}
-                    fontWeight="fontWeightBold"
-                    display="inline">
+                  <Box fontWeight="fontWeightBold" display="inline">
                     (Safe threshold)
                   </Box>{" "}
                 </Typography>
@@ -349,7 +336,7 @@ export default function Step3(props) {
       <Typography variant="body" className="text-blue">
         Governance
       </Typography>
-      <Typography variant="info" className="text-darkblue">
+      <Typography variant="info" className="text-light-gray">
         Who can create transaction(s) inside your station?
       </Typography>
 

@@ -1,7 +1,9 @@
-import { Alert } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import React, { useState } from "react";
+import React from "react";
 import { BsLink45Deg } from "react-icons/bs";
+import { useDispatch } from "react-redux";
+import { setAlertData } from "redux/reducers/alert";
+import { shortAddress } from "utils/helper";
 
 const useStyles = makeStyles({
   container: {
@@ -67,10 +69,11 @@ const DocumentCard = ({
   index,
   createdBy,
   daoAddress,
+  networkId,
 }) => {
-  const [isCopied, setIsCopied] = useState(false);
-
   const classes = useStyles();
+  const dispatch = useDispatch();
+
   const convertedDate = new Date(date).toLocaleDateString();
 
   return (
@@ -78,11 +81,8 @@ const DocumentCard = ({
       <div className={classes.topLine}>
         <h4 className={classes.createdBy}>
           Created by{" "}
-          <span className={classes.span}>
-            {createdBy?.slice(0, 5)}....
-            {createdBy?.slice(createdBy?.length - 4)}
-          </span>{" "}
-          on <span className={classes.span}>{convertedDate}</span>
+          <span className={classes.span}>{shortAddress(createdBy)}</span> on{" "}
+          <span className={classes.span}>{convertedDate}</span>
         </h4>
 
         <div className={classes.iconContainer}>
@@ -90,12 +90,15 @@ const DocumentCard = ({
             onClick={(e) => {
               e.stopPropagation();
               navigator.clipboard.writeText(
-                `${window.location.origin}/documents/${daoAddress}/sign/${legalDocLink}`,
+                `${window.location.origin}/documents/${daoAddress}/${networkId}/sign/${legalDocLink}`,
               );
-              setIsCopied(true);
-              setTimeout(() => {
-                setIsCopied(false);
-              }, 3000);
+              dispatch(
+                setAlertData({
+                  open: true,
+                  message: "Copied!",
+                  severity: "success",
+                }),
+              );
             }}
             size={25}
             className={classes.icons}
@@ -107,20 +110,6 @@ const DocumentCard = ({
         <span className={classes.span}>#{index} </span>
         {fileName}
       </h2>
-
-      {isCopied && (
-        <Alert
-          severity="success"
-          sx={{
-            width: "150px",
-            position: "absolute",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          {"Copied"}
-        </Alert>
-      )}
     </div>
   );
 };

@@ -7,19 +7,20 @@ import ClaimEligibility from "@components/claimsInsightComps/ClaimEligibility";
 import ClaimEdit from "@components/claimsInsightComps/ClaimEdit";
 import ToggleClaim from "@components/claimsInsightComps/ToggleClaim";
 import ClaimsTransactions from "@components/claimsInsightComps/ClaimsTransactions";
-import { useRouter } from "next/router";
-import { Alert, Backdrop, CircularProgress } from "@mui/material";
 import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "utils/globalFunctions";
 import { useNetwork } from "wagmi";
-import useClaimSmartContracts from "hooks/useClaimSmartContracts";
-import useDropsContractMethods from "hooks/useDropsContracMethods";
+import useDropsContractMethods from "hooks/useDropsContractMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { queryDropDetailsFromSubgraph } from "utils/dropsSubgraphHelper";
 import { createSnapShot } from "api/claims";
 import dayjs from "dayjs";
+import BackdropLoader from "@components/common/BackdropLoader";
+import { useTheme } from "@mui/styles";
+import { useDispatch } from "react-redux";
+import { setAlertData } from "redux/reducers/alert";
 
 const ClaimInsight = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState([]);
@@ -29,16 +30,12 @@ const ClaimInsight = ({ claimAddress }) => {
     tokenSymbol: "",
     tokenAddress: "",
   });
-  const [showMessage, setShowMessage] = useState(false);
-  const [message, setMessage] = useState("");
-  const [isSuccessFull, setIsSuccessFull] = useState(false);
 
-  const classes = ClaimsInsightStyles();
-  const router = useRouter();
+  const theme = useTheme();
+  const classes = ClaimsInsightStyles(theme);
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
-
-  useClaimSmartContracts(claimAddress);
+  const dispatch = useDispatch();
 
   const { addMoreTokens, rollbackTokens, modifyStartAndEndTime } =
     useDropsContractMethods();
@@ -122,17 +119,32 @@ const ClaimInsight = ({ claimAddress }) => {
           : snapshotData?.merkleRoot,
       );
       setLoading(false);
-      showMessageHandler();
-      setIsSuccessFull(true);
-      setMessage("Token added successfully!");
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Token added successfully!",
+          severity: "success",
+        }),
+      );
     } catch (error) {
       console.log(error);
       setLoading(false);
-      showMessageHandler();
-      setIsSuccessFull(false);
       if (error.code === 4001) {
-        setMessage("Metamask Signature denied");
-      } else setMessage("Adding token failed");
+        dispatch(
+          setAlertData({
+            open: true,
+            message: "Metamask Signature denied",
+            severity: "error",
+          }),
+        );
+      } else
+        dispatch(
+          setAlertData({
+            open: true,
+            message: "Adding token failed",
+            severity: "error",
+          }),
+        );
     }
   };
 
@@ -146,17 +158,33 @@ const ClaimInsight = ({ claimAddress }) => {
 
       await rollbackTokens(claimAddress, rollbackAmount, rollbackAddress);
       setLoading(false);
-      showMessageHandler();
-      setIsSuccessFull(true);
-      setMessage("Claimed successfully!");
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Claimed successfully!",
+          severity: "success",
+        }),
+      );
     } catch (error) {
       console.log(error);
       setLoading(false);
-      showMessageHandler();
-      setIsSuccessFull(false);
       if (error.code === 4001) {
-        setMessage("Metamask Signature denied");
-      } else setMessage("Claiming token failed");
+        dispatch(
+          setAlertData({
+            open: true,
+            message: "Metamask signature denied",
+            severity: "error",
+          }),
+        );
+      } else {
+        dispatch(
+          setAlertData({
+            open: true,
+            message: "Claiming token failed",
+            severity: "error",
+          }),
+        );
+      }
     }
   };
 
@@ -169,25 +197,34 @@ const ClaimInsight = ({ claimAddress }) => {
         Number(endTime).toFixed(0),
       );
       setLoading(false);
-      showMessageHandler();
-      setIsSuccessFull(true);
-      setMessage("Modified time successfully!");
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Modified time successfully!",
+          severity: "success",
+        }),
+      );
     } catch (error) {
       console.log(error);
       setLoading(false);
-      showMessageHandler();
-      setIsSuccessFull(false);
       if (error.code === 4001) {
-        setMessage("Metamask Signature denied");
-      } else setMessage("Modifying time failed");
+        dispatch(
+          setAlertData({
+            open: true,
+            message: "Metamask Signature denied",
+            severity: "error",
+          }),
+        );
+      } else {
+        dispatch(
+          setAlertData({
+            open: true,
+            message: "Modifying time failed",
+            severity: "error",
+          }),
+        );
+      }
     }
-  };
-
-  const showMessageHandler = () => {
-    setShowMessage(true);
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 4000);
   };
 
   useEffect(() => {
@@ -251,39 +288,7 @@ const ClaimInsight = ({ claimAddress }) => {
         />
       </section>
 
-      {showMessage && isSuccessFull && (
-        <Alert
-          severity="success"
-          sx={{
-            width: "300px",
-            position: "fixed",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          {message}
-        </Alert>
-      )}
-
-      {showMessage && !isSuccessFull && (
-        <Alert
-          severity="error"
-          sx={{
-            width: "300px",
-            position: "fixed",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          {message}
-        </Alert>
-      )}
-
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}>
-        <CircularProgress />
-      </Backdrop>
+      <BackdropLoader isOpen={loading} />
     </>
   );
 };

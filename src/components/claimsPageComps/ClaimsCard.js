@@ -5,9 +5,10 @@ import { AiFillCalendar } from "react-icons/ai";
 import { FaCoins } from "react-icons/fa";
 import { useRouter } from "next/router";
 import Countdown from "react-countdown";
-import { Alert } from "@mui/material";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
+import { useDispatch } from "react-redux";
+import { setAlertData } from "redux/reducers/alert";
 
 const useStyles = makeStyles({
   container: {
@@ -26,7 +27,6 @@ const useStyles = makeStyles({
     justifyContent: "space-between",
     margin: 0,
     alignItems: "center",
-    // fontWeight: '400'
   },
 
   createdBy: {
@@ -34,11 +34,9 @@ const useStyles = makeStyles({
     margin: 0,
     fontSize: "14px",
     color: "#6475A3",
-    // letterSpacing: '0.5px'
   },
   span: {
     color: "#dcdcdc",
-    // textDecoration: 'underline'
   },
   icons: {
     padding: 4,
@@ -101,14 +99,16 @@ const ClaimsCard = ({
 }) => {
   const classes = useStyles();
   const router = useRouter();
+  const dispatch = useDispatch();
+
+  const { getDecimals, getTokenSymbol } = useCommonContractMethods();
+
   const [isActive, setIsActive] = useState(false);
   const [isClaimStarted, setIsClaimStarted] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [claimEnabled, setClaimEnabled] = useState(false);
   const [symbol, setSymbol] = useState("");
   const [decimals, setDecimals] = useState(0);
-
-  const { getDecimals, getTokenSymbol } = useCommonContractMethods();
 
   const startingTime = new Date(+startDate * 1000);
   const endingTime = new Date(+endDate * 1000);
@@ -156,7 +156,7 @@ const ClaimsCard = ({
   });
 
   const claimHandler = () => {
-    router.push(`/claims/${claimContract}`);
+    router.push(`/claims/${claimsNetwork}/${claimContract}`);
   };
 
   return (
@@ -191,11 +191,14 @@ const ClaimsCard = ({
               navigator.clipboard.writeText(
                 `${window.location.origin}/claim/${claimContract}/${claimsNetwork}`,
               );
-              setIsCopied(true);
 
-              setTimeout(() => {
-                setIsCopied(false);
-              }, 3000);
+              dispatch(
+                setAlertData({
+                  open: true,
+                  message: "Copied",
+                  severity: "success",
+                }),
+              );
             }}
             size={25}
             className={classes.icons}
@@ -231,20 +234,6 @@ const ClaimsCard = ({
           </p>
         </div>
       </div>
-
-      {isCopied && (
-        <Alert
-          severity="success"
-          sx={{
-            width: "150px",
-            position: "absolute",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          {"Copied"}
-        </Alert>
-      )}
     </div>
   );
 };

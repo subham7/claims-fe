@@ -32,19 +32,7 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 ::-webkit-scrollbar {
-  width: 8px; /* Width of the scrollbar */
-}
-
-::-webkit-scrollbar-track {
-  background-color: transparent; /* Color of the track */
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: #ccc; /* Color of the thumb */
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: #555; /* Color of the thumb on hover */
+  display: none;
 }
 
 /* text colors */
@@ -241,11 +229,30 @@ input::-webkit-inner-spin-button {
   cursor: pointer;
 }
 
+.ml-1 {
+  margin-left: 1rem;
+}
+
+.heading {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.subheading {
+  font-size: 20px;
+  font-weight: 400;
+  color: $typography-gray;
+}
+
 .navbar {
   display: flex;
   justify-content: space-between;
   padding: 16px 32px;
   align-items: center;
+  position: fixed;
+  width: 100vw;
+  background-color: #0f0f0f;
+  z-index: 1;
 }
 
 .wallet-div {

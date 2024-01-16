@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
-import { Grid, FormHelperText, Alert } from "@mui/material";
+import { Grid, FormHelperText } from "@mui/material";
 import ClaimStep1 from "../claimsPageComps/ClaimStep1";
 import ClaimStep2 from "../claimsPageComps/ClaimStep2";
 import dayjs from "dayjs";
@@ -8,19 +8,19 @@ import { makeStyles } from "@mui/styles";
 import { convertToWeiGovernance } from "utils/globalFunctions";
 import { createClaimCsv, createSnapShot } from "api/claims";
 import { useRouter } from "next/router";
-import Moralis from "moralis";
-import { EvmChain } from "@moralisweb3/common-evm-utils";
 import {
   claimStep1ValidationSchema,
   claimStep2ValidationSchema,
 } from "../createClubComps/ValidationSchemas";
 import { useAccount, useNetwork } from "wagmi";
-import { getTokensList } from "api/token";
+import { getTokensList, getTokensListOfManta } from "api/token";
 import { getUserTokenData } from "utils/helper";
-import { CHAIN_CONFIG } from "utils/constants";
-import useClaimSmartContracts from "hooks/useClaimSmartContracts";
+import { CHAIN_CONFIG, ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
-import useDropsContractMethods from "hooks/useDropsContracMethods";
+import useDropsContractMethods from "hooks/useDropsContractMethods";
+import { getPublicClient } from "utils/viemConfig";
+import { useDispatch } from "react-redux";
+import { setAlertData } from "redux/reducers/alert";
 
 const useStyles = makeStyles({
   container: {
@@ -32,26 +32,23 @@ const useStyles = makeStyles({
 });
 
 const CreateClaim = () => {
-  const [activeStep, setActiveStep] = useState(0);
-  const [tokensInWallet, setTokensInWallet] = useState(null);
-  const [showError, setShowError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [finish, setFinish] = useState(false);
-  const [errMsg, setErrMsg] = useState("");
-  const [loadingTokens, setLoadingTokens] = useState(false);
-  const [snapshotMerkleData, setSnapshotMerkleData] = useState([]);
-  useClaimSmartContracts();
-
   const classes = useStyles();
-
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const { approveDeposit, getDecimals } = useCommonContractMethods();
 
   const { claimContract } = useDropsContractMethods();
+
+  const [activeStep, setActiveStep] = useState(0);
+  const [tokensInWallet, setTokensInWallet] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [finish, setFinish] = useState(false);
+  const [loadingTokens, setLoadingTokens] = useState(false);
+  const [snapshotMerkleData, setSnapshotMerkleData] = useState([]);
 
   const handleBack = () => {
     setActiveStep((prevStep) => prevStep - 1);
@@ -61,21 +58,53 @@ const CreateClaim = () => {
     setActiveStep((prevStep) => prevStep + 1);
   };
 
+  const fetchTokens = async (networkId, walletAddress) => {
+    try {
+      if (networkId === "0xa9") {
+        const tokensList = await getTokensListOfManta(walletAddress);
+        return tokensList?.data?.result;
+      }
+
+      const covalentNetworkName = CHAIN_CONFIG[networkId]?.covalentNetworkName;
+      if (!covalentNetworkName) {
+        throw new Error("Unsupported network ID");
+      }
+
+      const tokensList = await getTokensList(
+        covalentNetworkName,
+        walletAddress,
+      );
+
+      return tokensList?.data?.items;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const getCurrentAccount = async () => {
     try {
       setLoadingTokens(true);
+
       if (networkId && walletAddress) {
-        const tokensList = await getTokensList(
-          CHAIN_CONFIG[networkId].covalentNetworkName,
-          walletAddress,
+        const tokenItems = await fetchTokens(networkId, walletAddress);
+
+        const useMantaConfig = networkId === "0xa9";
+        const data = await getUserTokenData(
+          tokenItems,
+          networkId,
+          useMantaConfig,
         );
 
-        const data = await getUserTokenData(tokensList?.data?.items, networkId);
-        setTokensInWallet(data?.filter((token) => token.symbol !== null));
-        setLoadingTokens(false);
+        setTokensInWallet(
+          data?.filter(
+            (token) => token.symbol !== null && token.symbol !== undefined,
+          ),
+        );
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoadingTokens(false);
     }
   };
 
@@ -84,31 +113,21 @@ const CreateClaim = () => {
   }, [walletAddress, networkId]);
 
   const fetchLatestBlockNumber = async (tokenGatedNetwork) => {
-    try {
-      if (!Moralis.Core.isStarted) {
-        await Moralis.start({
-          apiKey: process.env.NEXT_PUBLIC_MORALIS_API_KEY,
-        });
-      }
+    const networkToIdMap = {
+      "eth-mainnet": "0x1",
+      "matic-mainnet": "0x89",
+      "bsc-mainnet": "0x38",
+    };
 
-      let chain;
-      if (tokenGatedNetwork === "eth-mainnet") {
-        chain = EvmChain.ETHEREUM;
-      } else if (tokenGatedNetwork === "matic-mainnet") {
-        chain = EvmChain.POLYGON;
-      } else if (tokenGatedNetwork === "bsc-mainnet") {
-        chain = EvmChain.BSC;
-      }
+    const network = networkToIdMap[tokenGatedNetwork];
 
-      const response = await Moralis.EvmApi.block.getDateToBlock({
-        date: Date.now(),
-        chain,
-      });
-
-      return response.toJSON();
-    } catch (error) {
-      console.error("Error:", error);
+    if (!network) {
+      console.error(`Unknown network: ${tokenGatedNetwork}`);
+      return null;
     }
+    const publicClient = getPublicClient(network);
+
+    return publicClient.getBlockNumber();
   };
 
   const formikStep1 = useFormik({
@@ -160,7 +179,7 @@ const CreateClaim = () => {
         daoTokenAddress:
           values?.daoTokenAddress.length > 2
             ? values?.daoTokenAddress
-            : "0x0000000000000000000000000000000000000000",
+            : ZERO_ADDRESS,
         tokenGatingAmt: values?.tokenGatingAmt ? values?.tokenGatingAmt : 0,
         maximumClaim: values?.maximumClaim,
         customAmount:
@@ -183,19 +202,27 @@ const CreateClaim = () => {
 
       if (data.maximumClaim === "proRata") {
         try {
-          const blockData = await fetchLatestBlockNumber(
+          const latestBlockNumber = await fetchLatestBlockNumber(
             data?.tokenGatedNetwork,
           );
 
-          if (data.blockNumber > 0 && data.blockNumber > blockData.block) {
-            showMessageHandler(setShowError);
-            setErrMsg("Invalid block number!");
+          if (
+            data.blockNumber > 0 &&
+            data.blockNumber > Number(latestBlockNumber)
+          ) {
+            dispatch(
+              setAlertData({
+                open: true,
+                message: "Invalid block number!",
+                severity: "error",
+              }),
+            );
             setLoading(false);
             return;
           }
 
           blockNumber =
-            data.blockNumber > 0 ? data.blockNumber : blockData.block;
+            data.blockNumber > 0 ? data.blockNumber : Number(latestBlockNumber);
 
           snapshotData = await createSnapShot(
             convertToWeiGovernance(data.numberOfTokens, decimals),
@@ -209,8 +236,13 @@ const CreateClaim = () => {
           setSnapshotMerkleData(snapshotData);
         } catch (error) {
           console.log(error);
-          setErrMsg("Unable to fetch snapshot data");
-          showMessageHandler(setShowError);
+          dispatch(
+            setAlertData({
+              open: true,
+              message: "Unable to fetch snapshot data",
+              severity: "error",
+            }),
+          );
           setLoading(false);
         }
       }
@@ -257,10 +289,7 @@ const CreateClaim = () => {
           try {
             let tokenGatingDecimals = 1;
 
-            if (
-              data.daoTokenAddress !==
-              "0x0000000000000000000000000000000000000000"
-            ) {
+            if (data.daoTokenAddress !== ZERO_ADDRESS) {
               try {
                 tokenGatingDecimals = await getDecimals(data.daoTokenAddress);
               } catch (error) {
@@ -285,8 +314,7 @@ const CreateClaim = () => {
               data.walletAddress.toLowerCase(),
               data.airdropTokenAddress,
               data.daoTokenAddress,
-              data.daoTokenAddress !==
-              "0x0000000000000000000000000000000000000000"
+              data.daoTokenAddress !== ZERO_ADDRESS
                 ? convertToWeiGovernance(
                     data.tokenGatingAmt,
                     tokenGatingDecimals,
@@ -299,7 +327,7 @@ const CreateClaim = () => {
               true,
               data.maximumClaim === "proRata"
                 ? snapshotData?.merkleRoot
-                : "0x0000000000000000000000000000000000000000000000000000000000000001",
+                : ZERO_MERKLE_ROOT,
               Number(eligible), // Permission ie. 0 - TG; 1 - Whitelisted; 2 - FreeForALL
               [
                 data.maximumClaim === "proRata"
@@ -338,15 +366,26 @@ const CreateClaim = () => {
 
             setLoading(false);
             setFinish(true);
-            showMessageHandler(setFinish);
+            dispatch(
+              setAlertData({
+                open: true,
+                message: "Airdrop created successfully",
+                severity: "success",
+              }),
+            );
             setTimeout(() => {
-              router.push(`/claims/${networkId}`);
-            }, 3000);
+              router.push(`/claims/`);
+            }, 1000);
           } catch (err) {
             console.log(err);
             setLoading(false);
-            showMessageHandler(setShowError);
-            setErrMsg(err.message);
+            dispatch(
+              setAlertData({
+                open: true,
+                message: err.message,
+                severity: "error",
+              }),
+            );
           }
         };
 
@@ -400,7 +439,7 @@ const CreateClaim = () => {
               data.walletAddress.toLowerCase(),
               data.walletAddress.toLowerCase(),
               data.airdropTokenAddress,
-              "0x0000000000000000000000000000000000000000",
+              ZERO_ADDRESS,
               0,
               new Date(data.startDate).getTime() / 1000,
               new Date(data.endDate).getTime() / 1000,
@@ -441,15 +480,26 @@ const CreateClaim = () => {
 
             setLoading(false);
             setFinish(true);
-            showMessageHandler(setFinish);
+            dispatch(
+              setAlertData({
+                open: true,
+                message: "Airdrop created successfully",
+                severity: "success",
+              }),
+            );
             setTimeout(() => {
-              router.push(`/claims/${networkId}`);
+              router.push(`/claims/`);
             }, 3000);
           } catch (err) {
             console.log(err);
             setLoading(false);
-            showMessageHandler(setShowError);
-            setErrMsg(err.message);
+            dispatch(
+              setAlertData({
+                open: true,
+                message: err.message,
+                severity: "error",
+              }),
+            );
           }
         };
         loadClaimsContractFactoryData_CSV();
@@ -467,6 +517,7 @@ const CreateClaim = () => {
             setActiveStep={setActiveStep}
             tokensInWallet={tokensInWallet}
             isLoading={loadingTokens}
+            networkId={networkId}
           />
         );
       case 1:
@@ -479,61 +530,25 @@ const CreateClaim = () => {
             setActiveStep={setActiveStep}
             finish={finish}
             loading={loading}
+            networkId={networkId}
           />
         );
     }
   };
 
-  const showMessageHandler = (setState) => {
-    setState(true);
-    setTimeout(() => {
-      setState(false);
-    }, 4000);
-  };
-
   return (
-    <>
-      <div className={classes.container}>
-        <Grid container>
-          <Grid item xs={12} sx={{ padding: "20px" }}>
-            {formContent(activeStep)}
-          </Grid>
-          {formikStep1.errors.submit && (
-            <Grid item xs={12}>
-              <FormHelperText error>{formikStep1.errors.submit}</FormHelperText>
-            </Grid>
-          )}
+    <div className={classes.container}>
+      <Grid container>
+        <Grid item xs={12} sx={{ padding: "20px" }}>
+          {formContent(activeStep)}
         </Grid>
-
-        {showError && (
-          <Alert
-            severity="error"
-            sx={{
-              width: "350px",
-              position: "fixed",
-              bottom: "30px",
-              right: "20px",
-              borderRadius: "8px",
-            }}>
-            {errMsg}
-          </Alert>
+        {formikStep1.errors.submit && (
+          <Grid item xs={12}>
+            <FormHelperText error>{formikStep1.errors.submit}</FormHelperText>
+          </Grid>
         )}
-
-        {finish && (
-          <Alert
-            severity="success"
-            sx={{
-              width: "350px",
-              position: "fixed",
-              bottom: "30px",
-              right: "20px",
-              borderRadius: "8px",
-            }}>
-            {"Airdrop created successfully"}
-          </Alert>
-        )}
-      </div>
-    </>
+      </Grid>
+    </div>
   );
 };
 

@@ -1,3 +1,4 @@
+import { useTheme } from "@mui/styles";
 import React from "react";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
@@ -8,7 +9,8 @@ const TotalWalletsClaimInfo = ({
   airdropTokenDetails,
   totalUsers = "",
 }) => {
-  const classes = ClaimsInsightStyles();
+  const theme = useTheme();
+  const classes = ClaimsInsightStyles(theme);
   return (
     <div className={classes.infoBottomRightContainer}>
       <p style={{ fontSize: "14px", fontWeight: "300" }}>Unique wallets</p>

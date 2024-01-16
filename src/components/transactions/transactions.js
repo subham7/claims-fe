@@ -1,6 +1,5 @@
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import Web3 from "web3";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -20,10 +19,13 @@ import {
   TableContainer,
   Paper,
 } from "@mui/material";
+import { CHAIN_CONFIG } from "utils/constants";
+import ComponentHeader from "@components/common/ComponentHeader";
+import { getTransactionsByNetworkId } from "api/transactions";
 
 dayjs.extend(relativeTime);
 
-const Transactions = () => {
+const Transactions = ({ networkId }) => {
   const tableHeaders = [
     "Token",
     "Txn Hash",
@@ -48,35 +50,11 @@ const Transactions = () => {
 
   const fetchTransactions = async () => {
     setLoading(true);
-    const address = Web3.utils.toChecksumAddress(gnosisAddress);
-    const res = await axios.get(
-      `https://safe-transaction-polygon.safe.global/api/v1/safes/${address}/all-transactions/?executed=true&queued=false`,
-    );
-    const results = res.data.results;
-    let transfers = [];
 
-    /*      (1) filter for type 'ETHER_TRANSFER' & 'ERC20_TRANSFER' 
-            (2) In case of 'ETHER_TRANSFER' decimals = 18 else its already present */
-    results.forEach((item) => {
-      item.transfers?.forEach((res) => {
-        if (res?.type === "ETHER_TRANSFER") {
-          transfers = [
-            ...transfers,
-            {
-              ...res,
-              tokenInfo: {
-                decimals: 18,
-                name: "MATIC",
-                logoUri: "https://cryptologos.cc/logos/polygon-matic-logo.svg",
-              },
-            },
-          ];
-        }
-        if (res?.type === "ERC20_TRANSFER") {
-          transfers = [...transfers, res];
-        }
-      });
-    });
+    const transfers = await getTransactionsByNetworkId(
+      Web3.utils.toChecksumAddress(gnosisAddress),
+      networkId,
+    );
     setLoading(false);
     setTransactions(transfers);
   };
@@ -87,16 +65,19 @@ const Transactions = () => {
 
   const handleAddressClick = (event, address) => {
     event.preventDefault();
-    window.open(`https://polygonscan.com/address/${address}`);
+    window.open(
+      `${CHAIN_CONFIG[networkId].blockExplorerUrl}/address/${address}`,
+    );
   };
   const handleHashClick = (event, hash) => {
     event.preventDefault();
-    window.open(`https://polygonscan.com/tx/${hash}`);
+    window.open(`${CHAIN_CONFIG[networkId].blockExplorerUrl}/tx/${hash}`);
   };
 
   const handleChangePage = (event, newPage) => {
     setPaginationSettings({ ...paginationSettings, page: newPage });
   };
+
   const handleChangeRowsPerPage = (event) => {
     setPaginationSettings({
       page: 0,
@@ -108,7 +89,7 @@ const Transactions = () => {
     <>
       <div className="f-d f-vt f-h-c w-80">
         <div className="b-pad-1">
-          <Typography variant="heading">Station Transactions</Typography>
+          <ComponentHeader title={"Transactions"} />
         </div>
         {/* Table */}
         <div>
@@ -117,7 +98,7 @@ const Transactions = () => {
             <div className="tb-pad-2 f-d f-h-c f-v-c">
               <CircularProgress />
             </div>
-          ) : !loading && transactions.length === 0 ? (
+          ) : !loading && !transactions.length ? (
             <div className="tb-pad-2 f-d f-h-c f-v-c">
               <Typography variant="subheading">
                 No Transactions to show
@@ -156,7 +137,7 @@ const Transactions = () => {
                                   onError={({ target }) => {
                                     target.onerror = null;
                                     target.src =
-                                      "https://cryptologos.cc/logos/ethereum-eth-logo.svg";
+                                      "/assets/images/fallbackUSDC.png";
                                   }}
                                 />
                                 <Typography variant="info">

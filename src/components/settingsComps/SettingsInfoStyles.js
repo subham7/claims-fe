@@ -1,6 +1,15 @@
 import { makeStyles } from "@mui/styles";
 
-export const SettingsInfoStlyes = makeStyles({
+export const SettingsInfoStlyes = makeStyles((theme) => ({
+  heading: {
+    fontSize: "28px !important",
+    fontWeight: "600 !important",
+  },
+  subHeading: {
+    fontSize: "20px !important",
+    fontWeight: "400 !important",
+    color: "#d3d3d3",
+  },
   icon: {
     marginRight: "0.5rem",
   },
@@ -9,8 +18,9 @@ export const SettingsInfoStlyes = makeStyles({
     fontWeight: "normal",
   },
   valuesDimStyle: {
-    fontSize: "22px",
+    fontSize: "16px",
     color: "#dcdcdc",
+    fontWeight: "500",
   },
   cardRegular: {
     borderRadius: "10px",
@@ -30,7 +40,7 @@ export const SettingsInfoStlyes = makeStyles({
     fontSize: "20px",
   },
   cardSmall: {
-    backgroundColor: "#0F0F0F",
+    backgroundColor: theme.palette.background.default,
     borderRadius: "20px",
     opacity: 1,
   },
@@ -92,7 +102,7 @@ export const SettingsInfoStlyes = makeStyles({
     backgroundColor: "#0ABB9233",
   },
   openTagFont: {
-    paddingTop: "5px",
+    padding: "5px 0",
     fontSize: "12px",
     textTransform: "uppercase",
     color: "#0ABB92",
@@ -136,7 +146,7 @@ export const SettingsInfoStlyes = makeStyles({
   },
   datePicker: {
     borderRadius: "10px",
-    backgroundColor: "#0F0F0F",
+    backgroundColor: theme.palette.background.default,
     width: "95%",
   },
-});
+}));

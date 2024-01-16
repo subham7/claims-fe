@@ -403,7 +403,7 @@ const ClaimStep2 = ({ handleBack, formik, finish, loading, formikStep1 }) => {
         {finish ? (
           <Button
             onClick={() => {
-              router.push("/claims");
+              router.push(`/claims/`);
             }}
             variant="contained"
             className={classes.finish}>

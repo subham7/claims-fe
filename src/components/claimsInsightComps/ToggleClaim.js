@@ -1,22 +1,21 @@
-import {
-  Alert,
-  Backdrop,
-  CircularProgress,
-  FormControlLabel,
-  Switch,
-} from "@mui/material";
-import useDropsContractMethods from "hooks/useDropsContracMethods";
+import BackdropLoader from "@components/common/BackdropLoader";
+import { FormControlLabel, Switch } from "@mui/material";
+import { useTheme } from "@mui/styles";
+import useDropsContractMethods from "hooks/useDropsContractMethods";
 import React, { useEffect, useState } from "react";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
+import { useDispatch } from "react-redux";
+import { setAlertData } from "redux/reducers/alert";
 
 const ToggleClaim = ({ claimAddress, isActive }) => {
-  const [loading, setLoading] = useState(false);
-  const [isEnabled, setIsEnabled] = useState(true);
-  const [showMessage, setShowMessage] = useState(null);
+  const theme = useTheme();
+  const classes = ClaimsInsightStyles(theme);
+  const dispatch = useDispatch();
 
   const { toggleClaim } = useDropsContractMethods();
 
-  const classes = ClaimsInsightStyles();
+  const [loading, setLoading] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(true);
 
   const claimsToggleHandler = async (e) => {
     setLoading(true);
@@ -25,19 +24,24 @@ const ToggleClaim = ({ claimAddress, isActive }) => {
       await toggleClaim(claimAddress);
       setLoading(false);
       setIsEnabled(!isEnabled);
-      showMessageHandler();
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Claims turned on",
+          severity: "success",
+        }),
+      );
     } catch (error) {
       console.log(error);
       setLoading(false);
-      showMessageHandler();
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Claims turned off",
+          severity: "error",
+        }),
+      );
     }
-  };
-
-  const showMessageHandler = () => {
-    setShowMessage(true);
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 4000);
   };
 
   const fetchContractDetails = async () => {
@@ -68,41 +72,7 @@ const ToggleClaim = ({ claimAddress, isActive }) => {
         }
       />
 
-      {showMessage && !isEnabled && (
-        <Alert
-          severity="error"
-          sx={{
-            width: "350px",
-            position: "fixed",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-            zIndex: 1000000,
-          }}>
-          {"Claims turned Off"}
-        </Alert>
-      )}
-
-      {showMessage && isEnabled && (
-        <Alert
-          severity="success"
-          sx={{
-            width: "350px",
-            position: "fixed",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-            zIndex: 1000000,
-          }}>
-          {"Claims turned On"}
-        </Alert>
-      )}
-
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}>
-        <CircularProgress />
-      </Backdrop>
+      <BackdropLoader isOpen={loading} />
     </div>
   );
 };

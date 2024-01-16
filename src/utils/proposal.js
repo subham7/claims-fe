@@ -1,9 +1,7 @@
-import { getProposal } from "../api/proposal";
-import SafeApiKit from "@safe-global/api-kit";
-import { Web3Adapter } from "@safe-global/protocol-kit";
+import { getProposalByDaoAddress } from "../api/proposal";
 import { createCancelProposal, getProposalTxHash } from "api/proposal";
 import Web3 from "web3";
-import { getIncreaseGasPrice, getSafeSdk } from "./helper";
+import { convertToFullNumber, getIncreaseGasPrice, getSafeSdk } from "./helper";
 import { factoryContractABI } from "abis/factoryContract.js";
 import { erc721DaoABI } from "abis/erc721Dao";
 import { erc20DaoABI } from "abis/erc20Dao";
@@ -21,12 +19,16 @@ import {
 import { erc20TokenABI } from "abis/usdcTokenContract.js";
 import { actionContractABI } from "abis/actionContract";
 import { erc20AaveABI } from "abis/erc20AaveABI";
+import { stargateStakeABI } from "abis/stargateStakeABI";
+import { stargateNativeABI } from "abis/stargateNativeABI";
 import { maticAaveABI } from "abis/MaticAaveABI";
+import { uniswapABI } from "abis/uniswapABI";
+import { encodeFunctionData } from "viem";
 
-export const fetchProposals = async (clubId, type) => {
+export const fetchProposals = async (daoAddress, type) => {
   let proposalData;
-  if (type === "all") proposalData = await getProposal(clubId);
-  else proposalData = await getProposal(clubId, type);
+  if (type === "all") proposalData = await getProposalByDaoAddress(daoAddress);
+  else proposalData = await getProposalByDaoAddress(daoAddress, type);
 
   if (proposalData.status !== 200) {
     return null;
@@ -40,32 +42,18 @@ export const createRejectSafeTx = async ({
   daoAddress,
   network,
   walletAddress,
-  networkId,
 }) => {
   try {
-    const web3 = new Web3(window.ethereum);
-    const ethAdapter = new Web3Adapter({
-      web3: web3,
-      signerAddress: Web3.utils.toChecksumAddress(walletAddress),
-    });
-
-    const txServiceUrl = gnosisTransactionUrl;
-
-    const safeService = new SafeApiKit({
-      txServiceUrl,
-      ethAdapter,
-    });
+    const { safeSdk, safeService } = await getSafeSdk(
+      gnosisAddress,
+      walletAddress,
+      gnosisTransactionUrl,
+    );
 
     const proposalTxHash = await getProposalTxHash(pid);
 
     const safetx = await safeService.getTransaction(
       proposalTxHash.data[0].txHash,
-    );
-
-    const safeSdk = await getSafeSdk(
-      Web3.utils.toChecksumAddress(gnosisAddress),
-      Web3.utils.toChecksumAddress(walletAddress),
-      networkId,
     );
 
     const rejectionTransaction = await safeSdk.createRejectionTransaction(
@@ -114,32 +102,18 @@ export const executeRejectTx = async ({
   walletAddress,
   gnosisTransactionUrl,
   gnosisAddress,
-  networkId,
 }) => {
   try {
-    const web3 = new Web3(window.ethereum);
-    const ethAdapter = new Web3Adapter({
-      web3: web3,
-      signerAddress: Web3.utils.toChecksumAddress(walletAddress),
-    });
-
-    const txServiceUrl = gnosisTransactionUrl;
-
-    const safeService = new SafeApiKit({
-      txServiceUrl,
-      ethAdapter,
-    });
+    const { safeSdk, safeService } = await getSafeSdk(
+      gnosisAddress,
+      walletAddress,
+      gnosisTransactionUrl,
+    );
 
     const proposalTxHash = await getProposalTxHash(pid);
 
     const safetx = await safeService.getTransaction(
       proposalTxHash.data[0].txHash,
-    );
-
-    const safeSdk = await getSafeSdk(
-      Web3.utils.toChecksumAddress(gnosisAddress),
-      Web3.utils.toChecksumAddress(walletAddress),
-      networkId,
     );
 
     const options = {
@@ -159,31 +133,17 @@ export const signRejectTx = async ({
   walletAddress,
   gnosisTransactionUrl,
   gnosisAddress,
-  networkId,
 }) => {
   try {
-    const web3 = new Web3(window.ethereum);
-    const ethAdapter = new Web3Adapter({
-      web3: web3,
-      signerAddress: Web3.utils.toChecksumAddress(walletAddress),
-    });
-
-    const txServiceUrl = gnosisTransactionUrl;
-
-    const safeService = new SafeApiKit({
-      txServiceUrl,
-      ethAdapter,
-    });
+    const { safeSdk, safeService } = await getSafeSdk(
+      gnosisAddress,
+      walletAddress,
+      gnosisTransactionUrl,
+    );
 
     const proposalTxHash = await getProposalTxHash(pid);
     const safetx = await safeService.getTransaction(
       proposalTxHash.data[0].txHash,
-    );
-
-    const safeSdk = await getSafeSdk(
-      Web3.utils.toChecksumAddress(gnosisAddress),
-      Web3.utils.toChecksumAddress(walletAddress),
-      networkId,
     );
 
     const safeTransaction = await safeSdk.createRejectionTransaction(
@@ -222,10 +182,20 @@ export const fetchABI = async (executionId, tokenType) => {
     case 10:
     case 11:
     case 12:
+    case 16:
     case 13:
+    case 20:
       return factoryContractABI;
     case 8:
       return seaportABI;
+    case 21:
+    case 22:
+    case 23:
+      return [
+        "function approve(address spender, uint256 amount)",
+        "function contractCalls(address _to, bytes memory _data)",
+        "function airDropToken(address _airdropTokenAddress,uint256[] memory _airdropAmountArray,address[] memory _members)",
+      ];
     default:
       return null;
   }
@@ -238,9 +208,11 @@ export const getEncodedData = async ({
   factoryData,
   contractABI,
   setMembers,
-  getNftBalance,
+  getBalance,
   getERC20TotalSupply,
+  getNftOwnersCount,
   networkId,
+  gnosisAddress,
 }) => {
   let membersArray = [];
   let airDropAmountArray = [];
@@ -265,11 +237,13 @@ export const getEncodedData = async ({
     nftLink,
     merkleRoot,
     pricePerToken,
+    nftSupply,
+    sendTokenAmounts,
+    sendTokenAddresses,
+    sendToken,
   } = proposalData.commands[0];
   let iface;
-
   if (contractABI) iface = new Interface(contractABI);
-
   switch (executionId) {
     case 0:
       const membersData = await subgraphQuery(
@@ -288,8 +262,8 @@ export const getEncodedData = async ({
         const carryFeeAmount = (airDropAmount * airDropCarryFee) / 100;
         airDropAmountArray = await Promise.all(
           membersArray.map(async (member) => {
-            const balance = await getNftBalance(
-              clubData.tokenType,
+            const balance = await getBalance(
+              daoAddress,
               Web3.utils.toChecksumAddress(member),
             );
 
@@ -315,8 +289,8 @@ export const getEncodedData = async ({
       } else {
         airDropAmountArray = await Promise.all(
           membersArray.map(async (member) => {
-            const balance = await getNftBalance(
-              clubData.tokenType,
+            const balance = await getBalance(
+              daoAddress,
               Web3.utils.toChecksumAddress(member),
             );
 
@@ -354,9 +328,16 @@ export const getEncodedData = async ({
           QUERY_STATION_DETAILS(daoAddress),
         );
         const tokenURI = clubDetails?.stations[0].imageUrl;
+
+        const tokenURIArr = [];
+
+        for (let i = 0; i < mintGTAddresses.length; i++) {
+          tokenURIArr.push(tokenURI);
+        }
+
         data = iface.encodeFunctionData("mintGTToAddress", [
           mintGTAmounts,
-          [tokenURI],
+          tokenURIArr,
           mintGTAddresses,
         ]);
       }
@@ -484,6 +465,7 @@ export const getEncodedData = async ({
     case 10:
     case 11:
     case 12:
+    case 16:
       let iface2 = new Interface(erc20DaoABI);
       approvalData = iface2.encodeFunctionData("toggleOnlyAllowWhitelist", []);
 
@@ -494,11 +476,46 @@ export const getEncodedData = async ({
       return { data, approvalData };
     case 13:
       data = iface.encodeFunctionData("updateTotalRaiseAmount", [
-        factoryData?.distributionAmount,
+        convertToFullNumber(factoryData?.distributionAmount + ""),
         convertToWeiGovernance(pricePerToken, 6),
         daoAddress,
       ]);
       return { data };
+    case 20:
+      data = iface.encodeFunctionData("updateTotalRaiseAmount", [
+        nftSupply,
+        convertToWeiGovernance(factoryData?.pricePerToken, 6),
+        daoAddress,
+      ]);
+      return { data };
+
+    case 21:
+    case 22:
+    case 23:
+      if (sendToken === CHAIN_CONFIG[networkId].nativeToken) {
+        return {};
+      } else {
+        const totalAmount = sendTokenAmounts.reduce(
+          (partialSum, a) => partialSum + Number(a),
+          0,
+        );
+
+        approvalData = iface.encodeFunctionData("approve", [
+          CHAIN_CONFIG[networkId]?.airdropContractAddress,
+          (totalAmount * 2).toString(),
+        ]);
+
+        data = iface.encodeFunctionData("airDropToken", [
+          sendToken,
+          sendTokenAmounts,
+          sendTokenAddresses,
+        ]);
+
+        membersArray = sendTokenAddresses;
+        airDropAmountArray = sendTokenAmounts;
+
+        return { data, approvalData, membersArray, airDropAmountArray };
+      }
     default:
       return {};
   }
@@ -583,6 +600,83 @@ const depositErc20TokensToAavePool = (
     .encodeABI();
 };
 
+const stakeErc20TokensToStargate = (
+  stakeTokenAddress,
+  stakeAmount,
+  gnosisAddress,
+  web3Call,
+  networkId,
+) => {
+  const stakeInStargate = new web3Call.eth.Contract(
+    stargateStakeABI,
+    CHAIN_CONFIG[networkId].stargateRouterAddress,
+  );
+  return stakeInStargate.methods
+    .addLiquidity(
+      CHAIN_CONFIG[networkId].stargatePoolIds[stakeTokenAddress],
+      stakeAmount,
+      gnosisAddress,
+    )
+    .encodeABI();
+};
+
+const stakeNativeTokensToStargate = (web3Call, networkId) => {
+  const stakeInStargate = new web3Call.eth.Contract(
+    stargateNativeABI,
+    CHAIN_CONFIG[networkId].stargatNativeRouterAddress,
+  );
+  return stakeInStargate.methods.addLiquidityETH().encodeABI();
+};
+
+const unstakeErc20TokensToStargate = (
+  unstakeTokenAddress,
+  unstakeAmount,
+  gnosisAddress,
+  web3Call,
+  networkId,
+) => {
+  const stakeInStargate = new web3Call.eth.Contract(
+    stargateStakeABI,
+    CHAIN_CONFIG[networkId].stargateRouterAddress,
+  );
+  return stakeInStargate.methods
+    .instantRedeemLocal(
+      CHAIN_CONFIG[networkId].stargatePoolIds[unstakeTokenAddress],
+      unstakeAmount,
+      gnosisAddress,
+    )
+    .encodeABI();
+};
+
+const swapWithUniswap = (
+  swapToken,
+  destinationToken,
+
+  gnosisAddress,
+
+  swapAmount,
+  web3Call,
+  networkId,
+) => {
+  const uniswapContract = new web3Call.eth.Contract(
+    uniswapABI,
+    CHAIN_CONFIG[networkId].uniswapRouterAddress,
+  );
+
+  return uniswapContract.methods
+    .exactInputSingle([
+      swapToken,
+      destinationToken,
+      500,
+      gnosisAddress,
+      Date.now() + 120,
+      swapAmount,
+      0,
+      0,
+    ])
+    .encodeABI();
+};
+
 const depositEthMethodEncoded = (
   poolAddress,
   addressWhereAssetsStored,
@@ -634,6 +728,24 @@ const withdrawErc20MethodEncoded = (
     .encodeABI();
 };
 
+const disburseTokenMethodEncoded = (
+  actionContractAddress,
+  amountArray,
+  members,
+  web3Call,
+) => {
+  if (actionContractAddress) {
+    const actionContractSend = new web3Call.eth.Contract(
+      disburseContractABI,
+      actionContractAddress,
+    );
+
+    return actionContractSend.methods
+      .disburseNative(members, amountArray)
+      .encodeABI();
+  }
+};
+
 export const getTransaction = async ({
   proposalData,
   daoAddress,
@@ -642,7 +754,6 @@ export const getTransaction = async ({
   transactionData,
   tokenData,
   gnosisAddress,
-  contractInstances,
   parameters,
   isAssetsStoredOnGnosis,
   networkId,
@@ -659,12 +770,18 @@ export const getTransaction = async ({
     customNftToken,
     depositAmount,
     withdrawAmount,
+    swapToken,
+    destinationToken,
+    swapAmount,
+    stakeAmount,
+    unstakeAmount,
+    sendTokenAmounts,
+    sendTokenAddresses,
   } = proposalData.commands[0];
   let approvalTransaction;
   let transaction;
   const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
 
-  const { erc20DaoContractCall } = contractInstances;
   switch (executionId) {
     case 0:
     case 4:
@@ -704,19 +821,32 @@ export const getTransaction = async ({
       }
 
     case 1:
-    case 2:
-    case 3:
-    case 13:
       transaction = {
         //dao
         to: Web3.utils.toChecksumAddress(daoAddress),
-        data: erc20DaoContractCall.methods
-          .updateProposalAndExecution(
-            //factory
+        data: encodeFunctionData({
+          abi: erc20DaoABI,
+          functionName: "updateProposalAndExecution",
+          args: [daoAddress, parameters],
+        }),
+        value: "0",
+      };
+      return { transaction };
+    case 2:
+    case 3:
+    case 13:
+    case 20:
+      transaction = {
+        //dao
+        to: Web3.utils.toChecksumAddress(daoAddress),
+        data: encodeFunctionData({
+          abi: erc20DaoABI,
+          functionName: "updateProposalAndExecution",
+          args: [
             factoryContractAddress ? factoryContractAddress : daoAddress,
             parameters,
-          )
-          .encodeABI(),
+          ],
+        }),
         value: "0",
       };
       return { transaction };
@@ -736,10 +866,6 @@ export const getTransaction = async ({
       };
       return { transaction };
     case 6:
-      transaction = {
-        ownerAddress,
-      };
-      return { transaction };
     case 7:
       transaction = {
         ownerAddress,
@@ -765,12 +891,14 @@ export const getTransaction = async ({
       } else {
         transaction = {
           to: Web3.utils.toChecksumAddress(daoAddress),
-          data: erc20DaoContractCall.methods
-            .updateProposalAndExecution(
+          data: encodeFunctionData({
+            abi: erc20DaoABI,
+            functionName: "updateProposalAndExecution",
+            args: [
               Web3.utils.toChecksumAddress(SEAPORT_CONTRACT_ADDRESS),
               parameters,
-            )
-            .encodeABI(),
+            ],
+          }),
           value: "10000000000000000",
         };
       }
@@ -778,136 +906,322 @@ export const getTransaction = async ({
     case 10:
     case 11:
     case 12:
+    case 16:
       approvalTransaction = {
         to: Web3.utils.toChecksumAddress(daoAddress),
-        data: erc20DaoContractCall.methods
-          .updateProposalAndExecution(
-            //usdc address
-            daoAddress,
-            approvalData,
-          )
-          .encodeABI(),
+        data: encodeFunctionData({
+          abi: erc20DaoABI,
+          functionName: "updateProposalAndExecution",
+          args: [daoAddress, approvalData],
+        }),
         value: "0",
       };
       transaction = {
-        //dao
         to: Web3.utils.toChecksumAddress(daoAddress),
-        data: erc20DaoContractCall.methods
-          .updateProposalAndExecution(
-            //factory
+        data: encodeFunctionData({
+          abi: erc20DaoABI,
+          functionName: "updateProposalAndExecution",
+          args: [
             factoryContractAddress ? factoryContractAddress : daoAddress,
             parameters,
-          )
-          .encodeABI(),
+          ],
+        }),
         value: "0",
       };
       return { transaction, approvalTransaction };
     case 14:
-      if (isAssetsStoredOnGnosis) {
-        if (tokenData === CHAIN_CONFIG[networkId].nativeToken) {
-          transaction = {
-            to: Web3.utils.toChecksumAddress(
-              CHAIN_CONFIG[networkId].aaveMaticPoolAddress,
-            ),
-            data: depositEthMethodEncoded(
-              CHAIN_CONFIG[networkId]?.aavePoolAddress,
-              gnosisAddress,
-              0,
-              web3Call,
-              networkId,
-            ),
-            value: depositAmount.toString(),
-          };
+      if (tokenData === CHAIN_CONFIG[networkId].nativeToken) {
+        transaction = {
+          to: Web3.utils.toChecksumAddress(
+            CHAIN_CONFIG[networkId].aaveMaticPoolAddress,
+          ),
+          data: depositEthMethodEncoded(
+            CHAIN_CONFIG[networkId]?.aavePoolAddress,
+            gnosisAddress,
+            0,
+            web3Call,
+            networkId,
+          ),
+          value: depositAmount.toString(),
+        };
 
-          return { transaction };
-        } else {
-          approvalTransaction = {
-            to: Web3.utils.toChecksumAddress(tokenData),
-            data: approveDepositWithEncodeABI(
-              tokenData,
-              CHAIN_CONFIG[networkId].aavePoolAddress,
-              depositAmount,
-              web3Call,
-            ),
-            value: "0",
-          };
-          transaction = {
-            to: Web3.utils.toChecksumAddress(
-              CHAIN_CONFIG[networkId].aavePoolAddress,
-            ),
-            data: depositErc20TokensToAavePool(
-              tokenData,
-              depositAmount,
-              gnosisAddress,
-              0,
-              web3Call,
-              networkId,
-            ),
-            value: "0",
-          };
+        return { transaction };
+      } else {
+        approvalTransaction = {
+          to: Web3.utils.toChecksumAddress(tokenData),
+          data: approveDepositWithEncodeABI(
+            tokenData,
+            CHAIN_CONFIG[networkId].aavePoolAddress,
+            depositAmount,
+            web3Call,
+          ),
+          value: "0",
+        };
+        transaction = {
+          to: Web3.utils.toChecksumAddress(
+            CHAIN_CONFIG[networkId].aavePoolAddress,
+          ),
+          data: depositErc20TokensToAavePool(
+            tokenData,
+            depositAmount,
+            gnosisAddress,
+            0,
+            web3Call,
+            networkId,
+          ),
+          value: "0",
+        };
 
-          return { transaction, approvalTransaction };
-        }
+        return { transaction, approvalTransaction };
       }
+
     case 15:
-      if (isAssetsStoredOnGnosis) {
-        if (tokenData === CHAIN_CONFIG[networkId].nativeToken) {
-          approvalTransaction = {
-            to: Web3.utils.toChecksumAddress(
-              CHAIN_CONFIG[networkId].aaveWrappedMaticAddress,
-            ),
-            data: approveDepositWithEncodeABI(
-              CHAIN_CONFIG[networkId].aaveWrappedMaticAddress,
-              CHAIN_CONFIG[networkId].aaveMaticPoolAddress,
-              withdrawAmount,
-              web3Call,
-            ),
-            value: "0",
-          };
+      if (tokenData === CHAIN_CONFIG[networkId].nativeToken) {
+        approvalTransaction = {
+          to: Web3.utils.toChecksumAddress(
+            CHAIN_CONFIG[networkId].aaveWrappedMaticAddress,
+          ),
+          data: approveDepositWithEncodeABI(
+            CHAIN_CONFIG[networkId].aaveWrappedMaticAddress,
+            CHAIN_CONFIG[networkId].aaveMaticPoolAddress,
+            withdrawAmount,
+            web3Call,
+          ),
+          value: "0",
+        };
 
-          transaction = {
-            to: Web3.utils.toChecksumAddress(
-              CHAIN_CONFIG[networkId].aaveMaticPoolAddress,
-            ),
-            data: withdrawEthMethodEncoded(
-              CHAIN_CONFIG[networkId].aavePoolAddress,
-              withdrawAmount,
-              gnosisAddress,
-              web3Call,
-              networkId,
-            ),
-            value: "0",
-          };
-        } else {
-          approvalTransaction = {
-            to: Web3.utils.toChecksumAddress(
-              CHAIN_CONFIG[networkId].aaveWrappedUsdcAddress,
-            ),
-            data: approveDepositWithEncodeABI(
-              CHAIN_CONFIG[networkId].aaveWrappedUsdcAddress,
-              CHAIN_CONFIG[networkId].aavePoolAddress,
-              withdrawAmount,
-              web3Call,
-            ),
-            value: "0",
-          };
+        transaction = {
+          to: Web3.utils.toChecksumAddress(
+            CHAIN_CONFIG[networkId].aaveMaticPoolAddress,
+          ),
+          data: withdrawEthMethodEncoded(
+            CHAIN_CONFIG[networkId].aavePoolAddress,
+            withdrawAmount,
+            gnosisAddress,
+            web3Call,
+            networkId,
+          ),
+          value: "0",
+        };
+      } else {
+        approvalTransaction = {
+          to: Web3.utils.toChecksumAddress(
+            CHAIN_CONFIG[networkId].aaveWrappedUsdcAddress,
+          ),
+          data: approveDepositWithEncodeABI(
+            CHAIN_CONFIG[networkId].aaveWrappedUsdcAddress,
+            CHAIN_CONFIG[networkId].aavePoolAddress,
+            withdrawAmount,
+            web3Call,
+          ),
+          value: "0",
+        };
 
-          transaction = {
-            to: Web3.utils.toChecksumAddress(
-              CHAIN_CONFIG[networkId].aavePoolAddress,
-            ),
-            data: withdrawErc20MethodEncoded(
-              Web3.utils.toChecksumAddress(tokenData),
-              withdrawAmount,
-              gnosisAddress,
-              web3Call,
-              networkId,
-            ),
-            value: "0",
-          };
-        }
-
-        return { approvalTransaction, transaction };
+        transaction = {
+          to: Web3.utils.toChecksumAddress(
+            CHAIN_CONFIG[networkId].aavePoolAddress,
+          ),
+          data: withdrawErc20MethodEncoded(
+            Web3.utils.toChecksumAddress(tokenData),
+            withdrawAmount,
+            gnosisAddress,
+            web3Call,
+            networkId,
+          ),
+          value: "0",
+        };
       }
+    case 19:
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(tokenData),
+        data: approveDepositWithEncodeABI(
+          tokenData,
+          CHAIN_CONFIG[networkId].uniswapRouterAddress,
+          swapAmount,
+          web3Call,
+        ),
+        value: "0",
+      };
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].uniswapRouterAddress,
+        ),
+        data: swapWithUniswap(
+          swapToken,
+          destinationToken,
+          gnosisAddress,
+          swapAmount,
+          web3Call,
+          networkId,
+        ),
+        value: "0",
+      };
+      return { approvalTransaction, transaction };
+    case 17:
+      if (tokenData === CHAIN_CONFIG[networkId].nativeToken) {
+        transaction = {
+          to: CHAIN_CONFIG[networkId].stargatNativeRouterAddress,
+          data: stakeNativeTokensToStargate(web3Call, networkId),
+          value: stakeAmount,
+        };
+      } else {
+        approvalTransaction = {
+          to: tokenData,
+          data: approveDepositWithEncodeABI(
+            tokenData,
+            CHAIN_CONFIG[networkId].stargateRouterAddress,
+            stakeAmount,
+            web3Call,
+          ),
+          value: "0",
+        };
+        transaction = {
+          to: CHAIN_CONFIG[networkId].stargateRouterAddress,
+          data: stakeErc20TokensToStargate(
+            tokenData,
+            stakeAmount,
+            gnosisAddress,
+            web3Call,
+            networkId,
+          ),
+          value: "0",
+        };
+      }
+      return { transaction, approvalTransaction };
+    case 18:
+      approvalTransaction = {
+        to: tokenData,
+        data: approveDepositWithEncodeABI(
+          tokenData,
+          CHAIN_CONFIG[networkId].stargateRouterAddress,
+          unstakeAmount,
+          web3Call,
+        ),
+        value: "0",
+      };
+      transaction = {
+        to: CHAIN_CONFIG[networkId].stargateRouterAddress,
+        data: unstakeErc20TokensToStargate(
+          tokenData,
+          unstakeAmount,
+          gnosisAddress,
+          web3Call,
+          networkId,
+        ),
+        value: "0",
+      };
+      return { transaction, approvalTransaction };
+    case 21:
+    case 22:
+    case 23:
+      const totalAmount = sendTokenAmounts.reduce(
+        (partialSum, a) => partialSum + Number(a),
+        0,
+      );
+
+      if (tokenData === CHAIN_CONFIG[networkId].nativeToken) {
+        transaction = {
+          to: Web3.utils.toChecksumAddress(
+            CHAIN_CONFIG[networkId]?.disburseContractAddress,
+          ),
+          data: disburseTokenMethodEncoded(
+            CHAIN_CONFIG[networkId]?.disburseContractAddress,
+            sendTokenAmounts,
+            sendTokenAddresses,
+            web3Call,
+          ),
+          value: totalAmount.toString(),
+        };
+        return { transaction };
+      } else {
+        approvalTransaction = {
+          to: Web3.utils.toChecksumAddress(tokenData),
+          data: approveDepositWithEncodeABI(
+            tokenData,
+            CHAIN_CONFIG[networkId]?.airdropContractAddress,
+            (totalAmount * 2).toString(),
+            web3Call,
+          ),
+          value: "0",
+        };
+        transaction = {
+          to: Web3.utils.toChecksumAddress(
+            CHAIN_CONFIG[networkId]?.airdropContractAddress,
+          ),
+          data: airdropTokenMethodEncoded(
+            CHAIN_CONFIG[networkId]?.airdropContractAddress,
+            tokenData,
+            airDropAmountArray,
+            membersArray,
+            web3Call,
+          ),
+          value: 0,
+        };
+        return { transaction, approvalTransaction };
+      }
+  }
+};
+
+export const createSafeTransactionData = ({
+  approvalTransaction,
+  transaction,
+  nonce,
+}) => {
+  try {
+    if (approvalTransaction === "" || approvalTransaction === undefined) {
+      return {
+        to: transaction?.to,
+        data: transaction?.data,
+        value: transaction?.value,
+        nonce,
+      };
+    } else {
+      return [
+        {
+          to: approvalTransaction?.to,
+          data: approvalTransaction?.data,
+          value: approvalTransaction?.value,
+          nonce,
+        },
+        {
+          to: transaction?.to,
+          data: transaction?.data,
+          value: transaction?.value,
+          nonce,
+        },
+      ];
+    }
+  } catch (e) {
+    console.error(e);
+    return {};
+  }
+};
+
+export const getTokenTypeByExecutionId = (commands) => {
+  const executionId = commands[0]?.executionId;
+
+  switch (executionId) {
+    case 0:
+      return commands[0]?.airDropToken;
+    case 4:
+      return commands[0]?.customToken;
+    case 5:
+      return commands[0]?.customNft;
+    case 14:
+      return commands[0]?.depositToken;
+    case 15:
+      return commands[0]?.withdrawToken;
+    case 19:
+      return commands[0]?.swapToken;
+    case 17:
+      return commands[0]?.stakeToken;
+    case 18:
+      return commands[0]?.unstakeToken;
+    case 21:
+    case 22:
+    case 23:
+      return commands[0]?.sendToken;
+    default:
+      return "";
   }
 };

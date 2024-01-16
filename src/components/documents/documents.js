@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import settingsImg from "../../../public/assets/images/settings.png";
-import { makeStyles } from "@mui/styles";
+import { makeStyles, useTheme } from "@mui/styles";
 import { useRouter } from "next/router";
 import { Card, Grid, Link, Typography } from "@mui/material";
 import LegalEntityModal from "@components/modals/LegalEntityModal";
@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 import { getDocumentsByClubId } from "api/document";
 import DocumentCard from "@components/documentPageComps/DocumentCard";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   container: {
     display: "flex",
     gap: "30px",
@@ -94,10 +94,29 @@ const useStyles = makeStyles({
     height: "300px",
     width: "300px",
   },
-});
+  typography: {
+    position: "absolute",
+    left: 20,
+    top: 30,
+    color: theme.palette.background.default,
+    fontWeight: "normal",
+    width: "80%",
+  },
+  link: {
+    position: "absolute",
+    color: theme.palette.background.default,
+    fontWeight: "normal",
+    width: "70%",
+    textDecoration: "underline",
+    fontSize: "0.875rem",
+    left: 20,
+    bottom: 10,
+  },
+}));
 
-const Documents = ({ daoAddress }) => {
-  const classes = useStyles();
+const Documents = ({ daoAddress, networkId }) => {
+  const theme = useTheme();
+  const classes = useStyles(theme);
   const router = useRouter();
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [documents, setDocuments] = useState([]);
@@ -110,8 +129,12 @@ const Documents = ({ daoAddress }) => {
     return state.legal.documentList;
   });
 
+  const isAdmin = useSelector((state) => {
+    return state.gnosis.adminUser;
+  });
+
   const createDocHandler = () => {
-    router.push(`/documents/${daoAddress}/create`);
+    router.push(`/documents/${daoAddress}/${networkId}/create`);
   };
 
   // closing legal entity modal
@@ -140,9 +163,12 @@ const Documents = ({ daoAddress }) => {
         <div className={classes.leftDiv}>
           <div className={classes.header}>
             <p className={classes.title}>Documents</p>
-            <button onClick={createDocHandler} className={classes.createDoc}>
-              Create new
-            </button>
+
+            {isAdmin && (
+              <button onClick={createDocHandler} className={classes.createDoc}>
+                Create new
+              </button>
+            )}
           </div>
 
           {docsList?.length ? (
@@ -156,6 +182,7 @@ const Documents = ({ daoAddress }) => {
                   index={index + 1}
                   createdBy={document.createdBy}
                   daoAddress={daoAddress}
+                  networkId={networkId}
                 />
               ))}
             </>
@@ -170,6 +197,7 @@ const Documents = ({ daoAddress }) => {
                   index={index + 1}
                   createdBy={document.createdBy}
                   daoAddress={daoAddress}
+                  networkId={networkId}
                 />
               ))}
             </>
@@ -196,30 +224,13 @@ const Documents = ({ daoAddress }) => {
                 alt="proposal image"
                 className={classes.proposalImg}
               />
-              <Typography
-                variant="h4"
-                sx={{
-                  position: "absolute",
-                  left: 20,
-                  top: 30,
-                  color: "#0F0F0F",
-                  fontWeight: "normal",
-                  width: "80%",
-                }}>
+              <Typography variant="h4" sx={{}}>
                 Sign documents within your station
               </Typography>
               <Link
-                href="/"
-                sx={{
-                  position: "absolute",
-                  color: "#0F0F0F",
-                  fontWeight: "normal",
-                  width: "70%",
-                  textDecoration: "underline",
-                  fontSize: "0.875rem",
-                  left: 20,
-                  bottom: 10,
-                }}>
+                href="https://stationxnetwork.gitbook.io/docs"
+                target={"_blank"}
+                className={classes.link}>
                 Read Docs
               </Link>
             </Card>
@@ -232,6 +243,7 @@ const Documents = ({ daoAddress }) => {
             isInvite={true}
             onClose={closeModalHandler}
             daoAddress={daoAddress}
+            networkId={networkId}
           />
         )}
       </div>

@@ -1,0 +1,86 @@
+@import "../../../../styles/variables.scss";
+
+.backdrop {
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  background-color: #0c0c0c70;
+  z-index: 20;
+  top: 0;
+  left: 0;
+}
+
+.modal {
+  max-width: 460px;
+  min-height: 300px;
+  width: 25vw;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  z-index: 2002;
+  padding: 28px 25px;
+  border-radius: 20px;
+  background: #191a1a;
+  border: 0.5px solid $divider-color;
+
+  .close {
+    position: absolute;
+    top: 30px;
+    right: 20px;
+    cursor: pointer;
+
+  }
+
+  .header {
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    padding-bottom: 20px;
+    border-bottom: 0.5px solid $divider-color;
+    margin-bottom: 20px;
+  }
+
+  .networksContainer {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+
+    .loaderContainer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .network {
+      cursor: pointer;
+      &:hover {
+        transform: scale(1.05);
+      }
+
+      .hexagonImageContainer {
+        width: 53px;
+        height: 59px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        clip-path: path(
+          "M 17.033 4.964 c 3.852 -2.262 5.778 -3.393 7.84 -3.77 a 11.807 11.807 0 0 1 4.254 0 c 2.062 0.377 3.988 1.508 7.84 3.77 l 6.066 3.562 c 3.852 2.263 5.777 3.394 7.13 5.022 a 12.268 12.268 0 0 1 2.127 3.747 c 0.71 2.006 0.71 4.268 0.71 8.793 v 7.124 c 0 4.525 0 6.787 -0.71 8.793 a 12.268 12.268 0 0 1 -2.126 3.747 c -1.354 1.628 -3.28 2.76 -7.131 5.022 l -6.066 3.562 c -3.852 2.262 -5.778 3.393 -7.84 3.771 a 11.814 11.814 0 0 1 -4.254 0 c -2.062 -0.378 -3.988 -1.509 -7.84 -3.77 l -6.066 -3.563 c -3.852 -2.263 -5.778 -3.394 -7.13 -5.022 a 12.268 12.268 0 0 1 -2.127 -3.747 C 1 40 1 37.737 1 33.212 v -7.124 c 0 -4.525 0 -6.787 0.71 -8.793 a 12.268 12.268 0 0 1 2.127 -3.747 c 1.352 -1.628 3.278 -2.76 7.13 -5.022 l 6.066 -3.562 Z"
+        );
+        overflow: hidden;
+      }
+
+      .logo {
+        object-fit: contain;
+        object-position: center;
+      }
+
+      .chainName {
+        text-align: center;
+        font-size: small;
+        margin-top: 4px;
+      }
+    }
+  }
+}

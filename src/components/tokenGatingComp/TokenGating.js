@@ -1,10 +1,10 @@
-import { Alert, Backdrop, CircularProgress, Switch } from "@mui/material";
+import { Switch, Typography } from "@mui/material";
 import { Button } from "@components/ui";
 import React, { useCallback, useEffect, useState } from "react";
 import { TokenGatingStyle } from "./TokenGatingStyles";
 import { MdDelete } from "react-icons/md";
 import TokenGatingModal from "./TokenGatingModal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import SingleToken from "./SingleToken";
 import {
   convertFromWeiGovernance,
@@ -12,6 +12,8 @@ import {
 } from "../../utils/globalFunctions";
 import useAppContractMethods from "../../hooks/useAppContractMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
+import BackdropLoader from "@components/common/BackdropLoader";
+import { setAlertData } from "redux/reducers/alert";
 
 const TokenGating = ({ daoAddress }) => {
   const [showTokenGatingModal, setShowTokenGatingModal] = useState(false);
@@ -32,9 +34,6 @@ const TokenGating = ({ daoAddress }) => {
   });
   const [tokensList, setTokensList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [isTokenGatingSuccessfull, setIsTokenGatingSuccessfull] =
-    useState(false);
-  const [showMessage, setShowMessage] = useState(false);
   const [showEditOptions, setShowEditOptions] = useState(true);
 
   const isAdminUser = useSelector((state) => {
@@ -42,13 +41,12 @@ const TokenGating = ({ daoAddress }) => {
   });
 
   const classes = TokenGatingStyle();
+  const dispatch = useDispatch();
 
-  const {
-    getTokenGatingDetails,
-    setupTokenGating,
-
-    disableTokenGating,
-  } = useAppContractMethods();
+  const { getTokenGatingDetails, setupTokenGating, disableTokenGating } =
+    useAppContractMethods({
+      daoAddress,
+    });
 
   const { getTokenSymbol, getDecimals } = useCommonContractMethods();
 
@@ -93,32 +91,34 @@ const TokenGating = ({ daoAddress }) => {
                 tokensList[0]?.tokenDecimal,
               ),
         ], // Minimum user balance of tokenA & tokenB
-        daoAddress,
       );
       fetchTokenGatingDetails();
       setLoading(false);
-      setIsTokenGatingSuccessfull(true);
       setShowEditOptions(false);
-      showMessageHandler();
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Token Gating Successfull",
+          severity: "success",
+        }),
+      );
     } catch (error) {
       console.log(error);
       setLoading(false);
-      setIsTokenGatingSuccessfull(false);
-      showMessageHandler();
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Token Gating failed",
+          severity: "success",
+        }),
+      );
     }
-  };
-
-  const showMessageHandler = () => {
-    setShowMessage(true);
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 4000);
   };
 
   const fetchTokenGatingDetails = useCallback(async () => {
     try {
       setLoading(true);
-      const tokenGatingDetails = await getTokenGatingDetails(daoAddress);
+      const tokenGatingDetails = await getTokenGatingDetails();
 
       setFetchedDetails({
         tokenA: tokenGatingDetails[0]?.tokenA,
@@ -165,15 +165,15 @@ const TokenGating = ({ daoAddress }) => {
 
   return (
     <div className={classes.container}>
-      <div className={classes.heading}>
-        <p className={classes.title}>Token Gating</p>
+      <div>
+        <Typography className={classes.heading}>Token Gating</Typography>
 
         {isAdminUser && fetchedDetails?.tokenA?.length ? (
           <div
             onClick={async () => {
               try {
                 setLoading(true);
-                await disableTokenGating(daoAddress);
+                await disableTokenGating();
                 await fetchTokenGatingDetails();
                 setFetchedDetails({
                   tokenA: "",
@@ -329,37 +329,7 @@ const TokenGating = ({ daoAddress }) => {
         />
       )}
 
-      <Backdrop sx={{ color: "#fff", zIndex: 1000 }} open={loading}>
-        <CircularProgress />
-      </Backdrop>
-
-      {showMessage && isTokenGatingSuccessfull && (
-        <Alert
-          severity="success"
-          sx={{
-            width: "250px",
-            position: "fixed",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          Token Gating Successfull
-        </Alert>
-      )}
-
-      {showMessage && !isTokenGatingSuccessfull && (
-        <Alert
-          severity="error"
-          sx={{
-            width: "250px",
-            position: "fixed",
-            bottom: "30px",
-            right: "20px",
-            borderRadius: "8px",
-          }}>
-          Token Gating Failed
-        </Alert>
-      )}
+      <BackdropLoader isOpen={loading} />
     </div>
   );
 };

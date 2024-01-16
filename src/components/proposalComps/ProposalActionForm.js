@@ -1,16 +1,10 @@
-import {
-  MenuItem,
-  OutlinedInput,
-  Select,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Stack } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useNetwork } from "wagmi";
 import { csvToObjectForMintGT } from "utils/helper";
 import React, { useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { CHAIN_CONFIG, proposalActionCommands } from "utils/constants";
+import { CHAIN_CONFIG } from "utils/constants";
 import { proposalFormData } from "utils/proposalData";
 import Web3 from "web3";
 
@@ -47,13 +41,33 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
 
   let filteredTokens = [];
-  tokenData.map((token) => {
+  tokenData?.map((token) => {
     if (
       token.address === CHAIN_CONFIG[networkId].nativeToken ||
       Web3.utils.toChecksumAddress(token.address) ===
         CHAIN_CONFIG[networkId].usdcAddress
     ) {
       filteredTokens.push(token);
+    }
+  });
+
+  let stargateFilteredTokens = [];
+  tokenData?.map((token) => {
+    if (
+      CHAIN_CONFIG[networkId]?.stargateStakingAddresses?.includes(token.address)
+    ) {
+      stargateFilteredTokens.push(token);
+    }
+  });
+
+  let stargateUnstakeFilteredTokens = [];
+  tokenData?.map((token) => {
+    if (
+      CHAIN_CONFIG[networkId]?.stargateUnstakingAddresses?.includes(
+        token.address,
+      )
+    ) {
+      stargateUnstakeFilteredTokens.push(token);
     }
   });
 
@@ -82,8 +96,14 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
           setLoadingCsv(false);
         } else {
           const { addresses, amounts } = csvToObjectForMintGT(csvData);
-          formik.values.mintGTAmounts = amounts;
-          formik.values.mintGTAddresses = addresses;
+          if (formik.values.actionCommand === 21) {
+            formik.values.sendTokenAmounts = amounts;
+            formik.values.sendTokenAddresses = addresses;
+          } else {
+            formik.values.mintGTAmounts = amounts;
+            formik.values.mintGTAddresses = addresses;
+          }
+
           setLoadingCsv(false);
         }
       };
@@ -91,95 +111,7 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
   };
 
   return (
-    <Stack sx={{ marginTop: "1rem" }}>
-      <Typography variant="proposalBody">
-        Choose a command for this proposal to execute
-      </Typography>
-      <Select
-        displayEmpty
-        value={formik.actionCommand}
-        onChange={(e) => {
-          const selectedValue = e.target.value;
-          const selectedKey = Object.keys(proposalActionCommands).find(
-            (key) => proposalActionCommands[key] === selectedValue,
-          );
-          formik.setFieldValue("actionCommand", Number(selectedKey));
-        }}
-        input={<OutlinedInput />}
-        renderValue={(selected) => {
-          if (!selected) {
-            return "Select a command";
-          }
-          return selected;
-        }}
-        style={{
-          borderRadius: "10px",
-          background: "#0F0F0F 0% 0% no-repeat padding-box",
-          width: "100%",
-          marginTop: "0.5rem",
-        }}
-        error={
-          formik.touched.actionCommand && Boolean(formik.errors.actionCommand)
-        }
-        helperText={
-          formik.touched.actionCommand && formik.errors.actionCommand
-        }>
-        <MenuItem key={0} value="Distribute token to members">
-          Distribute token to members
-        </MenuItem>
-
-        <MenuItem key={1} value="Mint club token">
-          Mint club token
-        </MenuItem>
-
-        {isGovernanceActive ? (
-          <MenuItem key={2} value="Update governance settings">
-            Update governance settings
-          </MenuItem>
-        ) : null}
-        {tokenType !== "erc721" ? (
-          <MenuItem key={3} value="Change total raise amount">
-            Change total raise amount
-          </MenuItem>
-        ) : null}
-
-        <MenuItem key={4} value="Send token to an address">
-          Send token to an address
-        </MenuItem>
-        <MenuItem key={5} value="Send nft to an address">
-          Send nft to an address
-        </MenuItem>
-        <MenuItem key={6} value="Add signer">
-          Add signer
-        </MenuItem>
-        <MenuItem key={7} value="Remove signer">
-          Remove signer
-        </MenuItem>
-        <MenuItem key={8} value="Buy nft">
-          Buy nft
-        </MenuItem>
-        {/* <MenuItem key={9} value="Sell nft">
-          Sell nft
-        </MenuItem> */}
-        <MenuItem key={10} value="Whitelist deposit">
-          Whitelist Deposit
-        </MenuItem>
-        <MenuItem key={11} value="Whitelist with lens followers">
-          Whitelist with lens followers
-        </MenuItem>
-        <MenuItem key={12} value="Whitelist with lens post's comments">
-          Whitelist with lens post&apos;s comments
-        </MenuItem>
-        <MenuItem key={13} value="Update price per token">
-          Update price per token
-        </MenuItem>
-        <MenuItem key={14} value="Deposit tokens in AAVE pool">
-          Deposit tokens in AAVE pool
-        </MenuItem>
-        <MenuItem key={15} value="Withdraw tokens from AAVE pool">
-          Withdraw tokens from AAVE pool
-        </MenuItem>
-      </Select>
+    <Stack>
       {proposalFormData({
         formik,
         tokenData,
@@ -190,7 +122,12 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         hiddenFileInput,
         file,
         nftData,
-        filteredTokens,
+        filteredTokens:
+          formik.values.actionCommand === 17
+            ? stargateFilteredTokens
+            : formik.values.actionCommand === 18
+            ? stargateUnstakeFilteredTokens
+            : filteredTokens,
       })}
     </Stack>
   );

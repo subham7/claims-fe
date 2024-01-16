@@ -33,6 +33,7 @@ yarn-error.log*
 
 # vercel
 .vercel
+.env
 
 package-lock.json
 
@@ -41,3 +42,12 @@ yarn.local
 yarn.lock
 
 .eslintcache
+
+# Sentry Config File
+.sentryclirc
+
+# Sentry Config File
+.sentryclirc
+
+# Sentry Config File
+.sentryclirc

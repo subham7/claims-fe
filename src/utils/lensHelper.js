@@ -4,6 +4,8 @@ const {
   fetchProfileByHandle,
   fetchProfileFollowers,
   fetchCommentsProfileByPost,
+  fetchMirrorsProfileByPost,
+  fetchHandleByAddress,
 } = require("api/lens");
 const { apolloClient } = require("../../pages/_app");
 
@@ -38,33 +40,81 @@ export const handleFetchFollowers = async (profileId) => {
   }
 };
 
-export const handleFetchCommentAddresses = async (postLink) => {
+export const fetchLensActionAddresses = async ({ postLink, action }) => {
   try {
     const postId = extractPartFromUrl(postLink);
 
+    let userArray = [];
+
+    if (action === "comment") {
+      const { data } = await apolloClient.query({
+        query: fetchCommentsProfileByPost,
+        variables: {
+          request: {
+            commentsOf: postId,
+          },
+        },
+      });
+
+      if (!data?.publications?.items.length) {
+        throw new Error("No comments found!");
+      }
+
+      data?.publications?.items.map((user) => {
+        userArray.push(user?.profile?.ownedBy);
+      });
+
+      if (userArray === undefined || !userArray.length) {
+        throw new Error("No Comments found");
+      }
+    }
+
+    if (action === "mirror") {
+      const { data } = await apolloClient.query({
+        query: fetchMirrorsProfileByPost,
+        variables: {
+          request: {
+            whoMirroredPublicationId: postId,
+            limit: 50,
+          },
+        },
+      });
+
+      if (!data?.profiles?.items.length) {
+        throw new Error("No comments found!");
+      }
+
+      data?.profiles?.items.map((user) => {
+        userArray.push(user?.ownedBy);
+      });
+
+      if (userArray === undefined || !userArray.length) {
+        throw new Error("No Comments found");
+      }
+    }
+
+    return userArray;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+export const getDefaultProfile = async (walletAddress) => {
+  try {
     const { data } = await apolloClient.query({
-      query: fetchCommentsProfileByPost,
+      query: fetchHandleByAddress,
       variables: {
         request: {
-          commentsOf: postId,
+          ownedBy: walletAddress,
         },
       },
     });
 
-    if (!data?.publications?.items.length) {
-      throw new Error("No comments found!");
+    if (!data?.profiles?.items.length) {
+      return;
     }
 
-    let userArray = [];
-    data?.publications?.items.map((user) => {
-      userArray.push(user?.profile?.ownedBy);
-    });
-
-    if (userArray === undefined || !userArray.length) {
-      throw new Error("No Comments found");
-    }
-
-    return userArray;
+    return data?.profiles?.items;
   } catch (error) {
     throw new Error(error);
   }

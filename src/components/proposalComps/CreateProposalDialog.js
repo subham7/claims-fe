@@ -1,37 +1,37 @@
-import {
-  Alert,
-  CircularProgress,
-  Dialog,
-  DialogContent,
-  FormControl,
-  FormHelperText,
-  Grid,
-  IconButton,
-  MenuItem,
-  Select,
-  Snackbar,
-  Stack,
-  Typography,
-} from "@mui/material";
-import { Button, TextField } from "@components/ui";
+import { CircularProgress, Grid, Stack, Typography } from "@mui/material";
+import { Button } from "@components/ui";
 import { makeStyles } from "@mui/styles";
 import { useFormik } from "formik";
-import React, { useState } from "react";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import React, { useCallback, useEffect, useState } from "react";
 import dayjs from "dayjs";
-import QuillEditor from "../quillEditor";
-import DeleteIcon from "@mui/icons-material/Delete";
 import ProposalActionForm from "./ProposalActionForm";
 import { createProposal } from "../../api/proposal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useAccount, useNetwork } from "wagmi";
 import { getProposalCommands } from "utils/proposalData";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { getProposalValidationSchema } from "@components/createClubComps/ValidationSchemas";
+import useAppContractMethods from "hooks/useAppContractMethods";
+import CommonProposalForm from "./CommonProposalForm";
+import SurveyProposalForm from "./SurveyProposalForm";
+import { getPublicClient } from "utils/viemConfig";
+import { handleSignMessage } from "utils/helper";
+import { setAlertData } from "redux/reducers/alert";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import { useRouter } from "next/router";
+import { proposalActionCommands } from "utils/proposalConstants";
+import { getNFTsByDaoAddress } from "api/assets";
+import { getUserTokenData } from "utils/helper";
+import { getTokensList } from "api/token";
+import { addNftsOwnedByDao } from "redux/reducers/club";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const useStyles = makeStyles({
+  main: {
+    display: "flex",
+    paddingLeft: "2rem",
+    paddingRight: "2rem",
+  },
   modalStyle: {
     width: "792px",
     backgroundColor: "#151515",
@@ -44,23 +44,26 @@ const useStyles = makeStyles({
   },
   textField: {
     width: "100%",
-    // margin: "16px 0 25px 0",
     fontSize: "18px",
-
     marginTop: "0.5rem",
+  },
+  leftDiv: {
+    width: "50%",
+  },
+  rightDiv: {
+    width: "50%",
+    height: "80vh",
+    overflowY: "auto",
   },
 });
 
-const CreateProposalDialog = ({
-  open,
-  setOpen,
-  onClose,
-  tokenData,
-  nftData,
-  daoAddress,
-  fetchProposalList,
-}) => {
+const CreateProposalDialog = ({ daoAddress }) => {
   const classes = useStyles();
+  const router = useRouter();
+  const [nftData, setNftData] = useState([]);
+  const [tokenData, setTokenData] = useState([]);
+
+  let { executionId } = router.query;
 
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
@@ -73,42 +76,90 @@ const CreateProposalDialog = ({
   const clubData = useSelector((state) => {
     return state.club.clubData;
   });
+  const dispatch = useDispatch();
+
+  const { getERC20TotalSupply, getNftOwnersCount } = useAppContractMethods({
+    daoAddress,
+  });
 
   const [loaderOpen, setLoaderOpen] = useState(false);
-  const [openSnackBar, setOpenSnackBar] = useState(false);
-  const [failed, setFailed] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-
-  const handleSnackBarClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnackBar(false);
-    setLoaderOpen(false);
-  };
 
   const { getBalance, getDecimals } = useCommonContractMethods();
 
   const factoryData = useSelector((state) => {
     return state.club.factoryData;
   });
+
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
 
+  const isGovernanceERC20 = useSelector((state) => {
+    return state.club.erc20ClubDetails.isGovernanceActive;
+  });
+
+  const isGovernanceERC721 = useSelector((state) => {
+    return state.club.erc721ClubDetails.isGovernanceActive;
+  });
+
+  const isGovernanceActive =
+    tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
+
+  const fetchLatestBlockNumber = async () => {
+    const publicClient = getPublicClient(networkId);
+    const block = Number(await publicClient.getBlockNumber());
+
+    return block;
+  };
+
+  const fetchTokens = useCallback(async () => {
+    if (daoAddress && gnosisAddress && networkId) {
+      const tokensList = await getTokensList(
+        CHAIN_CONFIG[networkId].covalentNetworkName,
+        gnosisAddress,
+      );
+      const data = await getUserTokenData(
+        tokensList?.data?.items,
+        networkId,
+        true,
+      );
+
+      setTokenData(data?.filter((token) => token.symbol !== null));
+    }
+  }, [daoAddress, networkId, gnosisAddress]);
+
+  const fetchNfts = useCallback(async () => {
+    try {
+      const nftsData = await getNFTsByDaoAddress(gnosisAddress, networkId);
+      setNftData(nftsData.data?.items);
+      dispatch(addNftsOwnedByDao(nftsData.data?.items));
+    } catch (error) {
+      console.log(error);
+    }
+  }, [networkId, dispatch, gnosisAddress]);
+
+  useEffect(() => {
+    if (daoAddress) {
+      fetchTokens();
+      fetchNfts();
+    }
+  }, [daoAddress, fetchNfts, fetchTokens]);
+
   const proposal = useFormik({
     initialValues: {
       tokenType: tokenType,
-      typeOfProposal: "action",
+      typeOfProposal: executionId === "survey" ? "survey" : "action",
       proposalDeadline: dayjs(Date.now() + 3600 * 1000 * 24),
       proposalTitle: "",
       proposalDescription: "",
+      blockNum: "",
       optionList: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
-      actionCommand: "",
+      actionCommand: executionId === "survey" ? "" : Number(executionId),
       airdropToken: tokenData ? tokenData[0]?.address : "",
       amountToAirdrop: 0,
       carryFee: 0,
       pricePerToken: 0,
+      nftSupply: 0,
       quorum: 0,
       threshold: 0,
       totalDeposit: 0,
@@ -130,6 +181,17 @@ const CreateProposalDialog = ({
       aaveDepositAmount: 0,
       aaveWithdrawAmount: 0,
       aaveWithdrawToken: tokenData ? tokenData[0]?.address : "",
+      uniswapSwapToken: tokenData ? tokenData[0]?.address : "",
+      uniswapRecieverToken: "",
+      uniswapSwapAmount: 0,
+      stargateStakeToken: "",
+      stargateStakeAmount: 0,
+      stargateUnstakeToken: "",
+      stargateUnstakeAmount: 0,
+      sendToken: "",
+      csvObject: [],
+      sendTokenAddresses: [],
+      sendTokenAmounts: [],
     },
     validationSchema: getProposalValidationSchema({
       networkId,
@@ -137,6 +199,11 @@ const CreateProposalDialog = ({
       getDecimals,
       gnosisAddress,
       factoryData,
+      walletAddress,
+      daoAddress,
+      getERC20TotalSupply,
+      getNftOwnersCount,
+      tokenType,
     }),
     onSubmit: async (values) => {
       try {
@@ -156,325 +223,124 @@ const CreateProposalDialog = ({
           usdcTokenDecimal: 6,
           usdcGovernanceTokenDecimal: 18,
         };
-
+        const blockNum = await fetchLatestBlockNumber();
         const payload = {
           clubId: daoAddress,
           name: values.proposalTitle,
-          description: values.proposalDescription,
           createdBy: walletAddress,
           votingDuration: dayjs(values.proposalDeadline).unix(),
           votingOptions: values.optionList,
-          commands: [commands],
+          commands: [values.typeOfProposal !== "survey" ? commands : null],
           type: values.typeOfProposal,
           tokenType: clubData.tokenType,
           daoAddress: daoAddress,
+          block:
+            values.blockNum !== undefined &&
+            values.blockNum !== null &&
+            values.blockNum.length > 0
+              ? values.blockNum
+              : Number(blockNum),
+          // quorum: Number(clubData.quorum),
+          // threshold: Number(clubData.threshold),
+          networkId: networkId,
         };
-
-        const createRequest = createProposal(payload, networkId);
+        const { signature } = await handleSignMessage(
+          walletAddress,
+          JSON.stringify(payload),
+        );
+        const createRequest = createProposal(isGovernanceActive, {
+          ...payload,
+          description: values.proposalDescription,
+          signature,
+        });
         createRequest.then(async (result) => {
           if (result.status !== 201) {
-            setOpenSnackBar(true);
-            setFailed(true);
             setLoaderOpen(false);
+            dispatch(
+              setAlertData({
+                open: true,
+                message: "Proposal creation failed!",
+                severity: "error",
+              }),
+            );
           } else {
-            fetchProposalList();
-            setOpenSnackBar(true);
-            setFailed(false);
-            setOpen(false);
+            dispatch(
+              setAlertData({
+                open: true,
+                message: "Proposal created successfully!",
+                severity: "success",
+              }),
+            );
             setLoaderOpen(false);
+            router.back();
           }
         });
       } catch (error) {
-        setErrorMessage(error.message ?? error);
         setLoaderOpen(false);
-        setOpenSnackBar(true);
-        setFailed(true);
+        dispatch(
+          setAlertData({
+            open: true,
+            message: "Proposal creation failed!",
+            severity: "error",
+          }),
+        );
       }
     },
   });
 
   return (
-    <>
-      <Dialog
-        open={open}
-        onClose={onClose}
-        scroll="body"
-        PaperProps={{ classes: { root: classes.modalStyle } }}
-        fullWidth
-        maxWidth="lg">
-        <DialogContent
-          sx={{
-            overflow: "hidden",
-            backgroundColor: "#151515",
-            padding: "3rem",
-          }}>
-          <form onSubmit={proposal.handleSubmit} className={classes.form}>
-            {/* <Grid container>
-            <Grid item m={3}> */}
-            <Typography className={classes.dialogBox}>
-              Create proposal
+    <div className={classes.main}>
+      <div className={classes.leftDiv}>
+        <Grid
+          container
+          spacing={1}
+          ml={-4}
+          mb={2}
+          onClick={() => router.back()}>
+          <Grid item sx={{ "&:hover": { cursor: "pointer" } }}>
+            <KeyboardBackspaceIcon className={classes.listFont} />
+          </Grid>
+          <Grid item sx={{ "&:hover": { cursor: "pointer" } }}>
+            <Typography className={classes.listFont}>
+              Back to all proposals
             </Typography>
-            {/* </Grid>
-          </Grid> */}
+          </Grid>
+        </Grid>
+        <Typography variant="h5">
+          {executionId === "survey"
+            ? "Create a survey proposal"
+            : proposalActionCommands[executionId]}
+        </Typography>
+      </div>
+      <div className={classes.rightDiv}>
+        <form onSubmit={proposal.handleSubmit} className={classes.form}>
+          <CommonProposalForm proposal={proposal} />
 
-            {/* type of proposal and end time */}
-            <Grid container spacing={3} ml={0} width="100%">
-              <Grid item md={6} sx={{ paddingLeft: "0 !important" }}>
-                <Typography variant="proposalBody">Type of Proposal</Typography>
-                <FormControl sx={{ width: "100%", marginTop: "0.5rem" }}>
-                  <Select
-                    value={proposal.values.typeOfProposal}
-                    onChange={proposal.handleChange}
-                    inputProps={{ "aria-label": "Without label" }}
-                    name="typeOfProposal"
-                    id="typeOfProposal">
-                    <MenuItem value={"survey"}>Survey</MenuItem>
-                    <MenuItem value={"action"}>Action</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item md={6}>
-                <Typography variant="proposalBody">
-                  Proposal deadline
-                </Typography>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DateTimePicker
-                    fullWidth
-                    sx={{
-                      width: "100%",
-                      marginTop: "0.5rem",
-                    }}
-                    value={proposal.values.proposalDeadline}
-                    minDateTime={dayjs(Date.now())}
-                    onChange={(value) => {
-                      proposal.setFieldValue("proposalDeadline", value);
-                    }}
-                  />
-                </LocalizationProvider>
-              </Grid>
-            </Grid>
-
-            {/* proposal title */}
-            <Grid
-              container
-              direction={"column"}
-              ml={3}
-              mt={2}
-              sx={{ marginLeft: "0 !important" }}>
-              <Typography variant="proposalBody">Proposal Title*</Typography>
-
-              <TextField
-                variant="outlined"
-                placeholder="Add a one liner title here"
-                name="proposalTitle"
-                id="proposalTitle"
-                value={proposal.values.proposalTitle}
-                onChange={proposal.handleChange}
-                error={
-                  proposal.touched.proposalTitle &&
-                  Boolean(proposal.errors.proposalTitle)
-                }
-                helperText={
-                  proposal.touched.proposalTitle &&
-                  proposal.errors.proposalTitle
-                }
+          {/* proposal forms */}
+          {proposal.values.typeOfProposal === "survey" ? (
+            <Stack mt={1}>
+              <SurveyProposalForm proposal={proposal} />
+            </Stack>
+          ) : (
+            <Stack>
+              <ProposalActionForm
+                formik={proposal}
+                tokenData={tokenData}
+                nftData={nftData}
               />
+            </Stack>
+          )}
+
+          <Grid container mt={2} spacing={3}>
+            <Grid item>
+              <Button type="submit">
+                {loaderOpen ? <CircularProgress size={25} /> : "Submit"}
+              </Button>
             </Grid>
-
-            {/* proposal description */}
-            <Grid
-              container
-              direction={"column"}
-              ml={3}
-              mt={2}
-              sx={{ marginLeft: "0 !important" }}>
-              <Typography variant="proposalBody">
-                Proposal Description*
-              </Typography>
-
-              <QuillEditor
-                //   onChange={setDescription}
-                multiline
-                rows={10}
-                placeholder="Add full description here"
-                style={{
-                  width: "100%",
-                  height: "auto",
-                  backgroundColor: "#0f0f0f",
-                  fontSize: "18px",
-                  margin: "0.5rem 0",
-                }}
-                name="proposalDescription"
-                id="proposalDescription"
-                value={proposal.values.proposalDescription}
-                onChange={(value) =>
-                  proposal.setFieldValue("proposalDescription", value)
-                }
-                error={
-                  proposal.touched.proposalDescription &&
-                  Boolean(proposal.errors.proposalDescription)
-                }
-                helperText={
-                  proposal.touched.proposalDescription &&
-                  proposal.errors.proposalDescription
-                }
-              />
-              {proposal.touched.proposalDescription &&
-                Boolean(proposal.errors.proposalDescription) && (
-                  <FormHelperText
-                    error
-                    focused
-                    mt={10}
-                    sx={{ marginLeft: "1rem" }}>
-                    Description is required
-                  </FormHelperText>
-                )}
-            </Grid>
-
-            {/* add options button */}
-            {proposal.values.typeOfProposal === "survey" ? (
-              <>
-                <Stack mt={1}>
-                  {proposal.values.optionList?.length > 0 ? (
-                    <Grid
-                      container
-                      mt={2}
-                      mb={2}
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                      }}>
-                      {proposal.values.optionList.map((data, key) => {
-                        return (
-                          <Grid
-                            item
-                            xs
-                            sx={{
-                              display: "flex",
-                              justifyContent: "flex-start",
-                              alignItems: "center",
-                            }}
-                            key={key}>
-                            <TextField
-                              label="Options"
-                              // error={!/^0x[a-zA-Z0-9]+/gm.test(addressList[key])}
-                              variant="outlined"
-                              value={proposal.values.optionList[key].text}
-                              onChange={(e, value) => {
-                                const option = e.target.value;
-                                const list = [...proposal.values.optionList];
-                                list[key].text = option;
-                                proposal.setFieldValue("optionList", list);
-                              }}
-                              placeholder={"yes, no"}
-                              sx={{
-                                m: 1,
-                                mt: 1,
-                                borderRadius: "10px",
-                              }}
-                              error={
-                                Boolean(proposal.errors.optionList)
-                                  ? proposal.touched.optionList &&
-                                    Boolean(proposal?.errors?.optionList[key])
-                                  : null
-                              }
-                              helperText={
-                                Boolean(proposal.errors.optionList)
-                                  ? proposal.touched.optionList &&
-                                    proposal?.errors?.optionList[key]
-                                  : null
-                              }
-                            />
-                            <IconButton
-                              aria-label="add"
-                              disabled={
-                                proposal.values.optionList.indexOf(
-                                  proposal.values.optionList[key],
-                                ) < 2
-                              }
-                              onClick={(value) => {
-                                const list = [...proposal.values.optionList];
-                                list.splice(key, 1);
-                                proposal.setFieldValue("optionList", list);
-                              }}>
-                              <DeleteIcon />
-                            </IconButton>
-                          </Grid>
-                        );
-                      })}
-                    </Grid>
-                  ) : null}
-                  <Button
-                    onClick={(value) => {
-                      proposal.setFieldValue("optionList", [
-                        ...proposal.values.optionList,
-                        { text: "" },
-                      ]);
-                    }}>
-                    Add Option
-                  </Button>
-                </Stack>
-              </>
-            ) : (
-              <Stack>
-                <ProposalActionForm
-                  formik={proposal}
-                  tokenData={tokenData}
-                  nftData={nftData}
-                />
-              </Stack>
-            )}
-
-            {/* Submit Button */}
-            <Grid container mt={2} spacing={3}>
-              <Grid
-                item
-                xs
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  alignItems: "center",
-                }}>
-                <Button
-                  onClick={() => {
-                    proposal.resetForm();
-                    setLoaderOpen(false);
-                    onClose(event, "cancel");
-                  }}>
-                  Cancel
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button type="submit">
-                  {loaderOpen ? <CircularProgress size={25} /> : "Submit"}
-                </Button>
-              </Grid>
-            </Grid>
-          </form>
-        </DialogContent>
-      </Dialog>
-      <Snackbar
-        open={openSnackBar}
-        autoHideDuration={6000}
-        onClose={handleSnackBarClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
-        {!failed ? (
-          <Alert
-            onClose={handleSnackBarClose}
-            severity="success"
-            sx={{ width: "100%" }}>
-            Proposal Successfully created!
-          </Alert>
-        ) : (
-          <Alert
-            onClose={handleSnackBarClose}
-            severity="error"
-            sx={{ width: "100%" }}>
-            {errorMessage ? errorMessage : "Proposal creation failed!"}
-          </Alert>
-        )}
-      </Snackbar>
-    </>
+          </Grid>
+        </form>
+      </div>
+    </div>
   );
 };
 

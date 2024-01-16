@@ -1,3 +1,4 @@
+import { useTheme } from "@mui/styles";
 import React, { useState } from "react";
 import { IoIosArrowForward } from "react-icons/io";
 import AddMoreTokenModal from "../claimsModals/AddMoreTokenModal";
@@ -14,7 +15,8 @@ const ClaimEdit = ({
   startTime,
   hasAllowanceMechanism,
 }) => {
-  const classes = ClaimsInsightStyles();
+  const theme = useTheme();
+  const classes = ClaimsInsightStyles(theme);
 
   const [showAddMoreTokensModal, setShowAddMoreTokensModal] = useState(false);
   const [showRollbackTokensModal, setShowRollbackTokensModal] = useState(false);

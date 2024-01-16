@@ -11,15 +11,14 @@ export default function ERC20Step2(props) {
 
   return (
     <>
-      <div className="f-d f-vt t-pad-d">
+      <div className="f-d f-vt t-pad-d w-100">
         <Typography variant="body" className="text-blue">
           Set deposit rules for members
         </Typography>
 
-        <Typography variant="info" className="text-darkblue tb-pad-1">
-          Members automatically receive pro-rata tokens after depositing to join
-          this Station. Any new deposits will not be accepted after the last
-          date and/or funding target is met.
+        <Typography variant="info" className="text-light-gray tb-pad-1">
+          Community members will receive membership token(s) when they join this
+          station.
         </Typography>
 
         <Card>

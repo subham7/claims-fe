@@ -1,26 +1,12 @@
-import { makeStyles } from "@mui/styles";
+import { makeStyles, useTheme } from "@mui/styles";
 import { IoMdClose } from "react-icons/io";
 import React from "react";
+import BackdropLoader from "@components/common/BackdropLoader";
 
-const Backdrop = () => {
-  const classes = useStyles();
-  return <div className={classes.backdrop}></div>;
-};
-
-const useStyles = makeStyles({
-  backdrop: {
-    position: "fixed",
-    height: "100vh",
-    width: "100vw",
-    top: 0,
-    left: 0,
-    background: "#000000",
-    opacity: 0.6,
-    zIndex: 2000,
-  },
+const useStyles = makeStyles((theme) => ({
   modal: {
     width: "900px",
-    background: "#0F0F0F",
+    background: theme.palette.background.default,
     // border: "1px solid #6475A3",
     position: "fixed",
     top: "50%",
@@ -41,31 +27,33 @@ const useStyles = makeStyles({
     right: "1rem",
     cursor: "pointer",
   },
-});
+}));
 
 const VideoModal = ({ onClose }) => {
-  const classes = useStyles();
+  const theme = useTheme();
+  const classes = useStyles(theme);
 
   return (
     <>
-      <Backdrop />
-      <div className={classes.modal}>
-        <IoMdClose
-          onClick={onClose}
-          className={classes.icon}
-          size={20}
-          color="white"
-        />
+      <BackdropLoader isOpen={true} showLoading={false}>
+        <div className={classes.modal}>
+          <IoMdClose
+            onClick={onClose}
+            className={classes.icon}
+            size={20}
+            color="white"
+          />
 
-        <iframe
-          width="800px"
-          height="500px"
-          src="https://www.youtube.com/embed/WwIGpRWwyAk"
-          title="YouTube video player"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowfullscreen></iframe>
-      </div>
+          <iframe
+            width="800px"
+            height="500px"
+            src="https://www.youtube.com/embed/WwIGpRWwyAk"
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen></iframe>
+        </div>
+      </BackdropLoader>
     </>
   );
 };

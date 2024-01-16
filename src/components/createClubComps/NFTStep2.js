@@ -37,11 +37,13 @@ export default function NFTStep2(props) {
 
   return (
     <div className="f-d f-vt tb-pad-2 w-100">
-      <Typography variant="heading">Set Token Rules</Typography>
+      <Typography variant="body" className="text-blue">
+        Set deposit rules for members
+      </Typography>
 
-      <Typography variant="body" className="text-blue tb-pad-1">
-        All parameters (except token name, symbol & art) are modifiable later by
-        raising proposals.
+      <Typography variant="info" className="text-light-gray tb-pad-1">
+        Community members will receive membership token(s) when they join this
+        station.
       </Typography>
 
       <Typography variant="body" className="text-blue">
@@ -54,7 +56,7 @@ export default function NFTStep2(props) {
           <div className="f-d f-vt tb-pad-2">
             <Typography variant="body">Upload Image</Typography>
 
-            <div className="f-d tb-pad-1">
+            <div className="f-d tb-pad-1" style={{ gap: "16px" }}>
               <Button variant="normal" onClick={generateRandomNFTImage}>
                 Generate random
               </Button>
@@ -82,7 +84,7 @@ export default function NFTStep2(props) {
               />
             </div>
 
-            <Typography variant="info" className="text-darkblue">
+            <Typography variant="info" className="text-light-gray">
               This image can’t be changed after your station is created.
             </Typography>
           </div>
@@ -180,37 +182,6 @@ export default function NFTStep2(props) {
       </Card>
 
       <br />
-      {/* max mints allowed per wallet input */}
-      <Card>
-        <div className="f-d f-v-c f-h-sb">
-          <div>
-            <Typography variant="body">
-              Max. mints allowed per wallet
-            </Typography>
-          </div>
-          <div className="w-50">
-            <TextField
-              name="maxTokensPerUser"
-              type="number"
-              label="Eg: 100"
-              variant="outlined"
-              onChange={props.formik.handleChange}
-              onBlur={props.formik.handleBlur}
-              value={props.formik.values.maxTokensPerUser}
-              error={
-                props.formik.touched.maxTokensPerUser &&
-                Boolean(props.formik.errors.maxTokensPerUser)
-              }
-              helperText={
-                props.formik.touched.maxTokensPerUser &&
-                props.formik.errors.maxTokensPerUser
-              }
-              onWheel={(event) => event.target.blur()}
-            />
-          </div>
-        </div>
-      </Card>
-      <br />
       {/* limit token supply input */}
       <Card>
         <div className="f-d f-v-c f-h-sb">
@@ -270,6 +241,38 @@ export default function NFTStep2(props) {
         </>
       )}
 
+      {/* max mints allowed per wallet input */}
+      <Card>
+        <div className="f-d f-v-c f-h-sb">
+          <div>
+            <Typography variant="body">
+              Max. mints allowed per wallet
+            </Typography>
+          </div>
+          <div className="w-50">
+            <TextField
+              name="maxTokensPerUser"
+              type="number"
+              label="Eg: 100"
+              variant="outlined"
+              onChange={props.formik.handleChange}
+              onBlur={props.formik.handleBlur}
+              value={props.formik.values.maxTokensPerUser}
+              error={
+                props.formik.touched.maxTokensPerUser &&
+                Boolean(props.formik.errors.maxTokensPerUser)
+              }
+              helperText={
+                props.formik.touched.maxTokensPerUser &&
+                props.formik.errors.maxTokensPerUser
+              }
+              onWheel={(event) => event.target.blur()}
+            />
+          </div>
+        </div>
+      </Card>
+      <br />
+
       <Card>
         <div className="f-d f-v-c f-h-sb">
           <Typography variant="body">Last date to close deposits</Typography>
@@ -286,7 +289,7 @@ export default function NFTStep2(props) {
       </Card>
 
       <br />
-      <Typography variant="info" className="text-darkblue">
+      <Typography variant="info" className="text-light-gray">
         If you don’t limit the supply of your club token, your supply will be
         unlimited until the date deposits are open.
       </Typography>

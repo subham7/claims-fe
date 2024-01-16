@@ -8,41 +8,49 @@ import {
   BLOCK_TIMEOUT,
   CHAIN_CONFIG,
   contractNetworks,
+  supportedChainsDrops,
 } from "./constants";
 import { getPublicClient, getWalletClient } from "utils/viemConfig";
+import { uploadToAWS } from "api/club";
+import { baseLinks } from "data/dashboard";
+import SafeApiKit from "@safe-global/api-kit";
 
-export const getCustomSafeSdk = async (
+export const getSafeSdk = async (
   gnosisAddress,
   walletAddress,
+  gnosisTransactionUrl,
   networkId,
 ) => {
-  const web3 = await web3InstanceCustomRPC(networkId);
-  const ethAdapter = new Web3Adapter({
-    web3,
-    signerAddress: walletAddress,
-  });
-  const safeSdk = await Safe.create({
-    ethAdapter,
-    safeAddress: gnosisAddress,
-    contractNetworks,
-  });
+  try {
+    const web3 = networkId
+      ? await web3InstanceCustomRPC(networkId)
+      : await web3InstanceEthereum();
 
-  return safeSdk;
-};
+    const ethAdapter = new Web3Adapter({
+      web3,
+      signerAddress: walletAddress,
+    });
 
-export const getSafeSdk = async (gnosisAddress, walletAddress, networkId) => {
-  const web3 = await web3InstanceEthereum();
-  const ethAdapter = new Web3Adapter({
-    web3,
-    signerAddress: walletAddress,
-  });
-  const safeSdk = await Safe.create({
-    ethAdapter,
-    safeAddress: gnosisAddress,
-    contractNetworks,
-  });
+    const safeSdk = gnosisAddress
+      ? await Safe.create({
+          ethAdapter,
+          safeAddress: gnosisAddress,
+          contractNetworks,
+        })
+      : null;
 
-  return safeSdk;
+    const safeService = gnosisTransactionUrl
+      ? new SafeApiKit({
+          txServiceUrl: gnosisTransactionUrl,
+          ethAdapter,
+        })
+      : null;
+
+    return { safeSdk, safeService };
+  } catch (e) {
+    console.error(e);
+    return {};
+  }
 };
 
 export const getIncreaseGasPrice = async (networkId = "0x89") => {
@@ -119,18 +127,16 @@ export function returnRemainingTime(epochTime) {
     : 0;
 }
 
-export const showWrongNetworkModal = (
-  walletAddress,
-  networkId,
-  routeNetworkId,
-) => {
-  if (routeNetworkId && routeNetworkId !== networkId) {
+export const showWrongNetworkModal = (networkId, routeNetworkId) => {
+  if (
+    (routeNetworkId &&
+      routeNetworkId !== networkId &&
+      routeNetworkId !== "create" &&
+      routeNetworkId !== "disburse") ||
+    !supportedChainsDrops.includes(networkId)
+  ) {
     return <WrongNetworkModal chainId={routeNetworkId} />;
   }
-
-  return walletAddress && !CHAIN_CONFIG[networkId] ? (
-    <WrongNetworkModal />
-  ) : null;
 };
 
 export const getAllEntities = async (
@@ -195,21 +201,21 @@ export const extractNftAdressAndId = (url) => {
 export const getUserTokenData = async (
   tokenData,
   networkId,
-  isProposal = false,
+  allowNative = false,
 ) => {
-  const filteredData = !isProposal
+  const filteredData = !allowNative
     ? tokenData.filter(
         (token) =>
           token.contract_address !== CHAIN_CONFIG[networkId].nativeToken,
       )
     : tokenData;
 
-  return filteredData.map((token) => {
+  return filteredData?.map((token) => {
     return {
       balance: token.balance,
-      address: token.contract_address,
-      decimals: token.contract_decimals,
-      symbol: token.contract_ticker_symbol,
+      address: token.contract_address || token.contractAddress,
+      decimals: token.contract_decimals || token.decimals,
+      symbol: token.contract_ticker_symbol || token.symbol,
     };
   });
 };
@@ -236,7 +242,6 @@ export const writeContractFunction = async ({
       functionName,
       args,
       account,
-      // gasPrice: await getIncreaseGasPrice(networkId),
     });
 
     const txHash = await walletClient.writeContract(request);
@@ -250,6 +255,27 @@ export const writeContractFunction = async ({
   } catch (error) {
     throw error;
   }
+};
+
+export const readContractFunction = async ({
+  address,
+  abi,
+  functionName,
+  args,
+  account,
+  networkId,
+}) => {
+  const publicClient = getPublicClient(networkId);
+
+  const data = await publicClient.readContract({
+    address,
+    abi,
+    functionName,
+    args,
+    account,
+  });
+
+  return data;
 };
 
 export const csvToObjectForMintGT = (csvString) => {
@@ -266,12 +292,141 @@ export const csvToObjectForMintGT = (csvString) => {
   return { addresses, amounts };
 };
 
-export const shortAddress = (address) => {
+export const shortAddress = (address, length = 6) => {
   if (address) {
     return (
-      address?.substring(0, 6) +
+      address?.substring(0, length) +
       "....." +
       address?.substring(address.length - 4)
     );
   }
+};
+
+export const uploadFileToAWS = async (file) => {
+  return new Promise(async (resolve, reject) => {
+    const reader = new FileReader();
+    reader.addEventListener("loadend", async () => {
+      const path = file?.name.split("/");
+      const fileName = path[path.length - 1];
+      const data = await uploadToAWS(fileName, reader);
+      resolve(data?.saveFileResponse?.Location);
+    });
+
+    reader.readAsArrayBuffer(file);
+  });
+};
+
+export const isValidAddress = (address) => {
+  return /^0x[a-fA-F0-9]{40}$/.test(address);
+};
+
+export const generateRandomString = (length) => {
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * chars.length);
+    result += chars[randomIndex];
+  }
+  return result;
+};
+
+export const addLineBreaks = (inputString, breakAfter = 40) => {
+  let result = "";
+  for (let i = 0; i < inputString?.length; i += breakAfter) {
+    result += inputString?.substr(i, breakAfter) + "\n";
+  }
+  return result;
+};
+
+export const convertToFullNumber = (expNotation) => {
+  if (typeof expNotation === "string") {
+    let [base, exponent] = expNotation?.split("e");
+    let [whole, fractional] = base?.split(".");
+
+    if (exponent?.includes("+")) {
+      let positiveExponent = parseInt(exponent?.replace("+", ""), 10);
+      if (fractional) {
+        let adjustedWhole =
+          whole +
+          fractional?.substring(
+            0,
+            Math.min(positiveExponent, fractional?.length),
+          );
+        let remainingExponent = positiveExponent - fractional?.length;
+        return adjustedWhole + "0".repeat(Math.max(0, remainingExponent));
+      } else {
+        return whole + "0".repeat(positiveExponent);
+      }
+    } else if (exponent?.includes("-")) {
+      let negativeExponent = parseInt(exponent?.replace("-", ""), 10);
+      if (negativeExponent >= whole?.length) {
+        return (
+          "0." +
+          "0".repeat(negativeExponent - whole?.length) +
+          whole +
+          (fractional || "")
+        );
+      } else {
+        let decimalPlace = whole?.length - negativeExponent;
+        return (
+          whole?.substring(0, decimalPlace) +
+          "." +
+          whole?.substring(decimalPlace) +
+          (fractional || "")
+        );
+      }
+    }
+    return expNotation;
+  } else {
+    expNotation;
+  }
+};
+
+export const processAmount = (amount) => {
+  if (typeof amount === "string" && amount?.includes("e")) {
+    return convertToFullNumber(amount);
+  }
+  return amount;
+};
+
+export const handleSignMessage = async (userAddress, data) => {
+  try {
+    const web3 = await web3InstanceEthereum();
+    // const web3 = await web3InstanceCustomRPC();
+
+    const signature = await web3?.eth.personal.sign(data, userAddress, "");
+
+    return { data, signature };
+  } catch (err) {
+    throw new Error("User denied message signature.");
+  }
+};
+export const getDaysDifferenceDescription = (targetDateStr) => {
+  const targetDate = new Date(targetDateStr);
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+  const differenceInMilliseconds = targetDate - currentDate;
+  const differenceInDays = Math.round(
+    differenceInMilliseconds / (1000 * 60 * 60 * 24),
+  );
+  return differenceInDays;
+};
+
+export const formatCash = (n) => {
+  if (n < 1e3) return n;
+  if (n >= 1e3 && n < 1e6) return +(n / 1e3).toFixed(1) + "K";
+  if (n >= 1e6 && n < 1e9) return +(n / 1e6).toFixed(1) + "M";
+  if (n >= 1e9 && n < 1e12) return +(n / 1e9).toFixed(1) + "B";
+  if (n >= 1e12) return +(n / 1e12).toFixed(1) + "T";
+};
+
+export const getLinks = (daoAddress, networkId) => {
+  return baseLinks.map((link, index) => ({
+    ...link,
+    icon: `/assets/icons/${link.icon}.svg`,
+    hoveredLink: `/assets/icons/${link.icon}_hovered.svg`,
+    route: `/${link.routeHeader}/${daoAddress}/${networkId}`,
+    id: String(index + 1),
+  }));
 };

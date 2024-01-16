@@ -1,6 +1,6 @@
 import { makeStyles } from "@mui/styles";
 
-export const ClaimsInsightStyles = makeStyles({
+export const ClaimsInsightStyles = makeStyles((theme) => ({
   mainContainer: {
     marginBottom: "60px",
     minHeight: "100vh",
@@ -71,7 +71,7 @@ export const ClaimsInsightStyles = makeStyles({
     justifyContent: "space-between",
     items: "center",
     gap: "20px",
-    background: "#0f0f0f",
+    background: theme.palette.background.default,
     padding: "12px",
     borderRadius: "8px",
     fontSize: "14px",
@@ -112,4 +112,10 @@ export const ClaimsInsightStyles = makeStyles({
     borderRadius: "8px",
     background: "#151515",
   },
-});
+  icon: {
+    background: theme.palette.background.default,
+    padding: "3px",
+    borderRadius: "5px",
+    cursor: "pointer",
+  },
+}));

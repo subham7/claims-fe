@@ -6,7 +6,7 @@ import Transactions from "@components/transactions/transactions";
 const TransactionsPage = () => {
   const router = useRouter();
 
-  const [daoAddress, networkId] = router?.query?.slug ?? [];
+  const [daoAddress, networkId = "0x89"] = router?.query?.slug ?? [];
 
   if (!daoAddress) {
     return null;
@@ -14,7 +14,7 @@ const TransactionsPage = () => {
 
   return (
     <Layout daoAddress={daoAddress} networkId={networkId} page={6}>
-      <Transactions />
+      <Transactions networkId={networkId} />
     </Layout>
   );
 };

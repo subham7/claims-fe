@@ -1,31 +1,20 @@
-import React, { useCallback, useEffect, useState } from "react";
-import {
-  Backdrop,
-  CircularProgress,
-  Grid,
-  MenuItem,
-  OutlinedInput,
-  Select,
-} from "@mui/material";
-import { Button, Typography } from "@components/ui";
+import React, { useEffect, useState } from "react";
+import { Grid } from "@mui/material";
 import { proposalDisplayOptions } from "data/dashboard";
-import DocsCard from "@components/proposalComps/DocsCard";
-import CreateProposalDialog from "@components/proposalComps/CreateProposalDialog";
+import DocsCard from "@components/common/DocsCard";
 import { fetchProposals } from "utils/proposal";
 import { useRouter } from "next/router";
 import ProposalCard from "./ProposalCard";
-import { getNFTsByDaoAddress } from "api/assets";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { makeStyles } from "@mui/styles";
 import Web3 from "web3";
-import { Web3Adapter } from "@safe-global/protocol-kit";
-import SafeApiKit from "@safe-global/api-kit";
 import { getProposalByDaoAddress, getProposalTxHash } from "api/proposal";
-import { getUserTokenData, web3InstanceCustomRPC } from "utils/helper";
-import { addNftsOwnedByDao } from "redux/reducers/club";
-import { getTokensList } from "api/token";
+import { getSafeSdk } from "utils/helper";
 import { CHAIN_CONFIG } from "utils/constants";
-import { useNetwork } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
+import BackdropLoader from "@components/common/BackdropLoader";
+import SelectActionDialog from "@components/proposalComps/SelectActionDialog";
+import ComponentHeader from "@components/common/ComponentHeader";
 
 const useStyles = makeStyles({
   noProposal_heading: {
@@ -45,56 +34,73 @@ const useStyles = makeStyles({
     border: "1px solid #FFFFFF1A",
     borderRadius: "10px",
     padding: "30px 30px",
-    marginTop: "50px",
+  },
+  headerDiv: {
+    display: "flex",
+    width: "100%",
+    gap: "16px",
+    marginBottom: "20px",
+  },
+  proposeBtn: {
+    paddingLeft: "40px !important",
+    paddingRight: "40px !important",
+  },
+  sticky: {
+    position: "sticky",
+    top: "90px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "20px",
   },
 });
 
 const Proposal = ({ daoAddress }) => {
   const router = useRouter();
-  const dispatch = useDispatch();
   const { chain } = useNetwork();
+  const { address: walletAddress } = useAccount();
   const networkId = "0x" + chain?.id.toString(16);
   const classes = useStyles();
 
-  const [nftData, setNftData] = useState([]);
   const [selectedListItem, setSelectedListItem] = useState(
     proposalDisplayOptions[0].type,
   );
 
   const [open, setOpen] = useState(false);
-  const [tokenData, setTokenData] = useState([]);
+
   const [proposalList, setProposalList] = useState([]);
+  const [owners, setOwners] = useState([]);
 
-  const NETWORK_HEX = useSelector((state) => {
-    return state.gnosis.networkHex;
-  });
-
-  const GNOSIS_TRANSACTION_URL = useSelector((state) => {
-    return state.gnosis.transactionUrl;
-  });
-
-  const gnosisAddress = useSelector((state) => {
-    return state.club.clubData.gnosisAddress;
-  });
-
-  const tokenType = useSelector((state) => {
-    return state.club.clubData.tokenType;
+  const { gnosisAddress, tokenType } = useSelector((state) => {
+    return state.club.clubData;
   });
 
   const isAdminUser = useSelector((state) => {
     return state.gnosis.adminUser;
   });
 
-  const isGovernanceERC20 = useSelector((state) => {
-    return state.club.erc20ClubDetails.isGovernanceActive;
+  const {
+    threshold: ERC721_Threshold,
+    quorum: ERC721_Quorum,
+    isGovernanceActive: isGovernanceERC721,
+  } = useSelector((state) => {
+    return state.club.erc721ClubDetails;
   });
 
-  const isGovernanceERC721 = useSelector((state) => {
-    return state.club.erc721ClubDetails.isGovernanceActive;
+  const {
+    threshold: ERC20_Threshold,
+    quorum: ERC20_Quorum,
+    isGovernanceActive: isGovernanceERC20,
+  } = useSelector((state) => {
+    return state.club.erc20ClubDetails;
   });
 
   const isGovernanceActive =
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
+
+  const Club_Threshold =
+    tokenType === "erc20" ? ERC20_Threshold : ERC721_Threshold;
+
+  const Club_Quorum = tokenType === "erc20" ? ERC20_Quorum : ERC721_Quorum;
 
   const [executionTransaction, setExecutionTransaction] = useState(null);
   const [loaderOpen, setLoaderOpen] = useState(false);
@@ -115,32 +121,6 @@ const Proposal = ({ daoAddress }) => {
     });
   };
 
-  const fetchNfts = useCallback(async () => {
-    try {
-      const nftsData = await getNFTsByDaoAddress(gnosisAddress, NETWORK_HEX);
-      setNftData(nftsData.data);
-      dispatch(addNftsOwnedByDao(nftsData.data));
-    } catch (error) {
-      console.log(error);
-    }
-  }, [NETWORK_HEX, dispatch, gnosisAddress]);
-
-  const fetchTokens = useCallback(async () => {
-    if (daoAddress && gnosisAddress && networkId) {
-      const tokensList = await getTokensList(
-        CHAIN_CONFIG[networkId].covalentNetworkName,
-        gnosisAddress,
-      );
-      const data = await getUserTokenData(
-        tokensList?.data?.items,
-        networkId,
-        true,
-      );
-
-      setTokenData(data?.filter((token) => token.symbol !== null));
-    }
-  }, [daoAddress, networkId, gnosisAddress]);
-
   const fetchProposalList = async (type = "all") => {
     const data = await fetchProposals(daoAddress, type);
     setProposalList(data);
@@ -154,23 +134,14 @@ const Proposal = ({ daoAddress }) => {
     fetchProposalList(value);
   };
 
-  const getSafeService = useCallback(async () => {
-    const web3 = await web3InstanceCustomRPC(networkId);
-
-    const ethAdapter = new Web3Adapter({
-      web3,
-      signerAddress: localStorage.getItem("wallet"),
-    });
-    const safeService = new SafeApiKit({
-      txServiceUrl: GNOSIS_TRANSACTION_URL,
-      ethAdapter,
-    });
-    return safeService;
-  }, [GNOSIS_TRANSACTION_URL]);
-
   const getExecutionTransaction = async () => {
     try {
-      const safeService = await getSafeService();
+      const { safeService } = await getSafeSdk(
+        "",
+        walletAddress,
+        CHAIN_CONFIG[networkId].gnosisTxUrl,
+        networkId,
+      );
       const proposalData = getProposalByDaoAddress(daoAddress);
       const pendingTxs = await safeService.getPendingTransactions(
         Web3.utils.toChecksumAddress(gnosisAddress),
@@ -196,22 +167,37 @@ const Proposal = ({ daoAddress }) => {
       console.log(error);
     }
   };
-
-  useEffect(() => {
-    if (daoAddress) {
-      fetchTokens();
-      fetchNfts();
+  const fetchOwners = async () => {
+    try {
+      const { safeSdk } = await getSafeSdk(
+        gnosisAddress,
+        walletAddress,
+        CHAIN_CONFIG[networkId].gnosisTxUrl,
+        networkId,
+      );
+      const addresses = [];
+      const ownerAddresses = await safeSdk?.getOwners();
+      ownerAddresses.map((owner) => {
+        addresses.push({
+          title: owner,
+        });
+      });
+      setOwners(addresses);
+    } catch (error) {
+      console.log(error);
     }
-  }, [daoAddress, fetchNfts, fetchTokens]);
+  };
 
   useEffect(() => {
     setLoaderOpen(true);
-    if (gnosisAddress && GNOSIS_TRANSACTION_URL) {
+    if (gnosisAddress && walletAddress) {
+      fetchOwners();
+
       getExecutionTransaction();
       setLoaderOpen(false);
     }
     setLoaderOpen(false);
-  }, [gnosisAddress, GNOSIS_TRANSACTION_URL]);
+  }, [gnosisAddress, walletAddress]);
 
   useEffect(() => {
     fetchProposalList();
@@ -219,67 +205,45 @@ const Proposal = ({ daoAddress }) => {
 
   return (
     <>
-      <Grid container spacing={3} paddingTop={2}>
-        <Grid item md={8}>
-          <Grid
-            container
-            mb={5}
-            direction={{
-              xs: "column",
-              sm: "column",
-              md: "column",
-              lg: "row",
-            }}>
-            <Grid item mb={4}>
-              <Typography variant="heading">All Proposals</Typography>
-            </Grid>
-            <Grid
-              item
-              xs
-              sx={{
-                display: { lg: "flex" },
-                justifyContent: { md: "flex-center", lg: "flex-end" },
-              }}>
-              <Grid container direction="row" spacing={2}>
-                <Grid
-                  item
-                  xs
-                  sx={{ display: "flex", justifyContent: "flex-end" }}>
-                  <Select
-                    sx={{ height: "60%", textTransform: "capitalize" }}
-                    value={selectedListItem}
-                    onChange={handleFilterChange}
-                    input={<OutlinedInput />}
-                    renderValue={(selected) => {
-                      if (selected.length === 0) {
-                        return "Select a command";
-                      }
-                      return selected;
-                    }}
-                    MenuProps={proposalDisplayOptions}
-                    style={{
-                      borderRadius: "10px",
-                      background: "#0F0F0F 0% 0% no-repeat padding-box",
-                      width: "30%",
-                    }}>
-                    {proposalDisplayOptions.map((option) => (
-                      <MenuItem
-                        key={option.name}
-                        value={option.type}
-                        sx={{ textTransform: "capitalize" }}>
-                        {option.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </Grid>
-
-                {isGovernanceActive || isAdminUser ? (
-                  <Grid mt={"4px"} item>
-                    <Button onClick={handleClickOpen}>Propose</Button>
-                  </Grid>
-                ) : null}
-              </Grid>
-            </Grid>
+      <Grid container spacing={3}>
+        <Grid item md={9}>
+          <Grid container>
+            <div className={classes.headerDiv}>
+              <ComponentHeader
+                title={"Activity"}
+                subtext="Use actions to get done with your day-to-day stuff directly from the station 🛸"
+                showButton={isGovernanceActive || isAdminUser}
+                buttonText="Propose"
+                onClickHandler={handleClickOpen}
+              />
+              {/* 
+              <Select
+                sx={{ textTransform: "capitalize" }}
+                value={selectedListItem}
+                onChange={handleFilterChange}
+                input={<OutlinedInput />}
+                renderValue={(selected) => {
+                  if (selected.length === 0) {
+                    return "Select a command";
+                  }
+                  return selected;
+                }}
+                MenuProps={proposalDisplayOptions}
+                style={{
+                  borderRadius: "10px",
+                  background: "#111111 0% 0% no-repeat padding-box",
+                  width: "25%",
+                }}>
+                {proposalDisplayOptions.map((option) => (
+                  <MenuItem
+                    key={option.name}
+                    value={option.type}
+                    sx={{ textTransform: "capitalize" }}>
+                    {option.name}
+                  </MenuItem>
+                ))}
+              </Select> */}
+            </div>
             <Grid container spacing={3}>
               {proposalList?.length > 0 ? (
                 <>
@@ -340,25 +304,42 @@ const Proposal = ({ daoAddress }) => {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item md={4}>
-          <DocsCard />
+        <Grid item md={3}>
+          <div className={classes.sticky}>
+            <DocsCard
+              heading="Signator(s)"
+              data={owners}
+              isGovernance={false}
+            />
+
+            {isGovernanceActive && (
+              <DocsCard
+                heading="Governance"
+                data={[
+                  {
+                    title: "Quorum",
+                    value: Club_Quorum,
+                  },
+                  {
+                    title: "Threshold",
+                    value: Club_Threshold,
+                  },
+                ]}
+                isGovernance
+              />
+            )}
+          </div>
         </Grid>
       </Grid>
 
-      <CreateProposalDialog
+      <SelectActionDialog
         open={open}
         setOpen={setOpen}
         onClose={handleClose}
-        tokenData={tokenData}
-        nftData={nftData}
         daoAddress={daoAddress}
-        fetchProposalList={fetchProposalList}
+        networkId={networkId}
       />
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loaderOpen}>
-        <CircularProgress />
-      </Backdrop>
+      <BackdropLoader isOpen={open} />
     </>
   );
 };

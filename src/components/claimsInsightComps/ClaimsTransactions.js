@@ -19,6 +19,8 @@ import {
   queryWalletWiseTransactionsFromSubgraph,
 } from "utils/dropsSubgraphHelper";
 import { shortAddress } from "utils/helper";
+import { CHAIN_CONFIG } from "utils/constants";
+import { useTheme } from "@mui/styles";
 
 const ClaimsTransactions = ({
   claimAddress,
@@ -35,7 +37,8 @@ const ClaimsTransactions = ({
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
 
-  const classes = ClaimsInsightStyles();
+  const theme = useTheme();
+  const classes = ClaimsInsightStyles(theme);
   const walletHeaders = ["Wallet", "Total tokens", "Claimed", "Percentage"];
   const allTransactionHeaders = [
     "Date",
@@ -190,7 +193,7 @@ const ClaimsTransactions = ({
                           }}
                           item>
                           <a className={classes.activityLink}>
-                            {shortAddress(data.claimAddress)}
+                            {shortAddress(data.claimerAddress)}
                           </a>
                         </Grid>
                       </Grid>
@@ -246,7 +249,7 @@ const ClaimsTransactions = ({
                         <FiExternalLink
                           onClick={() => {
                             window.open(
-                              `https://polygonscan.com/tx/${data.txHash}`,
+                              `${CHAIN_CONFIG[networkId].blockExplorerUrl}/tx/${data.txHash}`,
                               "_blank",
                             );
                           }}

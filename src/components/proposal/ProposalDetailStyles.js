@@ -1,6 +1,6 @@
 import { makeStyles } from "@mui/styles";
 
-export const ProposalDetailStyles = makeStyles({
+export const ProposalDetailStyles = makeStyles((theme) => ({
   clubAssets: {
     fontSize: "42px",
     color: "#FFFFFF",
@@ -90,7 +90,7 @@ export const ProposalDetailStyles = makeStyles({
     textTransform: "capitalize",
   },
   timeLeftChip: {
-    background: "#0F0F0F",
+    background: theme.palette.background.default,
     borderRadius: "5px",
   },
   cardFontActive: {
@@ -113,4 +113,10 @@ export const ProposalDetailStyles = makeStyles({
     backgroundColor: "#D55438",
     padding: "5px 5px 5px 5px",
   },
-});
+  shareOnLens: {
+    fontSize: "16px",
+    color: "#FFFFFF",
+    background: "#8B5BF9",
+    cursor: "pointer",
+  },
+}));

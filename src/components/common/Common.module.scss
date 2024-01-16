@@ -1,0 +1,81 @@
+@import "../../../styles/variables.scss";
+
+.headerContainer {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+
+  .stationName {
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  .subText {
+    font-size: 16px;
+    font-weight: 400;
+    color: $gray;
+  }
+
+  .button {
+    width: 150px;
+    padding: 10px;
+    text-transform: capitalize;
+    font-family: inherit;
+    font-weight: 600;
+  }
+}
+
+.tableListContainer {
+  border: 0.5px solid $border-color;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  .title {
+    padding: 20px;
+    border-bottom: 0.5px solid $border-color;
+    font-size: 18px;
+    font-weight: 500;
+    color: $gray;
+  }
+
+  .list {
+    max-height: 250px;
+    overflow-y: scroll;
+
+    .noActivity {
+      color: $gray;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      padding: 40px 0;
+    }
+  }
+
+  .item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+
+    div {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    &:hover {
+      background: $background-primary;
+      cursor: pointer;
+    }
+  }
+
+  .itemTitle {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .itemValue {
+    color: $gray;
+  }
+}

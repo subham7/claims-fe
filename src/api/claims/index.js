@@ -65,7 +65,47 @@ export const getUserProofAndBalance = async (merkleRoot, userAddress) => {
     const res = await fetch(
       `${MAIN_API_URL}snapshot/user/${userAddress}?merkleRoot=${merkleRoot}`,
     );
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
+export const createClaimDetails = async ({
+  claimAddress,
+  description,
+  socialLinks,
+  imageLinks,
+  networkId,
+  tweetText,
+}) => {
+  try {
+    const res = await fetch(`${MAIN_API_URL}claim`, {
+      method: "POST",
+      body: JSON.stringify({
+        claimAddress,
+        description,
+        socialLinks,
+        imageLinks,
+        networkId,
+        tweetText,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getClaimDetails = async (claimAddress) => {
+  try {
+    const res = await fetch(`${MAIN_API_URL}claim/${claimAddress}`);
     const data = await res.json();
     return data;
   } catch (error) {

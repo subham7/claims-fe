@@ -1,40 +1,42 @@
-import React, { useState } from "react";
 import { Box, CssBaseline, Grid, Typography } from "@mui/material";
-import Navbar from "../navbar";
-import Sidebar from "../sidebar";
 import { useAccount, useNetwork } from "wagmi";
-import { Web3Button } from "@web3modal/react";
 import useClubFetch from "hooks/useClubFetch";
 import { showWrongNetworkModal } from "utils/helper";
+import { makeStyles } from "@mui/styles";
+import Navbar from "@components/ui/Navbar/Navbar";
+import Sidebar from "@components/ui/Sidebar/Sidebar";
+
+import CustomAlert from "@components/common/CustomAlert";
 
 const drawerWidth = 50;
 
+const useStyles = makeStyles({
+  container: {
+    padding: "12px 10px 0px 10px",
+    marginTop: "80px",
+  },
+});
+
 export default function Layout(props) {
-  const [mobileOpen, setMobileOpen] = useState(false);
   const { showSidebar = true, daoAddress, networkId: routeNetworkId } = props;
   useClubFetch({ daoAddress, networkId: routeNetworkId });
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
+  const networkId = "0x" + chain?.id.toString(16);
+  const classes = useStyles();
 
   return (
     <>
-      <Navbar />
+      <div>
+        <Navbar />
+        {showSidebar && (
+          <Sidebar daoAddress={daoAddress} networkId={networkId} />
+        )}
+      </div>
+
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
-        {showSidebar && (
-          <Sidebar
-            mobileOpen={mobileOpen}
-            handleDrawerToggle={handleDrawerToggle}
-            page={props.page}
-            daoAddress={daoAddress}
-            networkId={networkId}
-          />
-        )}
 
         {!walletAddress || !networkId ? (
           <Grid
@@ -56,7 +58,7 @@ export default function Layout(props) {
               </Typography>
             </Grid>
             <Grid item mt={3}>
-              <Web3Button />
+              <w3m-connect-button />
             </Grid>
           </Grid>
         ) : (
@@ -68,13 +70,18 @@ export default function Layout(props) {
                 width: { sm: `calc(100% - ${drawerWidth}px)` },
                 paddingX: showSidebar ? "0px" : "60px",
               }}>
-              <div style={{ padding: "12px 32px 0px 40px" }}>
+              <div
+                className={classes.container}
+                style={{
+                  marginLeft: showSidebar ? "80px" : 0,
+                }}>
                 {props.children}
               </div>
             </Box>
-            {showWrongNetworkModal(walletAddress, networkId, routeNetworkId)}
+            {showWrongNetworkModal(networkId, routeNetworkId)}
           </>
         )}
+        <CustomAlert />
       </Box>
     </>
   );

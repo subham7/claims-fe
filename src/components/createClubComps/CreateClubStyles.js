@@ -1,6 +1,6 @@
 import { makeStyles } from "@mui/styles";
 
-export const Step1Styles = makeStyles({
+export const Step1Styles = makeStyles((theme) => ({
   largeText: {
     fontSize: "18px",
     color: "#dcdcdc",
@@ -21,9 +21,9 @@ export const Step1Styles = makeStyles({
 
     color: "#6475A3",
   },
-});
+}));
 
-export const ERC20Step2Styles = makeStyles({
+export const ERC20Step2Styles = makeStyles((theme) => ({
   textField: {
     width: "100%",
     margin: "16px 0 25px 0",
@@ -66,7 +66,7 @@ export const ERC20Step2Styles = makeStyles({
     fontWeight: "bold",
   },
   uploadButton: {
-    backgroundColor: "#0F0F0F",
+    backgroundColor: theme.palette.background.default,
     color: "#2D55FF",
     fontSize: "18px",
     width: "208px",
@@ -88,12 +88,11 @@ export const ERC20Step2Styles = makeStyles({
   },
   smallText: {
     fontSize: "16px",
-
     color: "#6475A3",
   },
-});
+}));
 
-export const Step3Styles = makeStyles({
+export const Step3Styles = makeStyles((theme) => ({
   selectContainer: {
     border: "0.5px solid #6475A3",
     display: "flex",
@@ -133,7 +132,6 @@ export const Step3Styles = makeStyles({
   },
   textField: {
     width: "100%",
-    margin: "16px 0 25px 0",
     fontSize: "18px",
   },
   image: {
@@ -173,7 +171,7 @@ export const Step3Styles = makeStyles({
     fontWeight: "bold",
   },
   uploadButton: {
-    backgroundColor: "#0F0F0F",
+    backgroundColor: theme.palette.background.default,
     color: "#2D55FF",
     fontSize: "18px",
     width: "208px",
@@ -207,7 +205,7 @@ export const Step3Styles = makeStyles({
     fontSize: "18px",
     color: "#FFFFFF",
   },
-});
+}));
 
 export const Step4Styles = makeStyles({
   largeText: {
