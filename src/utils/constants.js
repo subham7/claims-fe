@@ -212,6 +212,13 @@ export const CHAIN_CONFIG = {
     blockExplorerUrl: "https://lineascan.build",
     disburseContractAddress: "0xE6301e65e1371eeECFBB124872a6C3d0F8288DE1",
     gnosisTxUrl: "https://transaction.safe.linea.build",
+    clipFinanceBatchAddressLinea: "0xfCcc0ECE0daD2Ef38c84de53168dC0923c6c68d1",
+    clipFinanceStrategyRouterAddressLinea:
+      "0x03A074D130144FcE6883F7EA3884C0a783d85Fb3",
+    clipFinanceSharesTokenAddressLinea:
+      "0xDD49bF14cAAE7a22bb6a58A76C4E998054859D9a",
+    clipFinanceSharesPoolAddressLinea:
+      "0xB4e319a082C61eDc7fddE36ec0f5f8B1f495D87A",
     stargateStakingAddresses: ["0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"],
     stargateUnstakingAddresses: ["0xaad094f6a75a14417d39f04e690fc216f080a41a"],
     stargateRouterAddress: "0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590",

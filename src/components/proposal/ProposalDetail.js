@@ -455,14 +455,14 @@ Cast your vote before ${new Date(
 
   const createRejectSafeTransaction = async () => {
     setLoaderOpen(true);
+
     const response = await createRejectSafeTx({
       pid,
       gnosisTransactionUrl: CHAIN_CONFIG[networkId].gnosisTxUrl,
       gnosisAddress,
-      networkId,
+      network: networkId,
       daoAddress,
       walletAddress,
-      networkId,
     });
     if (response) {
       fetchData();
@@ -499,6 +499,7 @@ Cast your vote before ${new Date(
       gnosisAddress,
       networkId,
     });
+
     if (response) {
       fetchData();
       setIsCancelSigned(true);

@@ -35,6 +35,7 @@ export const proposalActionCommands = {
   21: "Send tokens through csv",
   22: "Send tokens to all members",
   23: "Send tokens pro rata basis",
+  24: "Deposit tokens with clip-finance",
 };
 
 export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
@@ -415,5 +416,13 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
     //   icon: sendIcon,
     //   availableOnNetworkIds: ["0x89"],
     // },
+    {
+      key: 24,
+      value: "Deposit tokens with clip-finance",
+      text: "Deposit tokens with clip-finance",
+      section: "DeFi Pools",
+      icon: sendIcon,
+      availableOnNetworkIds: ["0xe708"],
+    },
   ];
 };
