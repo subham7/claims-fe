@@ -16,7 +16,6 @@ const PublicPageLayout = ({
   inputComponents,
   socialData,
   eligibilityProps,
-  isSuccessfull,
   loading,
   isDeposit,
   bio,
@@ -36,14 +35,22 @@ const PublicPageLayout = ({
         <div className={classes.mainSocials}>
           <SocialButtons data={socialData} />
         </div>
+
+        {clubData && clubData.tokenType === "erc721" ? (
+          <></>
+        ) : (
+          <div className={classes.secondaryInputComponents}>
+            {inputComponents}
+          </div>
+        )}
       </div>
 
       <div className={classes.rightContainer}>
         <div className={classes.bannerContainer}>
           {isDeposit && clubData.tokenType === "erc721" ? (
             <div className={classes.nftContainer}>
-              {(imgUrl && imgUrl.includes(".mp4")) ||
-              imgUrl.includes(".MP4") ? (
+              {(imgUrl && imgUrl?.includes(".mp4")) ||
+              imgUrl?.includes(".MP4") ? (
                 <video
                   style={{
                     height: "100%",
@@ -87,10 +94,11 @@ const PublicPageLayout = ({
           )
         ) : null}
 
-        {/* For mobile screen */}
-        <div className={classes.secondaryInputComponents}>
-          {inputComponents}
-        </div>
+        {clubData && clubData.tokenType === "erc721" && (
+          <div className={classes.secondaryInputComponents}>
+            {inputComponents}
+          </div>
+        )}
 
         {bio && <About bio={bio} />}
 

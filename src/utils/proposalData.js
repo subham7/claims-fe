@@ -29,6 +29,7 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
     customTokenAmounts,
     customTokenAddresses,
     mintGTAddresses,
+    mintGTAmounts,
     customNft,
     ownerAddress,
     nftLink,
@@ -53,6 +54,9 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
     case 1:
       return {
         "No of recipients :": mintGTAddresses?.length,
+        "Tokens to be minted: ":
+          mintGTAmounts?.reduce((partialSum, a) => partialSum + Number(a), 0) /
+          10 ** decimals,
       };
     case 2:
       return {
@@ -268,7 +272,7 @@ export const proposalFormData = ({
                 formik.touched.mintGTAmounts && formik.errors.mintGTAmounts
               }
             />
-            <Button onClick={handleClick} variant="normal">
+            <Button onClick={handleClick} variant="contained">
               Upload
             </Button>
             <input
@@ -1179,6 +1183,149 @@ export const proposalFormData = ({
           />
         </Grid>
       );
+    case 21:
+      return (
+        <>
+          <Typography variant="proposalBody" mt={2}>
+            Token to be sent
+          </Typography>
+          <Select
+            sx={{ marginTop: "0.5rem" }}
+            value={formik.values.customToken}
+            onChange={(e) =>
+              formik.setFieldValue(
+                "sendToken",
+                tokenData?.find((token) => token.symbol === e.target.value)
+                  .address,
+              )
+            }
+            renderValue={(selected) => {
+              if (selected.length === 0) {
+                return "Select a command";
+              }
+
+              return selected;
+            }}
+            inputProps={{ "aria-label": "Without label" }}
+            name="sendToken"
+            id="sendToken">
+            {tokenData?.map((token) => (
+              <MenuItem key={token.symbol} value={token.symbol}>
+                {token.symbol}
+              </MenuItem>
+            ))}
+          </Select>
+          <Typography mt={2} variant="proposalBody">
+            Upload your CSV file
+          </Typography>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "20px",
+              marginTop: "8px",
+            }}>
+            <TextField
+              style={{
+                width: "100%",
+              }}
+              className={classes.input}
+              onClick={handleClick}
+              id="sendToken"
+              onChange={(event) => {
+                handleChange(event, true);
+              }}
+              disabled
+              value={file?.name}
+              error={
+                formik.touched.sendTokenAmounts &&
+                Boolean(formik.errors.sendTokenAmounts)
+              }
+              helperText={
+                formik.touched.sendTokenAmounts &&
+                formik.errors.sendTokenAmounts
+              }
+            />
+            <Button onClick={handleClick} variant="normal">
+              Upload
+            </Button>
+            <input
+              type="file"
+              accept=".csv"
+              ref={hiddenFileInput}
+              onChange={(event) => {
+                handleChange(event, true);
+              }}
+              style={{ display: "none" }}
+            />
+          </div>
+
+          <Typography mt={1} variant="proposalSubHeading">
+            Download sample from{" "}
+            <span style={{ color: "#3a7afd" }}>
+              <Link href={"/assets/csv/mintGt.csv"}>here</Link>
+            </span>
+          </Typography>
+        </>
+      );
+
+    case 22:
+    case 23:
+      return (
+        <>
+          <Typography variant="proposalBody" mt={2}>
+            Token to be sent
+          </Typography>
+          <Select
+            sx={{ marginTop: "0.5rem" }}
+            value={formik.values.customToken}
+            onChange={(e) =>
+              formik.setFieldValue(
+                "sendToken",
+                tokenData?.find((token) => token.symbol === e.target.value)
+                  .address,
+              )
+            }
+            renderValue={(selected) => {
+              if (selected.length === 0) {
+                return "Select a command";
+              }
+
+              return selected;
+            }}
+            inputProps={{ "aria-label": "Without label" }}
+            name="sendToken"
+            id="sendToken">
+            {tokenData?.map((token) => (
+              <MenuItem key={token.symbol} value={token.symbol}>
+                {token.symbol}
+              </MenuItem>
+            ))}
+          </Select>
+          <Typography mt={2} variant="proposalBody">
+            {executionId === 25
+              ? "Amount to be sent to each member *"
+              : "Total amount of tokens to be distributed *"}
+          </Typography>
+          <TextField
+            variant="outlined"
+            className={classes.textField}
+            placeholder="0"
+            type="number"
+            name="amountToSend"
+            id="amountToSend"
+            value={formik.values.amountToSend}
+            onChange={formik.handleChange}
+            error={
+              formik.touched.amountToSend && Boolean(formik.errors.amountToSend)
+            }
+            helperText={
+              formik.touched.amountToSend && formik.errors.amountToSend
+            }
+            onWheel={(event) => event.target.blur()}
+          />
+        </>
+      );
   }
 };
 
@@ -1396,6 +1543,31 @@ export const getProposalCommands = async ({
       return {
         nftSupply: values.nftSupply,
       };
+    case 21:
+      tokenDecimal = tokenData?.find(
+        (token) => token.address === values.sendToken,
+      ).decimals;
+      console.log("values", values);
+      return {
+        sendToken: values.sendToken,
+        sendTokenAddresses: values.sendTokenAddresses,
+        sendTokenAmounts:
+          clubData.tokenType === "existingErc20"
+            ? values.sendTokenAmounts.map((amount) =>
+                convertToWeiGovernance(amount, tokenDecimal),
+              )
+            : values.sendTokenAmounts,
+      };
+
+    case 22:
+    case 23:
+      tokenDecimal = tokenData?.find(
+        (token) => token.address === values.sendToken,
+      ).decimals;
+      return {
+        sendToken: values.sendToken,
+        amountToSend: convertToWeiGovernance(values.amountToSend, tokenDecimal),
+      };
   }
 };
 
@@ -1414,6 +1586,7 @@ export const proposalDetailsData = ({
     customTokenAmounts,
     customTokenAddresses,
     mintGTAddresses,
+    mintGTAmounts,
     customNft,
     ownerAddress,
     nftLink,
@@ -1431,6 +1604,8 @@ export const proposalDetailsData = ({
     whitelistAddresses,
     airDropCarryFee,
     nftSupply,
+    sendTokenAmounts,
+    sendTokenAddresses,
   } = data ?? {};
 
   let responseData = {
@@ -1445,7 +1620,14 @@ export const proposalDetailsData = ({
       };
       return responseData;
     case 1:
-      responseData.data = { "No of recipients :": mintGTAddresses.length };
+      responseData.data = {
+        "Total Amount":
+          mintGTAmounts?.reduce((partialSum, a) => partialSum + Number(a), 0) /
+          10 ** 18,
+        Recipients: mintGTAddresses
+          ?.map((address) => shortAddress(address))
+          .join(", "),
+      };
       return responseData;
     case 2:
       responseData.data = { Quorum: quorum, Threshold: threshold };
@@ -1546,6 +1728,31 @@ export const proposalDetailsData = ({
     case 20:
       responseData.data = { "New nft supply": nftSupply };
       return responseData;
+    case 21:
+      responseData.data = {
+        "Total Amount": sendTokenAmounts?.reduce(
+          (partialSum, a) => partialSum + Number(a),
+          0,
+        ),
+        Recipients: sendTokenAddresses
+          ?.map((address) => shortAddress(address))
+          .join(", "),
+      };
+      return responseData;
+    case 22:
+    case 23:
+      responseData.data = {
+        "Total Amount": (
+          sendTokenAmounts?.reduce(
+            (partialSum, a) => partialSum + Number(a),
+            0,
+          ) /
+          10 ** decimals
+        ).toFixed(4),
+        Recipients: "All Members",
+      };
+      return responseData;
+
     default:
       return {};
   }

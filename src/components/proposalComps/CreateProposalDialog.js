@@ -188,6 +188,10 @@ const CreateProposalDialog = ({ daoAddress }) => {
       stargateStakeAmount: 0,
       stargateUnstakeToken: "",
       stargateUnstakeAmount: 0,
+      sendToken: "",
+      csvObject: [],
+      sendTokenAddresses: [],
+      sendTokenAmounts: [],
     },
     validationSchema: getProposalValidationSchema({
       networkId,

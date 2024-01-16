@@ -1,6 +1,5 @@
 import { Box, CssBaseline, Grid, Typography } from "@mui/material";
 import { useAccount, useNetwork } from "wagmi";
-import { Web3Button } from "@web3modal/react";
 import useClubFetch from "hooks/useClubFetch";
 import { showWrongNetworkModal } from "utils/helper";
 import { makeStyles } from "@mui/styles";
@@ -59,7 +58,7 @@ export default function Layout(props) {
               </Typography>
             </Grid>
             <Grid item mt={3}>
-              <Web3Button />
+              <w3m-connect-button />
             </Grid>
           </Grid>
         ) : (

@@ -1,33 +1,18 @@
-import { React, useEffect, useState } from "react";
-import {
-  Grid,
-  Card,
-  Divider,
-  Stack,
-  ListItemButton,
-  DialogContent,
-  Dialog,
-} from "@mui/material";
-import { Button, Typography } from "@components/ui";
-import { useDispatch } from "react-redux";
+import { React, useState } from "react";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
+
 import NewCard from "../src/components/cards/card";
-import { addClubData } from "../src/redux/reducers/club";
 import Layout from "../src/components/layouts/layout";
 import { BsFillPlayFill } from "react-icons/bs";
-import Web3 from "web3";
 import VideoModal from "../src/components/modals/VideoModal";
-import { useAccount, useNetwork } from "wagmi";
-import {
-  queryStationDataFromSubgraph,
-  queryStationListFromSubgraph,
-} from "utils/stationsSubgraphHelper";
-import { requestEthereumChain, shortAddress } from "utils/helper";
-import { OMIT_DAOS } from "utils/constants";
+import { useNetwork } from "wagmi";
 import useClubFetch from "hooks/useClubFetch";
-import { getReferralCode } from "api/invite/invite";
-import InviteCard from "@components/cards/InviteCard";
+import {
+  ALLOWED_NETWORKS_FOR_STATION,
+  stationNetworksChainId,
+} from "utils/constants";
+import NetworkSwitcher from "@components/modals/NetworkSwitcher/NetworkSwitcher";
 
 const useStyles = makeStyles({
   container: {
@@ -123,116 +108,23 @@ const useStyles = makeStyles({
 });
 
 const App = () => {
-  const dispatch = useDispatch();
   const classes = useStyles();
-  const { address: walletAddress } = useAccount();
-  const [clubListData, setClubListData] = useState([]);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [isMainLink, setIsMainLink] = useState(false);
-  const [isUserWhitelisted, setIsUserWhitelisted] = useState(false);
+  const [showNetworkModal, setShowNetworkModal] = useState(false);
 
-  const [manageStation, setManageStation] = useState(false);
-
-  const [open, setOpen] = useState(false);
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
   useClubFetch({ networkId });
   const router = useRouter();
 
-  // useEffect(() => {
-  //   setIsMainLink(window.location.origin.includes("app.stationx.network"));
-  // }, []);
-
-  useEffect(() => {
-    try {
-      if (!walletAddress) setManageStation(false);
-      else {
-        const fetchClubs = async () => {
-          try {
-            const data = await queryStationListFromSubgraph(
-              walletAddress,
-              networkId,
-            );
-
-            if (data.users) setClubListData(data.users);
-          } catch (error) {
-            console.log(error);
-          }
-        };
-
-        if (walletAddress && networkId) fetchClubs();
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }, [networkId, walletAddress]);
-
-  const handleCreateButtonClick = async (event) => {
-    const { pathname } = router;
-    if (pathname == "/") {
-      router.push("/create");
-    }
-  };
-
-  const handleItemClick = async (data) => {
-    try {
-      const clubData = await queryStationDataFromSubgraph(
-        data.daoAddress,
-        networkId,
-      );
-
-      if (clubData.stations.length)
-        dispatch(
-          addClubData({
-            gnosisAddress: clubData.stations[0].gnosisAddress,
-            isGtTransferable: clubData.stations[0].isGtTransferable,
-            name: clubData.stations[0].name,
-            ownerAddress: clubData.stations[0].ownerAddress,
-            symbol: clubData.stations[0].symbol,
-            tokenType: clubData.stations[0].tokenType,
-            membersCount: clubData.stations[0].membersCount,
-            deployedTime: clubData.stations[0].timeStamp,
-            imgUrl: clubData.stations[0].imageUrl,
-            minDepositAmount: clubData.stations[0].minDepositAmount,
-            maxDepositAmount: clubData.stations[0].maxDepositAmount,
-            pricePerToken: clubData.stations[0].pricePerToken,
-            isGovernanceActive: clubData.stations[0].isGovernanceActive,
-            quorum: clubData.stations[0].quorum,
-            threshold: clubData.stations[0].threshold,
-            raiseAmount: clubData.stations[0].raiseAmount,
-            totalAmountRaised: clubData.stations[0].totalAmountRaised,
-            distributionAmount: clubData.stations[0].distributionAmount,
-            maxTokensPerUser: clubData.stations[0].maxTokensPerUser,
-          }),
-        );
-      router.push(
-        `/dashboard/${Web3.utils.toChecksumAddress(
-          data.daoAddress,
-        )}/${networkId}`,
-        undefined,
-        {
-          shallow: true,
-        },
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleClose = (e) => {
-    e.preventDefault();
-    setOpen(false);
-  };
-
   const showStationsHandler = async () => {
     if (isMainLink) {
       window.open("https://tally.so/r/nG64GQ", "_blank");
-    } else if (networkId !== "0x89") {
-      await requestEthereumChain("wallet_switchEthereumChain", [
-        { chainId: "0x89" },
-      ]);
+    } else if (!ALLOWED_NETWORKS_FOR_STATION.includes(networkId)) {
+      setShowNetworkModal(true);
     } else {
-      setManageStation(true);
+      router.push("/stations");
     }
   };
 
@@ -240,230 +132,82 @@ const App = () => {
     router.push(`/claims/`);
   };
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const code = await getReferralCode(walletAddress);
-        if (code) {
-          setIsUserWhitelisted(true);
-        } else {
-          setIsUserWhitelisted(false);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    })();
-  }, [walletAddress]);
-
   return (
     <Layout showSidebar={false} faucet={false}>
       <div className={classes.container}>
-        {!manageStation && (
-          <div className={classes.cardContainer}>
-            <div
+        <div className={classes.cardContainer}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: "30px",
+            }}>
+            <NewCard
+              onClick={showStationsHandler}
+              title={"Manage Stations"}
+              subtitle={
+                "Creating a Station is the easiest way to start managing money/assets towards shared goals"
+              }
+              buttonText={
+                ALLOWED_NETWORKS_FOR_STATION.includes(networkId)
+                  ? "Enter App"
+                  : "Switch to supported network"
+              }
+            />
+            <NewCard
+              onClick={claimsHandler}
+              title={"DropX"}
+              subtitle={
+                "Set up custom drops instantly to distribute tokens/NFTs to your community anywhere."
+              }
+              buttonText="Enter App"
+            />
+          </div>
+          <div className={classes.secondContainer}>
+            <p
               style={{
-                display: "flex",
-                justifyContent: "center",
-                gap: "30px",
+                fontSize: "20px",
+                fontWeight: "400",
+                color: "#EFEFEF",
+                margin: 0,
+                padding: 0,
+                letterSpacing: ".8px",
               }}>
-              <NewCard
-                onClick={showStationsHandler}
-                title={"Manage Stations"}
-                subtitle={
-                  "Creating a Station is the easiest way to start managing money/assets towards shared goals"
-                }
-                buttonText={
-                  networkId === "0x89" ? "Enter App" : "Switch to polygon"
-                }
-              />
-              <NewCard
-                onClick={claimsHandler}
-                title={"DropX"}
-                subtitle={
-                  "Set up custom drops instantly to distribute tokens/NFTs to your community anywhere."
-                }
-                buttonText="Enter App"
-              />
-            </div>
-            <div className={classes.secondContainer}>
+              Learn what communities can do with StationX
+            </p>
+            <button
+              onClick={() => {
+                setShowVideoModal(true);
+              }}
+              className={classes.watchBtn}>
+              <BsFillPlayFill color="#EFEFEF" size={30} />
               <p
                 style={{
-                  fontSize: "20px",
-                  fontWeight: "400",
+                  fontSize: "18px",
                   color: "#EFEFEF",
                   margin: 0,
                   padding: 0,
-                  letterSpacing: ".8px",
                 }}>
-                Learn what communities can do with StationX
+                Watch video
               </p>
-              <button
-                onClick={() => {
-                  setShowVideoModal(true);
-                }}
-                className={classes.watchBtn}>
-                <BsFillPlayFill color="#EFEFEF" size={30} />
-                <p
-                  style={{
-                    fontSize: "18px",
-                    color: "#EFEFEF",
-                    margin: 0,
-                    padding: 0,
-                  }}>
-                  Watch video
-                </p>
-              </button>
-            </div>
+            </button>
           </div>
-        )}
-
-        {manageStation ? (
-          <>
-            {isUserWhitelisted ? (
-              <Grid
-                container
-                direction="row"
-                justifyContent="center"
-                alignItems="start"
-                mt={2}
-                mb={0}>
-                <Grid item md={5}>
-                  <Card>
-                    <div className={classes.flex}>
-                      <Grid item>
-                        <Typography variant="heading">My Stations</Typography>
-                      </Grid>
-                      <Grid>
-                        <Button onClick={handleCreateButtonClick}>
-                          Create new
-                        </Button>
-                      </Grid>
-                    </div>
-                    <Divider className={classes.divider} />
-                    <div>
-                      <div style={{ overflowY: "scroll", maxHeight: "60vh" }}>
-                        {walletAddress && clubListData.length ? (
-                          clubListData
-                            .reverse()
-                            .filter(
-                              (club) => !OMIT_DAOS.includes(club.daoAddress),
-                            )
-                            .map((club, key) => {
-                              return (
-                                <ListItemButton
-                                  style={{ marginBottom: "8px" }}
-                                  key={key}
-                                  onClick={(e) => {
-                                    handleItemClick(clubListData[key]);
-                                  }}>
-                                  <Grid
-                                    container
-                                    className={classes.flexContainer}>
-                                    <Grid item md={6}>
-                                      <Stack spacing={0}>
-                                        <Typography variant="subheading">
-                                          {club.daoName}
-                                        </Typography>
-                                        <Typography
-                                          variant="body"
-                                          className="text-blue">
-                                          {shortAddress(club.userAddress)}
-                                        </Typography>
-                                      </Stack>
-                                    </Grid>
-                                    <Grid>
-                                      <Stack
-                                        spacing={0}
-                                        alignItems="flex-end"
-                                        justifyContent="flex-end">
-                                        <Typography
-                                          variant="body"
-                                          className="text-blue">
-                                          {club.isAdmin ? "Admin" : "Member"}
-                                        </Typography>
-                                      </Stack>
-                                    </Grid>
-                                  </Grid>
-                                </ListItemButton>
-                              );
-                            })
-                        ) : (
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              flexDirection: "column",
-                            }}>
-                            <h3
-                              style={{
-                                fontSize: "20px",
-                                fontWeight: "400",
-                                marginBottom: 0,
-                              }}>
-                              No stations found
-                            </h3>
-                            <p style={{ color: "#dcdcdc", fontWeight: "300" }}>
-                              Station(s) you created or a part of appear here
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </Card>
-                </Grid>
-              </Grid>
-            ) : (
-              <InviteCard setIsUserWhitelisted={setIsUserWhitelisted} />
-            )}
-          </>
-        ) : null}
-
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          scroll="body"
-          PaperProps={{ classes: { root: classes.modalStyle } }}
-          fullWidth
-          maxWidth="lg">
-          <DialogContent
-            sx={{ overflow: "hidden", backgroundColor: "#19274B" }}>
-            <Grid
-              container
-              justifyContent="center"
-              alignItems="center"
-              direction="column"
-              mt={3}>
-              <Grid item pl={15}>
-                <img
-                  src="/assets/images/connected_world_wuay.svg"
-                  width="80%"
-                />
-              </Grid>
-              <Grid item m={3}>
-                <Typography className={classes.dialogBox}>
-                  You are in the wrong network, please switch to the correct
-                  network by clicking the button provided below
-                </Typography>
-              </Grid>
-              <Grid item m={3}>
-                <Button
-                  variant="primary"
-                  onClick={() => {
-                    handleSwitchNetwork();
-                  }}>
-                  Switch Network
-                </Button>
-              </Grid>
-            </Grid>
-          </DialogContent>
-        </Dialog>
+        </div>
 
         {showVideoModal && (
           <VideoModal
             onClose={() => {
               setShowVideoModal(false);
             }}
+          />
+        )}
+
+        {showNetworkModal && (
+          <NetworkSwitcher
+            onClose={() => {
+              setShowNetworkModal(false);
+            }}
+            supportedNetworks={stationNetworksChainId}
           />
         )}
       </div>

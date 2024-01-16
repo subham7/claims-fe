@@ -19,6 +19,8 @@ const Mint = ({
   isSigned,
   isW8BenSigned,
   isSignable,
+  approveERC721Handler,
+  allowanceValue,
 }) => {
   const isButtonDisabled = () => {
     if (isSignable) {
@@ -44,6 +46,8 @@ const Mint = ({
 
     return false;
   };
+
+  const inputValue = clubData.pricePerToken * count;
 
   return (
     <div className={classes.mintContainer}>
@@ -71,13 +75,21 @@ const Mint = ({
           </div>
         </div>
         <Button
-          onClick={claimNFTHandler}
+          onClick={
+            Number(inputValue) > allowanceValue
+              ? approveERC721Handler
+              : claimNFTHandler
+          }
           sx={{
             width: "130px",
           }}
           disabled={isButtonDisabled()}
           variant="contained">
-          {hasClaimed ? "Minted" : "Mint"}
+          {hasClaimed
+            ? "Minted"
+            : Number(inputValue) > allowanceValue
+            ? "Approve"
+            : "Mint"}
         </Button>
       </div>
 

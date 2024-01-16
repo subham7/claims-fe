@@ -82,10 +82,10 @@ export default function Step3(props) {
         works for you.
       </Typography>
       <br />
-      <Typography variant="body" className="text-blue">
+      <Typography variant="body" className="text-blue b-pad-1">
         Configure Treasury
       </Typography>
-      <Typography variant="info" className="text-light-gray">
+      <Typography variant="body" className="text-light-gray">
         Where do you want to store funds/assets of this station?
       </Typography>
 
@@ -97,7 +97,7 @@ export default function Step3(props) {
         aria-label="deploySafe"
         name="deploySafe"
         id="deploySafe"
-        className="b-pad-1"
+        className="tb-pad-1"
         // className={classes.selectContainer}
       >
         <ToggleButton
@@ -120,7 +120,7 @@ export default function Step3(props) {
       {props.formik.values.deploySafe === "oldSafe" &&
         allSafeAddresses?.length > 0 && (
           <>
-            <Typography variant="body" className="text-blue">
+            <Typography variant="body" className="text-blue t-pad-d b-pad-1">
               Select from existing multi-sig wallet(s)
             </Typography>
             <Autocomplete
@@ -132,6 +132,7 @@ export default function Step3(props) {
               }}
               renderInput={(params) => (
                 <TextField
+                  className="b-pad-1"
                   name="safeAddress"
                   {...params}
                   label="Safe address"
@@ -148,7 +149,6 @@ export default function Step3(props) {
                 />
               )}
             />
-
             <p
               style={{
                 margin: "0",
@@ -167,6 +167,7 @@ export default function Step3(props) {
       {props.formik.values.deploySafe === "oldSafe" &&
         props.formik.values.safeAddress?.length > 0 && (
           <>
+            <br />
             <Typography variant="body" className="text-blue">
               Signators
             </Typography>
@@ -175,7 +176,7 @@ export default function Step3(props) {
                 {ownerAddresses.map((data, key) => {
                   return (
                     <>
-                      <div className="f-d f-v-c tb-pad-1">
+                      <div className="f-d f-v-c b-pad-1">
                         <TextField
                           label="Owner address"
                           // error={!/^0x[a-zA-Z0-9]+/gm.test(addressList[key])}
@@ -202,9 +203,9 @@ export default function Step3(props) {
           </>
         )}
 
-      <br />
       {props.formik.values.deploySafe === "newSafe" && (
         <>
+          <br />
           <Typography variant="body" className="text-blue">
             Wallet Signators
           </Typography>
