@@ -119,7 +119,7 @@ const App = () => {
   const showStationsHandler = async () => {
     if (isMainLink) {
       window.open("https://tally.so/r/nG64GQ", "_blank");
-    } else if (networkId !== "0x89") {
+    } else if (networkId !== "0x89" && networkId !== "0x5") {
       await requestEthereumChain("wallet_switchEthereumChain", [
         { chainId: "0x89" },
       ]);

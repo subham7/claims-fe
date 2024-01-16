@@ -124,7 +124,13 @@ export default function ERC20Step2(props) {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end" sx={{ color: "#dcdcdc" }}>
-                      USDC
+                      {CHAIN_CONFIG[props.networkId].usdcAddress ===
+                      props.formik.values.depositToken
+                        ? "USDC"
+                        : CHAIN_CONFIG[props.networkId].nativeToken ===
+                          props.formik.values.depositToken
+                        ? CHAIN_CONFIG[props.networkId].nativeCurrency.symbol
+                        : ""}
                     </InputAdornment>
                   ),
                 }}
@@ -163,7 +169,13 @@ export default function ERC20Step2(props) {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end" sx={{ color: "#dcdcdc" }}>
-                      USDC
+                      {CHAIN_CONFIG[props.networkId].usdcAddress ===
+                      props.formik.values.depositToken
+                        ? "USDC"
+                        : CHAIN_CONFIG[props.networkId].nativeToken ===
+                          props.formik.values.depositToken
+                        ? CHAIN_CONFIG[props.networkId].nativeCurrency.symbol
+                        : ""}
                     </InputAdornment>
                   ),
                 }}
@@ -202,7 +214,13 @@ export default function ERC20Step2(props) {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end" sx={{ color: "#dcdcdc" }}>
-                      USDC
+                      {CHAIN_CONFIG[props.networkId].usdcAddress ===
+                      props.formik.values.depositToken
+                        ? "USDC"
+                        : CHAIN_CONFIG[props.networkId].nativeToken ===
+                          props.formik.values.depositToken
+                        ? CHAIN_CONFIG[props.networkId].nativeCurrency.symbol
+                        : ""}
                     </InputAdornment>
                   ),
                 }}
@@ -241,7 +259,13 @@ export default function ERC20Step2(props) {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end" sx={{ color: "#dcdcdc" }}>
-                      USDC
+                      {CHAIN_CONFIG[props.networkId].usdcAddress ===
+                      props.formik.values.depositToken
+                        ? "USDC"
+                        : CHAIN_CONFIG[props.networkId].nativeToken ===
+                          props.formik.values.depositToken
+                        ? CHAIN_CONFIG[props.networkId].nativeCurrency.symbol
+                        : ""}
                     </InputAdornment>
                   ),
                 }}

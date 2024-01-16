@@ -34,6 +34,7 @@ import { useAccount, useNetwork } from "wagmi";
 import { CHAIN_CONFIG, ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import useClubFetch from "hooks/useClubFetch";
 import { NFT_STORAGE_TOKEN } from "api/token";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
 
 const Create = () => {
   const steps = ["Add basic info", "Configure token", "Set controls"];
@@ -44,7 +45,7 @@ const Create = () => {
 
   const { address: walletAddress } = useAccount();
   useClubFetch({ networkId: networkId });
-
+  const { getDecimals } = useCommonContractMethods();
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const [open, setOpen] = useState(false);
@@ -153,6 +154,7 @@ const Create = () => {
     onSubmit: async (values) => {
       setOpen(true);
       setLoader(true);
+
       if (formikStep1.values.clubTokenType === "NFT") {
         // dispatch(setUploadNFTLoading(true));
         const client = new NFTStorage({
@@ -215,6 +217,15 @@ const Create = () => {
         }
       } else {
         try {
+          debugger;
+          const depositTokenAddress = formikERC20Step2.values.depositToken;
+          const isNativeToken =
+            depositTokenAddress ===
+            CHAIN_CONFIG[networkId].nativeToken.toLowerCase();
+          const decimals = isNativeToken
+            ? 18
+            : await getDecimals(depositTokenAddress);
+
           const params = {
             clubName: formikStep1.values.clubName,
             clubSymbol: formikStep1.values.clubSymbol,
@@ -225,15 +236,15 @@ const Create = () => {
             ),
             pricePerToken: convertToWeiGovernance(
               formikERC20Step2.values.pricePerToken,
-              6,
+              decimals,
             ),
             minDepositPerUser: convertToWeiGovernance(
               formikERC20Step2.values.minDepositPerUser,
-              6,
+              decimals,
             ),
             maxDepositPerUser: convertToWeiGovernance(
               formikERC20Step2.values.maxDepositPerUser,
-              6,
+              decimals,
             ),
             ownerFeePerDepositPercent: 0 * 100,
             depositClose: dayjs(formikERC20Step2.values.depositClose).unix(),

@@ -88,6 +88,7 @@ export const QUERY_STATION_DETAILS = (daoAddress) => {
                 minDepositAmount
                 maxTokensPerUser
                 depositDeadline
+                depositTokenAddress
               }
       }`;
 };

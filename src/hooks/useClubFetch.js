@@ -103,6 +103,7 @@ const useClubFetch = ({ daoAddress, networkId }) => {
               totalAmountRaised: clubData.stations[0].totalAmountRaised,
               distributionAmount: clubData.stations[0].distributionAmount,
               maxTokensPerUser: clubData.stations[0].maxTokensPerUser,
+              depositTokenAddress: clubData.stations[0].depositTokenAddress,
             }),
           );
         }

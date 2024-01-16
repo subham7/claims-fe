@@ -106,7 +106,7 @@ export const CHAIN_CONFIG = {
     appRpcUrl: `https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
     factoryContractAddress: "0x833087e80EA04b5127Ac7F13511C65AAC2ef3BBf",
     stationSubgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/subham7/stnx-be-goerli",
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-goerli-2/0.0.2/gn",
     claimFactoryAddress: "0x14E92a30fc70F8544b0DDB5fd87B773bC0DD68e6",
     claimsSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim",

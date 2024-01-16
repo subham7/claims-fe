@@ -186,7 +186,17 @@ const useAppContractMethods = (params) => {
     userAddress,
     numOfTokens,
     merkleProof,
+    value,
   ) => {
+    console.log({
+      address: CHAIN_CONFIG[networkId].factoryContractAddress,
+      abi: factoryContractABI,
+      functionName: "buyGovernanceTokenERC20DAO",
+      args: [userAddress, daoAddress, numOfTokens, merkleProof],
+      account: walletAddress,
+      value: value,
+      networkId,
+    });
     try {
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
@@ -194,6 +204,7 @@ const useAppContractMethods = (params) => {
         functionName: "buyGovernanceTokenERC20DAO",
         args: [userAddress, daoAddress, numOfTokens, merkleProof],
         account: walletAddress,
+        value: value,
         networkId,
       });
       return res;

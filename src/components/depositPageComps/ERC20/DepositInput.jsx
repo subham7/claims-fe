@@ -67,7 +67,7 @@ const DepositInput = ({
       <Button
         disabled={isDisabled}
         onClick={
-          Number(inputValue) > allowanceValue
+          !tokenDetails?.isNativeToken && Number(inputValue) < allowanceValue
             ? approveERC20Handler
             : formik.handleSubmit
         }
@@ -77,7 +77,7 @@ const DepositInput = ({
           padding: "10px 0",
           margin: "10px 0",
         }}>
-        {Number(inputValue) > allowanceValue ? "Approve" : "Deposit"}
+        {Number(inputValue) < allowanceValue ? "Approve" : "Deposit"}
       </Button>
     </>
   );
