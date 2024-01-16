@@ -98,7 +98,7 @@ const Transactions = ({ networkId }) => {
             <div className="tb-pad-2 f-d f-h-c f-v-c">
               <CircularProgress />
             </div>
-          ) : !loading && transactions.length === 0 ? (
+          ) : !loading && !transactions.length ? (
             <div className="tb-pad-2 f-d f-h-c f-v-c">
               <Typography variant="subheading">
                 No Transactions to show

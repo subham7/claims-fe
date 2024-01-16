@@ -321,7 +321,7 @@ export const getProposalValidationSchema = ({
       .number("Enter price per token")
       .test(
         "invalidPricePerToken",
-        "Enter deposit amount should be greater than current amount",
+        "price of token should be greater than current price",
         async (value, context) => {
           const { actionCommand } = context.parent;
           if (actionCommand === 13) {

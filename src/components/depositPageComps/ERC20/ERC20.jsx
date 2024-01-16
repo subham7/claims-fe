@@ -281,13 +281,14 @@ const ERC20 = ({
   };
 
   const isDepositDisabled = () => {
-    if (
-      typeof isSigned !== "undefined" &&
-      typeof isW8BenSigned !== "undefined"
-    ) {
-      if (!isSigned) return true;
-      if (!isW8BenSigned) return true;
-    }
+    // if (
+    //   typeof isSigned !== "undefined" &&
+    //   typeof isW8BenSigned !== "undefined"
+    // ) {
+    //   if (!isSigned) return true;
+    //   if (!isW8BenSigned) return true;
+    // }
+
     const isRemainingTimeInvalid =
       remainingDays < 0 || remainingTimeInSecs <= 0;
     if (isRemainingTimeInvalid) return true;

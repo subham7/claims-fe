@@ -96,8 +96,14 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
           setLoadingCsv(false);
         } else {
           const { addresses, amounts } = csvToObjectForMintGT(csvData);
-          formik.values.mintGTAmounts = amounts;
-          formik.values.mintGTAddresses = addresses;
+          if (formik.values.actionCommand === 21) {
+            formik.values.sendTokenAmounts = amounts;
+            formik.values.sendTokenAddresses = addresses;
+          } else {
+            formik.values.mintGTAmounts = amounts;
+            formik.values.mintGTAddresses = addresses;
+          }
+
           setLoadingCsv(false);
         }
       };

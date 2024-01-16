@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from "react";
+import { React, useState } from "react";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 
@@ -6,10 +6,13 @@ import NewCard from "../src/components/cards/card";
 import Layout from "../src/components/layouts/layout";
 import { BsFillPlayFill } from "react-icons/bs";
 import VideoModal from "../src/components/modals/VideoModal";
-import { useAccount, useNetwork } from "wagmi";
-import { requestEthereumChain } from "utils/helper";
+import { useNetwork } from "wagmi";
 import useClubFetch from "hooks/useClubFetch";
-import { getReferralCode } from "api/invite/invite";
+import {
+  ALLOWED_NETWORKS_FOR_STATION,
+  stationNetworksChainId,
+} from "utils/constants";
+import NetworkSwitcher from "@components/modals/NetworkSwitcher/NetworkSwitcher";
 
 const useStyles = makeStyles({
   container: {
@@ -106,10 +109,9 @@ const useStyles = makeStyles({
 
 const App = () => {
   const classes = useStyles();
-  const { address: walletAddress } = useAccount();
-
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [isMainLink, setIsMainLink] = useState(false);
+  const [showNetworkModal, setShowNetworkModal] = useState(false);
 
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
@@ -119,10 +121,8 @@ const App = () => {
   const showStationsHandler = async () => {
     if (isMainLink) {
       window.open("https://tally.so/r/nG64GQ", "_blank");
-    } else if (networkId !== "0x89" && networkId !== "0x5") {
-      await requestEthereumChain("wallet_switchEthereumChain", [
-        { chainId: "0x89" },
-      ]);
+    } else if (!ALLOWED_NETWORKS_FOR_STATION.includes(networkId)) {
+      setShowNetworkModal(true);
     } else {
       router.push("/stations");
     }
@@ -131,23 +131,6 @@ const App = () => {
   const claimsHandler = () => {
     router.push(`/claims/`);
   };
-
-  useEffect(() => {
-    (async () => {
-      try {
-        if (walletAddress) {
-          const code = await getReferralCode(walletAddress);
-          if (code) {
-            setIsUserWhitelisted(true);
-          } else {
-            setIsUserWhitelisted(false);
-          }
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    })();
-  }, [walletAddress]);
 
   return (
     <Layout showSidebar={false} faucet={false}>
@@ -166,9 +149,9 @@ const App = () => {
                 "Creating a Station is the easiest way to start managing money/assets towards shared goals"
               }
               buttonText={
-                networkId === "0x89" || networkId === "0x5"
+                ALLOWED_NETWORKS_FOR_STATION.includes(networkId)
                   ? "Enter App"
-                  : "Switch to polygon"
+                  : "Switch to supported network"
               }
             />
             <NewCard
@@ -216,6 +199,15 @@ const App = () => {
             onClose={() => {
               setShowVideoModal(false);
             }}
+          />
+        )}
+
+        {showNetworkModal && (
+          <NetworkSwitcher
+            onClose={() => {
+              setShowNetworkModal(false);
+            }}
+            supportedNetworks={stationNetworksChainId}
           />
         )}
       </div>

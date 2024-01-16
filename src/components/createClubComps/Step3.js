@@ -149,7 +149,6 @@ export default function Step3(props) {
                 />
               )}
             />
-
             <p
               style={{
                 margin: "0",
@@ -168,6 +167,7 @@ export default function Step3(props) {
       {props.formik.values.deploySafe === "oldSafe" &&
         props.formik.values.safeAddress?.length > 0 && (
           <>
+            <br />
             <Typography variant="body" className="text-blue">
               Signators
             </Typography>
@@ -203,9 +203,9 @@ export default function Step3(props) {
           </>
         )}
 
-      <br />
       {props.formik.values.deploySafe === "newSafe" && (
         <>
+          <br />
           <Typography variant="body" className="text-blue">
             Wallet Signators
           </Typography>

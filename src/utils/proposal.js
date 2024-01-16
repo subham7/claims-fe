@@ -188,6 +188,14 @@ export const fetchABI = async (executionId, tokenType) => {
       return factoryContractABI;
     case 8:
       return seaportABI;
+    case 21:
+    case 22:
+    case 23:
+      return [
+        "function approve(address spender, uint256 amount)",
+        "function contractCalls(address _to, bytes memory _data)",
+        "function airDropToken(address _airdropTokenAddress,uint256[] memory _airdropAmountArray,address[] memory _members)",
+      ];
     default:
       return null;
   }
@@ -230,6 +238,9 @@ export const getEncodedData = async ({
     merkleRoot,
     pricePerToken,
     nftSupply,
+    sendTokenAmounts,
+    sendTokenAddresses,
+    sendToken,
   } = proposalData.commands[0];
   let iface;
   if (contractABI) iface = new Interface(contractABI);
@@ -317,9 +328,16 @@ export const getEncodedData = async ({
           QUERY_STATION_DETAILS(daoAddress),
         );
         const tokenURI = clubDetails?.stations[0].imageUrl;
+
+        const tokenURIArr = [];
+
+        for (let i = 0; i < mintGTAddresses.length; i++) {
+          tokenURIArr.push(tokenURI);
+        }
+
         data = iface.encodeFunctionData("mintGTToAddress", [
           mintGTAmounts,
-          [tokenURI],
+          tokenURIArr,
           mintGTAddresses,
         ]);
       }
@@ -470,6 +488,34 @@ export const getEncodedData = async ({
         daoAddress,
       ]);
       return { data };
+
+    case 21:
+    case 22:
+    case 23:
+      if (sendToken === CHAIN_CONFIG[networkId].nativeToken) {
+        return {};
+      } else {
+        const totalAmount = sendTokenAmounts.reduce(
+          (partialSum, a) => partialSum + Number(a),
+          0,
+        );
+
+        approvalData = iface.encodeFunctionData("approve", [
+          CHAIN_CONFIG[networkId]?.airdropContractAddress,
+          (totalAmount * 2).toString(),
+        ]);
+
+        data = iface.encodeFunctionData("airDropToken", [
+          sendToken,
+          sendTokenAmounts,
+          sendTokenAddresses,
+        ]);
+
+        membersArray = sendTokenAddresses;
+        airDropAmountArray = sendTokenAmounts;
+
+        return { data, approvalData, membersArray, airDropAmountArray };
+      }
     default:
       return {};
   }
@@ -682,6 +728,24 @@ const withdrawErc20MethodEncoded = (
     .encodeABI();
 };
 
+const disburseTokenMethodEncoded = (
+  actionContractAddress,
+  amountArray,
+  members,
+  web3Call,
+) => {
+  if (actionContractAddress) {
+    const actionContractSend = new web3Call.eth.Contract(
+      disburseContractABI,
+      actionContractAddress,
+    );
+
+    return actionContractSend.methods
+      .disburseNative(members, amountArray)
+      .encodeABI();
+  }
+};
+
 export const getTransaction = async ({
   proposalData,
   daoAddress,
@@ -711,6 +775,8 @@ export const getTransaction = async ({
     swapAmount,
     stakeAmount,
     unstakeAmount,
+    sendTokenAmounts,
+    sendTokenAddresses,
   } = proposalData.commands[0];
   let approvalTransaction;
   let transaction;
@@ -1045,6 +1111,54 @@ export const getTransaction = async ({
         value: "0",
       };
       return { transaction, approvalTransaction };
+    case 21:
+    case 22:
+    case 23:
+      const totalAmount = sendTokenAmounts.reduce(
+        (partialSum, a) => partialSum + Number(a),
+        0,
+      );
+
+      if (tokenData === CHAIN_CONFIG[networkId].nativeToken) {
+        transaction = {
+          to: Web3.utils.toChecksumAddress(
+            CHAIN_CONFIG[networkId]?.disburseContractAddress,
+          ),
+          data: disburseTokenMethodEncoded(
+            CHAIN_CONFIG[networkId]?.disburseContractAddress,
+            sendTokenAmounts,
+            sendTokenAddresses,
+            web3Call,
+          ),
+          value: totalAmount.toString(),
+        };
+        return { transaction };
+      } else {
+        approvalTransaction = {
+          to: Web3.utils.toChecksumAddress(tokenData),
+          data: approveDepositWithEncodeABI(
+            tokenData,
+            CHAIN_CONFIG[networkId]?.airdropContractAddress,
+            (totalAmount * 2).toString(),
+            web3Call,
+          ),
+          value: "0",
+        };
+        transaction = {
+          to: Web3.utils.toChecksumAddress(
+            CHAIN_CONFIG[networkId]?.airdropContractAddress,
+          ),
+          data: airdropTokenMethodEncoded(
+            CHAIN_CONFIG[networkId]?.airdropContractAddress,
+            tokenData,
+            airDropAmountArray,
+            membersArray,
+            web3Call,
+          ),
+          value: 0,
+        };
+        return { transaction, approvalTransaction };
+      }
   }
 };
 
@@ -1103,6 +1217,10 @@ export const getTokenTypeByExecutionId = (commands) => {
       return commands[0]?.stakeToken;
     case 18:
       return commands[0]?.unstakeToken;
+    case 21:
+    case 22:
+    case 23:
+      return commands[0]?.sendToken;
     default:
       return "";
   }
