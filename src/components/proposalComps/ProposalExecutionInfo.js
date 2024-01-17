@@ -71,6 +71,8 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
     swapToken,
     swapAmount,
     destinationToken,
+    sendTokenAmounts,
+    sendToken,
   } = proposalData?.commands[0];
 
   const fetchAirDropContractDetails = useCallback(async () => {
@@ -82,7 +84,8 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
         withdrawToken ||
         stakeToken ||
         unstakeToken ||
-        swapToken
+        swapToken ||
+        sendToken
       ) {
         const decimal = await getDecimals(
           airDropToken
@@ -97,7 +100,9 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
             ? stakeToken
             : unstakeToken
             ? unstakeToken
-            : swapToken,
+            : swapToken
+            ? swapToken
+            : sendToken,
         );
         const symbol = await getTokenSymbol(
           airDropToken
@@ -112,7 +117,9 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
             ? stakeToken
             : unstakeToken
             ? unstakeToken
-            : swapToken,
+            : swapToken
+            ? swapToken
+            : sendToken,
         );
 
         const amount = convertFromWeiGovernance(

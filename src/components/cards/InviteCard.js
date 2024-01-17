@@ -125,7 +125,7 @@ const InviteCard = ({ setIsUserWhitelisted }) => {
       }
     } catch (e) {
       console.error("Error whitelisting user", e);
-      setIsUserWhitelisted(false);
+      setIsUserWhitelisted && setIsUserWhitelisted(false);
     } finally {
       setLoading(false);
     }

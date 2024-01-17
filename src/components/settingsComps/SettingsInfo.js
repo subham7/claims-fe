@@ -23,6 +23,7 @@ import ReactHtmlParser from "react-html-parser";
 import EditDetails from "./modals/EditDetails";
 import { useNetwork } from "wagmi";
 import { getTotalTreasuryAmount } from "api/club";
+import { useSelector } from "react-redux";
 
 const SettingsInfo = ({
   daoDetails,
@@ -43,6 +44,10 @@ const SettingsInfo = ({
 
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
+
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
+  });
 
   const handleClose = (event, reason) => {
     if (reason !== "backdropClick" && reason !== "escapeKeyDown") {
@@ -497,6 +502,15 @@ const SettingsInfo = ({
                     )
                   }
                 />
+              ) : tokenType === "erc20" ? (
+                <>
+                  <ProgressBar
+                    value={
+                      (Number(clubData.totalAmountRaised) * 100) /
+                      Number(clubData.raiseAmount)
+                    }
+                  />
+                </>
               ) : (
                 <Skeleton variant="rectangular" />
               )}
