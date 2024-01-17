@@ -11,6 +11,9 @@ import { useAccount, useNetwork } from "wagmi";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
+import { getPublicClient } from "utils/viemConfig";
+import { CHAIN_CONFIG } from "utils/constants";
+import { formatEther } from "viem";
 
 const Settings = ({ daoAddress }) => {
   const [daoDetails, setDaoDetails] = useState({
@@ -75,6 +78,7 @@ const Settings = ({ daoAddress }) => {
   const day2 = dayjs.unix(daoDetails.depositDeadline);
   const remainingTimeInSecs = day2.diff(day1, "seconds");
   const remainingDays = day2.diff(day1, "day");
+  const publicClient = getPublicClient(networkId);
 
   const {
     getERC20DAOdetails,
@@ -93,7 +97,6 @@ const Settings = ({ daoAddress }) => {
       const erc20Data = await getERC20DAOdetails();
       const erc20DaoDecimal = await getDecimals(daoAddress);
       const clubTokensMinted = await getERC20TotalSupply();
-
       if (erc20Data && factoryData) {
         setDaoDetails({
           daoName: erc20Data.DaoName,
@@ -125,10 +128,30 @@ const Settings = ({ daoAddress }) => {
 
   const fetchErc20TokenDetails = useCallback(async () => {
     try {
-      const balanceOfToken = await getBalance(factoryData.depositTokenAddress);
-      const decimals = await getDecimals(factoryData.depositTokenAddress);
-      const symbol = await getTokenSymbol(factoryData.depositTokenAddress);
-      const name = await getTokenName(factoryData.depositTokenAddress);
+      const isNativeToken =
+        factoryData.depositTokenAddress.toLowerCase() ===
+        CHAIN_CONFIG[networkId].nativeToken.toLowerCase();
+      let balanceOfToken;
+
+      if (isNativeToken) {
+        balanceOfToken = formatEther(
+          await publicClient.getBalance({
+            address: walletAddress,
+          }),
+        );
+      } else {
+        balanceOfToken = await getBalance(factoryData.depositTokenAddress);
+      }
+
+      const decimals = isNativeToken
+        ? 18
+        : await getDecimals(factoryData.depositTokenAddress);
+      const symbol = isNativeToken
+        ? CHAIN_CONFIG[networkId].nativeCurrency.symbol
+        : await getTokenSymbol(factoryData.depositTokenAddress);
+      const name = isNativeToken
+        ? CHAIN_CONFIG[networkId].nativeCurrency.name
+        : await getTokenName(factoryData.depositTokenAddress);
 
       const balanceConverted = convertFromWeiGovernance(
         balanceOfToken,

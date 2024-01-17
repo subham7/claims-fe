@@ -36,25 +36,26 @@ export default function ERC20Step2(props) {
                 Deposit Token
               </Typography>
             </div>
-
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">Token</InputLabel>
-              <Select
-                labelId="depositToken-label"
-                id="depositToken"
-                name="depositToken"
-                value={props.formik.values.depositToken}
-                label="Token"
-                onChange={props.formik.handleChange}>
-                <MenuItem value={CHAIN_CONFIG[props.networkId].usdcAddress}>
-                  USDC
-                </MenuItem>
-                <MenuItem value={CHAIN_CONFIG[props.networkId].nativeToken}>
-                  {" "}
-                  {CHAIN_CONFIG[props.networkId].nativeCurrency.symbol}
-                </MenuItem>
-              </Select>
-            </FormControl>
+            <div className="w-50">
+              <FormControl fullWidth>
+                <InputLabel>Token</InputLabel>
+                <Select
+                  id="depositToken"
+                  name="depositToken"
+                  value={props.formik.values.depositToken}
+                  label="Token"
+                  onChange={props.formik.handleChange}
+                  fullWidth>
+                  <MenuItem value={CHAIN_CONFIG[props.networkId].usdcAddress}>
+                    USDC
+                  </MenuItem>
+                  <MenuItem value={CHAIN_CONFIG[props.networkId].nativeToken}>
+                    {" "}
+                    {CHAIN_CONFIG[props.networkId].nativeCurrency.symbol}
+                  </MenuItem>
+                </Select>
+              </FormControl>
+            </div>
           </div>
         </Card>
 
