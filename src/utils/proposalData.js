@@ -132,6 +132,13 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
       };
     case 20:
       return { "New nft supply": `${nftSupply}` };
+    case 24:
+      return {
+        "Deposit Amount :": `${convertFromWeiGovernance(
+          depositAmount,
+          decimals,
+        )} $${symbol}`,
+      };
     default:
       return {};
   }
@@ -1833,6 +1840,15 @@ export const proposalDetailsData = ({
         ).toFixed(4),
         Recipients: "All Members",
       };
+      return responseData;
+    case 24:
+      responseData.data = {
+        "Deposit Amount": `${convertFromWeiGovernance(
+          depositAmount,
+          decimals,
+        )} ${symbol}`,
+      };
+
       return responseData;
 
     default:

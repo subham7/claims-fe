@@ -671,6 +671,36 @@ export const getProposalValidationSchema = ({
           return true;
         },
       ),
+
+    clipFinanceDepositAmount: yup
+      .number("Please enter amount")
+      .test(
+        "invalidClipFinanceDepositAmount",
+        `Enter an amount less or equal to treasury balance`,
+        async (value, context) => {
+          const { actionCommand, clipFinanceDepositToken } = context.parent;
+
+          if (actionCommand === 24) {
+            try {
+              const balance = await getBalance(
+                clipFinanceDepositToken,
+                gnosisAddress,
+              );
+              const decimals = await getDecimals(clipFinanceDepositToken);
+              if (
+                Number(value) <=
+                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                Number(value) > 0
+              ) {
+                return true;
+              } else return false;
+            } catch (error) {
+              return false;
+            }
+          }
+          return true;
+        },
+      ),
   });
 };
 
