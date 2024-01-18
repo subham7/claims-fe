@@ -52,7 +52,7 @@ const ProposalCard = ({ proposal, daoAddress }) => {
               ? daoAddress
               : executionId === 4
               ? customToken
-              : executionId === 14
+              : executionId === 14 || executionId === 24
               ? depositToken
               : executionId === 15
               ? withdrawToken
@@ -75,7 +75,7 @@ const ProposalCard = ({ proposal, daoAddress }) => {
             ? daoAddress
             : executionId === 4
             ? customToken
-            : executionId === 14
+            : executionId === 14 || executionId === 24
             ? depositToken
             : executionId === 15
             ? withdrawToken
