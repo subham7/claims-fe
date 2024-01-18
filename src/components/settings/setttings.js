@@ -11,6 +11,7 @@ import { useAccount, useNetwork } from "wagmi";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
+import WalletTracker from "@components/settingsComps/walletTracker/WalletTracker";
 
 const Settings = ({ daoAddress }) => {
   const [daoDetails, setDaoDetails] = useState({
@@ -196,8 +197,11 @@ const Settings = ({ daoAddress }) => {
 
   const getClubInfoFn = async () => {
     const info = await getClubInfo(daoAddress);
-    if (info.status === 200) setClubInfo(info.data[0]);
+    if (info.status === 200) {
+      setClubInfo(info.data[0]);
+    }
   };
+
   useEffect(() => {
     getClubInfoFn();
   }, [daoAddress]);
@@ -265,6 +269,9 @@ const Settings = ({ daoAddress }) => {
         daoAddress={daoAddress}
         factoryData={factoryData}
       />
+
+      <WalletTracker isAdminUser={isAdminUser} daoAddress={daoAddress} />
+
       <TokenGating daoAddress={daoAddress} />
     </>
   );
