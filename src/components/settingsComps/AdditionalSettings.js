@@ -517,7 +517,7 @@ const AdditionalSettings = ({
                 <Link
                   className={classes.link}
                   onClick={() => setShowNotificationsModal(true)}>
-                  Learn more
+                  Manage
                 </Link>
               </Grid>
             </Grid>
@@ -655,6 +655,7 @@ const AdditionalSettings = ({
       )}
       {showNotificationsModal && (
         <NotificationsModal
+          daoAddress={daoAddress}
           open={showNotificationsModal}
           onClose={() => setShowNotificationsModal(false)}
         />
