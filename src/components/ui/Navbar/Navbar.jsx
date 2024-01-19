@@ -46,14 +46,14 @@ const Navbar = () => {
           {address && (
             <div onClick={showNetworkModalHandler} className={classes.switch}>
               <Image
-                src={CHAIN_CONFIG[networkId].logoUri}
+                src={CHAIN_CONFIG[networkId]?.logoUri}
                 height={25}
                 width={25}
-                alt={CHAIN_CONFIG[networkId].shortName}
+                alt={CHAIN_CONFIG[networkId]?.shortName}
                 className={classes.networkImg}
               />
               <Typography variant="inherit">
-                {CHAIN_CONFIG[networkId].shortName}
+                {CHAIN_CONFIG[networkId]?.shortName}
               </Typography>
             </div>
           )}
