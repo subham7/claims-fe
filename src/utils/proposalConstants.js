@@ -36,6 +36,7 @@ export const proposalActionCommands = {
   22: "Send tokens to all members",
   23: "Send tokens pro rata basis",
   24: "Deposit tokens with clip-finance",
+  25: "Stake eth through eigen layer",
 };
 
 export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
@@ -425,6 +426,22 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
       section: "DeFi Pools",
       icon: sendIcon,
       availableOnNetworkIds: ["0xe708"],
+    },
+    {
+      key: 24,
+      value: "Stake",
+      text: "Deposit tokens with clip-finance",
+      section: "DeFi Pools",
+      icon: sendIcon,
+      availableOnNetworkIds: ["0xe708"],
+    },
+    {
+      key: 25,
+      icon: rewardIcon,
+      value: "Stake eth through eigen layer",
+      text: "Stake eth through eigen layer",
+      section: "DeFi Pools",
+      availableOnNetworkIds: ["0x5"],
     },
   ];
 };
