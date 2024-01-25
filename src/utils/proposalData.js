@@ -1916,6 +1916,7 @@ export const createOrUpdateSafeTransaction = async ({
   executionId,
   transaction,
   approvalTransaction,
+  stakeETHTransaction,
   nonce,
   executionStatus,
 }) => {
@@ -1930,6 +1931,7 @@ export const createOrUpdateSafeTransaction = async ({
     safeTransaction = await safeSdk.createTransaction({
       safeTransactionData: createSafeTransactionData({
         approvalTransaction,
+        stakeETHTransaction,
         transaction,
         nonce,
       }),
