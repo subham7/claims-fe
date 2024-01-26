@@ -139,6 +139,14 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
           decimals,
         )} $${symbol}`,
       };
+
+    case 25:
+      return {
+        "Withdraw Amount :": `${convertFromWeiGovernance(
+          withdrawAmount,
+          decimals,
+        )} $${symbol}`,
+      };
     default:
       return {};
   }
@@ -1403,6 +1411,74 @@ export const proposalFormData = ({
           </Grid>
         </>
       );
+
+    case 25:
+      return (
+        <>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            // mb={}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography variant="proposalBody">Token to be withdraw</Typography>
+            <Select
+              sx={{ marginTop: "0.5rem" }}
+              value={formik.values.clipFinanceWithdrawToken}
+              onChange={(e) =>
+                formik.setFieldValue(
+                  "clipFinanceWithdrawToken",
+                  filteredTokens.find(
+                    (token) => token.symbol === e.target.value,
+                  ).address,
+                )
+              }
+              renderValue={(selected) => {
+                if (selected.length === 0) {
+                  return "Select a command";
+                }
+                return selected;
+              }}
+              inputProps={{ "aria-label": "Without label" }}
+              name="clipFinanceWithdrawToken"
+              id="clipFinanceWithdrawToken">
+              {filteredTokens.map((token) => (
+                <MenuItem key={token.symbol} value={token.symbol}>
+                  {token.symbol}
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography variant="proposalBody">Amount of Tokens *</Typography>
+            <TextField
+              variant="outlined"
+              className={classes.textField}
+              placeholder="0"
+              type="number"
+              name="clipFinanceWithdrawAmount"
+              id="clipFinanceWithdrawAmount"
+              value={formik.values.clipFinanceWithdrawAmount}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.clipFinanceWithdrawAmount &&
+                Boolean(formik.errors.clipFinanceWithdrawAmount)
+              }
+              helperText={
+                formik.touched.clipFinanceWithdrawAmount &&
+                formik.errors.clipFinanceWithdrawAmount
+              }
+              onWheel={(event) => event.target.blur()}
+            />
+          </Grid>
+        </>
+      );
   }
 };
 
@@ -1657,6 +1733,18 @@ export const getProposalCommands = async ({
           tokenDecimal,
         ),
       };
+
+    case 25:
+      tokenDecimal = tokenData?.find(
+        (token) => token.address === values.clipFinanceWithdrawToken,
+      ).decimals;
+      return {
+        depositToken: values.clipFinanceWithdrawToken,
+        depositAmount: convertToWeiGovernance(
+          values.clipFinanceWithdrawAmount,
+          tokenDecimal,
+        ),
+      };
   }
 };
 
@@ -1845,6 +1933,16 @@ export const proposalDetailsData = ({
       responseData.data = {
         "Deposit Amount": `${convertFromWeiGovernance(
           depositAmount,
+          decimals,
+        )} ${symbol}`,
+      };
+
+      return responseData;
+
+    case 25:
+      responseData.data = {
+        "Withdraw Amount": `${convertFromWeiGovernance(
+          withdrawAmount,
           decimals,
         )} ${symbol}`,
       };

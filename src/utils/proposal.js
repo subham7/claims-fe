@@ -26,6 +26,7 @@ import { uniswapABI } from "abis/uniswapABI";
 import { encodeFunctionData } from "viem";
 import { Batch } from "abis/clip-finance/batch";
 import { StrategyRouter } from "abis/clip-finance/stragetgyRouter";
+import { getClipBalanceInShares } from "api/defi";
 
 export const fetchProposals = async (daoAddress, type) => {
   let proposalData;
@@ -566,6 +567,28 @@ const clipFinanceBatchDeposit = async ({
     .encodeABI();
 
   return { data, depositFee };
+};
+
+export const calculateSharesToWithdraw = async ({
+  withdrawAmount,
+  web3Call,
+  walletAddress,
+  networkId,
+}) => {
+  const shares = await getClipBalanceInShares(walletAddress);
+  console.log("xxxS", shares);
+
+  const strategyRouterContract = new web3Call.eth.Contract(
+    StrategyRouter,
+    CHAIN_CONFIG[networkId].clipFinanceStrategyRouterAddressLinea,
+  );
+
+  const usdFromShares = await strategyRouterContract.calculateSharesUsdValue(
+    shares,
+  );
+
+  const sharesToWithdraw = (withdrawAmount * shares) / usdFromShares;
+  return sharesToWithdraw;
 };
 
 const transferNFTfromSafe = (
@@ -1284,6 +1307,9 @@ export const getTokenTypeByExecutionId = (commands) => {
       return commands[0]?.sendToken;
     case 24:
       return commands[0]?.depositToken;
+
+    case 25:
+      return commands[0]?.withdrawToken;
     default:
       return "";
   }
