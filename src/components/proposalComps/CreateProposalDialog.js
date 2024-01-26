@@ -195,6 +195,7 @@ const CreateProposalDialog = ({ daoAddress }) => {
       clipFinanceDepositToken: tokenData ? tokenData[0]?.address : "",
       clipFinanceDepositAmount: 0,
       eigenStakeAmount: 0,
+      eigenUnstakeAmount: 0,
     },
     validationSchema: getProposalValidationSchema({
       networkId,

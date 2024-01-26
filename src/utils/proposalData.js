@@ -1441,6 +1441,45 @@ export const proposalFormData = ({
           />
         </Grid>
       );
+    case 26:
+      return (
+        <Grid
+          container
+          direction={"column"}
+          ml={3}
+          mt={2}
+          sx={{ marginLeft: "0 !important" }}>
+          <Typography variant="proposalBody">
+            Amount of eth to remove from stake *
+          </Typography>
+          <TextField
+            variant="outlined"
+            className={classes.textField}
+            placeholder="0"
+            type="number"
+            name="eigenUnstakeAmount"
+            id="eigenUnstakeAmount"
+            value={formik.values.eigenUnstakeAmount}
+            onChange={formik.handleChange}
+            // InputProps={{
+            //   endAdornment: (
+            //     <InputAdornment style={{ color: "#6475A3" }} position="end">
+            //       ETH
+            //     </InputAdornment>
+            //   ),
+            // }}
+            error={
+              formik.touched.eigenUnstakeAmount &&
+              Boolean(formik.errors.eigenUnstakeAmount)
+            }
+            helperText={
+              formik.touched.eigenUnstakeAmount &&
+              formik.errors.eigenUnstakeAmount
+            }
+            onWheel={(event) => event.target.blur()}
+          />
+        </Grid>
+      );
   }
 };
 
@@ -1698,6 +1737,10 @@ export const getProposalCommands = async ({
     case 25:
       return {
         eigenStakeAmount: values.eigenStakeAmount,
+      };
+    case 26:
+      return {
+        eigenUnstakeAmount: values.eigenUnstakeAmount,
       };
   }
 };

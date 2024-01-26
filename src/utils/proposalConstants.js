@@ -37,6 +37,7 @@ export const proposalActionCommands = {
   23: "Send tokens pro rata basis",
   24: "Deposit tokens with clip-finance",
   25: "Stake eth through eigen layer",
+  26: "Remove stake from eigen layer",
 };
 
 export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
@@ -440,6 +441,14 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
       icon: rewardIcon,
       value: "Stake eth through eigen layer",
       text: "Stake eth through eigen layer",
+      section: "DeFi Pools",
+      availableOnNetworkIds: ["0x5"],
+    },
+    {
+      key: 26,
+      icon: rewardIcon,
+      value: "Remove stake from eigen layer",
+      text: "Remove stake from eigen layer",
       section: "DeFi Pools",
       availableOnNetworkIds: ["0x5"],
     },
