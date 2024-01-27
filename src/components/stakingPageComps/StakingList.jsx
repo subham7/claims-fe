@@ -13,7 +13,7 @@ const DUMMY_LIST = [
   },
   {
     name: "Lido x ElgenLayer",
-    logo: "/assets/images/lido_elgen.png",
+    logo: "/assets/images/lido_elgen1.png",
     APY: "9.4",
     staked: "100",
     token: "ETH",
