@@ -1,0 +1,56 @@
+@import "../../../styles/variables.scss";
+
+.list {
+  display: flex;
+  margin-top: 28px;
+  gap: 20px;
+
+  .stakingCard {
+    width: 400px;
+    background-color: $background-primary;
+    padding: 20px;
+    border-radius: 12px;
+
+    .heading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid $divider-color;
+    }
+
+    .apyContainer {
+      display: flex;
+      padding: 20px 0;
+      div {
+        width: 50%;
+
+        .smallFont {
+          color: $gray;
+        }
+      }
+    }
+
+    .buttonContainer {
+      display: flex;
+      gap: 20px;
+      button {
+        background-color: #282828;
+        border: none;
+        outline: none;
+        padding: 12px 0;
+        width: 100%;
+        font-family: inherit;
+        border-radius: 12px;
+        font-weight: 500;
+        color: #707070;
+        color: white;
+        cursor: pointer;
+
+        &:hover {
+          background: $background-secondary;
+        }
+      }
+    }
+  }
+}
