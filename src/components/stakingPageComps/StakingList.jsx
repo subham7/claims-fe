@@ -7,17 +7,17 @@ const DUMMY_LIST = [
   {
     name: "Clip Finance",
     logo: "/assets/images/clipFinanceLogo.png",
-    APY: "70",
-    staked: "1800",
+    APY: "17.36",
+    staked: "0",
     token: "USDC",
   },
-  {
-    name: "Lido x ElgenLayer",
-    logo: "/assets/images/lido_elgen1.png",
-    APY: "9.4",
-    staked: "100",
-    token: "ETH",
-  },
+  // {
+  //   name: "Lido x ElgenLayer",
+  //   logo: "/assets/images/lido_elgen1.png",
+  //   APY: "9.4",
+  //   staked: "100",
+  //   token: "ETH",
+  // },
 ];
 
 const StakingList = ({ daoAddress }) => {
@@ -36,6 +36,7 @@ const StakingList = ({ daoAddress }) => {
             staked={item.staked}
             token={item.token}
             key={item.name}
+            daoAddress={daoAddress}
           />
         ))}
       </div>

@@ -24,7 +24,6 @@ import NoTokens from "./NoTokens";
 import TreasuryItem from "./TreasuryItem";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import InviteModal from "@components/modals/InviteModal";
-import { getClipBalanceInShares } from "api/defi";
 
 const Dashboard = ({ daoAddress, routeNeteworkId }) => {
   const [assetType, setAssetType] = useState("erc20");
@@ -243,10 +242,7 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
             subtext="Astronauts, welcome to your station"
             showButton
             buttonText="Send Invite"
-            // onClickHandler={() => setShowInviteModal(true)}
-            onClickHandler={async () => {
-              await getClipBalanceInShares(gnosisAddress.toLowerCase());
-            }}
+            onClickHandler={() => setShowInviteModal(true)}
           />
         </div>
 

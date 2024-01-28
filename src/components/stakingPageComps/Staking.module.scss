@@ -58,7 +58,7 @@
 
 .modal {
   width: 500px;
-  background-color: #151515;
+  background-color: $background-primary !important;
   border-radius: 16px;
 
   .nameContainer {
@@ -77,19 +77,18 @@
     .inputContainer {
       background-color: #282828;
       display: flex;
-      padding: 12px;
+      padding: 0 16px;
       border-radius: 8px;
       margin: 4px 0;
       align-items: center;
-      gap: 16px;
+      gap: 8px;
 
-      input {
+      .input {
         background-color: inherit;
         border: none;
         outline: none;
         width: 100%;
         font-family: inherit;
-        font-size: 20px;
         color: white;
         &::placeholder {
           color: $gray;
@@ -122,6 +121,7 @@
     font-family: inherit;
     color: white;
     font-size: 16px;
+    margin-top: 4px;
   }
 
   .buttonContainer {

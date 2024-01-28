@@ -1724,14 +1724,11 @@ export const getProposalCommands = async ({
 
     case 24:
       tokenDecimal = tokenData?.find(
-        (token) => token.address === values.clipFinanceDepositToken,
+        (token) => token.address === values.stakeTokenAddress.toLowerCase(),
       ).decimals;
       return {
-        depositToken: values.clipFinanceDepositToken,
-        depositAmount: convertToWeiGovernance(
-          values.clipFinanceDepositAmount,
-          tokenDecimal,
-        ),
+        depositToken: values.stakeTokenAddress,
+        depositAmount: convertToWeiGovernance(values.stakeAmount, tokenDecimal),
       };
 
     case 25:
