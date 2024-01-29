@@ -730,6 +730,7 @@ Cast your vote before ${new Date(
           <Typography fontWeight={"500"}>Proposal description</Typography>
           <Grid container item className={classes.listFont}>
             <div
+              className={classes.verticalScroll}
               dangerouslySetInnerHTML={{
                 __html: ReactHtmlParser(proposalData?.description),
               }}></div>

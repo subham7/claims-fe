@@ -7,7 +7,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ProgressBar from "../progressbar";
 
 import { SettingsInfoStlyes } from "./SettingsInfoStyles";
@@ -22,11 +22,11 @@ import { RiDiscordFill } from "react-icons/ri";
 import ReactHtmlParser from "react-html-parser";
 import EditDetails from "./modals/EditDetails";
 import { useNetwork } from "wagmi";
+import { getTotalTreasuryAmount } from "api/club";
 import { useSelector } from "react-redux";
 
 const SettingsInfo = ({
   daoDetails,
-  treasuryAmount,
   tokenType,
   erc20TokenDetails,
   members,
@@ -40,6 +40,8 @@ const SettingsInfo = ({
   const classes = SettingsInfoStlyes();
   const [open, setOpen] = useState(false);
 
+  const [treasuryAmount, setTreasuryAmount] = useState(0);
+
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
 
@@ -52,6 +54,24 @@ const SettingsInfo = ({
       setOpen(false);
     }
   };
+
+  const fetchTreasuryDetails = async () => {
+    try {
+      if (networkId !== "undefined") {
+        const assetsData = await getTotalTreasuryAmount(daoAddress);
+
+        setTreasuryAmount(assetsData?.balance);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (daoAddress) {
+      fetchTreasuryDetails();
+    }
+  }, [daoAddress]);
 
   return (
     <>

@@ -1,5 +1,5 @@
 import ComponentHeader from "@components/common/ComponentHeader";
-import { FormControl, MenuItem, Select, Typography } from "@mui/material";
+import { Tab, Tabs } from "@mui/material";
 import {
   getAssetsByDaoAddress,
   getNFTsByDaoAddress,
@@ -8,7 +8,6 @@ import {
 import { getProposalByDaoAddress } from "api/proposal";
 import { getTotalNumberOfTokenHolders } from "api/token";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
-// import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addNftsOwnedByDao } from "redux/reducers/club";
@@ -22,15 +21,24 @@ import { tableHeader } from "../../data/dashboard";
 import DashboardActivities from "./DashboardActivities";
 import NoTokens from "./NoTokens";
 import TreasuryItem from "./TreasuryItem";
-import useAppContractMethods from "hooks/useAppContractMethods";
 import InviteModal from "@components/modals/InviteModal";
+import { fetchClubByDaoAddress, getTotalTreasuryAmount } from "api/club";
+import WalletsTabs from "./WalletsTabs";
 
 const Dashboard = ({ daoAddress, routeNeteworkId }) => {
+  const gnosisAddress = useSelector((state) => {
+    return state.club.clubData.gnosisAddress;
+  });
+
+  const { chain } = useNetwork();
+  const dispatch = useDispatch();
+  const networkId = "0x" + chain?.id.toString(16);
+
   const [assetType, setAssetType] = useState("erc20");
   const [tokenDetails, setTokenDetails] = useState({
-    treasuryAmount: 0,
     tokenPriceList: [],
   });
+  const [treasuryAmount, setTreasuryAmount] = useState(0);
   const [clubDetails, setClubDetails] = useState({
     clubImageUrl: "",
     noOfMembers: 0,
@@ -38,23 +46,15 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
   const [myShare, setMyShare] = useState(0);
   const [nftData, setNftData] = useState([]);
   const [proposals, setProposals] = useState([]);
-  const [balanceOfUser, setBalanceOfUser] = useState(0);
-  const [clubTokenMinted, setClubTokenMinted] = useState(0);
   const [showInviteModal, setShowInviteModal] = useState(false);
-
-  const { chain } = useNetwork();
-  const dispatch = useDispatch();
-  const networkId = "0x" + chain?.id.toString(16);
-
-  const { getBalance, getDecimals, getTokenSymbol } =
-    useCommonContractMethods();
-
-  const { getNftOwnersCount, getDaoBalance, getERC20TotalSupply } =
-    useAppContractMethods({ daoAddress });
-
-  const gnosisAddress = useSelector((state) => {
-    return state.club.clubData.gnosisAddress;
+  const [currentEOAWallet, setCurrentEOAWallet] = useState({
+    walletAddress: gnosisAddress,
+    walletName: "Treasury",
+    networkId,
   });
+  const [allEOAWallets, setAllEOAWallets] = useState([]);
+
+  const { getBalance, getDecimals } = useCommonContractMethods();
 
   const clubData = useSelector((state) => {
     return state.club.clubData;
@@ -124,11 +124,10 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
     try {
       if (networkId !== "undefined") {
         const assetsData = await getAssetsByDaoAddress(
-          gnosisAddress,
-          networkId,
+          currentEOAWallet.walletAddress,
+          currentEOAWallet.networkId,
         );
         setTokenDetails({
-          treasuryAmount: assetsData?.data?.treasuryAmount,
           tokenPriceList: assetsData?.data?.tokenPriceList,
         });
       }
@@ -139,7 +138,10 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
 
   const fetchNfts = async () => {
     try {
-      const nftsData = await getNFTsByDaoAddress(gnosisAddress, networkId);
+      const nftsData = await getNFTsByDaoAddress(
+        currentEOAWallet.walletAddress,
+        currentEOAWallet.networkId,
+      );
       setNftData(nftsData.data.items);
       dispatch(addNftsOwnedByDao(nftsData.data.items));
     } catch (error) {
@@ -156,8 +158,37 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
     }
   };
 
-  const handleChange = (e) => {
-    setAssetType(e.target.value);
+  const fetchTreasuryDetails = async () => {
+    try {
+      if (networkId !== "undefined") {
+        const assetsData = await getTotalTreasuryAmount(daoAddress);
+
+        setTreasuryAmount(assetsData?.balance);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleChange = (event, newValue) => {
+    setAssetType(newValue);
+  };
+
+  const currentEOAWalletChangeHandler = (e) => {
+    setCurrentEOAWallet({
+      walletAddress: e.target.value.walletAddress,
+      networkId: e.target.value.networkId,
+      walletName: e.target.value.walletName,
+    });
+  };
+
+  const fetchAllWallets = async () => {
+    try {
+      const data = await fetchClubByDaoAddress(daoAddress);
+      setAllEOAWallets(data.data.hotWallets);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const treasuryData = [
@@ -166,7 +197,7 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
       iconSrc: "/assets/icons/stats_hovered.svg",
       altText: "Treasury Holdings",
       title: "Treasury Holdings",
-      value: `$${Number(tokenDetails?.treasuryAmount).toFixed(3)}`,
+      value: `$${Number(treasuryAmount).toFixed(3)}`,
     },
     {
       containerClass: classes.ownershipContainer,
@@ -186,52 +217,21 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
   ];
 
   useEffect(() => {
-    try {
-      if (daoAddress) {
-        const loadNftContractData = async () => {
-          try {
-            const nftBalance = await getDaoBalance(true);
-            setBalanceOfUser(nftBalance);
-            const symbol = await getTokenSymbol(daoAddress);
-            const nftMinted = await getNftOwnersCount();
-            setClubTokenMinted(nftMinted);
-          } catch (error) {
-            console.log(error);
-          }
-        };
-
-        const loadSmartContractData = async () => {
-          try {
-            const balance = await getDaoBalance();
-            setBalanceOfUser(balance);
-            const clubTokensMinted = await getERC20TotalSupply();
-            setClubTokenMinted(clubTokensMinted);
-          } catch (e) {
-            console.log(e);
-            console.log(e);
-          }
-        };
-
-        if (clubData.tokenType === "erc721") {
-          loadNftContractData();
-        } else {
-          loadSmartContractData();
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }, [daoAddress, clubData.tokenType]);
-
-  useEffect(() => {
     if (gnosisAddress && networkId && daoAddress && clubData) {
-      fetchAssets();
-      fetchNfts();
       fetchProposals();
       fetchClubDetails();
+      fetchTreasuryDetails();
+      fetchAllWallets();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gnosisAddress, networkId, daoAddress, clubData]);
+
+  useEffect(() => {
+    if (currentEOAWallet && networkId && daoAddress && clubData) {
+      fetchAssets();
+      fetchNfts();
+    }
+  }, [currentEOAWallet]);
 
   return (
     <div className={classes.main}>
@@ -261,40 +261,39 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
         </div>
 
         <div className={classes.assetsContainer}>
-          <div className={classes.assetsType}>
-            <Typography className={classes.title} variant="inherit">
-              Assets
-            </Typography>
+          <WalletsTabs
+            allEOAWallets={allEOAWallets}
+            classes={classes}
+            currentEOAWallet={currentEOAWallet}
+            currentEOAWalletChangeHandler={currentEOAWalletChangeHandler}
+            gnosisAddress={gnosisAddress}
+            networkId={networkId}
+          />
 
-            <FormControl sx={{ minWidth: 150 }}>
-              <Select
-                sx={{
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    border: "none",
-                  },
-                  fontFamily: "inherit",
-                }}
-                value={assetType}
-                onChange={handleChange}
-                displayEmpty>
-                <MenuItem
-                  sx={{
-                    fontFamily: "inherit",
-                  }}
-                  value={"erc20"}
-                  selected>
-                  Tokens
-                </MenuItem>
-                <MenuItem
-                  sx={{
-                    fontFamily: "inherit",
-                  }}
-                  value={"erc721"}>
-                  Collectibles
-                </MenuItem>
-              </Select>
-            </FormControl>
-          </div>
+          <Tabs
+            TabIndicatorProps={{
+              style: { backgroundColor: "#fff" },
+            }}
+            textColor="inherit"
+            value={assetType}
+            onChange={handleChange}>
+            <Tab
+              sx={{
+                fontFamily: "inherit",
+                textTransform: "none",
+              }}
+              value="erc20"
+              label="Crypto"
+            />
+            <Tab
+              sx={{
+                fontFamily: "inherit",
+                textTransform: "none",
+              }}
+              value="erc721"
+              label="NFTs"
+            />
+          </Tabs>
 
           {assetType === "erc20" ? (
             <>
