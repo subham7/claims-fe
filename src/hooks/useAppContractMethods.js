@@ -440,7 +440,6 @@ const useAppContractMethods = (params) => {
         membersArray,
         airDropAmountArray,
       });
-
     const txHash = await getTransactionHash(pid);
     const tx = txHash ? await safeService.getTransaction(txHash) : null;
 

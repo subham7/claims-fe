@@ -648,12 +648,34 @@ const eigenStakeMethodEncoded = async (
       amount,
       web3Call,
     );
-    console.log("previewAmount", previewAmount);
+
     return eigneContract.methods
       .depositIntoStrategy(
         "0x5d1E9DC056C906CBfe06205a39B0D965A6Df7C14",
         "0x3338eCd3ab3d3503c55c931d759fA6d78d287236",
         previewAmount,
+      )
+      .encodeABI();
+  }
+};
+
+const eigenUnstakeMethodEncoded = async (
+  eigenContractAddress,
+  gnosisAddress,
+  eigenUnstakeAmount,
+  web3Call,
+) => {
+  if (eigenContractAddress) {
+    const eigneContract = new web3Call.eth.Contract(
+      eigenContractABI,
+      eigenContractAddress,
+    );
+
+    return eigneContract.methods
+      .removeShares(
+        gnosisAddress,
+        "0x5d1E9DC056C906CBfe06205a39B0D965A6Df7C14",
+        eigenUnstakeAmount,
       )
       .encodeABI();
   }
@@ -861,6 +883,7 @@ export const getTransaction = async ({
     sendTokenAmounts,
     sendTokenAddresses,
     eigenStakeAmount,
+    eigenUnstakeAmount,
   } = proposalData.commands[0];
 
   let approvalTransaction;
@@ -1275,6 +1298,8 @@ export const getTransaction = async ({
 
       return { transaction, approvalTransaction };
     case 25:
+      //this txn will be diff for stader, lido, ankr, etc
+      //currently, this is for stader
       stakeETHTransaction = {
         to: Web3.utils.toChecksumAddress(
           "0xd0e400Ec6Ed9C803A9D9D3a602494393E806F823",
@@ -1286,7 +1311,7 @@ export const getTransaction = async ({
         ),
         value: convertToWeiGovernance(eigenStakeAmount, 18).toString(),
       };
-      console.log("stakeETHTransaction", stakeETHTransaction);
+
       approvalTransaction = {
         to: Web3.utils.toChecksumAddress(
           "0x3338eCd3ab3d3503c55c931d759fA6d78d287236",
@@ -1299,13 +1324,13 @@ export const getTransaction = async ({
         ),
         value: "0",
       };
-      console.log("approvalTransaction", approvalTransaction);
+
       const stakeData = await eigenStakeMethodEncoded(
         "0x779d1b5315df083e3F9E94cB495983500bA8E907",
         convertToWeiGovernance(eigenStakeAmount, 18).toString(),
         web3Call,
       );
-      console.log("stakeData", stakeData);
+
       transaction = {
         to: Web3.utils.toChecksumAddress(
           "0x779d1b5315df083e3F9E94cB495983500bA8E907",
@@ -1315,6 +1340,22 @@ export const getTransaction = async ({
       };
       console.log("transaction", transaction);
       return { stakeETHTransaction, transaction, approvalTransaction };
+    case 26:
+      const unstakeData = await eigenUnstakeMethodEncoded(
+        "0x779d1b5315df083e3F9E94cB495983500bA8E907",
+        gnosisAddress,
+        eigenUnstakeAmount.toString(),
+        web3Call,
+      );
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          "0x779d1b5315df083e3F9E94cB495983500bA8E907",
+        ),
+        data: unstakeData,
+        value: 0,
+      };
+      console.log("transaction", transaction);
+      return { transaction };
   }
 };
 
@@ -1325,7 +1366,8 @@ export const createSafeTransactionData = ({
   nonce,
 }) => {
   try {
-    if (stakeETHTransaction !== "" || stakeETHTransaction !== undefined) {
+    debugger;
+    if (stakeETHTransaction !== "" && stakeETHTransaction !== undefined) {
       return [
         {
           to: stakeETHTransaction?.to,
