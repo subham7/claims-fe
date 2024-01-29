@@ -36,6 +36,7 @@ export const supportedChainsDrops = [
   "0xa9",
   "0x28c5f",
   "0x1",
+  "0x5",
 ];
 
 export const CHAIN_CONFIG = {
@@ -104,12 +105,15 @@ export const CHAIN_CONFIG = {
     },
     rpcUrls: ["https://rpc.goerli.mudit.blog/"],
     appRpcUrl: `https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
-    factoryContractAddress: "",
+    factoryContractAddress: "0x833087e80EA04b5127Ac7F13511C65AAC2ef3BBf",
+    stationSubgraphUrl:
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-goerli-2/0.0.2/gn",
     claimFactoryAddress: "0x14E92a30fc70F8544b0DDB5fd87B773bC0DD68e6",
     claimsSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim",
     covalentNetworkName: "goerli-testnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    usdcAddress: "0x07865c6E87B9F70255377e024ace6630C1Eaa37F",
     blockExplorerUrl: "https://goerli.etherscan.io",
     disburseContractAddress: "0x63D57d534a44f486EE2cCDcd53EbB7FA988cA5d5",
     gnosisTxUrl: "https://safe-transaction-goerli.safe.global/",
@@ -2303,6 +2307,10 @@ export const stationNetworksChainId = [
     chainId: 59144,
     networkId: "0xe708",
   },
+  {
+    chainId: 5,
+    networkId: "0x5",
+  },
 ];
 
-export const ALLOWED_NETWORKS_FOR_STATION = ["0x89", "0x1", "0xe708"];
+export const ALLOWED_NETWORKS_FOR_STATION = ["0x89", "0x1", "0xe708", "0x5"];

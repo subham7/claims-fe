@@ -422,23 +422,24 @@ const useAppContractMethods = (params) => {
       CHAIN_CONFIG[networkId].gnosisTxUrl,
     );
 
-    const { transaction, approvalTransaction } = await getTransaction({
-      proposalData,
-      daoAddress,
-      factoryContractAddress,
-      approvalData,
-      safeThreshold,
-      transactionData,
-      airdropContractAddress,
-      tokenData,
-      gnosisAddress,
-      parameters,
-      isAssetsStoredOnGnosis,
-      networkId,
-      membersArray,
-      airDropAmountArray,
-    });
-
+    const { transaction, approvalTransaction, stakeETHTransaction } =
+      await getTransaction({
+        proposalData,
+        daoAddress,
+        walletAddress,
+        factoryContractAddress,
+        approvalData,
+        safeThreshold,
+        transactionData,
+        airdropContractAddress,
+        tokenData,
+        gnosisAddress,
+        parameters,
+        isAssetsStoredOnGnosis,
+        networkId,
+        membersArray,
+        airDropAmountArray,
+      });
     const txHash = await getTransactionHash(pid);
     const tx = txHash ? await safeService.getTransaction(txHash) : null;
 
@@ -451,6 +452,7 @@ const useAppContractMethods = (params) => {
             executionId,
             transaction,
             approvalTransaction,
+            stakeETHTransaction,
             nonce,
             proposalStatus,
           });
@@ -481,6 +483,7 @@ const useAppContractMethods = (params) => {
             executionId,
             transaction,
             approvalTransaction,
+            stakeETHTransaction,
             nonce: tx.nonce,
             executionStatus: proposalStatus,
           });

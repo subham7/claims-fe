@@ -6,6 +6,8 @@ import { factoryContractABI } from "abis/factoryContract.js";
 import { erc721DaoABI } from "abis/erc721Dao";
 import { erc20DaoABI } from "abis/erc20Dao";
 import { seaportABI } from "abis/seaport";
+import { stakeETHABI } from "abis/stakeEth";
+import { eigenContractABI } from "abis/eigenContract";
 import { subgraphQuery } from "./subgraphs";
 import { convertToWeiGovernance } from "./globalFunctions";
 import { Interface } from "ethers";
@@ -629,6 +631,79 @@ const airdropTokenMethodEncoded = (
   }
 };
 
+const depositEthForEigen = (contractAddress, walletAddress, web3Call) => {
+  if (contractAddress) {
+    const stakeETHContractCall = new web3Call.eth.Contract(
+      stakeETHABI,
+      contractAddress,
+    );
+
+    return stakeETHContractCall?.methods
+      ?.deposit(walletAddress, "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+      .encodeABI();
+  }
+};
+
+const getStaderPreview = (contractAddress, amount, web3Call) => {
+  if (contractAddress) {
+    const stakeETHContractCall = new web3Call.eth.Contract(
+      stakeETHABI,
+      contractAddress,
+    );
+
+    return stakeETHContractCall?.methods?.previewDeposit(amount).call();
+  }
+};
+
+const eigenStakeMethodEncoded = async (
+  eigenContractAddress,
+  amount,
+  web3Call,
+) => {
+  if (eigenContractAddress) {
+    const eigneContract = new web3Call.eth.Contract(
+      eigenContractABI,
+      eigenContractAddress,
+    );
+
+    const previewAmount = await getStaderPreview(
+      "0xd0e400Ec6Ed9C803A9D9D3a602494393E806F823",
+      amount,
+      web3Call,
+    );
+
+    return eigneContract.methods
+      .depositIntoStrategy(
+        "0x5d1E9DC056C906CBfe06205a39B0D965A6Df7C14",
+        "0x3338eCd3ab3d3503c55c931d759fA6d78d287236",
+        previewAmount,
+      )
+      .encodeABI();
+  }
+};
+
+const eigenUnstakeMethodEncoded = async (
+  eigenContractAddress,
+  gnosisAddress,
+  eigenUnstakeAmount,
+  web3Call,
+) => {
+  if (eigenContractAddress) {
+    const eigneContract = new web3Call.eth.Contract(
+      eigenContractABI,
+      eigenContractAddress,
+    );
+
+    return eigneContract.methods
+      .removeShares(
+        gnosisAddress,
+        "0x5d1E9DC056C906CBfe06205a39B0D965A6Df7C14",
+        eigenUnstakeAmount,
+      )
+      .encodeABI();
+  }
+};
+
 const depositErc20TokensToAavePool = (
   depositTokenAddress,
   depositAmount,
@@ -801,6 +876,7 @@ const disburseTokenMethodEncoded = (
 export const getTransaction = async ({
   proposalData,
   daoAddress,
+  walletAddress,
   factoryContractAddress,
   approvalData,
   transactionData,
@@ -829,12 +905,13 @@ export const getTransaction = async ({
     unstakeAmount,
     sendTokenAmounts,
     sendTokenAddresses,
+    eigenStakeAmount,
+    eigenUnstakeAmount,
   } = proposalData.commands[0];
-
-  console.log("xxxxD", depositAmount, tokenData);
 
   let approvalTransaction;
   let transaction;
+  let stakeETHTransaction;
   const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
 
   switch (executionId) {
@@ -1243,16 +1320,101 @@ export const getTransaction = async ({
       };
 
       return { transaction, approvalTransaction };
+    case 26:
+      //this txn will be diff for stader, lido, ankr, etc
+      //currently, this is for stader
+      stakeETHTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          "0xd0e400Ec6Ed9C803A9D9D3a602494393E806F823",
+        ),
+        data: depositEthForEigen(
+          "0xd0e400Ec6Ed9C803A9D9D3a602494393E806F823",
+          gnosisAddress,
+          web3Call,
+        ),
+        value: convertToWeiGovernance(eigenStakeAmount, 18).toString(),
+      };
+
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          "0x3338eCd3ab3d3503c55c931d759fA6d78d287236",
+        ),
+        data: approveDepositWithEncodeABI(
+          "0x3338eCd3ab3d3503c55c931d759fA6d78d287236",
+          "0x779d1b5315df083e3F9E94cB495983500bA8E907",
+          convertToWeiGovernance(eigenStakeAmount, 18).toString(),
+          web3Call,
+        ),
+        value: "0",
+      };
+
+      const stakeData = await eigenStakeMethodEncoded(
+        "0x779d1b5315df083e3F9E94cB495983500bA8E907",
+        convertToWeiGovernance(eigenStakeAmount, 18).toString(),
+        web3Call,
+      );
+
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          "0x779d1b5315df083e3F9E94cB495983500bA8E907",
+        ),
+        data: stakeData,
+        value: 0,
+      };
+      console.log("transaction", transaction);
+      return { stakeETHTransaction, transaction, approvalTransaction };
+    case 27:
+      const unstakeData = await eigenUnstakeMethodEncoded(
+        "0x779d1b5315df083e3F9E94cB495983500bA8E907",
+        gnosisAddress,
+        eigenUnstakeAmount.toString(),
+        web3Call,
+      );
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          "0x779d1b5315df083e3F9E94cB495983500bA8E907",
+        ),
+        data: unstakeData,
+        value: 0,
+      };
+      console.log("transaction", transaction);
+      return { transaction };
   }
 };
 
 export const createSafeTransactionData = ({
   approvalTransaction,
+  stakeETHTransaction,
   transaction,
   nonce,
 }) => {
   try {
-    if (approvalTransaction === "" || approvalTransaction === undefined) {
+    debugger;
+    if (stakeETHTransaction !== "" && stakeETHTransaction !== undefined) {
+      return [
+        {
+          to: stakeETHTransaction?.to,
+          data: stakeETHTransaction?.data,
+          value: stakeETHTransaction?.value,
+          nonce,
+        },
+        {
+          to: approvalTransaction?.to,
+          data: approvalTransaction?.data,
+          value: approvalTransaction?.value,
+          nonce,
+        },
+        {
+          to: transaction?.to,
+          data: transaction?.data,
+          value: transaction?.value,
+          nonce,
+        },
+      ];
+    } else if (
+      approvalTransaction === "" ||
+      approvalTransaction === undefined
+    ) {
       return {
         to: transaction?.to,
         data: transaction?.data,
