@@ -28,6 +28,7 @@ import { uniswapABI } from "abis/uniswapABI";
 import { encodeFunctionData } from "viem";
 import { Batch } from "abis/clip-finance/batch";
 import { StrategyRouter } from "abis/clip-finance/stragetgyRouter";
+import { getClipBalanceInShares } from "api/defi";
 
 export const fetchProposals = async (daoAddress, type) => {
   let proposalData;
@@ -568,6 +569,28 @@ const clipFinanceBatchDeposit = async ({
     .encodeABI();
 
   return { data, depositFee };
+};
+
+export const calculateSharesToWithdraw = async ({
+  withdrawAmount,
+  web3Call,
+  walletAddress,
+  networkId,
+}) => {
+  const shares = await getClipBalanceInShares(walletAddress);
+  console.log("xxxS", shares);
+
+  const strategyRouterContract = new web3Call.eth.Contract(
+    StrategyRouter,
+    CHAIN_CONFIG[networkId].clipFinanceStrategyRouterAddressLinea,
+  );
+
+  const usdFromShares = await strategyRouterContract.calculateSharesUsdValue(
+    shares,
+  );
+
+  const sharesToWithdraw = (withdrawAmount * shares) / usdFromShares;
+  return sharesToWithdraw;
 };
 
 const transferNFTfromSafe = (
@@ -1297,7 +1320,7 @@ export const getTransaction = async ({
       };
 
       return { transaction, approvalTransaction };
-    case 25:
+    case 26:
       //this txn will be diff for stader, lido, ankr, etc
       //currently, this is for stader
       stakeETHTransaction = {
@@ -1340,7 +1363,7 @@ export const getTransaction = async ({
       };
       console.log("transaction", transaction);
       return { stakeETHTransaction, transaction, approvalTransaction };
-    case 26:
+    case 27:
       const unstakeData = await eigenUnstakeMethodEncoded(
         "0x779d1b5315df083e3F9E94cB495983500bA8E907",
         gnosisAddress,
@@ -1446,6 +1469,9 @@ export const getTokenTypeByExecutionId = (commands) => {
       return commands[0]?.sendToken;
     case 24:
       return commands[0]?.depositToken;
+
+    case 25:
+      return commands[0]?.withdrawToken;
     default:
       return "";
   }
