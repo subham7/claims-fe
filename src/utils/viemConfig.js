@@ -7,6 +7,7 @@ import {
   mainnet,
   gnosis,
   taikoJolnir,
+  goerli,
 } from "viem/chains";
 import {
   CHAIN_CONFIG,
@@ -28,6 +29,7 @@ const viemChains = {
   "0x82750": scrollMainnet,
   "0xa9": mantaMainnet,
   "0x28c5f": taikoJolnir,
+  "0x5": goerli,
 };
 
 export const getPublicClient = (networkId) => {

@@ -7,7 +7,15 @@ import { useNetwork } from "wagmi";
 import classes from "./Staking.module.scss";
 import StakingModal from "./StakingModal";
 
-const StakingCard = ({ name, image, apy, staked, token, daoAddress }) => {
+const StakingCard = ({
+  name,
+  image,
+  apy,
+  staked,
+  token,
+  daoAddress,
+  executionIds,
+}) => {
   const [showStakingModal, setShowStakingModal] = useState(false);
   const [showUnstakingModal, setShowUnstakingModal] = useState(false);
   const [stakingResult, setStakingResult] = useState(null);
@@ -84,7 +92,7 @@ const StakingCard = ({ name, image, apy, staked, token, daoAddress }) => {
             setShowStakingModal(false);
           }}
           daoAddress={daoAddress}
-          executionId={24}
+          executionId={executionIds.Stake}
           onStakingComplete={handleStakingComplete}
         />
       ) : null}
@@ -101,6 +109,7 @@ const StakingCard = ({ name, image, apy, staked, token, daoAddress }) => {
           }}
           daoAddress={daoAddress}
           onStakingComplete={handleStakingComplete}
+          executionId={executionIds.Unstake}
         />
       ) : null}
 

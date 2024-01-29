@@ -888,6 +888,7 @@ export const getTransaction = async ({
   membersArray,
   airDropAmountArray,
 }) => {
+  debugger;
   const {
     executionId,
     safeThreshold,
@@ -1332,7 +1333,7 @@ export const getTransaction = async ({
           gnosisAddress,
           web3Call,
         ),
-        value: convertToWeiGovernance(eigenStakeAmount, 18).toString(),
+        value: convertToWeiGovernance(depositAmount, 18).toString(),
       };
 
       approvalTransaction = {
@@ -1342,7 +1343,7 @@ export const getTransaction = async ({
         data: approveDepositWithEncodeABI(
           "0x3338eCd3ab3d3503c55c931d759fA6d78d287236",
           "0x779d1b5315df083e3F9E94cB495983500bA8E907",
-          convertToWeiGovernance(eigenStakeAmount, 18).toString(),
+          convertToWeiGovernance(depositAmount, 18).toString(),
           web3Call,
         ),
         value: "0",
@@ -1350,7 +1351,7 @@ export const getTransaction = async ({
 
       const stakeData = await eigenStakeMethodEncoded(
         "0x779d1b5315df083e3F9E94cB495983500bA8E907",
-        convertToWeiGovernance(eigenStakeAmount, 18).toString(),
+        convertToWeiGovernance(depositAmount, 18).toString(),
         web3Call,
       );
 
@@ -1468,6 +1469,7 @@ export const getTokenTypeByExecutionId = (commands) => {
     case 23:
       return commands[0]?.sendToken;
     case 24:
+    case 26:
       return commands[0]?.depositToken;
 
     case 25:

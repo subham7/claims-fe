@@ -231,7 +231,7 @@ export const CHAIN_CONFIG = {
       "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": 13,
       "0xaad094f6a75a14417d39f04e690fc216f080a41a": 13,
     },
-    logoUri: "/assets/networks/0xe708.webp",
+    logoUri: "/assets/networks/0xe708.png",
   },
   "0x38": {
     chainName: "BNB Smart Chain",

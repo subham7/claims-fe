@@ -421,37 +421,37 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
     //   icon: sendIcon,
     //   availableOnNetworkIds: ["0x89"],
     // },
+  ];
+};
+
+export const DEFI_PROPOSALS = ({
+  clipFinanceStaked = 0,
+  staderETHStaked = 0,
+}) => {
+  return [
     {
-      key: 24,
-      value: "Deposit tokens with clip-finance",
-      text: "Deposit tokens with clip-finance",
-      section: "DeFi Pools",
-      icon: sendIcon,
+      name: "Clip Finance",
+      logo: "/assets/images/clipFinanceLogo.png",
+      APY: "17.36",
+      staked: clipFinanceStaked,
+      token: "USDC",
+      executionIds: {
+        Stake: 24,
+        Unstake: 25,
+      },
       availableOnNetworkIds: ["0xe708"],
     },
 
     {
-      key: 25,
-      value: "Withdraw tokens with clip-finance",
-      text: "Withdraw tokens with clip-finance",
-      section: "DeFi Pools",
-      icon: sendIcon,
-      availableOnNetworkIds: ["0xe708"],
-    },
-    {
-      key: 26,
-      icon: rewardIcon,
-      value: "Stake eth through eigen layer",
-      text: "Stake eth through eigen layer",
-      section: "DeFi Pools",
-      availableOnNetworkIds: ["0x5"],
-    },
-    {
-      key: 27,
-      icon: rewardIcon,
-      value: "Remove stake from eigen layer",
-      text: "Remove stake from eigen layer",
-      section: "DeFi Pools",
+      name: "Lido x Stader",
+      logo: "/assets/images/lido_elgen1.png",
+      APY: "17.36",
+      staked: staderETHStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 26,
+        Unstake: 27,
+      },
       availableOnNetworkIds: ["0x5"],
     },
   ];

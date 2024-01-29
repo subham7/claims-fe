@@ -2,25 +2,13 @@ import { Typography } from "@mui/material";
 import React from "react";
 import StakingCard from "./StakingCard";
 import classes from "./Staking.module.scss";
-
-const DUMMY_LIST = [
-  {
-    name: "Clip Finance",
-    logo: "/assets/images/clipFinanceLogo.png",
-    APY: "17.36",
-    staked: "0",
-    token: "USDC",
-  },
-  // {
-  //   name: "Lido x ElgenLayer",
-  //   logo: "/assets/images/lido_elgen1.png",
-  //   APY: "9.4",
-  //   staked: "100",
-  //   token: "ETH",
-  // },
-];
+import { DEFI_PROPOSALS } from "utils/proposalConstants";
+import { useNetwork } from "wagmi";
 
 const StakingList = ({ daoAddress }) => {
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
+
   return (
     <div className={classes.container}>
       <Typography fontSize={24} fontWeight={600} variant="inherit">
@@ -28,17 +16,22 @@ const StakingList = ({ daoAddress }) => {
       </Typography>
 
       <div className={classes.list}>
-        {DUMMY_LIST.map((item) => (
-          <StakingCard
-            apy={item.APY}
-            image={item.logo}
-            name={item.name}
-            staked={item.staked}
-            token={item.token}
-            key={item.name}
-            daoAddress={daoAddress}
-          />
-        ))}
+        {DEFI_PROPOSALS({
+          clipFinanceStaked: 0,
+        })
+          .filter((item) => item.availableOnNetworkIds.includes(networkId))
+          .map((item) => (
+            <StakingCard
+              apy={item.APY}
+              image={item.logo}
+              name={item.name}
+              staked={item.staked}
+              token={item.token}
+              key={item.name}
+              daoAddress={daoAddress}
+              executionIds={item.executionIds}
+            />
+          ))}
       </div>
     </div>
   );
