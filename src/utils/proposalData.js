@@ -1754,25 +1754,20 @@ export const getProposalCommands = async ({
       };
     case 17:
       tokenDecimal = tokenData?.find(
-        (token) => token.address === values.stargateStakeToken,
+        (token) => token.address === values.stakeTokenAddress,
       ).decimals;
+
       return {
-        stakeToken: values.stargateStakeToken,
-        stakeAmount: convertToWeiGovernance(
-          values.stargateStakeAmount,
-          tokenDecimal,
-        ),
+        stakeToken: values.stakeTokenAddress,
+        stakeAmount: convertToWeiGovernance(values.stakeAmount, tokenDecimal),
       };
     case 18:
       tokenDecimal = tokenData?.find(
-        (token) => token.address === values.stargateUnstakeToken,
+        (token) => token.address === values.unstakeTokenAddress,
       ).decimals;
       return {
-        unstakeToken: values.stargateUnstakeToken,
-        unstakeAmount: convertToWeiGovernance(
-          values.stargateUnstakeAmount,
-          tokenDecimal,
-        ),
+        unstakeToken: values.unstakeTokenAddress,
+        unstakeAmount: convertToWeiGovernance(values.stakeAmount, tokenDecimal),
       };
     case 20:
       return {
@@ -1782,7 +1777,6 @@ export const getProposalCommands = async ({
       tokenDecimal = tokenData?.find(
         (token) => token.address === values.sendToken,
       ).decimals;
-      console.log("values", values);
       return {
         sendToken: values.sendToken,
         sendTokenAddresses: values.sendTokenAddresses,
@@ -1842,7 +1836,6 @@ export const proposalDetailsData = ({
   factoryData,
   symbol,
 }) => {
-  console.log("xxx", data);
   const {
     executionId,
     airDropAmount,

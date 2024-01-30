@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "@components/common/Modal/Modal";
 import { TextField, Typography } from "@mui/material";
 import classes from "./Staking.module.scss";
@@ -13,7 +13,6 @@ import { getProposalCommands } from "utils/proposalData";
 import { getTokensList } from "api/token";
 import { CHAIN_CONFIG } from "utils/constants";
 import dayjs from "dayjs";
-import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import BackdropLoader from "@components/common/BackdropLoader";
 
@@ -27,14 +26,11 @@ const StakingModal = ({
   daoAddress,
   executionId,
   onStakingComplete,
+  unstakeTokenAddress = "",
 }) => {
   const [tokenData, setTokenData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [stakeTokenBalance, setStakeTokenBalance] = useState(0);
-  const [isStakingSuccessFull, setIsStakingSuccessFull] = useState(null);
-  const [isStakingFailed, setIsStakingFailed] = useState(null);
-
-  const { getBalance, getDecimals } = useCommonContractMethods();
+  const [stakeTokenBalance, setStakeTokenDetails] = useState();
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
@@ -70,12 +66,13 @@ const StakingModal = ({
     return block;
   };
 
-  const fetchTokens = useCallback(async () => {
+  const fetchTokens = async () => {
     if (daoAddress && gnosisAddress && networkId) {
       const tokensList = await getTokensList(
         CHAIN_CONFIG[networkId].covalentNetworkName,
         gnosisAddress,
       );
+
       const data = await getUserTokenData(
         tokensList?.data?.items,
         networkId,
@@ -84,21 +81,17 @@ const StakingModal = ({
 
       setTokenData(data?.filter((token) => token.symbol !== null));
     }
-  }, [daoAddress, networkId, gnosisAddress]);
+  };
 
   const fetchAvailableTokenDetails = async () => {
     try {
-      const balance = await getBalance(
-        CHAIN_CONFIG[networkId].usdcAddress,
-        gnosisAddress,
-      );
-
-      const decimals = await getDecimals(
-        CHAIN_CONFIG[networkId].usdcAddress,
-        gnosisAddress,
-      );
-
-      setStakeTokenBalance(convertFromWeiGovernance(balance, decimals));
+      if (token === "ETH") {
+        setStakeTokenDetails(tokenData.find((token) => token.symbol === "ETH"));
+      } else if (token === "USDC") {
+        setStakeTokenDetails(
+          tokenData.find((token) => token.symbol === "USDC"),
+        );
+      }
     } catch (error) {
       console.log(error);
     }
@@ -106,16 +99,18 @@ const StakingModal = ({
 
   useEffect(() => {
     fetchAvailableTokenDetails();
-  }, [gnosisAddress]);
+  }, [gnosisAddress, tokenData]);
 
   const formik = useFormik({
     initialValues: {
-      stakeTokenAddress: name.includes("Clip")
-        ? CHAIN_CONFIG[networkId].usdcAddress
-        : CHAIN_CONFIG[networkId].nativeToken,
+      stakeTokenAddress:
+        token === "USDC"
+          ? CHAIN_CONFIG[networkId].usdcAddress
+          : CHAIN_CONFIG[networkId].nativeToken,
       stakeAmount: 0,
       note: "",
       actionCommand: Number(executionId),
+      unstakeTokenAddress: unstakeTokenAddress,
     },
     onSubmit: async (values) => {
       try {
@@ -178,11 +173,20 @@ const StakingModal = ({
     if (daoAddress) {
       fetchTokens();
     }
-  }, [daoAddress, fetchTokens]);
+  }, [daoAddress]);
 
   const maxHandler = () => {
-    if (type === "Stake")
-      formik.setFieldValue("stakeAmount", stakeTokenBalance);
+    if (type === "Stake") {
+      formik.setFieldValue(
+        "stakeAmount",
+        convertFromWeiGovernance(
+          stakeTokenBalance?.balance,
+          stakeTokenBalance?.decimals,
+        ),
+      );
+    } else {
+      formik.setFieldValue("stakeAmount", staked);
+    }
   };
 
   return (
@@ -263,7 +267,13 @@ const StakingModal = ({
               variant="inherit">
               You have{" "}
               <span>
-                {stakeTokenBalance} {token}
+                {Number(
+                  convertFromWeiGovernance(
+                    stakeTokenBalance?.balance,
+                    stakeTokenBalance?.decimals,
+                  ),
+                ).toFixed(6)}{" "}
+                {stakeTokenBalance?.symbol}
               </span>{" "}
               in your station
             </Typography>

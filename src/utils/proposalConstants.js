@@ -9,6 +9,7 @@ import govIcon from "../../public/assets/icons/gov_icon.svg";
 import adduserIcon from "../../public/assets/icons/adduser_icon.svg";
 import removeUserIcon from "../../public/assets/icons/removeuser_icon.svg";
 import moneyIcon from "../../public/assets/icons/money_icon.svg";
+import { CHAIN_CONFIG } from "./constants";
 
 export const proposalActionCommands = {
   0: "Distribute tokens to members",
@@ -427,6 +428,8 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
 export const DEFI_PROPOSALS = ({
   clipFinanceStaked = 0,
   staderETHStaked = 0,
+  stargateStaked,
+  networkId,
 }) => {
   return [
     {
@@ -440,6 +443,21 @@ export const DEFI_PROPOSALS = ({
         Unstake: 25,
       },
       availableOnNetworkIds: ["0xe708"],
+    },
+
+    {
+      name: "Stargate Finance",
+      logo: "/assets/icons/stargate.png",
+      APY: "17.36",
+      staked: stargateStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 17,
+        Unstake: 18,
+      },
+      availableOnNetworkIds: ["0x89", "0xe708"],
+      unstakeTokenAddress:
+        CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0],
     },
 
     {

@@ -9,7 +9,10 @@ import { seaportABI } from "abis/seaport";
 import { stakeETHABI } from "abis/stakeEth";
 import { eigenContractABI } from "abis/eigenContract";
 import { subgraphQuery } from "./subgraphs";
-import { convertToWeiGovernance } from "./globalFunctions";
+import {
+  convertFromWeiGovernance,
+  convertToWeiGovernance,
+} from "./globalFunctions";
 import { Interface } from "ethers";
 import { fulfillOrder, retrieveNftListing } from "api/assets";
 import { SEAPORT_CONTRACT_ADDRESS } from "api";
@@ -29,6 +32,9 @@ import { encodeFunctionData } from "viem";
 import { Batch } from "abis/clip-finance/batch";
 import { StrategyRouter } from "abis/clip-finance/stragetgyRouter";
 import { getClipBalanceInShares } from "api/defi";
+import axios from "axios";
+import { SharesPool } from "abis/clip-finance/sharesPool";
+import { SharesToken } from "abis/clip-finance/sharesToken";
 
 export const fetchProposals = async (daoAddress, type) => {
   let proposalData;
@@ -544,6 +550,41 @@ const approveDepositWithEncodeABI = (
   }
 };
 
+const checkSwapAvailability = async ({
+  web3Call,
+  networkId,
+  depositAmount,
+}) => {
+  try {
+    const sharesTokenContract = new web3Call.eth.Contract(
+      SharesToken,
+      CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
+    );
+
+    const sharesInPool = await sharesTokenContract.methods
+      .balanceOf(CHAIN_CONFIG[networkId].clipFinanceSharesPoolAddressLinea)
+      .call();
+
+    const res = await axios.get(
+      "https://shares-pool-csynu.ondigitalocean.app/get-one-usd-in-shares?chain=linea",
+    );
+
+    const rate = res.data?.data?.oneUsdInShares;
+    const sharesUsdValueInPool = Number(sharesInPool) / Number(rate);
+    const depositAmountInUsd = convertFromWeiGovernance(depositAmount, 6);
+
+    if (Number(depositAmountInUsd) <= Number(sharesUsdValueInPool)) {
+      // Opt for sharesPool deposit
+      return true;
+    } else {
+      // Opt for batch deposit
+      return false;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const clipFinanceBatchDeposit = async ({
   depositToken,
   depositAmount,
@@ -568,7 +609,63 @@ const clipFinanceBatchDeposit = async ({
     .depositToBatch(depositToken, depositAmount, "")
     .encodeABI();
 
-  return { data, depositFee };
+  const allocateData = strategyRouterContract.methods
+    .allocateToStrategies()
+    .encodeABI();
+
+  return { data, depositFee, allocateData };
+};
+
+const clipFinanceSharesPoolDeposit = async ({
+  depositAmount,
+  web3Call,
+  networkId,
+  depositToken,
+}) => {
+  try {
+    const res = await axios.get(
+      `https://shares-pool-csynu.ondigitalocean.app/deposit?chain=linea&token=usdc.e&amount=${convertFromWeiGovernance(
+        depositAmount,
+        6,
+      )}`,
+    );
+
+    const swapData = {
+      token: depositToken,
+      isDeposit: true,
+      signature: res.data?.data?.signature,
+      amountIn: res.data?.data?.amountIn,
+      amountOut: res.data?.data?.amountOut,
+      deadline: res.data?.data?.deadline,
+      fee: res.data?.data?.fee,
+    };
+
+    const swapData2 = [
+      depositToken,
+      true,
+      res.data?.data?.amountIn,
+      res.data?.data?.amountOut,
+      res.data?.data?.deadline,
+      res.data?.data?.fee,
+      res.data?.data?.signature,
+    ];
+
+    const sharesPoolContract = new web3Call.eth.Contract(
+      SharesPool,
+      CHAIN_CONFIG[networkId].clipFinanceSharesPoolAddressLinea,
+    );
+
+    const data = sharesPoolContract.methods
+      .swapShares(
+        swapData2,
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+      )
+      .encodeABI();
+
+    return { data, depositFee: swapData.fee };
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const calculateSharesToWithdraw = async ({
@@ -578,7 +675,6 @@ export const calculateSharesToWithdraw = async ({
   networkId,
 }) => {
   const shares = await getClipBalanceInShares(walletAddress);
-  console.log("xxxS", shares);
 
   const strategyRouterContract = new web3Call.eth.Contract(
     StrategyRouter,
@@ -888,7 +984,6 @@ export const getTransaction = async ({
   membersArray,
   airDropAmountArray,
 }) => {
-  debugger;
   const {
     executionId,
     safeThreshold,
@@ -1295,32 +1390,78 @@ export const getTransaction = async ({
 
     case 24:
       // token Data === usdc address
-      const { data, depositFee } = await clipFinanceBatchDeposit({
-        depositAmount,
-        depositToken: tokenData,
-        networkId,
+
+      const isSharesPoolSwapAvailable = await checkSwapAvailability({
         web3Call,
+        depositAmount,
+        networkId,
       });
 
-      approvalTransaction = {
-        to: Web3.utils.toChecksumAddress(tokenData),
-        data: approveDepositWithEncodeABI(
-          tokenData,
-          CHAIN_CONFIG[networkId].clipFinanceStrategyRouterAddressLinea,
+      if (!isSharesPoolSwapAvailable) {
+        // Shares Pool Deposit
+        const { data, depositFee } = await clipFinanceSharesPoolDeposit({
           depositAmount,
+          networkId,
           web3Call,
-        ),
-        value: "0",
-      };
-      transaction = {
-        to: Web3.utils.toChecksumAddress(
-          CHAIN_CONFIG[networkId]?.clipFinanceStrategyRouterAddressLinea,
-        ),
-        data: data,
-        value: depositFee,
-      };
+          depositToken: tokenData,
+        });
 
-      return { transaction, approvalTransaction };
+        approvalTransaction = {
+          to: Web3.utils.toChecksumAddress(tokenData),
+          data: approveDepositWithEncodeABI(
+            tokenData,
+            CHAIN_CONFIG[networkId].clipFinanceSharesPoolAddressLinea,
+            depositAmount,
+            web3Call,
+          ),
+          value: "0",
+        };
+        transaction = {
+          to: Web3.utils.toChecksumAddress(
+            CHAIN_CONFIG[networkId]?.clipFinanceSharesPoolAddressLinea,
+          ),
+          data: data,
+          value: depositFee,
+        };
+
+        return { transaction, approvalTransaction };
+      } else {
+        // Batch Deposit
+        const { data, depositFee, allocateData } =
+          await clipFinanceBatchDeposit({
+            depositAmount,
+            depositToken: tokenData,
+            networkId,
+            web3Call,
+          });
+        approvalTransaction = {
+          to: Web3.utils.toChecksumAddress(tokenData),
+          data: approveDepositWithEncodeABI(
+            tokenData,
+            CHAIN_CONFIG[networkId].clipFinanceStrategyRouterAddressLinea,
+            depositAmount,
+            web3Call,
+          ),
+          value: "0",
+        };
+        transaction = {
+          to: Web3.utils.toChecksumAddress(
+            CHAIN_CONFIG[networkId]?.clipFinanceStrategyRouterAddressLinea,
+          ),
+          data: data,
+          value: depositFee,
+        };
+        stakeETHTransaction = {
+          to: Web3.utils.toChecksumAddress(
+            CHAIN_CONFIG[networkId]?.clipFinanceStrategyRouterAddressLinea,
+          ),
+          data: allocateData,
+          value: "0",
+        };
+
+        return { transaction, approvalTransaction, stakeETHTransaction };
+      }
+
     case 26:
       //this txn will be diff for stader, lido, ankr, etc
       //currently, this is for stader
@@ -1362,7 +1503,6 @@ export const getTransaction = async ({
         data: stakeData,
         value: 0,
       };
-      console.log("transaction", transaction);
       return { stakeETHTransaction, transaction, approvalTransaction };
     case 27:
       const unstakeData = await eigenUnstakeMethodEncoded(
@@ -1378,7 +1518,6 @@ export const getTransaction = async ({
         data: unstakeData,
         value: 0,
       };
-      console.log("transaction", transaction);
       return { transaction };
   }
 };
@@ -1390,7 +1529,6 @@ export const createSafeTransactionData = ({
   nonce,
 }) => {
   try {
-    debugger;
     if (stakeETHTransaction !== "" && stakeETHTransaction !== undefined) {
       return [
         {
@@ -1471,7 +1609,6 @@ export const getTokenTypeByExecutionId = (commands) => {
     case 24:
     case 26:
       return commands[0]?.depositToken;
-
     case 25:
       return commands[0]?.withdrawToken;
     default:

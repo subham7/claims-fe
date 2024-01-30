@@ -15,6 +15,7 @@ const StakingCard = ({
   token,
   daoAddress,
   executionIds,
+  unstakeTokenAddress,
 }) => {
   const [showStakingModal, setShowStakingModal] = useState(false);
   const [showUnstakingModal, setShowUnstakingModal] = useState(false);
@@ -110,6 +111,7 @@ const StakingCard = ({
           daoAddress={daoAddress}
           onStakingComplete={handleStakingComplete}
           executionId={executionIds.Unstake}
+          unstakeTokenAddress={unstakeTokenAddress}
         />
       ) : null}
 

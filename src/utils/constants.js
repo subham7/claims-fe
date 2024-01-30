@@ -111,7 +111,7 @@ export const CHAIN_CONFIG = {
     claimFactoryAddress: "0x14E92a30fc70F8544b0DDB5fd87B773bC0DD68e6",
     claimsSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim",
-    covalentNetworkName: "goerli-testnet",
+    covalentNetworkName: "eth-goerli",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0x07865c6E87B9F70255377e024ace6630C1Eaa37F",
     blockExplorerUrl: "https://goerli.etherscan.io",
