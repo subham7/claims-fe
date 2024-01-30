@@ -1,10 +1,6 @@
 import ComponentHeader from "@components/common/ComponentHeader";
 import { Tab, Tabs } from "@mui/material";
-import {
-  getAssetsByDaoAddress,
-  getNFTsByDaoAddress,
-  getUploadedNFT,
-} from "api/assets";
+import { getAssetsOfWallet, getNFTsByWallet, getUploadedNFT } from "api/assets";
 import { getProposalByDaoAddress } from "api/proposal";
 import { getTotalNumberOfTokenHolders } from "api/token";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
@@ -123,12 +119,11 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
   const fetchAssets = async () => {
     try {
       if (networkId !== "undefined") {
-        const assetsData = await getAssetsByDaoAddress(
+        const assetsData = await getAssetsOfWallet(
           currentEOAWallet.walletAddress,
-          currentEOAWallet.networkId,
         );
         setTokenDetails({
-          tokenPriceList: assetsData?.data?.tokenPriceList,
+          tokenPriceList: assetsData?.data,
         });
       }
     } catch (error) {
@@ -138,12 +133,9 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
 
   const fetchNfts = async () => {
     try {
-      const nftsData = await getNFTsByDaoAddress(
-        currentEOAWallet.walletAddress,
-        currentEOAWallet.networkId,
-      );
-      setNftData(nftsData.data.items);
-      dispatch(addNftsOwnedByDao(nftsData.data.items));
+      const nftsData = await getNFTsByWallet(currentEOAWallet.walletAddress);
+      setNftData(nftsData?.data?.data);
+      dispatch(addNftsOwnedByDao(nftsData?.data?.data));
     } catch (error) {
       console.log(error);
     }
@@ -312,30 +304,29 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
           ) : (
             <div className={classes.collectiblesContainer}>
               {nftData.length ? (
-                nftData.map((nft, index) => (
-                  <img
-                    onClick={() => {
-                      window.open(
-                        `https://opensea.io/assets/matic/${nft.contract_address}/${nft?.nft_data[0]?.token_id}`,
-                        "_blank",
-                      );
-                    }}
-                    key={
-                      nft?.nft_data[0]?.token_id
-                        ? nft?.nft_data[0]?.token_id
-                        : index
-                    }
-                    src={
-                      nft?.nft_data[0]?.external_data?.image_1024
-                        ? nft?.nft_data[0]?.external_data?.image_1024
-                        : "/assets/NFT_IMAGES/3.png"
-                    }
-                    alt={nft?.contract_name ? nft?.contract_name : "NFT"}
-                    height={230}
-                    width={230}
-                    className={classes.nft}
-                  />
-                ))
+                nftData.map((nft) => {
+                  return nft.collection_assets.map((asset, index) => {
+                    const n = asset?.assets[0] ?? {};
+                    return (
+                      <img
+                        onClick={() => {
+                          window.open(
+                            `https://opensea.io/assets/matic/${
+                              asset?.contract_address
+                            }/${n?.token_id ?? "0"}`,
+                            "_blank",
+                          );
+                        }}
+                        key={"nft" + index}
+                        src={n?.image_uri ?? "/assets/NFT_IMAGES/3.png"}
+                        alt={n?.contract_name ?? "NFT"}
+                        height={230}
+                        width={230}
+                        className={classes.nft}
+                      />
+                    );
+                  });
+                })
               ) : (
                 <NoTokens
                   title="No collectibles in treasury"

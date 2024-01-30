@@ -187,7 +187,6 @@ const Settings = ({ daoAddress }) => {
     try {
       const assetsData = await getAssetsByDaoAddress(
         daoDetails.assetsStoredOnGnosis ? gnosisAddress : daoAddress,
-        networkId,
       );
       setTreasuryAmount(assetsData?.data?.treasuryAmount);
     } catch (error) {

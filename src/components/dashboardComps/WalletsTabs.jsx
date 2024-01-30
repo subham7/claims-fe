@@ -1,5 +1,4 @@
 import { FormControl, MenuItem, Select, Typography } from "@mui/material";
-import Image from "next/image";
 import React from "react";
 import { shortAddress } from "utils/helper";
 
@@ -46,15 +45,6 @@ const WalletsTabs = ({
                 gap: "12px",
                 padding: "4px",
               }}>
-              <Image
-                src={`/assets/networks/${networkId}.png`}
-                height={20}
-                width={20}
-                alt={networkId}
-                style={{
-                  borderRadius: "50%",
-                }}
-              />
               <Typography variant="inherit" fontSize={14}>
                 Treasury
               </Typography>
@@ -74,15 +64,6 @@ const WalletsTabs = ({
                   gap: "12px",
                   padding: "4px",
                 }}>
-                <Image
-                  src={`/assets/networks/${wallet.networkId}.png`}
-                  height={20}
-                  width={20}
-                  alt={wallet.networkId}
-                  style={{
-                    borderRadius: "50%",
-                  }}
-                />
                 <Typography variant="inherit" fontSize={14}>
                   {wallet.walletName
                     ? wallet.walletName
