@@ -1,14 +1,7 @@
 import BackdropLoader from "@components/common/BackdropLoader";
 import Modal from "@components/common/Modal/Modal";
 import { eoaWalletTrackerValidation } from "@components/createClubComps/ValidationSchemas";
-import {
-  Button,
-  FormControl,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button, TextField, Typography } from "@mui/material";
 import { addWalletAddressToTrack } from "api/club";
 import { useFormik } from "formik";
 import React, { useState } from "react";
@@ -29,7 +22,6 @@ const WalletTrackerModal = ({ onClose, daoAddress, onAddSuccess }) => {
     initialValues: {
       walletAddress: "",
       walletName: "",
-      networkId: "0x89",
     },
     validationSchema: eoaWalletTrackerValidation,
     onSubmit: async (value) => {
@@ -38,7 +30,6 @@ const WalletTrackerModal = ({ onClose, daoAddress, onAddSuccess }) => {
         const data = {
           walletName: value.walletName,
           walletAddress: value.walletAddress,
-          networkId: value.networkId,
         };
 
         const { signature } = await handleSignMessage(
@@ -144,51 +135,6 @@ const WalletTrackerModal = ({ onClose, daoAddress, onAddSuccess }) => {
             }
             helperText={formik.touched.walletName && formik.errors.walletName}
           />
-
-          <Typography variant="inherit" fontWeight={500} mt={2} mb={0.5}>
-            Network *
-          </Typography>
-          <FormControl sx={{ width: "100%" }}>
-            <Select
-              sx={{
-                fontFamily: "inherit",
-              }}
-              MenuProps={{
-                style: {
-                  zIndex: 2004,
-                },
-              }}
-              name="networkId"
-              id="networkId"
-              value={formik.values.networkId}
-              onChange={formik.handleChange}
-              error={
-                formik.touched.networkId && Boolean(formik.errors.networkId)
-              }
-              inputProps={{ "aria-label": "Without label" }}>
-              <MenuItem
-                sx={{
-                  fontFamily: "inherit",
-                }}
-                value={"0x38"}>
-                Binance Smart Chain
-              </MenuItem>
-              <MenuItem
-                sx={{
-                  fontFamily: "inherit",
-                }}
-                value={"0x89"}>
-                Polygon (POS)
-              </MenuItem>
-              <MenuItem
-                sx={{
-                  fontFamily: "inherit",
-                }}
-                value={"0x1"}>
-                Ethereum Mainnet
-              </MenuItem>
-            </Select>
-          </FormControl>
 
           <Button
             type="submit"

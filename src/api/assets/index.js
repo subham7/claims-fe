@@ -116,3 +116,16 @@ export async function getUploadedNFT(daoAddress) {
     },
   });
 }
+
+export async function getAssetsOfWallet(address) {
+  try {
+    return await axios.get(MAIN_API_URL + `club/hot-wallets/${address}`, {
+      headers: {
+        Authorization: "Bearer " + getJwtToken(),
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}

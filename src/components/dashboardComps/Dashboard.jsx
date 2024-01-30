@@ -1,7 +1,7 @@
 import ComponentHeader from "@components/common/ComponentHeader";
 import { Tab, Tabs } from "@mui/material";
 import {
-  getAssetsByDaoAddress,
+  getAssetsOfWallet,
   getNFTsByDaoAddress,
   getUploadedNFT,
 } from "api/assets";
@@ -123,12 +123,11 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
   const fetchAssets = async () => {
     try {
       if (networkId !== "undefined") {
-        const assetsData = await getAssetsByDaoAddress(
+        const assetsData = await getAssetsOfWallet(
           currentEOAWallet.walletAddress,
-          currentEOAWallet.networkId,
         );
         setTokenDetails({
-          tokenPriceList: assetsData?.data?.tokenPriceList,
+          tokenPriceList: assetsData?.data,
         });
       }
     } catch (error) {
@@ -140,7 +139,6 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
     try {
       const nftsData = await getNFTsByDaoAddress(
         currentEOAWallet.walletAddress,
-        currentEOAWallet.networkId,
       );
       setNftData(nftsData.data.items);
       dispatch(addNftsOwnedByDao(nftsData.data.items));

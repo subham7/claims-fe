@@ -759,5 +759,4 @@ export const eoaWalletTrackerValidation = yup.object({
   walletAddress: yup
     .string("Enter wallet address")
     .required("Wallet address is required"),
-  networkId: yup.string("Select network").required("Network is required"),
 });
