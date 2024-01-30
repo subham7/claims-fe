@@ -129,3 +129,16 @@ export async function getAssetsOfWallet(address) {
     console.log(error);
   }
 }
+
+export async function getNFTsByWallet(address) {
+  try {
+    return await axios.get(MAIN_API_URL + `club/hot-wallets/nft/${address}`, {
+      headers: {
+        Authorization: "Bearer " + getJwtToken(),
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
