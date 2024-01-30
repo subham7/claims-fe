@@ -104,9 +104,9 @@ export const CHAIN_CONFIG = {
     },
     rpcUrls: ["https://rpc.goerli.mudit.blog/"],
     appRpcUrl: `https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
-    factoryContractAddress: "0x833087e80EA04b5127Ac7F13511C65AAC2ef3BBf",
+    factoryContractAddress: "0x936eca063Bdd8e2C15637F8c7cd507216b9E7aAd",
     stationSubgraphUrl:
-      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-goerli-2/0.0.2/gn",
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-goerli-1/0.0.1/gn",
     claimFactoryAddress: "0x14E92a30fc70F8544b0DDB5fd87B773bC0DD68e6",
     claimsSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim",
