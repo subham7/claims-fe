@@ -13,6 +13,7 @@ const StakingList = ({ daoAddress }) => {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
   const [unstakeTokenBalance, setUnstakeTokenBalance] = useState(0);
+  const [unstakeClipFinanceToken, setUnstakeClipFinanceToken] = useState(0);
 
   const { getBalance, getDecimals } = useCommonContractMethods();
 
@@ -37,8 +38,26 @@ const StakingList = ({ daoAddress }) => {
     }
   };
 
+  const fetchClipFinanceStakedToken = async () => {
+    try {
+      const balance = await getBalance(
+        CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
+        gnosisAddress,
+      );
+
+      const decimals = await getDecimals(
+        CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
+      );
+
+      setUnstakeClipFinanceToken(convertFromWeiGovernance(balance, decimals));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     fetchStargateStakedToken();
+    fetchClipFinanceStakedToken();
   }, [gnosisAddress]);
 
   return (
@@ -49,7 +68,7 @@ const StakingList = ({ daoAddress }) => {
 
       <div className={classes.list}>
         {DEFI_PROPOSALS({
-          clipFinanceStaked: 0,
+          clipFinanceStaked: Number(unstakeClipFinanceToken),
           stargateStaked: Number(unstakeTokenBalance),
           networkId,
         })

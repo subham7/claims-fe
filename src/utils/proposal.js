@@ -630,17 +630,7 @@ const clipFinanceSharesPoolDeposit = async ({
       )}`,
     );
 
-    const swapData = {
-      token: depositToken,
-      isDeposit: true,
-      signature: res.data?.data?.signature,
-      amountIn: res.data?.data?.amountIn,
-      amountOut: res.data?.data?.amountOut,
-      deadline: res.data?.data?.deadline,
-      fee: res.data?.data?.fee,
-    };
-
-    const swapData2 = [
+    const swapData = [
       depositToken,
       true,
       res.data?.data?.amountIn,
@@ -657,35 +647,74 @@ const clipFinanceSharesPoolDeposit = async ({
 
     const data = sharesPoolContract.methods
       .swapShares(
-        swapData2,
+        swapData,
         "0x0000000000000000000000000000000000000000000000000000000000000000",
       )
       .encodeABI();
 
-    return { data, depositFee: swapData.fee };
+    return { data, depositFee: res.data?.data?.fee };
   } catch (error) {
     console.log(error);
   }
 };
 
-export const calculateSharesToWithdraw = async ({
-  withdrawAmount,
+const clipFinanceSharesPoolWithdraw = async ({
+  sharesToWithdraw,
   web3Call,
-  walletAddress,
   networkId,
 }) => {
-  const shares = await getClipBalanceInShares(walletAddress);
+  try {
+    const res = await axios.get(
+      `https://shares-pool-csynu.ondigitalocean.app/withdrawl?chain=linea&token=usdc.e&amount=${sharesToWithdraw}`,
+    );
+
+    const swapData = [
+      CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
+      false,
+      res.data?.data?.amountIn,
+      res.data?.data?.amountOut,
+      res.data?.data?.deadline,
+      res.data?.data?.fee,
+      res.data?.data?.signature,
+    ];
+
+    const sharesPoolContract = new web3Call.eth.Contract(
+      SharesPool,
+      CHAIN_CONFIG[networkId].clipFinanceSharesPoolAddressLinea,
+    );
+
+    const data = sharesPoolContract.methods
+      .swapShares(
+        swapData,
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+      )
+      .encodeABI();
+
+    return { data, depositFee: res.data.data.fee };
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const calculateSharesToWithdraw = async ({
+  withdrawAmount,
+  web3Call,
+  gnosisAddress,
+  networkId,
+}) => {
+  const shares = await getClipBalanceInShares(gnosisAddress);
 
   const strategyRouterContract = new web3Call.eth.Contract(
     StrategyRouter,
     CHAIN_CONFIG[networkId].clipFinanceStrategyRouterAddressLinea,
   );
 
-  const usdFromShares = await strategyRouterContract.calculateSharesUsdValue(
-    shares,
-  );
+  const usdFromShares = await strategyRouterContract.methods
+    .calculateSharesUsdValue(shares)
+    .call();
 
-  const sharesToWithdraw = (withdrawAmount * shares) / usdFromShares;
+  const sharesToWithdraw =
+    (Number(withdrawAmount) * Number(shares)) / Number(usdFromShares);
   return sharesToWithdraw;
 };
 
@@ -1397,7 +1426,7 @@ export const getTransaction = async ({
         networkId,
       });
 
-      if (!isSharesPoolSwapAvailable) {
+      if (isSharesPoolSwapAvailable) {
         // Shares Pool Deposit
         const { data, depositFee } = await clipFinanceSharesPoolDeposit({
           depositAmount,
@@ -1461,6 +1490,42 @@ export const getTransaction = async ({
 
         return { transaction, approvalTransaction, stakeETHTransaction };
       }
+    case 25:
+      const sharesToWithdraw = await calculateSharesToWithdraw({
+        gnosisAddress,
+        networkId,
+        web3Call,
+        withdrawAmount,
+      });
+
+      const { data, depositFee } = await clipFinanceSharesPoolWithdraw({
+        networkId,
+        sharesToWithdraw,
+        web3Call,
+      });
+
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
+        ),
+        data: approveDepositWithEncodeABI(
+          CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
+          CHAIN_CONFIG[networkId].clipFinanceSharesPoolAddressLinea,
+          withdrawAmount,
+          web3Call,
+        ),
+        value: "0",
+      };
+
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId]?.clipFinanceSharesPoolAddressLinea,
+        ),
+        data: data,
+        value: depositFee,
+      };
+
+      return { transaction, approvalTransaction };
 
     case 26:
       //this txn will be diff for stader, lido, ankr, etc
