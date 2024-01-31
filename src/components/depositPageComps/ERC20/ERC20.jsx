@@ -210,7 +210,7 @@ const ERC20 = ({
             18,
           ),
           whitelistUserData?.proof ? whitelistUserData.proof : [],
-          clubData.depositTokenAddress ===
+          clubData.depositTokenAddress.toLowerCase() ===
             CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
             ? inputValue
             : "0",
@@ -231,9 +231,8 @@ const ERC20 = ({
   const fetchTokenDetails = async () => {
     try {
       const depositTokenAddress = clubData.depositTokenAddress;
-
       const isNativeToken =
-        clubData.depositTokenAddress ===
+        clubData.depositTokenAddress.toLowerCase() ===
         CHAIN_CONFIG[networkId].nativeToken.toLowerCase();
       const decimals = isNativeToken
         ? 18

@@ -57,7 +57,7 @@ export const CHAIN_CONFIG = {
     claimsSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-polygon/prod/gn",
     covalentNetworkName: "matic-mainnet",
-    nativeToken: "0x0000000000000000000000000000000000001010",
+    nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
     airdropContractAddress: "0x0DF19560f74749a42215A16C3FC22FfAA1c4029A",
     aavePoolAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",

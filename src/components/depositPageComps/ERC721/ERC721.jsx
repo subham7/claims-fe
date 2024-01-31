@@ -109,7 +109,7 @@ const ERC721 = ({
         const depositTokenAddress = clubData.depositTokenAddress;
 
         const isNativeToken =
-          clubData.depositTokenAddress ===
+          clubData.depositTokenAddress.toLowerCase() ===
           CHAIN_CONFIG[networkId].nativeToken.toLowerCase();
         const decimals = isNativeToken
           ? 18
@@ -193,7 +193,7 @@ const ERC721 = ({
         clubData?.imageUrl,
         count,
         whitelistUserData?.proof ? whitelistUserData.proof : [],
-        clubData.depositTokenAddress ===
+        clubData.depositTokenAddress.toLowerCase() ===
           CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
           ? (clubData?.pricePerToken * count).toString()
           : "0",
