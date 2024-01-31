@@ -429,6 +429,7 @@ export const DEFI_PROPOSALS = ({
   clipFinanceStaked = 0,
   staderETHStaked = 0,
   stargateStaked,
+  kelpEthStaked,
   networkId,
 }) => {
   return [
@@ -475,6 +476,20 @@ export const DEFI_PROPOSALS = ({
       unstakeTokenAddress: CHAIN_CONFIG[networkId]?.staderETHxAddress
         ? CHAIN_CONFIG[networkId].staderETHxAddress
         : "",
+    },
+
+    {
+      name: "Stader x Kelp",
+      logo: "/assets/icons/kelp.png",
+      APY: "8.2",
+      staked: kelpEthStaked, // Amount of ETHx staked
+      token: "ETH",
+      executionIds: {
+        Stake: 31,
+        Unstake: 32,
+      },
+      availableOnNetworkIds: ["0x5", "0x1"],
+      unstakeTokenAddress: CHAIN_CONFIG[networkId].kelpRsETHAddress,
     },
   ];
 };

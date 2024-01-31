@@ -122,6 +122,8 @@ export const CHAIN_CONFIG = {
     staderEigenLayerDepositPoolAddress:
       "0x779d1b5315df083e3F9E94cB495983500bA8E907",
     staderEigenStrategyAddress: "0x5d1E9DC056C906CBfe06205a39B0D965A6Df7C14",
+    staderKelpPoolAddress: "0xd51d846ba5032b9284b12850373ae2f053f977b3",
+    kelpRsETHAddress: "0xb4EA9175e99232560ac5dC2Bcbe4d7C833a15D56",
   },
   "0x1": {
     chainName: "Ethereum Mainnet",
@@ -148,6 +150,10 @@ export const CHAIN_CONFIG = {
     disburseContractAddress: "0x8b41c0aa45c86cebcfed5fb3744bf99ac8fb45c3",
     gnosisTxUrl: "https://safe-transaction-mainnet.safe.global/",
     logoUri: "/assets/networks/0x1.png",
+    kelpRsETHAddress: "0xA1290d69c65A6Fe4DF752f95823fae25cB99e5A7",
+    staderKelpPoolAddress: "0x036676389e48133B63a802f8635AD39E752D375D",
+    staderETHxAddress: "0xA35b1B31Ce002FBF2058D22F30f95D405200A15b",
+    staderStakingPoolAddress: "0xcf5EA1b38380f6aF39068375516Daf40Ed70D299",
   },
   "0x2105": {
     chainName: "Base Mainnet",
