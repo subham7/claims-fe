@@ -24,6 +24,9 @@
   width: 100%;
 }
 .codeblock {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
   margin: 12px 0px;
   padding: 10px;
   border-radius: 6px;
@@ -47,8 +50,13 @@
 }
 
 .iconButton {
-  position: absolute;
+  position: absolute !important;
   right: 8px;
   top: 8px;
   color: grey;
+}
+
+.iconColor {
+  font-size: 18px !important;
+  color: #dcdcdc;
 }
