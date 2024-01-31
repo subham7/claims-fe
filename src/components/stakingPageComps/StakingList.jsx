@@ -14,6 +14,7 @@ const StakingList = ({ daoAddress }) => {
   const networkId = "0x" + chain?.id.toString(16);
   const [unstakeTokenBalance, setUnstakeTokenBalance] = useState(0);
   const [unstakeClipFinanceToken, setUnstakeClipFinanceToken] = useState(0);
+  const [unstakeStaderToken, setUnstakeStaderToken] = useState(0);
 
   const { getBalance, getDecimals } = useCommonContractMethods();
 
@@ -21,44 +22,104 @@ const StakingList = ({ daoAddress }) => {
     return state.club.clubData.gnosisAddress;
   });
 
-  const fetchStargateStakedToken = async () => {
+  // const fetchStargateStakedToken = async () => {
+  //   try {
+  //     const balance = await getBalance(
+  //       CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0],
+  //       gnosisAddress,
+  //     );
+
+  //     const decimals = await getDecimals(
+  //       CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0],
+  //     );
+
+  //     setUnstakeTokenBalance(convertFromWeiGovernance(balance, decimals));
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  // const fetchClipFinanceStakedToken = async () => {
+  //   try {
+  //     const balance = await getBalance(
+  //       CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
+  //       gnosisAddress,
+  //     );
+
+  //     const decimals = await getDecimals(
+  //       CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
+  //     );
+
+  //     setUnstakeClipFinanceToken(convertFromWeiGovernance(balance, decimals));
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  // const fetchStaderStakedToken = async () => {
+  //   try {
+  //     const balance = await getBalance(
+  //       CHAIN_CONFIG[networkId].staderETHxAddress,
+  //       gnosisAddress,
+  //     );
+
+  //     const decimals = await getDecimals(
+  //       CHAIN_CONFIG[networkId].staderETHxAddress,
+  //     );
+
+  //     setUnstakeStaderToken(convertFromWeiGovernance(balance, decimals));
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   if (networkId === "0xe708") {
+  //     fetchStargateStakedToken();
+  //     fetchClipFinanceStakedToken();
+  //   } else if (networkId === "0x5") {
+  //     fetchStaderStakedToken();
+  //   }
+  // }, [gnosisAddress, networkId]);
+
+  const fetchTokenBalance = async (tokenAddress) => {
     try {
-      const balance = await getBalance(
-        CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0],
-        gnosisAddress,
-      );
-
-      const decimals = await getDecimals(
-        CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0],
-      );
-
-      setUnstakeTokenBalance(convertFromWeiGovernance(balance, decimals));
+      const balance = await getBalance(tokenAddress, gnosisAddress);
+      const decimals = await getDecimals(tokenAddress);
+      return convertFromWeiGovernance(balance, decimals);
     } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const fetchClipFinanceStakedToken = async () => {
-    try {
-      const balance = await getBalance(
-        CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
-        gnosisAddress,
-      );
-
-      const decimals = await getDecimals(
-        CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
-      );
-
-      setUnstakeClipFinanceToken(convertFromWeiGovernance(balance, decimals));
-    } catch (error) {
-      console.log(error);
+      console.error("Error fetching token balance:", error);
     }
   };
 
   useEffect(() => {
-    fetchStargateStakedToken();
-    fetchClipFinanceStakedToken();
-  }, [gnosisAddress]);
+    const fetchBalances = async () => {
+      let stargateBalance = 0,
+        clipFinanceBalance = 0,
+        staderBalance = 0;
+
+      if (networkId === "0xe708") {
+        [stargateBalance, clipFinanceBalance] = await Promise.all([
+          fetchTokenBalance(
+            CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0],
+          ),
+          fetchTokenBalance(
+            CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
+          ),
+        ]);
+      } else if (networkId === "0x5") {
+        staderBalance = await fetchTokenBalance(
+          CHAIN_CONFIG[networkId].staderETHxAddress,
+        );
+      }
+
+      setUnstakeTokenBalance(stargateBalance);
+      setUnstakeClipFinanceToken(clipFinanceBalance);
+      setUnstakeStaderToken(staderBalance);
+    };
+
+    fetchBalances();
+  }, [gnosisAddress, networkId]);
 
   return (
     <div className={classes.container}>
@@ -70,6 +131,7 @@ const StakingList = ({ daoAddress }) => {
         {DEFI_PROPOSALS({
           clipFinanceStaked: Number(unstakeClipFinanceToken),
           stargateStaked: Number(unstakeTokenBalance),
+          staderETHStaked: Number(unstakeStaderToken),
           networkId,
         })
           .filter((item) => item.availableOnNetworkIds.includes(networkId))

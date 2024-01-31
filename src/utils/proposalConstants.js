@@ -448,7 +448,7 @@ export const DEFI_PROPOSALS = ({
     {
       name: "Stargate Finance",
       logo: "/assets/icons/stargate.png",
-      APY: "17.36",
+      APY: "11.34",
       staked: stargateStaked,
       token: "ETH",
       executionIds: {
@@ -456,21 +456,25 @@ export const DEFI_PROPOSALS = ({
         Unstake: 18,
       },
       availableOnNetworkIds: ["0x89", "0xe708"],
-      unstakeTokenAddress:
-        CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0],
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.stargateUnstakingAddresses
+        ? CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0]
+        : "",
     },
 
     {
-      name: "Lido x Stader",
-      logo: "/assets/images/lido_elgen1.png",
+      name: "Stader x Eigen",
+      logo: "/assets/icons/stader.png",
       APY: "17.36",
-      staked: staderETHStaked,
+      staked: staderETHStaked, // Amount of ETHx staked
       token: "ETH",
       executionIds: {
         Stake: 26,
         Unstake: 27,
       },
       availableOnNetworkIds: ["0x5"],
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.staderETHxAddress
+        ? CHAIN_CONFIG[networkId].staderETHxAddress
+        : "",
     },
   ];
 };

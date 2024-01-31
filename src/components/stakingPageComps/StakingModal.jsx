@@ -15,6 +15,7 @@ import { CHAIN_CONFIG } from "utils/constants";
 import dayjs from "dayjs";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import BackdropLoader from "@components/common/BackdropLoader";
+import { stakingValidation } from "@components/createClubComps/ValidationSchemas";
 
 const StakingModal = ({
   image,
@@ -112,6 +113,12 @@ const StakingModal = ({
       actionCommand: Number(executionId),
       unstakeTokenAddress: unstakeTokenAddress,
     },
+    validationSchema: stakingValidation(
+      convertFromWeiGovernance(
+        stakeTokenBalance?.balance,
+        stakeTokenBalance?.decimals,
+      ),
+    ),
     onSubmit: async (values) => {
       try {
         setLoading(true);
@@ -285,7 +292,7 @@ const StakingModal = ({
               variant="inherit">
               Total of{" "}
               <span>
-                {staked} {token}
+                {Number(staked).toFixed(4)} {token}
               </span>{" "}
               is staked in this pool.
             </Typography>

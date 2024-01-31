@@ -117,6 +117,11 @@ export const CHAIN_CONFIG = {
     blockExplorerUrl: "https://goerli.etherscan.io",
     disburseContractAddress: "0x63D57d534a44f486EE2cCDcd53EbB7FA988cA5d5",
     gnosisTxUrl: "https://safe-transaction-goerli.safe.global/",
+    staderStakingPoolAddress: "0xd0e400Ec6Ed9C803A9D9D3a602494393E806F823",
+    staderETHxAddress: "0x3338eCd3ab3d3503c55c931d759fA6d78d287236",
+    staderEigenLayerDepositPoolAddress:
+      "0x779d1b5315df083e3F9E94cB495983500bA8E907",
+    staderEigenStrategyAddress: "0x5d1E9DC056C906CBfe06205a39B0D965A6Df7C14",
   },
   "0x1": {
     chainName: "Ethereum Mainnet",

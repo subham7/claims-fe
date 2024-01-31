@@ -761,3 +761,13 @@ export const eoaWalletTrackerValidation = yup.object({
     .required("Wallet address is required"),
   networkId: yup.string("Select network").required("Network is required"),
 });
+
+export const stakingValidation = (amount) => {
+  return yup.object({
+    stakeAmount: yup
+      .number()
+      .required("Amount is required")
+      .moreThan(0, "Amount should be greater than 0")
+      .max(amount, `Amount should be less than or equal to ${amount}`),
+  });
+};

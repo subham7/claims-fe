@@ -784,6 +784,7 @@ const eigenStakeMethodEncoded = async (
   eigenContractAddress,
   amount,
   web3Call,
+  networkId,
 ) => {
   if (eigenContractAddress) {
     const eigneContract = new web3Call.eth.Contract(
@@ -792,15 +793,15 @@ const eigenStakeMethodEncoded = async (
     );
 
     const previewAmount = await getStaderPreview(
-      "0xd0e400Ec6Ed9C803A9D9D3a602494393E806F823",
+      CHAIN_CONFIG[networkId].staderStakingPoolAddress,
       amount,
       web3Call,
     );
 
     return eigneContract.methods
       .depositIntoStrategy(
-        "0x5d1E9DC056C906CBfe06205a39B0D965A6Df7C14",
-        "0x3338eCd3ab3d3503c55c931d759fA6d78d287236",
+        CHAIN_CONFIG[networkId].staderEigenStrategyAddress, // Strategy Address
+        CHAIN_CONFIG[networkId].staderETHxAddress, // Stader Eth Token Address
         previewAmount,
       )
       .encodeABI();
@@ -1532,10 +1533,10 @@ export const getTransaction = async ({
       //currently, this is for stader
       stakeETHTransaction = {
         to: Web3.utils.toChecksumAddress(
-          "0xd0e400Ec6Ed9C803A9D9D3a602494393E806F823",
+          CHAIN_CONFIG[networkId].staderStakingPoolAddress, // Stader Staking Pool Address
         ),
         data: depositEthForEigen(
-          "0xd0e400Ec6Ed9C803A9D9D3a602494393E806F823",
+          CHAIN_CONFIG[networkId].staderStakingPoolAddress, //  Stader Staking Pool Address
           gnosisAddress,
           web3Call,
         ),
@@ -1544,11 +1545,11 @@ export const getTransaction = async ({
 
       approvalTransaction = {
         to: Web3.utils.toChecksumAddress(
-          "0x3338eCd3ab3d3503c55c931d759fA6d78d287236",
+          CHAIN_CONFIG[networkId].staderETHxAddress, // Stader Ethx Address
         ),
         data: approveDepositWithEncodeABI(
-          "0x3338eCd3ab3d3503c55c931d759fA6d78d287236",
-          "0x779d1b5315df083e3F9E94cB495983500bA8E907",
+          CHAIN_CONFIG[networkId].staderETHxAddress,
+          CHAIN_CONFIG[networkId].staderEigenLayerDepositPoolAddress, // Eigen Layer Deposit Pool Address
           convertToWeiGovernance(depositAmount, 18).toString(),
           web3Call,
         ),
@@ -1556,14 +1557,15 @@ export const getTransaction = async ({
       };
 
       const stakeData = await eigenStakeMethodEncoded(
-        "0x779d1b5315df083e3F9E94cB495983500bA8E907",
+        CHAIN_CONFIG[networkId].staderEigenLayerDepositPoolAddress,
         convertToWeiGovernance(depositAmount, 18).toString(),
         web3Call,
+        networkId,
       );
 
       transaction = {
         to: Web3.utils.toChecksumAddress(
-          "0x779d1b5315df083e3F9E94cB495983500bA8E907",
+          CHAIN_CONFIG[networkId].staderEigenLayerDepositPoolAddress,
         ),
         data: stakeData,
         value: 0,
