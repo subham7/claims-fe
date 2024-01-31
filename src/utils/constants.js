@@ -57,7 +57,7 @@ export const CHAIN_CONFIG = {
     claimsSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-polygon/prod/gn",
     covalentNetworkName: "matic-mainnet",
-    nativeToken: "0x0000000000000000000000000000000000001010",
+    nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
     airdropContractAddress: "0x0DF19560f74749a42215A16C3FC22FfAA1c4029A",
     aavePoolAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
@@ -104,12 +104,15 @@ export const CHAIN_CONFIG = {
     },
     rpcUrls: ["https://rpc.goerli.mudit.blog/"],
     appRpcUrl: `https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
-    factoryContractAddress: "",
+    factoryContractAddress: "0x936eca063Bdd8e2C15637F8c7cd507216b9E7aAd",
+    stationSubgraphUrl:
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-goerli-1/0.0.1/gn",
     claimFactoryAddress: "0x14E92a30fc70F8544b0DDB5fd87B773bC0DD68e6",
     claimsSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim",
     covalentNetworkName: "goerli-testnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    usdcAddress: "0x07865c6E87B9F70255377e024ace6630C1Eaa37F",
     blockExplorerUrl: "https://goerli.etherscan.io",
     disburseContractAddress: "0x63D57d534a44f486EE2cCDcd53EbB7FA988cA5d5",
     gnosisTxUrl: "https://safe-transaction-goerli.safe.global/",
@@ -135,6 +138,7 @@ export const CHAIN_CONFIG = {
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-eth/prod/gn",
     covalentNetworkName: "eth-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    usdcAddress: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
     blockExplorerUrl: "https://etherscan.io",
     disburseContractAddress: "0x8b41c0aa45c86cebcfed5fb3744bf99ac8fb45c3",
     gnosisTxUrl: "https://safe-transaction-mainnet.safe.global/",
@@ -2295,6 +2299,10 @@ export const stationNetworksChainId = [
     chainId: 1,
     networkId: "0x1",
   },
+  {
+    chainId: 5,
+    networkId: "0x5",
+  },
   // {
   //   chainId: 100,
   //   networkId: "0x64",
@@ -2305,4 +2313,4 @@ export const stationNetworksChainId = [
   },
 ];
 
-export const ALLOWED_NETWORKS_FOR_STATION = ["0x89", "0x1", "0xe708"];
+export const ALLOWED_NETWORKS_FOR_STATION = ["0x89", "0x1", "0x5", "0xe708"];

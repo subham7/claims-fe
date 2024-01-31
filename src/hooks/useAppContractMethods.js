@@ -160,6 +160,7 @@ const useAppContractMethods = (params) => {
     tokenUriOfNFT,
     numOfTokens,
     merkleProof,
+    value,
   ) => {
     try {
       const res = await writeContractFunction({
@@ -174,6 +175,7 @@ const useAppContractMethods = (params) => {
           merkleProof,
         ],
         account: walletAddress,
+        value: value,
         networkId,
       });
       return res;
@@ -186,7 +188,17 @@ const useAppContractMethods = (params) => {
     userAddress,
     numOfTokens,
     merkleProof,
+    value,
   ) => {
+    console.log({
+      address: CHAIN_CONFIG[networkId].factoryContractAddress,
+      abi: factoryContractABI,
+      functionName: "buyGovernanceTokenERC20DAO",
+      args: [userAddress, daoAddress, numOfTokens, merkleProof],
+      account: walletAddress,
+      value: value,
+      networkId,
+    });
     try {
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
@@ -194,6 +206,7 @@ const useAppContractMethods = (params) => {
         functionName: "buyGovernanceTokenERC20DAO",
         args: [userAddress, daoAddress, numOfTokens, merkleProof],
         account: walletAddress,
+        value: value,
         networkId,
       });
       return res;
@@ -351,7 +364,7 @@ const useAppContractMethods = (params) => {
     quorum,
     threshold,
     safeThreshold,
-    depositTokenAddress,
+    depositToken,
     treasuryAddress,
     addressList,
     isGovernanceActive,
@@ -377,7 +390,7 @@ const useAppContractMethods = (params) => {
           quorum,
           threshold,
           safeThreshold,
-          depositTokenAddress,
+          depositToken,
           treasuryAddress,
           addressList,
           isGovernanceActive,

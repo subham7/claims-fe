@@ -13,7 +13,7 @@ const Detail = ({
 }) => {
   const renderedValue = isPricePerToken
     ? `1 ${title}: ${value} ${tokenName}`
-    : `${title}: ${value} ${isAmount ? "USDC" : ""}`;
+    : `${title}: ${value} ${isAmount ? tokenName : ""}`;
 
   return (
     <div className={classes.detailCard}>
@@ -44,11 +44,13 @@ const DepositDetails = ({ contractData = {}, tokenDetails = {} }) => {
           title="Min"
           value={convertFromWeiGovernance(minDepositAmount, tokenDecimal)}
           isAmount
+          tokenName={tokenSymbol}
         />
         <Detail
           title="Max"
           value={convertFromWeiGovernance(maxDepositAmount, tokenDecimal)}
           isAmount
+          tokenName={tokenSymbol}
         />
         <Detail
           title={symbol}
