@@ -132,6 +132,13 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
       };
     case 20:
       return { "New nft supply": `${nftSupply}` };
+    case 24:
+      return {
+        "Deposit Amount :": `${convertFromWeiGovernance(
+          depositAmount,
+          decimals,
+        )} $${symbol}`,
+      };
     default:
       return {};
   }
@@ -289,7 +296,7 @@ export const proposalFormData = ({
           <Typography mt={1} variant="proposalSubHeading">
             Download sample from{" "}
             <span style={{ color: "#3a7afd" }}>
-              <Link href={"/assets/csv/mintGt.csv"}>here</Link>
+              <Link href={"/assets/csv/sample.csv"}>here</Link>
             </span>
           </Typography>
         </>
@@ -805,7 +812,7 @@ export const proposalFormData = ({
             </Typography>
             <Select
               sx={{ marginTop: "0.5rem" }}
-              value={formik.values.aaveWithdrawToken}
+              value={formik.values.aaveDepositToken}
               onChange={(e) =>
                 formik.setFieldValue(
                   "aaveDepositToken",
@@ -1263,7 +1270,7 @@ export const proposalFormData = ({
           <Typography mt={1} variant="proposalSubHeading">
             Download sample from{" "}
             <span style={{ color: "#3a7afd" }}>
-              <Link href={"/assets/csv/mintGt.csv"}>here</Link>
+              <Link href={"/assets/csv/sample.csv"}>here</Link>
             </span>
           </Typography>
         </>
@@ -1324,6 +1331,76 @@ export const proposalFormData = ({
             }
             onWheel={(event) => event.target.blur()}
           />
+        </>
+      );
+
+    case 24:
+      return (
+        <>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            // mb={}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography variant="proposalBody">
+              Token to be deposited
+            </Typography>
+            <Select
+              sx={{ marginTop: "0.5rem" }}
+              value={formik.values.clipFinanceDepositToken}
+              onChange={(e) =>
+                formik.setFieldValue(
+                  "clipFinanceDepositToken",
+                  filteredTokens.find(
+                    (token) => token.symbol === e.target.value,
+                  ).address,
+                )
+              }
+              renderValue={(selected) => {
+                if (selected.length === 0) {
+                  return "Select a command";
+                }
+                return selected;
+              }}
+              inputProps={{ "aria-label": "Without label" }}
+              name="clipFinanceDepositToken"
+              id="clipFinanceDepositToken">
+              {filteredTokens.map((token) => (
+                <MenuItem key={token.symbol} value={token.symbol}>
+                  {token.symbol}
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid>
+          <Grid
+            container
+            direction={"column"}
+            ml={3}
+            mt={2}
+            sx={{ marginLeft: "0 !important" }}>
+            <Typography variant="proposalBody">Amount of Tokens *</Typography>
+            <TextField
+              variant="outlined"
+              className={classes.textField}
+              placeholder="0"
+              type="number"
+              name="clipFinanceDepositAmount"
+              id="clipFinanceDepositAmount"
+              value={formik.values.clipFinanceDepositAmount}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.clipFinanceDepositAmount &&
+                Boolean(formik.errors.clipFinanceDepositAmount)
+              }
+              helperText={
+                formik.touched.clipFinanceDepositAmount &&
+                formik.errors.clipFinanceDepositAmount
+              }
+              onWheel={(event) => event.target.blur()}
+            />
+          </Grid>
         </>
       );
   }
@@ -1568,6 +1645,18 @@ export const getProposalCommands = async ({
         sendToken: values.sendToken,
         amountToSend: convertToWeiGovernance(values.amountToSend, tokenDecimal),
       };
+
+    case 24:
+      tokenDecimal = tokenData?.find(
+        (token) => token.address === values.clipFinanceDepositToken,
+      ).decimals;
+      return {
+        depositToken: values.clipFinanceDepositToken,
+        depositAmount: convertToWeiGovernance(
+          values.clipFinanceDepositAmount,
+          tokenDecimal,
+        ),
+      };
   }
 };
 
@@ -1751,6 +1840,15 @@ export const proposalDetailsData = ({
         ).toFixed(4),
         Recipients: "All Members",
       };
+      return responseData;
+    case 24:
+      responseData.data = {
+        "Deposit Amount": `${convertFromWeiGovernance(
+          depositAmount,
+          decimals,
+        )} ${symbol}`,
+      };
+
       return responseData;
 
     default:

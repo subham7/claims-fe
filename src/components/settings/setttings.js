@@ -15,6 +15,7 @@ import { getPublicClient } from "utils/viemConfig";
 import { CHAIN_CONFIG } from "utils/constants";
 import { formatEther } from "viem";
 import { isNative } from "utils/helper";
+import WalletTracker from "@components/settingsComps/walletTracker/WalletTracker";
 
 const Settings = ({ daoAddress }) => {
   const [daoDetails, setDaoDetails] = useState({
@@ -212,7 +213,6 @@ const Settings = ({ daoAddress }) => {
     try {
       const assetsData = await getAssetsByDaoAddress(
         daoDetails.assetsStoredOnGnosis ? gnosisAddress : daoAddress,
-        networkId,
       );
       setTreasuryAmount(assetsData?.data?.treasuryAmount);
     } catch (error) {
@@ -222,8 +222,11 @@ const Settings = ({ daoAddress }) => {
 
   const getClubInfoFn = async () => {
     const info = await getClubInfo(daoAddress);
-    if (info.status === 200) setClubInfo(info.data[0]);
+    if (info.status === 200) {
+      setClubInfo(info.data[0]);
+    }
   };
+
   useEffect(() => {
     getClubInfoFn();
   }, [daoAddress]);
@@ -291,6 +294,9 @@ const Settings = ({ daoAddress }) => {
         daoAddress={daoAddress}
         factoryData={factoryData}
       />
+
+      <WalletTracker isAdminUser={isAdminUser} daoAddress={daoAddress} />
+
       <TokenGating daoAddress={daoAddress} />
     </>
   );

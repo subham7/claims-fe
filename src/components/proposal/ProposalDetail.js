@@ -455,14 +455,14 @@ Cast your vote before ${new Date(
 
   const createRejectSafeTransaction = async () => {
     setLoaderOpen(true);
+
     const response = await createRejectSafeTx({
       pid,
       gnosisTransactionUrl: CHAIN_CONFIG[networkId].gnosisTxUrl,
       gnosisAddress,
-      networkId,
+      network: networkId,
       daoAddress,
       walletAddress,
-      networkId,
     });
     if (response) {
       fetchData();
@@ -499,6 +499,7 @@ Cast your vote before ${new Date(
       gnosisAddress,
       networkId,
     });
+
     if (response) {
       fetchData();
       setIsCancelSigned(true);
@@ -729,6 +730,7 @@ Cast your vote before ${new Date(
           <Typography fontWeight={"500"}>Proposal description</Typography>
           <Grid container item className={classes.listFont}>
             <div
+              className={classes.verticalScroll}
               dangerouslySetInnerHTML={{
                 __html: ReactHtmlParser(proposalData?.description),
               }}></div>

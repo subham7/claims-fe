@@ -24,6 +24,8 @@ import { stargateNativeABI } from "abis/stargateNativeABI";
 import { maticAaveABI } from "abis/MaticAaveABI";
 import { uniswapABI } from "abis/uniswapABI";
 import { encodeFunctionData } from "viem";
+import { Batch } from "abis/clip-finance/batch";
+import { StrategyRouter } from "abis/clip-finance/stragetgyRouter";
 
 export const fetchProposals = async (daoAddress, type) => {
   let proposalData;
@@ -539,6 +541,33 @@ const approveDepositWithEncodeABI = (
   }
 };
 
+const clipFinanceBatchDeposit = async ({
+  depositToken,
+  depositAmount,
+  web3Call,
+  networkId,
+}) => {
+  const batchContract = new web3Call.eth.Contract(
+    Batch,
+    CHAIN_CONFIG[networkId].clipFinanceBatchAddressLinea,
+  );
+
+  const depositFee = await batchContract.methods
+    .getDepositFeeInNative(depositAmount)
+    .call();
+
+  const strategyRouterContract = new web3Call.eth.Contract(
+    StrategyRouter,
+    CHAIN_CONFIG[networkId].clipFinanceStrategyRouterAddressLinea,
+  );
+
+  const data = strategyRouterContract.methods
+    .depositToBatch(depositToken, depositAmount, "")
+    .encodeABI();
+
+  return { data, depositFee };
+};
+
 const transferNFTfromSafe = (
   tokenAddress,
   gnosisAddress,
@@ -778,6 +807,9 @@ export const getTransaction = async ({
     sendTokenAmounts,
     sendTokenAddresses,
   } = proposalData.commands[0];
+
+  console.log("xxxxD", depositAmount, tokenData);
+
   let approvalTransaction;
   let transaction;
   const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
@@ -1159,6 +1191,35 @@ export const getTransaction = async ({
         };
         return { transaction, approvalTransaction };
       }
+
+    case 24:
+      // token Data === usdc address
+      const { data, depositFee } = await clipFinanceBatchDeposit({
+        depositAmount,
+        depositToken: tokenData,
+        networkId,
+        web3Call,
+      });
+
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(tokenData),
+        data: approveDepositWithEncodeABI(
+          tokenData,
+          CHAIN_CONFIG[networkId].clipFinanceStrategyRouterAddressLinea,
+          depositAmount,
+          web3Call,
+        ),
+        value: "0",
+      };
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId]?.clipFinanceStrategyRouterAddressLinea,
+        ),
+        data: data,
+        value: depositFee,
+      };
+
+      return { transaction, approvalTransaction };
   }
 };
 
@@ -1221,6 +1282,8 @@ export const getTokenTypeByExecutionId = (commands) => {
     case 22:
     case 23:
       return commands[0]?.sendToken;
+    case 24:
+      return commands[0]?.depositToken;
     default:
       return "";
   }

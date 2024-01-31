@@ -1,0 +1,118 @@
+@import "../../../../styles/variables.scss";
+
+.container {
+  background: $background-primary;
+  width: 70%;
+  border-radius: 12px;
+  padding: 32px;
+  margin-bottom: 40px;
+
+  .walletItem {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    border: 1px solid $divider-color;
+    border-radius: 8px;
+    justify-content: space-between;
+
+    .flexContainer {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+
+      .imageContainer {
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-right: 1px solid $divider-color;
+      }
+
+      .walletAddress {
+        color: white;
+
+        span {
+          color: $gray;
+        }
+      }
+    }
+
+    .icons {
+      color: $gray;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-right: 20px;
+
+      .remove {
+        cursor: pointer;
+        color: $inactive-text;
+
+        &:hover {
+          color: white;
+        }
+      }
+
+      img {
+        cursor: pointer;
+      }
+
+      svg {
+        cursor: pointer;
+
+        &:hover {
+          color: white;
+        }
+      }
+    }
+  }
+
+  .addButton {
+    display: flex;
+    align-items: center;
+    width: 100px;
+    justify-content: center;
+    gap: 8px;
+    font-size: 20px;
+    color: $gray;
+    background: inherit;
+    border: 1px solid $divider-color;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 28px;
+    &:hover {
+      color: white;
+    }
+  }
+}
+
+.walletTrackerModal {
+  width: 600px;
+
+  .heading {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+
+    svg {
+      cursor: pointer;
+    }
+  }
+
+  .subtext {
+    color: $light-gray;
+  }
+
+  .textFields {
+    width: 100%;
+  }
+
+  .saveButton {
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    border-radius: 12px;
+  }
+}

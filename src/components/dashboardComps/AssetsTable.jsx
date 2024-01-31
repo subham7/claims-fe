@@ -11,8 +11,11 @@ import {
 } from "@mui/material";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import classes from "./Dashboard.module.scss";
+import { CHAIN_CONFIG } from "utils/constants";
 
-const AssetsTable = ({ tableHeader, tableData }) => {
+export const tableHeader = ["Name", "Holding", "Network", "Value in USD"];
+
+const AssetsTable = ({ tableData }) => {
   return (
     <div className={classes.tokensContainer}>
       <TableContainer component={Paper}>
@@ -28,48 +31,47 @@ const AssetsTable = ({ tableHeader, tableData }) => {
           </TableHead>
           <TableBody>
             {tableData.map((token, index) => (
-              <TableRow key={index}>
-                <TableCell className={classes.tableCell}>
-                  <div className={classes.token}>
-                    {/* <Image
-                      src={token.logo}
-                      height={25}
-                      width={35}
-                      alt="token name"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = "/assets/icons/usd.png";
-                      }}
-                    /> */}
+              <>
+                {token.name && (
+                  <TableRow key={index}>
+                    <TableCell className={classes.tableCell}>
+                      <div className={classes.token}>
+                        <SafeImage
+                          src={token.logo}
+                          fallbackSrc="/assets/icons/testToken.png"
+                          alt="token name"
+                          height={25}
+                          width={25}
+                          style={{
+                            borderRadius: "50%",
+                          }}
+                        />
+                        <Typography
+                          className={classes.tokenName}
+                          variant="inherit">
+                          {token.name}
+                        </Typography>
 
-                    <SafeImage
-                      src={token.logo}
-                      fallbackSrc="/assets/icons/testToken.png"
-                      alt="token name"
-                      height={25}
-                      width={25}
-                    />
-                    <Typography className={classes.tokenName} variant="inherit">
-                      {token.name}
-                    </Typography>
-                    <Typography
-                      className={classes.tokenSymbol}
-                      variant="inherit">
+                        <Typography
+                          className={classes.tokenSymbol}
+                          variant="inherit">
+                          {token.symbol}
+                        </Typography>
+                      </div>
+                    </TableCell>
+                    <TableCell className={classes.tableCell}>
+                      {convertFromWeiGovernance(token.balance, token.decimals)}{" "}
                       {token.symbol}
-                    </Typography>
-                  </div>
-                </TableCell>
-                {/* <TableCell className={classes.tableCell}>
-                  {token.price}
-                </TableCell> */}
-                <TableCell className={classes.tableCell}>
-                  {convertFromWeiGovernance(token.balance, token.decimals)}{" "}
-                  {token.symbol}
-                </TableCell>
-                <TableCell className={classes.tableCell}>
-                  ${token?.usd?.usdValue ?? 0}
-                </TableCell>
-              </TableRow>
+                    </TableCell>
+                    <TableCell className={classes.tableCell}>
+                      {CHAIN_CONFIG[token?.networkId]?.shortName ?? ""}
+                    </TableCell>
+                    <TableCell className={classes.tableCell}>
+                      ${token?.usd?.usdValue ?? 0}
+                    </TableCell>
+                  </TableRow>
+                )}
+              </>
             ))}
           </TableBody>
         </Table>
