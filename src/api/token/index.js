@@ -33,6 +33,17 @@ export const getTokensListOfManta = async (walletAddress) => {
   }
 };
 
+export const getTokensListBeraChain = async (walletAddress) => {
+  try {
+    return await axios.get(
+      // `https://api.routescan.io/v2/network/testnet/evm/80085/etherscan/api?module=account&action=addresstokenbalance&address=${"0x77949783f407a6206883f93302800554d492e953"}`,
+      `https://api.routescan.io/v2/network/testnet/evm/80085/etherscan/api?module=account&action=addresstokenbalance&address=${walletAddress}`,
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const getTotalNumberOfTokenHolders = async (
   networkName,
   tokenAddress,

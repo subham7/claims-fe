@@ -36,6 +36,7 @@ export const supportedChainsDrops = [
   "0xa9",
   "0x28c5f",
   "0x1",
+  "0x138d5",
 ];
 
 export const CHAIN_CONFIG = {
@@ -366,6 +367,30 @@ export const CHAIN_CONFIG = {
     disburseContractAddress: "0x3DA9Fb55Ab77b10F99C1C1f52C150280dbd5a611",
     logoUri: "/assets/networks/0x28c5f.png",
   },
+  "0x138d5": {
+    chainName: "Bera Testnet",
+    shortName: "Berachain",
+    chainId: 80085,
+    nativeCurrency: {
+      name: "ETH",
+      decimals: 18,
+      symbol: "ETH",
+    },
+    rpcUrls: ["https://artio.rpc.berachain.com"],
+    appRpcUrl: `https://artio.rpc.berachain.com`,
+    stationSubgraphUrl: "",
+    covalentNetworkName: "",
+    factoryContractAddress: "",
+    claimFactoryAddress: "0x50702Fd9086BAbDB0A3A576bFe22D4dD47b09937",
+    claimsSubgraphUrl:
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-berachain/0.0.1/gn",
+    nativeToken: "",
+    usdcAddress: "",
+    airdropContractAddress: "",
+    blockExplorerUrl: "https://artio.beratrail.io",
+    disburseContractAddress: "0x7aA33CC623Db79d5fFa859bA6cBE2Fb93c237401",
+    logoUri: "/assets/networks/0x138d5.png",
+  },
 };
 
 export const lineaMainnetWalletConnect = {
@@ -564,6 +589,7 @@ export const contractNetworks = {
     createCallAbi: createCallAbi, // Optional. Only needed with web3.js
     simulateTxAccessorAbi: simulateTxAccessorAbi, // Optional. Only needed with web3.js
   },
+  // berachain testnet
 };
 
 export const dropsNetworksChaindId = [
@@ -610,6 +636,10 @@ export const dropsNetworksChaindId = [
   {
     chainId: 1,
     networkId: "0x1",
+  },
+  {
+    chainId: 80085,
+    networkId: "0x138d5",
   },
 ];
 
