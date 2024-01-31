@@ -20,10 +20,12 @@ const StakingCard = ({
   const [showStakingModal, setShowStakingModal] = useState(false);
   const [showUnstakingModal, setShowUnstakingModal] = useState(false);
   const [stakingResult, setStakingResult] = useState(null);
+  const [proposalId, setProposalId] = useState("");
 
-  const handleStakingComplete = (result) => {
+  const handleStakingComplete = (result, proposalId = "") => {
     setShowStakingModal(false);
     setStakingResult(result);
+    setProposalId(proposalId);
   };
 
   const router = useRouter();
@@ -123,7 +125,7 @@ const StakingCard = ({
           onClose={() => setStakingResult(null)}
           buttonText="View & Sign Transaction"
           onButtonClick={() => {
-            router.push(`/proposals/${daoAddress}/${networkId}`);
+            router.push(`/proposals/${daoAddress}/${networkId}/${proposalId}`);
           }}
         />
       ) : stakingResult === "failure" ? (

@@ -167,7 +167,7 @@ const StakingModal = ({
         });
         onClose();
         setLoading(false);
-        onStakingComplete("success");
+        onStakingComplete("success", request.data?.proposalId);
       } catch (error) {
         onClose();
         setLoading(false);
