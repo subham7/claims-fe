@@ -23,6 +23,7 @@ import { useRouter } from "next/router";
 import { setAlertData } from "redux/reducers/alert";
 import { getPublicClient } from "utils/viemConfig";
 import { formatEther } from "viem";
+import { isNative } from "utils/helper";
 
 const DepositInputComponents = ({
   formik,
@@ -231,9 +232,8 @@ const ERC20 = ({
   const fetchTokenDetails = async () => {
     try {
       const depositTokenAddress = clubData.depositTokenAddress;
-      const isNativeToken =
-        clubData.depositTokenAddress.toLowerCase() ===
-        CHAIN_CONFIG[networkId].nativeToken.toLowerCase();
+      const isNativeToken = isNative(clubData.depositTokenAddress, networkId);
+
       const decimals = isNativeToken
         ? 18
         : await getDecimals(depositTokenAddress);

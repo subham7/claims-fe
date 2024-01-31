@@ -108,9 +108,8 @@ const ERC721 = ({
 
         const depositTokenAddress = clubData.depositTokenAddress;
 
-        const isNativeToken =
-          clubData.depositTokenAddress.toLowerCase() ===
-          CHAIN_CONFIG[networkId].nativeToken.toLowerCase();
+        const isNativeToken = isNative(clubData.depositTokenAddress, networkId);
+
         const decimals = isNativeToken
           ? 18
           : await getDecimals(depositTokenAddress);

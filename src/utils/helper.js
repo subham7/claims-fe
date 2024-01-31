@@ -432,3 +432,10 @@ export const getLinks = (daoAddress, networkId) => {
     id: String(index + 1),
   }));
 };
+
+export const isNative = (depositTokenAddress, networkId) => {
+  return (
+    depositTokenAddress.toLowerCase() ===
+    CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
+  );
+};

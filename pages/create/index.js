@@ -31,10 +31,11 @@ import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import useSafe from "../../src/hooks/useSafe";
 import Layout from "../../src/components/layouts/layout";
 import { useAccount, useNetwork } from "wagmi";
-import { CHAIN_CONFIG, ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
+import { ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import useClubFetch from "hooks/useClubFetch";
 import { NFT_STORAGE_TOKEN } from "api/token";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
+import { isNative } from "utils/helper";
 
 const Create = () => {
   const steps = ["Add basic info", "Configure token", "Set controls"];
@@ -169,10 +170,8 @@ const Create = () => {
           image: formikERC721Step2.values.nftImage,
         });
         const depositTokenAddress = formikERC721Step2.values.depositToken;
-        const isNativeToken =
-          depositTokenAddress ===
-          CHAIN_CONFIG[networkId].nativeToken.toLowerCase();
-        const decimals = isNativeToken
+
+        const decimals = isNative(depositTokenAddress, networkId)
           ? 18
           : await getDecimals(depositTokenAddress);
 
@@ -227,10 +226,8 @@ const Create = () => {
       } else {
         try {
           const depositTokenAddress = formikERC20Step2.values.depositToken;
-          const isNativeToken =
-            depositTokenAddress ===
-            CHAIN_CONFIG[networkId].nativeToken.toLowerCase();
-          const decimals = isNativeToken
+
+          const decimals = isNative(depositTokenAddress, networkId)
             ? 18
             : await getDecimals(depositTokenAddress);
 

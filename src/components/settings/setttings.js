@@ -14,6 +14,7 @@ import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 import { getPublicClient } from "utils/viemConfig";
 import { CHAIN_CONFIG } from "utils/constants";
 import { formatEther } from "viem";
+import { isNative } from "utils/helper";
 
 const Settings = ({ daoAddress }) => {
   const [daoDetails, setDaoDetails] = useState({
@@ -128,9 +129,11 @@ const Settings = ({ daoAddress }) => {
 
   const fetchErc20TokenDetails = useCallback(async () => {
     try {
-      const isNativeToken =
-        factoryData.depositTokenAddress.toLowerCase() ===
-        CHAIN_CONFIG[networkId].nativeToken.toLowerCase();
+      const isNativeToken = isNative(
+        factoryData.depositTokenAddress,
+        networkId,
+      );
+
       let balanceOfToken;
 
       if (isNativeToken) {
