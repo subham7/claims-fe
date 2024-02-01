@@ -1,6 +1,5 @@
 import SafeImage from "@components/common/SafeImage";
 import { Typography } from "@mui/material";
-import axios from "axios";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -8,6 +7,7 @@ import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { getDaysDifferenceDescription } from "utils/helper";
 import Web3 from "web3";
 import classes from "./Dashboard.module.scss";
+import { getTransactionsByNetworkId } from "api/transactions";
 
 const ActivityItem = ({ item, daoAddress, networkId }) => {
   const router = useRouter();
@@ -86,33 +86,11 @@ const DashboardActivities = ({ proposals, daoAddress, networkId }) => {
   });
 
   const fetchTransactions = async () => {
-    const address = Web3.utils.toChecksumAddress(gnosisAddress);
-    const res = await axios.get(
-      `https://safe-transaction-polygon.safe.global/api/v1/safes/${address}/all-transactions/?executed=true&queued=false`,
+    const transfers = await getTransactionsByNetworkId(
+      Web3.utils.toChecksumAddress(gnosisAddress),
+      networkId,
     );
-    const results = res.data.results;
-    let transfers = [];
 
-    results.forEach((item) => {
-      item.transfers?.forEach((res) => {
-        if (res?.type === "ETHER_TRANSFER") {
-          transfers = [
-            ...transfers,
-            {
-              ...res,
-              tokenInfo: {
-                decimals: 18,
-                name: "MATIC",
-                logoUri: "https://cryptologos.cc/logos/polygon-matic-logo.svg",
-              },
-            },
-          ];
-        }
-        if (res?.type === "ERC20_TRANSFER") {
-          transfers = [...transfers, res];
-        }
-      });
-    });
     setAllTransactions(transfers);
   };
 
