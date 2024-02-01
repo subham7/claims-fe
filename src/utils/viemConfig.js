@@ -10,6 +10,7 @@ import {
 } from "viem/chains";
 import {
   CHAIN_CONFIG,
+  beraMainnetWalletConnect,
   lineaMainnetWalletConnect,
   mantaMainnet,
   mantleMainnetViem,
@@ -28,6 +29,7 @@ const viemChains = {
   "0x82750": scrollMainnet,
   "0xa9": mantaMainnet,
   "0x28c5f": taikoJolnir,
+  "0x138d5": beraMainnetWalletConnect,
 };
 
 export const getPublicClient = (networkId) => {

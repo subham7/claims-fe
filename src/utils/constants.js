@@ -417,6 +417,30 @@ export const lineaMainnetWalletConnect = {
     },
   },
 };
+export const beraMainnetWalletConnect = {
+  id: 80085,
+  name: "Bera",
+  network: "bera",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ether ",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    public: { http: ["https://artio.rpc.berachain.com"] },
+    default: { http: ["https://artio.rpc.berachain.com"] },
+  },
+  blockExplorers: {
+    etherscan: { name: "ArtioExplorer", url: "https://artio.beratrail.io/" },
+    default: { name: "ArtioExplorer", url: "https://artio.beratrail.io/" },
+  },
+  contracts: {
+    multicall3: {
+      address: "",
+      blockCreated: "",
+    },
+  },
+};
 
 export const scrollMainnet = {
   id: 534352,
