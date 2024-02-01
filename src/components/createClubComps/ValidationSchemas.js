@@ -202,31 +202,31 @@ export const getProposalValidationSchema = ({
           .number("Enter proposal action")
           .required("Action command is required"),
     }),
-    amountToAirdrop: yup
-      .number("Enter amount of tokens")
-      .test(
-        "invalidAirdropAmount",
-        "Enter an amount less or equal to treasury balance",
-        async (value, context) => {
-          const { actionCommand, airdropToken } = context.parent;
-          if (actionCommand === 0) {
-            try {
-              const balance = await getBalance(airdropToken, gnosisAddress);
-              const decimals = await getDecimals(airdropToken);
-              if (
-                Number(value) <=
-                  Number(convertFromWeiGovernance(balance, decimals)) &&
-                Number(value) > 0
-              ) {
-                return true;
-              } else return false;
-            } catch (error) {
-              return false;
-            }
-          }
-          return true;
-        },
-      ),
+    // amountToAirdrop: yup
+    //   .number("Enter amount of tokens")
+    //   .test(
+    //     "invalidAirdropAmount",
+    //     "Enter an amount less or equal to treasury balance",
+    //     async (value, context) => {
+    //       const { actionCommand, airdropToken } = context.parent;
+    //       if (actionCommand === 0) {
+    //         try {
+    //           const balance = await getBalance(airdropToken, gnosisAddress);
+    //           const decimals = await getDecimals(airdropToken);
+    //           if (
+    //             Number(value) <=
+    //               Number(convertFromWeiGovernance(balance, decimals)) &&
+    //             Number(value) > 0
+    //           ) {
+    //             return true;
+    //           } else return false;
+    //         } catch (error) {
+    //           return false;
+    //         }
+    //       }
+    //       return true;
+    //     },
+    //   ),
     mintGTAmounts: yup
       .array()
       .test(
