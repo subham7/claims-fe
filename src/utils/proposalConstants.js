@@ -446,6 +446,7 @@ export const DEFI_PROPOSALS = ({
         Unstake: 25,
       },
       availableOnNetworkIds: ["0xe708"],
+      isUnstakeDisabled: true,
     },
 
     {

@@ -28,11 +28,6 @@ const StakingList = ({ daoAddress }) => {
     return state.club.clubData.gnosisAddress;
   });
 
-  const eigenBalances = {
-    [CHAIN_CONFIG[networkId].staderETHxAddress.toLowerCase()]: "staderBalance",
-    [CHAIN_CONFIG[networkId].swellSwETHAddress.toLowerCase()]: "swellEigen",
-  };
-
   const fetchTokenBalance = async (tokenAddress) => {
     try {
       const balance = await getBalance(tokenAddress, gnosisAddress);
@@ -84,6 +79,13 @@ const StakingList = ({ daoAddress }) => {
           ),
         ]);
       } else if (networkId === "0x1") {
+        const eigenBalances = {
+          [CHAIN_CONFIG[networkId]?.staderETHxAddress?.toLowerCase()]:
+            "staderBalance",
+          [CHAIN_CONFIG[networkId]?.swellSwETHAddress?.toLowerCase()]:
+            "swellEigen",
+        };
+
         kelpBalance = await fetchTokenBalance(
           CHAIN_CONFIG[networkId].kelpRsETHAddress,
         );

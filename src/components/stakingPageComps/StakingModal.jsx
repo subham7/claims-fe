@@ -114,10 +114,12 @@ const StakingModal = ({
       unstakeTokenAddress: unstakeTokenAddress,
     },
     validationSchema: stakingValidation(
-      convertFromWeiGovernance(
-        stakeTokenBalance?.balance,
-        stakeTokenBalance?.decimals,
-      ),
+      type === "Stake"
+        ? convertFromWeiGovernance(
+            stakeTokenBalance?.balance,
+            stakeTokenBalance?.decimals,
+          )
+        : staked,
     ),
     onSubmit: async (values) => {
       try {
@@ -145,7 +147,7 @@ const StakingModal = ({
           clubId: daoAddress,
           name: `${name} - ${type}`,
           createdBy: walletAddress,
-          votingDuration: dayjs(Date.now() + 3600 * 1000 * 24).unix(),
+          votingDuration: dayjs().add(100, "year").unix(),
           votingOptions: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
           commands,
           type: "action",
