@@ -19,6 +19,7 @@ import {
   getTransactionHash,
   signAndConfirmTransaction,
 } from "utils/proposalData";
+import { eigenContractABI } from "abis/eigenContract";
 
 const useAppContractMethods = (params) => {
   const { daoAddress } = params ?? {};
@@ -281,6 +282,22 @@ const useAppContractMethods = (params) => {
     return res;
   };
 
+  const fetchEigenTokenBalance = async (gnosisAddress) => {
+    try {
+      const res = await readContractFunction({
+        address: CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+        abi: eigenContractABI,
+        functionName: "getDeposits",
+        args: ["0xD9Ba5c0a4162246Fa0E7537245Ee318591379B02"],
+        account: walletAddress,
+        networkId,
+      });
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const createERC721DAO = async ({
     clubName,
     clubSymbol,
@@ -526,6 +543,7 @@ const useAppContractMethods = (params) => {
     getTokenGatingDetails,
     updateProposalAndExecution,
     toggleWhitelist,
+    fetchEigenTokenBalance,
   };
 };
 

@@ -119,8 +119,7 @@ export const CHAIN_CONFIG = {
     gnosisTxUrl: "https://safe-transaction-goerli.safe.global/",
     staderStakingPoolAddress: "0xd0e400Ec6Ed9C803A9D9D3a602494393E806F823",
     staderETHxAddress: "0x3338eCd3ab3d3503c55c931d759fA6d78d287236",
-    staderEigenLayerDepositPoolAddress:
-      "0x779d1b5315df083e3F9E94cB495983500bA8E907",
+    eigenLayerDepositPoolAddress: "0x779d1b5315df083e3F9E94cB495983500bA8E907",
     staderEigenStrategyAddress: "0x5d1E9DC056C906CBfe06205a39B0D965A6Df7C14",
     staderKelpPoolAddress: "0xd51d846ba5032b9284b12850373ae2f053f977b3",
     kelpRsETHAddress: "0xb4EA9175e99232560ac5dC2Bcbe4d7C833a15D56",
@@ -154,6 +153,11 @@ export const CHAIN_CONFIG = {
     staderKelpPoolAddress: "0x036676389e48133B63a802f8635AD39E752D375D",
     staderETHxAddress: "0xA35b1B31Ce002FBF2058D22F30f95D405200A15b",
     staderStakingPoolAddress: "0xcf5EA1b38380f6aF39068375516Daf40Ed70D299",
+    staderEigenStrategyAddress: "0x9d7eD45EE2E8FC5482fa2428f15C971e6369011d",
+    eigenLayerDepositPoolAddress: "0x858646372CC42E1A627fcE94aa7A7033e7CF075A",
+    swellRswETHAddress: "0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0",
+    swellSwETHAddress: "0xf951E335afb289353dc249e82926178EaC7DEd78",
+    swellEigenStrategyAddress: "0x0Fe4F44beE93503346A3Ac9EE5A26b130a5796d6",
   },
   "0x2105": {
     chainName: "Base Mainnet",

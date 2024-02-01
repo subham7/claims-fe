@@ -430,6 +430,8 @@ export const DEFI_PROPOSALS = ({
   staderETHStaked = 0,
   stargateStaked,
   kelpEthStaked,
+  swellRswEthStaked,
+  swellEigenEthStaked,
   networkId,
 }) => {
   return [
@@ -466,30 +468,69 @@ export const DEFI_PROPOSALS = ({
       name: "Stader x Eigen",
       logo: "/assets/icons/stader.png",
       APY: "17.36",
-      staked: staderETHStaked, // Amount of ETHx staked
+      staked: staderETHStaked,
       token: "ETH",
       executionIds: {
         Stake: 26,
         Unstake: 27,
       },
-      availableOnNetworkIds: ["0x5"],
+      availableOnNetworkIds: ["0x1"],
       unstakeTokenAddress: CHAIN_CONFIG[networkId]?.staderETHxAddress
         ? CHAIN_CONFIG[networkId].staderETHxAddress
         : "",
+      isUnstakeDisabled: true,
     },
 
     {
       name: "Stader x Kelp",
       logo: "/assets/icons/kelp.png",
       APY: "8.2",
-      staked: kelpEthStaked, // Amount of ETHx staked
+      staked: kelpEthStaked,
       token: "ETH",
       executionIds: {
         Stake: 31,
         Unstake: 32,
       },
-      availableOnNetworkIds: ["0x5", "0x1"],
-      unstakeTokenAddress: CHAIN_CONFIG[networkId].kelpRsETHAddress,
+      availableOnNetworkIds: ["0x1"],
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.kelpRsETHAddress
+        ? CHAIN_CONFIG[networkId].kelpRsETHAddress
+        : "",
+      isUnstakeDisabled: true,
+    },
+
+    {
+      name: "Swell - Restaking",
+      logo: "/assets/icons/swell.png",
+      APY: "7.9",
+      staked: swellRswEthStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 33,
+        Unstake: 34,
+      },
+      availableOnNetworkIds: ["0x1"],
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.swellRswETHAddress
+        ? CHAIN_CONFIG[networkId].swellRswETHAddress
+        : "",
+      isUnstakeDisabled: true,
+    },
+
+    {
+      name: "Swell x Eigen",
+      logo: "/assets/icons/swell_eigen.png",
+      APY: "7.9",
+      staked: swellEigenEthStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 35,
+        Unstake: 36,
+      },
+      availableOnNetworkIds: ["0x1"],
+      isUnstakeDisabled: true,
+
+      // unstakeTokenAddress: CHAIN_CONFIG[networkId]?.swellRswETHAddress
+      //   ? CHAIN_CONFIG[networkId].swellRswETHAddress
+      //   : "",
     },
   ];
 };

@@ -16,6 +16,7 @@ const StakingCard = ({
   daoAddress,
   executionIds,
   unstakeTokenAddress,
+  isUnstakeDisabled,
 }) => {
   const [showStakingModal, setShowStakingModal] = useState(false);
   const [showUnstakingModal, setShowUnstakingModal] = useState(false);
@@ -75,7 +76,10 @@ const StakingCard = ({
             }}>
             Stake
           </button>
+
           <button
+            className={isUnstakeDisabled && classes.disabled}
+            disabled={isUnstakeDisabled}
             onClick={() => {
               setShowUnstakingModal(true);
             }}>

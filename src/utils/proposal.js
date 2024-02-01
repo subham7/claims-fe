@@ -36,6 +36,8 @@ import axios from "axios";
 import { SharesPool } from "abis/clip-finance/sharesPool";
 import { SharesToken } from "abis/clip-finance/sharesToken";
 import { kelpPoolABI } from "abis/kelp/kelpPoolContract";
+import { rswETHABI } from "abis/swell/rswETHContract";
+import { swETHABI } from "abis/swell/swETHContract";
 
 export const fetchProposals = async (daoAddress, type) => {
   let proposalData;
@@ -812,6 +814,50 @@ const kelpStakeMethodEncoded = async (
   }
 };
 
+const swellEthStakeEncoded = ({ swellETHAddress, web3Call }) => {
+  if (swellETHAddress) {
+    const swellRswETHContract = new web3Call.eth.Contract(
+      rswETHABI, // OR swETHABI
+      swellETHAddress,
+    );
+
+    return swellRswETHContract.methods
+      .depositWithReferral("0xD9A5A56eE4eCAD795B274015e3c90884402b2138")
+      .encodeABI();
+  }
+};
+
+const swellEigenStakeMethodEncoded = async ({
+  eigenContractAddress,
+  depositAmount,
+  web3Call,
+  networkId,
+}) => {
+  if (eigenContractAddress) {
+    const eigenContract = new web3Call.eth.Contract(
+      eigenContractABI,
+      eigenContractAddress,
+    );
+
+    const swETHContract = new web3Call.eth.Contract(
+      swETHABI,
+      CHAIN_CONFIG[networkId].swellSwETHAddress,
+    );
+
+    const ethToSwETHRate = await swETHContract.methods.ethToSwETHRate().call();
+
+    const previewAmount = Number(depositAmount) * Number(ethToSwETHRate);
+
+    return eigenContract.methods
+      .depositIntoStrategy(
+        CHAIN_CONFIG[networkId].swellEigenStrategyAddress,
+        CHAIN_CONFIG[networkId].swellSwETHAddress,
+        convertToFullNumber(previewAmount.toString()).split(".")[0],
+      )
+      .encodeABI();
+  }
+};
+
 const getStaderPreview = (contractAddress, amount, web3Call) => {
   if (contractAddress) {
     const stakeETHContractCall = new web3Call.eth.Contract(
@@ -1576,7 +1622,7 @@ export const getTransaction = async ({
       //currently, this is for stader
       stakeETHTransaction = {
         to: Web3.utils.toChecksumAddress(
-          CHAIN_CONFIG[networkId].staderStakingPoolAddress, // Stader Staking Pool Address
+          CHAIN_CONFIG[networkId].staderStakingPoolAddress, // Stader Staking Pool Address -
         ),
         data: depositEthForEigen(
           CHAIN_CONFIG[networkId].staderStakingPoolAddress, //  Stader Staking Pool Address
@@ -1588,11 +1634,11 @@ export const getTransaction = async ({
 
       approvalTransaction = {
         to: Web3.utils.toChecksumAddress(
-          CHAIN_CONFIG[networkId].staderETHxAddress, // Stader Ethx Address
+          CHAIN_CONFIG[networkId].staderETHxAddress, // Stader Ethx Address - swETH Address
         ),
         data: approveDepositWithEncodeABI(
           CHAIN_CONFIG[networkId].staderETHxAddress,
-          CHAIN_CONFIG[networkId].staderEigenLayerDepositPoolAddress, // Eigen Layer Deposit Pool Address - (KELP pool)
+          CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress, // Eigen Layer Deposit Pool Address - (KELP pool)
           convertToWeiGovernance(depositAmount, 18).toString(),
           web3Call,
         ),
@@ -1600,7 +1646,7 @@ export const getTransaction = async ({
       };
 
       const stakeData = await eigenStakeMethodEncoded(
-        CHAIN_CONFIG[networkId].staderEigenLayerDepositPoolAddress, // KELP Pool
+        CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress, // KELP Pool
         convertToWeiGovernance(depositAmount, 18).toString(),
         web3Call,
         networkId,
@@ -1608,7 +1654,7 @@ export const getTransaction = async ({
 
       transaction = {
         to: Web3.utils.toChecksumAddress(
-          CHAIN_CONFIG[networkId].staderEigenLayerDepositPoolAddress,
+          CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
         ),
         data: stakeData,
         value: 0,
@@ -1668,6 +1714,63 @@ export const getTransaction = async ({
         ),
         value: "0",
       };
+
+      return { stakeETHTransaction, approvalTransaction, transaction };
+
+    case 33:
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].swellRswETHAddress,
+        ),
+        data: swellEthStakeEncoded({
+          swellRswETHAddress: CHAIN_CONFIG[networkId].swellRswETHAddress,
+          web3Call,
+        }),
+        value: convertToWeiGovernance(depositAmount, 18).toString(),
+      };
+
+      return { transaction };
+
+    case 35:
+      stakeETHTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].swellSwETHAddress,
+        ),
+        data: swellEthStakeEncoded({
+          swellETHAddress: CHAIN_CONFIG[networkId].swellSwETHAddress,
+          web3Call,
+        }),
+        value: convertToWeiGovernance(depositAmount, 18).toString(),
+      };
+
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].swellSwETHAddress,
+        ),
+        data: approveDepositWithEncodeABI(
+          CHAIN_CONFIG[networkId].swellSwETHAddress,
+          CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress, // Eigen Layer Deposit Pool Address
+          convertToWeiGovernance(depositAmount, 18).toString(),
+          web3Call,
+        ),
+        value: "0",
+      };
+
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+        ),
+        data: await swellEigenStakeMethodEncoded({
+          eigenContractAddress:
+            CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+          depositAmount,
+          web3Call,
+          networkId,
+        }),
+        value: "0",
+      };
+
+      console.log("xxxtx", transaction);
 
       return { stakeETHTransaction, approvalTransaction, transaction };
   }
@@ -1760,6 +1863,8 @@ export const getTokenTypeByExecutionId = (commands) => {
     case 24:
     case 26:
     case 31:
+    case 33:
+    case 35:
       return commands[0]?.depositToken;
     case 25:
       return commands[0]?.withdrawToken;

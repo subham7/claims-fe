@@ -150,6 +150,8 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
 
     case 26:
     case 31:
+    case 33:
+    case 35:
       return {
         "Deposit Amount :": `${depositAmount} ETH`,
       };
@@ -1821,6 +1823,8 @@ export const getProposalCommands = async ({
     //   };
     case 26:
     case 31:
+    case 33:
+    case 35:
       return {
         depositToken: values.stakeTokenAddress,
         depositAmount: values.stakeAmount,
@@ -2035,6 +2039,8 @@ export const proposalDetailsData = ({
 
     case 26:
     case 31:
+    case 33:
+    case 35:
       responseData.data = {
         "Deposit Amount": `${depositAmount} ETH`,
       };

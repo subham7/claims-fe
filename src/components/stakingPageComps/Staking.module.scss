@@ -2,6 +2,7 @@
 
 .list {
   display: flex;
+  flex-wrap: wrap;
   margin-top: 28px;
   gap: 20px;
 
@@ -43,13 +44,22 @@
         font-family: inherit;
         border-radius: 12px;
         font-weight: 500;
-        color: #707070;
         color: white;
         cursor: pointer;
 
         &:hover {
           background: white;
           color: #151515;
+        }
+      }
+
+      .disabled {
+        cursor: not-allowed;
+        color: #707070;
+
+        &:hover {
+          background-color: #282828;
+          color: #707070;
         }
       }
     }
