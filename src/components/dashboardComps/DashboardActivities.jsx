@@ -86,12 +86,15 @@ const DashboardActivities = ({ proposals, daoAddress, networkId }) => {
   });
 
   const fetchTransactions = async () => {
-    const transfers = await getTransactionsByNetworkId(
-      Web3.utils.toChecksumAddress(gnosisAddress),
-      networkId,
-    );
-
-    setAllTransactions(transfers);
+    try {
+      const transfers = await getTransactionsByNetworkId(
+        Web3.utils.toChecksumAddress(gnosisAddress),
+        networkId,
+      );
+      setAllTransactions(transfers?.slice(0, 10));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   useEffect(() => {
