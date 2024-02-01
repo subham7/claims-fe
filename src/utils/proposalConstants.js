@@ -459,7 +459,7 @@ export const DEFI_PROPOSALS = ({
         Stake: 17,
         Unstake: 18,
       },
-      availableOnNetworkIds: ["0x89", "0xe708"],
+      availableOnNetworkIds: ["0xe708"],
       unstakeTokenAddress: CHAIN_CONFIG[networkId]?.stargateUnstakingAddresses
         ? CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0]
         : "",
