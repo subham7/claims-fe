@@ -38,6 +38,7 @@ import { SharesToken } from "abis/clip-finance/sharesToken";
 import { kelpPoolABI } from "abis/kelp/kelpPoolContract";
 import { rswETHABI } from "abis/swell/rswETHContract";
 import { swETHABI } from "abis/swell/swETHContract";
+import { renzoStakingPoolABI } from "abis/renzo/renzoStakingPoolContract";
 
 export const fetchProposals = async (daoAddress, type) => {
   let proposalData;
@@ -823,6 +824,19 @@ const swellEthStakeEncoded = ({ swellETHAddress, web3Call }) => {
 
     return swellRswETHContract.methods
       .depositWithReferral("0xD9A5A56eE4eCAD795B274015e3c90884402b2138")
+      .encodeABI();
+  }
+};
+
+const renzoEthStakeEncoded = ({ renzoStakingPoolAddress, web3Call }) => {
+  if (renzoStakingPoolAddress) {
+    const renzoStakingPoolContract = new web3Call.eth.Contract(
+      renzoStakingPoolABI, // OR swETHABI
+      renzoStakingPoolAddress,
+    );
+
+    return renzoStakingPoolContract.methods
+      .depositETH("0xD9A5A56eE4eCAD795B274015e3c90884402b2138")
       .encodeABI();
   }
 };
@@ -1770,9 +1784,22 @@ export const getTransaction = async ({
         value: "0",
       };
 
-      console.log("xxxtx", transaction);
-
       return { stakeETHTransaction, approvalTransaction, transaction };
+
+    case 37:
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].renzoStakingPoolAddress,
+        ),
+        data: renzoEthStakeEncoded({
+          renzoStakingPoolAddress:
+            CHAIN_CONFIG[networkId].renzoStakingPoolAddress,
+          web3Call,
+        }),
+        value: convertToWeiGovernance(depositAmount, 18).toString(),
+      };
+
+      return { transaction };
   }
 };
 
@@ -1865,6 +1892,7 @@ export const getTokenTypeByExecutionId = (commands) => {
     case 31:
     case 33:
     case 35:
+    case 37:
       return commands[0]?.depositToken;
     case 25:
       return commands[0]?.withdrawToken;

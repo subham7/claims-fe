@@ -432,6 +432,7 @@ export const DEFI_PROPOSALS = ({
   kelpEthStaked,
   swellRswEthStaked,
   swellEigenEthStaked,
+  renzoEzEthStaked,
   networkId,
 }) => {
   return [
@@ -532,6 +533,23 @@ export const DEFI_PROPOSALS = ({
       // unstakeTokenAddress: CHAIN_CONFIG[networkId]?.swellRswETHAddress
       //   ? CHAIN_CONFIG[networkId].swellRswETHAddress
       //   : "",
+    },
+
+    {
+      name: "Renzo Protocol",
+      logo: "/assets/icons/renzo_logo.png",
+      APY: "3.6",
+      staked: renzoEzEthStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 37,
+        Unstake: 38,
+      },
+      availableOnNetworkIds: ["0x1"],
+      // unstakeTokenAddress: CHAIN_CONFIG[networkId]?.swellRswETHAddress
+      //   ? CHAIN_CONFIG[networkId].swellRswETHAddress
+      //   : "",
+      isUnstakeDisabled: true,
     },
   ];
 };

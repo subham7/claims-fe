@@ -19,6 +19,7 @@ const StakingList = ({ daoAddress }) => {
   const [unstakeKelpToken, setUnstakeKelpToken] = useState(0);
   const [unstakeSwellRswETHToken, setUnstakeSwellRswETHToken] = useState(0);
   const [unstakeSwellEigenToken, setUnstakeSwellEigenToken] = useState(0);
+  const [unstakeRenzoEzETHToken, setUnstakeRenzoEzETHToken] = useState(0);
   const [eigenTokensFetched, setEigenTokensFetched] = useState([]);
 
   const { getBalance, getDecimals } = useCommonContractMethods();
@@ -67,7 +68,8 @@ const StakingList = ({ daoAddress }) => {
         staderBalance = 0,
         kelpBalance = 0,
         swellRswETH = 0,
-        swellEigen = 0;
+        swellEigen = 0,
+        renzoEzEthBalance = 0;
 
       if (networkId === "0xe708") {
         [stargateBalance, clipFinanceBalance] = await Promise.all([
@@ -85,6 +87,10 @@ const StakingList = ({ daoAddress }) => {
           [CHAIN_CONFIG[networkId]?.swellSwETHAddress?.toLowerCase()]:
             "swellEigen",
         };
+
+        renzoEzEthBalance = await fetchTokenBalance(
+          CHAIN_CONFIG[networkId].renzoEzETHAddress,
+        );
 
         kelpBalance = await fetchTokenBalance(
           CHAIN_CONFIG[networkId].kelpRsETHAddress,
@@ -112,6 +118,7 @@ const StakingList = ({ daoAddress }) => {
       setUnstakeKelpToken(kelpBalance);
       setUnstakeSwellRswETHToken(swellRswETH);
       setUnstakeSwellEigenToken(swellEigen);
+      setUnstakeRenzoEzETHToken(renzoEzEthBalance);
     };
 
     fetchBalances();
@@ -131,6 +138,7 @@ const StakingList = ({ daoAddress }) => {
           kelpEthStaked: Number(unstakeKelpToken),
           swellRswEthStaked: Number(unstakeSwellRswETHToken),
           swellEigenEthStaked: Number(unstakeSwellEigenToken),
+          renzoEzEthStaked: Number(unstakeRenzoEzETHToken),
           networkId,
         })
           .filter((item) => item.availableOnNetworkIds.includes(networkId))

@@ -158,6 +158,8 @@ export const CHAIN_CONFIG = {
     swellRswETHAddress: "0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0",
     swellSwETHAddress: "0xf951E335afb289353dc249e82926178EaC7DEd78",
     swellEigenStrategyAddress: "0x0Fe4F44beE93503346A3Ac9EE5A26b130a5796d6",
+    renzoStakingPoolAddress: "0x74a09653A083691711cF8215a6ab074BB4e99ef5",
+    renzoEzETHAddress: "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110",
   },
   "0x2105": {
     chainName: "Base Mainnet",
