@@ -434,21 +434,22 @@ export const DEFI_PROPOSALS = ({
   swellEigenEthStaked,
   renzoEzEthStaked,
   networkId,
+  lidoEigenEthStaked,
 }) => {
   return [
-    {
-      name: "Clip Finance",
-      logo: "/assets/images/clipFinanceLogo.png",
-      APY: "17.36",
-      staked: clipFinanceStaked,
-      token: "USDC",
-      executionIds: {
-        Stake: 24,
-        Unstake: 25,
-      },
-      availableOnNetworkIds: ["0xe708"],
-      isUnstakeDisabled: true,
-    },
+    // {
+    //   name: "Clip Finance",
+    //   logo: "/assets/images/clipFinanceLogo.png",
+    //   APY: "17.36",
+    //   staked: clipFinanceStaked,
+    //   token: "USDC",
+    //   executionIds: {
+    //     Stake: 24,
+    //     Unstake: 25,
+    //   },
+    //   availableOnNetworkIds: ["0xe708"],
+    //   isUnstakeDisabled: true,
+    // },
 
     {
       name: "Stargate Finance",
@@ -484,6 +485,38 @@ export const DEFI_PROPOSALS = ({
     },
 
     {
+      name: "Lido x Eigen",
+      logo: "/assets/images/lido_eigen.png",
+      APY: "4.5",
+      staked: lidoEigenEthStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 39,
+        Unstake: 40,
+      },
+      availableOnNetworkIds: ["0x1"],
+      isUnstakeDisabled: true,
+    },
+
+    {
+      name: "Swell x Eigen",
+      logo: "/assets/icons/swell_eigen.png",
+      APY: "7.9",
+      staked: swellEigenEthStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 35,
+        Unstake: 36,
+      },
+      availableOnNetworkIds: ["0x1"],
+      isUnstakeDisabled: true,
+
+      // unstakeTokenAddress: CHAIN_CONFIG[networkId]?.swellRswETHAddress
+      //   ? CHAIN_CONFIG[networkId].swellRswETHAddress
+      //   : "",
+    },
+
+    {
       name: "Stader x Kelp",
       logo: "/assets/icons/kelp.png",
       APY: "8.2",
@@ -515,24 +548,6 @@ export const DEFI_PROPOSALS = ({
         ? CHAIN_CONFIG[networkId].swellRswETHAddress
         : "",
       isUnstakeDisabled: true,
-    },
-
-    {
-      name: "Swell x Eigen",
-      logo: "/assets/icons/swell_eigen.png",
-      APY: "7.9",
-      staked: swellEigenEthStaked,
-      token: "ETH",
-      executionIds: {
-        Stake: 35,
-        Unstake: 36,
-      },
-      availableOnNetworkIds: ["0x1"],
-      isUnstakeDisabled: true,
-
-      // unstakeTokenAddress: CHAIN_CONFIG[networkId]?.swellRswETHAddress
-      //   ? CHAIN_CONFIG[networkId].swellRswETHAddress
-      //   : "",
     },
 
     {

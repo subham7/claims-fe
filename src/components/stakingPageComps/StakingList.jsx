@@ -20,6 +20,7 @@ const StakingList = ({ daoAddress }) => {
   const [unstakeSwellRswETHToken, setUnstakeSwellRswETHToken] = useState(0);
   const [unstakeSwellEigenToken, setUnstakeSwellEigenToken] = useState(0);
   const [unstakeRenzoEzETHToken, setUnstakeRenzoEzETHToken] = useState(0);
+  const [unstakeLidoStETHToken, setUnstakeLidoStETHToken] = useState(0);
   const [eigenTokensFetched, setEigenTokensFetched] = useState([]);
 
   const { getBalance, getDecimals } = useCommonContractMethods();
@@ -69,6 +70,7 @@ const StakingList = ({ daoAddress }) => {
         kelpBalance = 0,
         swellRswETH = 0,
         swellEigen = 0,
+        lidoEigen = 0,
         renzoEzEthBalance = 0;
 
       if (networkId === "0xe708") {
@@ -86,6 +88,8 @@ const StakingList = ({ daoAddress }) => {
             "staderBalance",
           [CHAIN_CONFIG[networkId]?.swellSwETHAddress?.toLowerCase()]:
             "swellEigen",
+          [CHAIN_CONFIG[networkId]?.lidoStETHAddress?.toLowerCase()]:
+            "lidoEigen",
         };
 
         renzoEzEthBalance = await fetchTokenBalance(
@@ -107,6 +111,8 @@ const StakingList = ({ daoAddress }) => {
               staderBalance = token.amount;
             } else if (eigenBalances[key] === "swellEigen") {
               swellEigen = token.amount;
+            } else if (eigenBalances[key] === "lidoEigen") {
+              lidoEigen = token.amount;
             }
           }
         });
@@ -119,6 +125,7 @@ const StakingList = ({ daoAddress }) => {
       setUnstakeSwellRswETHToken(swellRswETH);
       setUnstakeSwellEigenToken(swellEigen);
       setUnstakeRenzoEzETHToken(renzoEzEthBalance);
+      setUnstakeLidoStETHToken(lidoEigen);
     };
 
     fetchBalances();
@@ -139,6 +146,7 @@ const StakingList = ({ daoAddress }) => {
           swellRswEthStaked: Number(unstakeSwellRswETHToken),
           swellEigenEthStaked: Number(unstakeSwellEigenToken),
           renzoEzEthStaked: Number(unstakeRenzoEzETHToken),
+          lidoEigenEthStaked: Number(unstakeLidoStETHToken),
           networkId,
         })
           .filter((item) => item.availableOnNetworkIds.includes(networkId))

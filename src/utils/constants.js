@@ -160,6 +160,8 @@ export const CHAIN_CONFIG = {
     swellEigenStrategyAddress: "0x0Fe4F44beE93503346A3Ac9EE5A26b130a5796d6",
     renzoStakingPoolAddress: "0x74a09653A083691711cF8215a6ab074BB4e99ef5",
     renzoEzETHAddress: "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110",
+    lidoStETHAddress: "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
+    lidoEigenStrategyAddress: "0x93c4b944D05dfe6df7645A86cd2206016c51564D",
   },
   "0x2105": {
     chainName: "Base Mainnet",

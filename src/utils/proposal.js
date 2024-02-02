@@ -39,6 +39,7 @@ import { kelpPoolABI } from "abis/kelp/kelpPoolContract";
 import { rswETHABI } from "abis/swell/rswETHContract";
 import { swETHABI } from "abis/swell/swETHContract";
 import { renzoStakingPoolABI } from "abis/renzo/renzoStakingPoolContract";
+import { stETHTokenABI } from "abis/lido/lidoStETHContract";
 
 export const fetchProposals = async (daoAddress, type) => {
   let proposalData;
@@ -815,19 +816,6 @@ const kelpStakeMethodEncoded = async (
   }
 };
 
-const swellEthStakeEncoded = ({ swellETHAddress, web3Call }) => {
-  if (swellETHAddress) {
-    const swellRswETHContract = new web3Call.eth.Contract(
-      rswETHABI, // OR swETHABI
-      swellETHAddress,
-    );
-
-    return swellRswETHContract.methods
-      .depositWithReferral("0xD9A5A56eE4eCAD795B274015e3c90884402b2138")
-      .encodeABI();
-  }
-};
-
 const renzoEthStakeEncoded = ({ renzoStakingPoolAddress, web3Call }) => {
   if (renzoStakingPoolAddress) {
     const renzoStakingPoolContract = new web3Call.eth.Contract(
@@ -837,6 +825,65 @@ const renzoEthStakeEncoded = ({ renzoStakingPoolAddress, web3Call }) => {
 
     return renzoStakingPoolContract.methods
       .depositETH("0xD9A5A56eE4eCAD795B274015e3c90884402b2138")
+      .encodeABI();
+  }
+};
+
+const lidoEthStakeEncoded = ({ web3Call, networkId }) => {
+  const lidoTokenContract = new web3Call.eth.Contract(
+    stETHTokenABI,
+    CHAIN_CONFIG[networkId].lidoStETHAddress,
+  );
+
+  return lidoTokenContract.methods
+    .submit("0xD9A5A56eE4eCAD795B274015e3c90884402b2138") // referall
+    .encodeABI();
+};
+
+const lidoEigneStakeMethod = async ({
+  eigenContractAddress,
+  depositAmount,
+  web3Call,
+  networkId,
+}) => {
+  if (eigenContractAddress) {
+    const eigenContract = new web3Call.eth.Contract(
+      eigenContractABI,
+      eigenContractAddress,
+    );
+
+    const stETHContract = new web3Call.eth.Contract(
+      stETHTokenABI,
+      CHAIN_CONFIG[networkId].lidoStETHAddress,
+    );
+
+    const sharesAllocated = await stETHContract.methods
+      .getSharesByPooledEth(convertToWeiGovernance(depositAmount, 18))
+      .call();
+
+    const stETHAllocated = await stETHContract.methods
+      .getPooledEthByShares(sharesAllocated)
+      .call();
+
+    return eigenContract.methods
+      .depositIntoStrategy(
+        CHAIN_CONFIG[networkId].lidoEigenStrategyAddress,
+        CHAIN_CONFIG[networkId].lidoStETHAddress,
+        stETHAllocated,
+      )
+      .encodeABI();
+  }
+};
+
+const swellEthStakeEncoded = ({ swellETHAddress, web3Call }) => {
+  if (swellETHAddress) {
+    const swellRswETHContract = new web3Call.eth.Contract(
+      rswETHABI, // OR swETHABI
+      swellETHAddress,
+    );
+
+    return swellRswETHContract.methods
+      .depositWithReferral("0xD9A5A56eE4eCAD795B274015e3c90884402b2138")
       .encodeABI();
   }
 };
@@ -1800,6 +1847,44 @@ export const getTransaction = async ({
       };
 
       return { transaction };
+
+    case 39:
+      stakeETHTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].lidoStETHAddress,
+        ),
+
+        data: lidoEthStakeEncoded({
+          networkId,
+          web3Call,
+        }),
+        value: convertToWeiGovernance(depositAmount, 18).toString(),
+      };
+      approvalTransaction = {
+        to: CHAIN_CONFIG[networkId].lidoStETHAddress,
+
+        data: approveDepositWithEncodeABI(
+          CHAIN_CONFIG[networkId].lidoStETHAddress,
+          CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+          convertToWeiGovernance(depositAmount, 18).toString(),
+          web3Call,
+        ),
+
+        value: "0",
+      };
+      transaction = {
+        to: CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+        data: await lidoEigneStakeMethod({
+          depositAmount,
+          networkId,
+          web3Call,
+          eigenContractAddress:
+            CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+        }),
+        value: "0",
+      };
+
+      return { stakeETHTransaction, approvalTransaction, transaction };
   }
 };
 
@@ -1893,6 +1978,7 @@ export const getTokenTypeByExecutionId = (commands) => {
     case 33:
     case 35:
     case 37:
+    case 39:
       return commands[0]?.depositToken;
     case 25:
       return commands[0]?.withdrawToken;
