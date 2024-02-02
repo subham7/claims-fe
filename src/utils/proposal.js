@@ -1,7 +1,11 @@
 import { getProposalByDaoAddress } from "../api/proposal";
 import { createCancelProposal, getProposalTxHash } from "api/proposal";
 import Web3 from "web3";
-import { convertToFullNumber, getIncreaseGasPrice, getSafeSdk } from "./helper";
+import {
+  convertToFullNumber,
+  getIncreaseGasPrice,
+  getSafeSdk,
+} from "./helper";
 import { factoryContractABI } from "abis/factoryContract.js";
 import { erc721DaoABI } from "abis/erc721Dao";
 import { erc20DaoABI } from "abis/erc20Dao";
@@ -840,7 +844,7 @@ const lidoEthStakeEncoded = ({ web3Call, networkId }) => {
     .encodeABI();
 };
 
-const lidoEigneStakeMethod = async ({
+const lidoEigneStakeMethodEncoded = async ({
   eigenContractAddress,
   depositAmount,
   web3Call,
@@ -873,6 +877,23 @@ const lidoEigneStakeMethod = async ({
       )
       .encodeABI();
   }
+};
+
+const restakeFinanceStakeMethodEncoded = ({
+  web3Call,
+  depositAmount,
+  networkId,
+}) => {
+  const abi = ["function deposit(uint256 vowID) external"];
+
+  const restakeDepositPoolContract = new web3Call.eth.Contract(
+    abi,
+    CHAIN_CONFIG[networkId].restakeDepositPoolAddress,
+  );
+
+  return restakeDepositPoolContract.methods
+    .deposit(convertToWeiGovernance(depositAmount, 18))
+    .encodeABI();
 };
 
 const swellEthStakeEncoded = ({ swellETHAddress, web3Call }) => {
@@ -1861,7 +1882,9 @@ export const getTransaction = async ({
         value: convertToWeiGovernance(depositAmount, 18).toString(),
       };
       approvalTransaction = {
-        to: CHAIN_CONFIG[networkId].lidoStETHAddress,
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].lidoStETHAddress,
+        ),
 
         data: approveDepositWithEncodeABI(
           CHAIN_CONFIG[networkId].lidoStETHAddress,
@@ -1873,13 +1896,54 @@ export const getTransaction = async ({
         value: "0",
       };
       transaction = {
-        to: CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
-        data: await lidoEigneStakeMethod({
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+        ),
+        data: await lidoEigneStakeMethodEncoded({
           depositAmount,
           networkId,
           web3Call,
           eigenContractAddress:
             CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+        }),
+        value: "0",
+      };
+
+      return { stakeETHTransaction, approvalTransaction, transaction };
+
+    case 41:
+      stakeETHTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].lidoStETHAddress,
+        ),
+        data: lidoEthStakeEncoded({
+          networkId,
+          web3Call,
+        }),
+        value: convertToWeiGovernance(depositAmount, 18).toString(),
+      };
+
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].lidoStETHAddress,
+        ),
+        data: approveDepositWithEncodeABI(
+          CHAIN_CONFIG[networkId].lidoStETHAddress,
+          CHAIN_CONFIG[networkId].restakeDepositPoolAddress,
+          convertToWeiGovernance(depositAmount, 18).toString(),
+          web3Call,
+        ),
+        value: "0",
+      };
+
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].restakeDepositPoolAddress,
+        ),
+        data: restakeFinanceStakeMethodEncoded({
+          depositAmount,
+          networkId,
+          web3Call,
         }),
         value: "0",
       };
@@ -1979,6 +2043,7 @@ export const getTokenTypeByExecutionId = (commands) => {
     case 35:
     case 37:
     case 39:
+    case 41:
       return commands[0]?.depositToken;
     case 25:
       return commands[0]?.withdrawToken;

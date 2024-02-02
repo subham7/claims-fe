@@ -21,6 +21,7 @@ const StakingList = ({ daoAddress }) => {
   const [unstakeSwellEigenToken, setUnstakeSwellEigenToken] = useState(0);
   const [unstakeRenzoEzETHToken, setUnstakeRenzoEzETHToken] = useState(0);
   const [unstakeLidoStETHToken, setUnstakeLidoStETHToken] = useState(0);
+  const [unstakeRestakeRstETHToken, setUnstakeRestakeRstETHToken] = useState(0);
   const [eigenTokensFetched, setEigenTokensFetched] = useState([]);
 
   const { getBalance, getDecimals } = useCommonContractMethods();
@@ -71,6 +72,7 @@ const StakingList = ({ daoAddress }) => {
         swellRswETH = 0,
         swellEigen = 0,
         lidoEigen = 0,
+        restakeRstETH = 0,
         renzoEzEthBalance = 0;
 
       if (networkId === "0xe708") {
@@ -104,6 +106,10 @@ const StakingList = ({ daoAddress }) => {
           CHAIN_CONFIG[networkId].swellRswETHAddress,
         );
 
+        restakeRstETH = await fetchTokenBalance(
+          CHAIN_CONFIG[networkId].restakeRstETHAddress,
+        );
+
         eigenTokensFetched.forEach((token) => {
           const key = token.tokenAddress.toLowerCase();
           if (eigenBalances[key]) {
@@ -126,6 +132,7 @@ const StakingList = ({ daoAddress }) => {
       setUnstakeSwellEigenToken(swellEigen);
       setUnstakeRenzoEzETHToken(renzoEzEthBalance);
       setUnstakeLidoStETHToken(lidoEigen);
+      setUnstakeRestakeRstETHToken(restakeRstETH);
     };
 
     fetchBalances();
@@ -147,6 +154,7 @@ const StakingList = ({ daoAddress }) => {
           swellEigenEthStaked: Number(unstakeSwellEigenToken),
           renzoEzEthStaked: Number(unstakeRenzoEzETHToken),
           lidoEigenEthStaked: Number(unstakeLidoStETHToken),
+          restakeRstETHStaked: Number(unstakeRestakeRstETHToken),
           networkId,
         })
           .filter((item) => item.availableOnNetworkIds.includes(networkId))

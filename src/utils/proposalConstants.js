@@ -435,6 +435,7 @@ export const DEFI_PROPOSALS = ({
   renzoEzEthStaked,
   networkId,
   lidoEigenEthStaked,
+  restakeRstETHStaked,
 }) => {
   return [
     // {
@@ -564,6 +565,23 @@ export const DEFI_PROPOSALS = ({
       // unstakeTokenAddress: CHAIN_CONFIG[networkId]?.swellRswETHAddress
       //   ? CHAIN_CONFIG[networkId].swellRswETHAddress
       //   : "",
+      isUnstakeDisabled: true,
+    },
+
+    {
+      name: "Restake x Lido",
+      logo: "/assets/images/restake.png",
+      APY: "8.9",
+      staked: restakeRstETHStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 37,
+        Unstake: 38,
+      },
+      availableOnNetworkIds: ["0x1"],
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.restakeRstETHAddress
+        ? CHAIN_CONFIG[networkId].restakeRstETHAddress
+        : "",
       isUnstakeDisabled: true,
     },
   ];

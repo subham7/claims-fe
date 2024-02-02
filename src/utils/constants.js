@@ -162,6 +162,8 @@ export const CHAIN_CONFIG = {
     renzoEzETHAddress: "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110",
     lidoStETHAddress: "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
     lidoEigenStrategyAddress: "0x93c4b944D05dfe6df7645A86cd2206016c51564D",
+    restakeDepositPoolAddress: "0xe384251B5f445A006519A2197bc6bD8E5fA228E5",
+    restakeRstETHAddress: "0xc3Ac43635d7Aa9Bf361094656C85de3311bE9a2c",
   },
   "0x2105": {
     chainName: "Base Mainnet",
