@@ -18,6 +18,7 @@ import StatusModal from "@components/modals/StatusModal/StatusModal";
 import { setAlertData } from "redux/reducers/alert";
 import { formatEther } from "viem";
 import { getPublicClient } from "utils/viemConfig";
+import { isNative } from "utils/helper";
 
 const DepositInputComponents = ({ depositPreRequisitesProps, mintProps }) => {
   return (
