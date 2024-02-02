@@ -368,7 +368,7 @@ const ERC20 = ({
       {depositSuccessfull ? (
         <StatusModal
           heading={"Hurray! We made it"}
-          subheading="Deposited $USDC onchain successfully."
+          subheading="You have deposited successfully."
           isError={false}
           onClose={() => {
             setDepositSuccessfull(false);
