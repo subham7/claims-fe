@@ -164,6 +164,9 @@ export const CHAIN_CONFIG = {
     lidoEigenStrategyAddress: "0x93c4b944D05dfe6df7645A86cd2206016c51564D",
     restakeDepositPoolAddress: "0xe384251B5f445A006519A2197bc6bD8E5fA228E5",
     restakeRstETHAddress: "0xc3Ac43635d7Aa9Bf361094656C85de3311bE9a2c",
+    rocketDepositPoolAddress: "0xDD3f50F8A6CafbE9b31a427582963f465E745AF8",
+    rocketRETHAddress: "0xae78736Cd615f374D3085123A210448E74Fc6393",
+    rocketEigenStrategyAddress: "0x1BeE69b7dFFfA4E2d53C2a2Df135C388AD25dCD2",
   },
   "0x2105": {
     chainName: "Base Mainnet",

@@ -113,14 +113,16 @@ const StakingModal = ({
       actionCommand: Number(executionId),
       unstakeTokenAddress: unstakeTokenAddress,
     },
-    validationSchema: stakingValidation(
-      type === "Stake"
-        ? convertFromWeiGovernance(
-            stakeTokenBalance?.balance,
-            stakeTokenBalance?.decimals,
-          )
-        : staked,
-    ),
+    validationSchema: stakingValidation({
+      amount:
+        type === "Stake"
+          ? convertFromWeiGovernance(
+              stakeTokenBalance?.balance,
+              stakeTokenBalance?.decimals,
+            )
+          : staked,
+      isRocketPool: executionId === 43 ? true : false,
+    }),
     onSubmit: async (values) => {
       try {
         setLoading(true);

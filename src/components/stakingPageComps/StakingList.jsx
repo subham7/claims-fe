@@ -22,6 +22,7 @@ const StakingList = ({ daoAddress }) => {
   const [unstakeRenzoEzETHToken, setUnstakeRenzoEzETHToken] = useState(0);
   const [unstakeLidoStETHToken, setUnstakeLidoStETHToken] = useState(0);
   const [unstakeRestakeRstETHToken, setUnstakeRestakeRstETHToken] = useState(0);
+  const [unstakeRocketEigenToken, setUnstakeRocketEigenToken] = useState(0);
   const [eigenTokensFetched, setEigenTokensFetched] = useState([]);
 
   const { getBalance, getDecimals } = useCommonContractMethods();
@@ -73,7 +74,8 @@ const StakingList = ({ daoAddress }) => {
         swellEigen = 0,
         lidoEigen = 0,
         restakeRstETH = 0,
-        renzoEzEthBalance = 0;
+        renzoEzEthBalance = 0,
+        rocketEigen = 0;
 
       if (networkId === "0xe708") {
         [stargateBalance, clipFinanceBalance] = await Promise.all([
@@ -92,6 +94,8 @@ const StakingList = ({ daoAddress }) => {
             "swellEigen",
           [CHAIN_CONFIG[networkId]?.lidoStETHAddress?.toLowerCase()]:
             "lidoEigen",
+          [CHAIN_CONFIG[networkId]?.rocketRETHAddress?.toLowerCase()]:
+            "rocketEigen",
         };
 
         renzoEzEthBalance = await fetchTokenBalance(
@@ -119,6 +123,8 @@ const StakingList = ({ daoAddress }) => {
               swellEigen = token.amount;
             } else if (eigenBalances[key] === "lidoEigen") {
               lidoEigen = token.amount;
+            } else if (eigenBalances[key] === "rocketEigen") {
+              rocketEigen = token.amount;
             }
           }
         });
@@ -133,6 +139,7 @@ const StakingList = ({ daoAddress }) => {
       setUnstakeRenzoEzETHToken(renzoEzEthBalance);
       setUnstakeLidoStETHToken(lidoEigen);
       setUnstakeRestakeRstETHToken(restakeRstETH);
+      setUnstakeRocketEigenToken(rocketEigen);
     };
 
     fetchBalances();
@@ -155,6 +162,7 @@ const StakingList = ({ daoAddress }) => {
           renzoEzEthStaked: Number(unstakeRenzoEzETHToken),
           lidoEigenEthStaked: Number(unstakeLidoStETHToken),
           restakeRstETHStaked: Number(unstakeRestakeRstETHToken),
+          rocketEigenStaked: Number(unstakeRocketEigenToken),
           networkId,
         })
           .filter((item) => item.availableOnNetworkIds.includes(networkId))

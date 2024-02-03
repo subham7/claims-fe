@@ -436,6 +436,7 @@ export const DEFI_PROPOSALS = ({
   networkId,
   lidoEigenEthStaked,
   restakeRstETHStaked,
+  rocketEigenStaked,
 }) => {
   return [
     // {
@@ -494,6 +495,20 @@ export const DEFI_PROPOSALS = ({
       executionIds: {
         Stake: 39,
         Unstake: 40,
+      },
+      availableOnNetworkIds: ["0x1"],
+      isUnstakeDisabled: true,
+    },
+
+    {
+      name: "Rocket x Eigen",
+      logo: "/assets/images/rocket.png",
+      APY: "3.6",
+      staked: rocketEigenStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 43,
+        Unstake: 44,
       },
       availableOnNetworkIds: ["0x1"],
       isUnstakeDisabled: true,
@@ -575,8 +590,8 @@ export const DEFI_PROPOSALS = ({
       staked: restakeRstETHStaked,
       token: "ETH",
       executionIds: {
-        Stake: 37,
-        Unstake: 38,
+        Stake: 41,
+        Unstake: 42,
       },
       availableOnNetworkIds: ["0x1"],
       unstakeTokenAddress: CHAIN_CONFIG[networkId]?.restakeRstETHAddress

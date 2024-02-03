@@ -1,11 +1,7 @@
 import { getProposalByDaoAddress } from "../api/proposal";
 import { createCancelProposal, getProposalTxHash } from "api/proposal";
 import Web3 from "web3";
-import {
-  convertToFullNumber,
-  getIncreaseGasPrice,
-  getSafeSdk,
-} from "./helper";
+import { convertToFullNumber, getIncreaseGasPrice, getSafeSdk } from "./helper";
 import { factoryContractABI } from "abis/factoryContract.js";
 import { erc721DaoABI } from "abis/erc721Dao";
 import { erc20DaoABI } from "abis/erc20Dao";
@@ -44,6 +40,8 @@ import { rswETHABI } from "abis/swell/rswETHContract";
 import { swETHABI } from "abis/swell/swETHContract";
 import { renzoStakingPoolABI } from "abis/renzo/renzoStakingPoolContract";
 import { stETHTokenABI } from "abis/lido/lidoStETHContract";
+import { rocketPoolABI } from "abis/rocketPool/rocketPoolContract";
+import { rETHTokenABI } from "abis/rocketPool/rETHTokenContract";
 
 export const fetchProposals = async (daoAddress, type) => {
   let proposalData;
@@ -829,6 +827,48 @@ const renzoEthStakeEncoded = ({ renzoStakingPoolAddress, web3Call }) => {
 
     return renzoStakingPoolContract.methods
       .depositETH("0xD9A5A56eE4eCAD795B274015e3c90884402b2138")
+      .encodeABI();
+  }
+};
+
+const rocketPoolStakeEncoded = ({ web3Call, networkId }) => {
+  const rocketPoolContract = new web3Call.eth.Contract(
+    rocketPoolABI,
+    CHAIN_CONFIG[networkId].rocketDepositPoolAddress,
+  );
+
+  return rocketPoolContract.methods.deposit().encodeABI();
+};
+
+const rocketPoolEigenStakeMethodEncoded = async ({
+  eigenContractAddress,
+  depositAmount,
+  web3Call,
+  networkId,
+}) => {
+  if (eigenContractAddress) {
+    const eigenContract = new web3Call.eth.Contract(
+      eigenContractABI,
+      eigenContractAddress,
+    );
+
+    const rETHContract = new web3Call.eth.Contract(
+      rETHTokenABI,
+      CHAIN_CONFIG[networkId].rocketRETHAddress,
+    );
+
+    const previewAmount = await rETHContract.methods
+      .getRethValue(convertToWeiGovernance(depositAmount, 18))
+      .call();
+
+    console.log("xxx", previewAmount);
+
+    return eigenContract.methods
+      .depositIntoStrategy(
+        CHAIN_CONFIG[networkId].rocketEigenStrategyAddress,
+        CHAIN_CONFIG[networkId].rocketRETHAddress,
+        previewAmount,
+      )
       .encodeABI();
   }
 };
@@ -1949,6 +1989,47 @@ export const getTransaction = async ({
       };
 
       return { stakeETHTransaction, approvalTransaction, transaction };
+
+    case 43:
+      stakeETHTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].rocketDepositPoolAddress,
+        ),
+        data: rocketPoolStakeEncoded({
+          networkId,
+          web3Call,
+        }),
+        value: convertToWeiGovernance(depositAmount, 18).toString(),
+      };
+
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].rocketRETHAddress,
+        ),
+        data: approveDepositWithEncodeABI(
+          CHAIN_CONFIG[networkId].rocketRETHAddress,
+          CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+          convertToWeiGovernance(depositAmount, 18).toString(),
+          web3Call,
+        ),
+        value: "0",
+      };
+
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+        ),
+        data: await rocketPoolEigenStakeMethodEncoded({
+          depositAmount,
+          networkId,
+          web3Call,
+          eigenContractAddress:
+            CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+        }),
+        value: "0",
+      };
+
+      return { stakeETHTransaction, approvalTransaction, transaction };
   }
 };
 
@@ -2044,6 +2125,7 @@ export const getTokenTypeByExecutionId = (commands) => {
     case 37:
     case 39:
     case 41:
+    case 43:
       return commands[0]?.depositToken;
     case 25:
       return commands[0]?.withdrawToken;
