@@ -23,6 +23,7 @@ export const OMIT_DAOS = [
   "0x067a544f00840056c8cdb7f9d9d73ac3611d37c9",
   "0x1ae43fb8283e45ae90d5bd9249cc7227fd6ecc73",
 ];
+export const REFERRAL_ADDRESS = "0xe5ff122f1dc6deceef651bb324f8e8136375d1a6";
 
 export const supportedChainsDrops = [
   "0x89",

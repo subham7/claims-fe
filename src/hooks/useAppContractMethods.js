@@ -288,7 +288,7 @@ const useAppContractMethods = (params) => {
         address: CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
         abi: eigenContractABI,
         functionName: "getDeposits",
-        args: ["0xD9Ba5c0a4162246Fa0E7537245Ee318591379B02"],
+        args: [gnosisAddress],
         account: walletAddress,
         networkId,
       });

@@ -16,7 +16,7 @@ import {
 import { Interface } from "ethers";
 import { fulfillOrder, retrieveNftListing } from "api/assets";
 import { SEAPORT_CONTRACT_ADDRESS } from "api";
-import { CHAIN_CONFIG } from "./constants";
+import { CHAIN_CONFIG, REFERRAL_ADDRESS } from "./constants";
 import {
   QUERY_ALL_MEMBERS,
   QUERY_STATION_DETAILS,
@@ -826,7 +826,7 @@ const renzoEthStakeEncoded = ({ renzoStakingPoolAddress, web3Call }) => {
     );
 
     return renzoStakingPoolContract.methods
-      .depositETH("0xD9A5A56eE4eCAD795B274015e3c90884402b2138")
+      .depositETH(REFERRAL_ADDRESS)
       .encodeABI();
   }
 };
@@ -880,7 +880,7 @@ const lidoEthStakeEncoded = ({ web3Call, networkId }) => {
   );
 
   return lidoTokenContract.methods
-    .submit("0xD9A5A56eE4eCAD795B274015e3c90884402b2138") // referall
+    .submit(REFERRAL_ADDRESS) // referall
     .encodeABI();
 };
 
@@ -944,7 +944,7 @@ const swellEthStakeEncoded = ({ swellETHAddress, web3Call }) => {
     );
 
     return swellRswETHContract.methods
-      .depositWithReferral("0xD9A5A56eE4eCAD795B274015e3c90884402b2138")
+      .depositWithReferral(REFERRAL_ADDRESS)
       .encodeABI();
   }
 };
