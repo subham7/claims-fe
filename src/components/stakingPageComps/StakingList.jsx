@@ -23,6 +23,7 @@ const StakingList = ({ daoAddress }) => {
   const [unstakeLidoStETHToken, setUnstakeLidoStETHToken] = useState(0);
   const [unstakeRestakeRstETHToken, setUnstakeRestakeRstETHToken] = useState(0);
   const [unstakeRocketEigenToken, setUnstakeRocketEigenToken] = useState(0);
+  const [unstakeMantleEigenToken, setUnstakeMantleEigenToken] = useState(0);
   const [eigenTokensFetched, setEigenTokensFetched] = useState([]);
 
   const { getBalance, getDecimals } = useCommonContractMethods();
@@ -75,6 +76,7 @@ const StakingList = ({ daoAddress }) => {
         lidoEigen = 0,
         restakeRstETH = 0,
         renzoEzEthBalance = 0,
+        mantleEigen = 0,
         rocketEigen = 0;
 
       if (networkId === "0xe708") {
@@ -96,6 +98,8 @@ const StakingList = ({ daoAddress }) => {
             "lidoEigen",
           [CHAIN_CONFIG[networkId]?.rocketRETHAddress?.toLowerCase()]:
             "rocketEigen",
+          [CHAIN_CONFIG[networkId]?.mantleMEthAddress?.toLowerCase()]:
+            "mantleEigen",
         };
 
         renzoEzEthBalance = await fetchTokenBalance(
@@ -125,6 +129,8 @@ const StakingList = ({ daoAddress }) => {
               lidoEigen = token.amount;
             } else if (eigenBalances[key] === "rocketEigen") {
               rocketEigen = token.amount;
+            } else if (eigenBalances[key] === "mantleEigen") {
+              mantleEigen = token.amount;
             }
           }
         });
@@ -140,6 +146,7 @@ const StakingList = ({ daoAddress }) => {
       setUnstakeLidoStETHToken(lidoEigen);
       setUnstakeRestakeRstETHToken(restakeRstETH);
       setUnstakeRocketEigenToken(rocketEigen);
+      setUnstakeMantleEigenToken(mantleEigen);
     };
 
     fetchBalances();
@@ -163,6 +170,7 @@ const StakingList = ({ daoAddress }) => {
           lidoEigenEthStaked: Number(unstakeLidoStETHToken),
           restakeRstETHStaked: Number(unstakeRestakeRstETHToken),
           rocketEigenStaked: Number(unstakeRocketEigenToken),
+          mantleEigenStaked: Number(unstakeMantleEigenToken),
           networkId,
         })
           .filter((item) => item.availableOnNetworkIds.includes(networkId))
@@ -178,6 +186,9 @@ const StakingList = ({ daoAddress }) => {
               executionIds={item.executionIds}
               unstakeTokenAddress={item.unstakeTokenAddress}
               isUnstakeDisabled={item.isUnstakeDisabled}
+              info={item.info}
+              tags={item.tags}
+              risk={item.risk}
             />
           ))}
       </div>

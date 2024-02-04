@@ -437,6 +437,7 @@ export const DEFI_PROPOSALS = ({
   lidoEigenEthStaked,
   restakeRstETHStaked,
   rocketEigenStaked,
+  mantleEigenStaked,
 }) => {
   return [
     // {
@@ -470,9 +471,9 @@ export const DEFI_PROPOSALS = ({
     },
 
     {
-      name: "Stader x Eigen",
+      name: "Stader X Eigen",
       logo: "/assets/icons/stader.png",
-      APY: "17.36",
+      APY: "3.4",
       staked: staderETHStaked,
       token: "ETH",
       executionIds: {
@@ -484,12 +485,16 @@ export const DEFI_PROPOSALS = ({
         ? CHAIN_CONFIG[networkId].staderETHxAddress
         : "",
       isUnstakeDisabled: true,
+      risk: "Low",
+
+      info: "This strategy earns Eigen Points by staking ETH on Stader to get ETHx (an LST by Staderlabs with 3.4% APR on ETH) and by restaking ETHx directly on Eigen Pool. All of it in a single transaction.",
+      tags: ["🏆 EIGEN POINTS", "⭐ STARS"],
     },
 
     {
-      name: "Lido x Eigen",
+      name: "Lido X Eigen",
       logo: "/assets/images/lido_eigen.png",
-      APY: "4.5",
+      APY: "3.4",
       staked: lidoEigenEthStaked,
       token: "ETH",
       executionIds: {
@@ -498,12 +503,16 @@ export const DEFI_PROPOSALS = ({
       },
       availableOnNetworkIds: ["0x1"],
       isUnstakeDisabled: true,
+      risk: "Low",
+
+      info: "This strategy earns Eigen Points by staking ETH on Lido to get stETH (an LST by Lido with 3.4% APR on ETH) and by restaking stETH directly on Eigen Pool. All of it in a single transaction.",
+      tags: ["🏆 EIGEN POINTS", "⭐ STARS"],
     },
 
     {
-      name: "Rocket x Eigen",
+      name: "Rocket X Eigen",
       logo: "/assets/images/rocket.png",
-      APY: "3.6",
+      APY: "3.4",
       staked: rocketEigenStaked,
       token: "ETH",
       executionIds: {
@@ -512,12 +521,33 @@ export const DEFI_PROPOSALS = ({
       },
       availableOnNetworkIds: ["0x1"],
       isUnstakeDisabled: true,
+      risk: "Low",
+
+      info: "This strategy earns Eigen Points by staking ETH on Rocketpool to get rETH (an LST by Rocketpool with 3.4% APR on ETH) and by restaking rETH directly on Eigen Pool. All of it in a single transaction.",
+      tags: ["🏆 EIGEN POINTS", "⭐ STARS"],
     },
 
     {
-      name: "Swell x Eigen",
+      name: "Mantle X Eigen",
+      logo: "/assets/icons/mantle.png",
+      APY: "7.23",
+      staked: mantleEigenStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 45,
+        Unstake: 46,
+      },
+      availableOnNetworkIds: ["0x1"],
+      isUnstakeDisabled: true,
+      risk: "Low",
+      info: "This strategy earns Eigen Points by staking ETH on MantlePool to get mETH (an LST by Mantle with ~7.23% APR on ETH) and by restaking mETH directly on Eigen Pool. All of it in a single transaction.",
+      tags: ["🏆 EIGEN POINTS", "⭐ STARS"],
+    },
+
+    {
+      name: "Swell X Eigen",
       logo: "/assets/icons/swell_eigen.png",
-      APY: "7.9",
+      APY: "3.32",
       staked: swellEigenEthStaked,
       token: "ETH",
       executionIds: {
@@ -526,6 +556,9 @@ export const DEFI_PROPOSALS = ({
       },
       availableOnNetworkIds: ["0x1"],
       isUnstakeDisabled: true,
+      info: "This strategy earns Eigen Points + Swell Pearls by staking ETH on Swell to get swETH (an LST by Swell with 3.32% APR on ETH) and by restaking swETH directly on Eigen Pool. All of it in a single transaction.",
+      tags: ["🏆 EIGEN POINTS", "⭐ STARS"],
+      risk: "Low",
 
       // unstakeTokenAddress: CHAIN_CONFIG[networkId]?.swellRswETHAddress
       //   ? CHAIN_CONFIG[networkId].swellRswETHAddress
@@ -533,9 +566,9 @@ export const DEFI_PROPOSALS = ({
     },
 
     {
-      name: "Stader x Kelp",
+      name: "Stader X Kelp LRT",
       logo: "/assets/icons/kelp.png",
-      APY: "8.2",
+      APY: "3.4",
       staked: kelpEthStaked,
       token: "ETH",
       executionIds: {
@@ -547,12 +580,15 @@ export const DEFI_PROPOSALS = ({
         ? CHAIN_CONFIG[networkId].kelpRsETHAddress
         : "",
       isUnstakeDisabled: true,
+      risk: "Low",
+      info: " This strategy earns Eigen Points + Kelp Miles by staking ETH on Stader to get ETHx (an LST by Staderlabs with 3.4% APR on ETH) and by restaking ETHx via KelpDAO to get reETH(a liquid restaked token by Kelp DAO). All of it in a single transaction.",
+      tags: ["🏆 EIGEN POINTS", "⭐ STARS", "KELP MILES"],
     },
 
     {
-      name: "Swell - Restaking",
+      name: "Swell LRT",
       logo: "/assets/icons/swell.png",
-      APY: "7.9",
+      APY: "3.32",
       staked: swellRswEthStaked,
       token: "ETH",
       executionIds: {
@@ -560,16 +596,20 @@ export const DEFI_PROPOSALS = ({
         Unstake: 34,
       },
       availableOnNetworkIds: ["0x1"],
+      risk: "Low",
       unstakeTokenAddress: CHAIN_CONFIG[networkId]?.swellRswETHAddress
         ? CHAIN_CONFIG[networkId].swellRswETHAddress
         : "",
       isUnstakeDisabled: true,
+
+      info: "This strategy earns Eigen Points + Swell Pearls by minting rswETH in exchange of ETH. rswETH is a liquid restaked token by Swell. Minting 1 rswETH gives you 30 bonus Pearls.",
+      tags: ["🏆 EIGEN POINTS", "⭐ STARS", "🐚 PEARLS"],
     },
 
     {
-      name: "Renzo Protocol",
+      name: "Renzo Protocol LRT",
       logo: "/assets/icons/renzo_logo.png",
-      APY: "3.6",
+      APY: "2.99",
       staked: renzoEzEthStaked,
       token: "ETH",
       executionIds: {
@@ -577,16 +617,19 @@ export const DEFI_PROPOSALS = ({
         Unstake: 38,
       },
       availableOnNetworkIds: ["0x1"],
+      risk: "High",
       // unstakeTokenAddress: CHAIN_CONFIG[networkId]?.swellRswETHAddress
       //   ? CHAIN_CONFIG[networkId].swellRswETHAddress
       //   : "",
       isUnstakeDisabled: true,
+      info: "This strategy earns Eigen Points + Renzo ezPoints by minting ezETH in exchange of ETH. ezETH is a liquid restaked token by Renzo.",
+      tags: ["🏆 EIGEN POINTS", "⭐ STARS", "exPoints"],
     },
 
     {
-      name: "Restake x Lido",
+      name: "Lido X Restake LRT",
       logo: "/assets/images/restake.png",
-      APY: "8.9",
+      APY: "3.4",
       staked: restakeRstETHStaked,
       token: "ETH",
       executionIds: {
@@ -598,6 +641,9 @@ export const DEFI_PROPOSALS = ({
         ? CHAIN_CONFIG[networkId].restakeRstETHAddress
         : "",
       isUnstakeDisabled: true,
+      risk: "High",
+      info: "This strategy swaps ETH for stETH and then restakes it to get rstETH (LRT by restakefinance.com). You earn 3.4% native yield on holding the LRT & ~10% APR from Eigen Rewards from Restake Finance.",
+      tags: ["RSTK APR"],
     },
   ];
 };

@@ -169,6 +169,9 @@ export const CHAIN_CONFIG = {
     rocketDepositPoolAddress: "0xDD3f50F8A6CafbE9b31a427582963f465E745AF8",
     rocketRETHAddress: "0xae78736Cd615f374D3085123A210448E74Fc6393",
     rocketEigenStrategyAddress: "0x1BeE69b7dFFfA4E2d53C2a2Df135C388AD25dCD2",
+    mantleDepositPoolAddress: "0xe3cBd06D7dadB3F4e6557bAb7EdD924CD1489E8f",
+    mantleMEthAddress: "0xd5F7838F5C461fefF7FE49ea5ebaF7728bB0ADfa",
+    mantleEigenStrategyAddress: "0x298aFB19A105D59E74658C4C334Ff360BadE6dd2",
   },
   "0x2105": {
     chainName: "Base Mainnet",

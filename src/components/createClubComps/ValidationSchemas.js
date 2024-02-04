@@ -761,15 +761,17 @@ export const eoaWalletTrackerValidation = yup.object({
     .required("Wallet address is required"),
 });
 
-export const stakingValidation = ({ amount, isRocketPool }) => {
+export const stakingValidation = ({ amount, isRocketPool, isMantlePool }) => {
   return yup.object({
     stakeAmount: yup
       .number()
       .required("Amount is required")
       .moreThan(
-        isRocketPool ? 0.01 : 0,
-        `Amount should be greater than ${isRocketPool ? "0.01" : "0"} `,
+        isRocketPool ? 0.01 : isMantlePool ? 0.02 : 0,
+        `Amount should be greater than ${
+          isRocketPool ? "0.01" : isMantlePool ? "0.02" : "0"
+        } `,
       )
-      .max(amount, `Amount should be less than or equal to ${amount}`),
+      .max(amount, "You don't have enough ETH."),
   });
 };

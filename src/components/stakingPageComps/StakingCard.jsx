@@ -1,5 +1,5 @@
 import StatusModal from "@components/modals/StatusModal/StatusModal";
-import { Typography } from "@mui/material";
+import { Tooltip, Typography } from "@mui/material";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
@@ -17,6 +17,9 @@ const StakingCard = ({
   executionIds,
   unstakeTokenAddress,
   isUnstakeDisabled,
+  info,
+  tags,
+  risk,
 }) => {
   const [showStakingModal, setShowStakingModal] = useState(false);
   const [showUnstakingModal, setShowUnstakingModal] = useState(false);
@@ -36,6 +39,39 @@ const StakingCard = ({
   return (
     <>
       <div className={classes.stakingCard}>
+        <div className={classes.tagContainer}>
+          <div className={classes.taglist}>
+            <div
+              style={{
+                backgroundColor: risk === "Low" ? "#0ABB9270" : "#d5543870",
+              }}
+              className={classes.tag}>{`${risk} risk`}</div>
+            {tags &&
+              tags?.map((tag) => (
+                <div key={tag} className={classes.tag}>
+                  {tag}
+                </div>
+              ))}
+          </div>
+
+          <Tooltip
+            sx={{
+              "& .MuiTooltip-tooltip": {
+                fontSize: "4rem", // Adjust the font size as needed
+              },
+            }}
+            placement="bottom"
+            title={info}>
+            <Image
+              src={"/assets/icons/info2.png"}
+              height={20}
+              width={20}
+              alt="info"
+              className={classes.icon}
+            />
+          </Tooltip>
+        </div>
+
         <div className={classes.heading}>
           <Image src={image} height={30} width={30} alt={name} />
           <Typography fontSize={18} fontWeight={500} variant="inherit">

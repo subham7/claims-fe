@@ -7,10 +7,34 @@
   gap: 20px;
 
   .stakingCard {
-    width: 400px;
+    width: 435px;
     background-color: $background-primary;
     padding: 20px;
     border-radius: 12px;
+
+    .tagContainer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+
+      .taglist {
+        display: flex;
+        gap: 8px;
+
+        .tag {
+          font-size: 12px;
+          font-weight: 600;
+          padding: 4px 8px;
+          border-radius: 6px;
+          background-color: #282828;
+        }
+      }
+
+      .icon {
+        cursor: pointer;
+      }
+    }
 
     .heading {
       display: flex;

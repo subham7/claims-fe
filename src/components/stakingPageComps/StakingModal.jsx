@@ -122,6 +122,7 @@ const StakingModal = ({
             )
           : staked,
       isRocketPool: executionId === 43 ? true : false,
+      isMantlePool: executionId === 45 ? true : false,
     }),
     onSubmit: async (values) => {
       try {
