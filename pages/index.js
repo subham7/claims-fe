@@ -144,7 +144,7 @@ const App = () => {
             }}>
             <NewCard
               onClick={showStationsHandler}
-              title={"Manage Stations"}
+              title={"Stations"}
               subtitle={
                 "Creating a Station is the easiest way to start managing money/assets towards shared goals"
               }

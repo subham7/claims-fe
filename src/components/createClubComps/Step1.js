@@ -1,21 +1,31 @@
-import { Box, FormControl, MenuItem, Select } from "@mui/material";
-import { TextField, Typography } from "@components/ui";
+import { Box, FormControl, MenuItem, Select, Typography } from "@mui/material";
+import { TextField } from "@components/ui";
 
 export default function Step1(props) {
   return (
     <div className="f-d f-vt f-v-s t-pad-d w-100">
-      <Typography variant="body" className="text-blue">
-        Basic info
+      <Typography
+        fontSize={24}
+        fontWeight={600}
+        variant="inherit"
+        className="text-blue">
+        Add basic info
       </Typography>
-      <Typography variant="info" className="text-light-gray">
-        {`Give a name & token symbol for your station that best describes it's
-        purpose or matches your community's tribe.`}
+      <Typography
+        fontSize={16}
+        color={"#a0a0a0"}
+        variant="info"
+        className="text-light-gray">
+        {`Add the name of your station and select a ticker for its token. Membership or share % of your members is represented by the station’s token.`}
       </Typography>
 
       <br />
 
-      <Typography variant="body" className="text-blue b-pad-min">
-        Name *
+      <Typography
+        fontWeight={600}
+        variant="body"
+        className="text-blue b-pad-min">
+        Title
       </Typography>
       <TextField
         name="clubName"
@@ -34,11 +44,11 @@ export default function Step1(props) {
 
       <br />
 
-      <Typography variant="body" className="text-blue b-pad-min">
-        Symbol *{" "}
-        <Box sx={{ ml: 1 }} fontWeight="Normal" display="inline">
-          (Ticker)
-        </Box>
+      <Typography
+        fontWeight={600}
+        variant="body"
+        className="text-blue b-pad-min">
+        Set token ticker
       </Typography>
       <div className="b-pad-min w-100">
         <TextField
@@ -57,19 +67,12 @@ export default function Step1(props) {
           }
         />
       </div>
-      <Typography variant="info" className="text-light-gray">
-        You can choose to make your token public or private along with other
-        rules in the next steps.
-      </Typography>
 
       <br />
 
-      <Typography variant="body" className="text-blue">
-        Set token type
-      </Typography>
-      <Typography variant="info" className="text-light-gray">
-        Choose a Token type that best suits your objective. (For example: ERC721
-        for NFT collectives or non-transferrable ERC20 for investment clubs)
+      <Typography fontWeight={600} mb={1} variant="body" className="text-blue">
+        Token Type (Recommended ERC20 for member shares and NFTs for
+        memberships)
       </Typography>
 
       <FormControl sx={{ width: "100%" }}>
@@ -88,8 +91,8 @@ export default function Step1(props) {
 
       <br />
 
-      <Typography variant="body" className="text-blue">
-        What will you use the Station for? *
+      <Typography mb={1} fontWeight={600} variant="body" className="text-blue">
+        What will you use the Station for?
       </Typography>
 
       <FormControl sx={{ width: "100%" }}>
@@ -114,7 +117,7 @@ export default function Step1(props) {
 
       <br />
 
-      <Typography variant="body" className="text-blue">
+      <Typography fontWeight={600} variant="body" className="text-blue">
         Email
         <Box sx={{ ml: 1 }} fontWeight="Normal" display="inline">
           (Optional)

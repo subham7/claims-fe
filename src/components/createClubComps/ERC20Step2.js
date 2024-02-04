@@ -5,8 +5,9 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Typography,
 } from "@mui/material";
-import { TextField, Typography } from "@components/ui";
+import { TextField } from "@components/ui";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -20,20 +21,29 @@ export default function ERC20Step2(props) {
   return (
     <>
       <div className="f-d f-vt t-pad-d w-100">
-        <Typography variant="body" className="text-blue">
-          Set deposit rules for members
+        <Typography
+          fontSize={24}
+          fontWeight={600}
+          variant="body"
+          className="text-blue">
+          Contribution rules
         </Typography>
 
-        <Typography variant="info" className="text-light-gray tb-pad-1">
-          Community members will receive membership token(s) when they join this
-          station.
+        <Typography
+          fontSize={16}
+          color={"#a0a0a0"}
+          variant="info"
+          className="text-light-gray tb-pad-1">
+          Configure parameters to deposit into the station’s treasury. Members
+          mint their share tokens by contributing funds (USDC or native
+          currency) to your station.
         </Typography>
 
         <Card>
           <div className="f-d f-v-c f-h-sb">
             <div>
-              <Typography variant="body" className="text-blue">
-                Deposit Token
+              <Typography fontWeight={600} variant="body" className="text-blue">
+                Choose currency (mode of contribution)
               </Typography>
             </div>
             <div className="w-50">
@@ -64,30 +74,8 @@ export default function ERC20Step2(props) {
         <Card>
           <div className="f-d f-v-c f-h-sb">
             <div>
-              <Typography variant="body" className="text-blue">
-                Last date for members to deposit & join
-              </Typography>
-            </div>
-
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DateTimePicker
-                value={props.formik.values.depositClose}
-                minDateTime={dayjs(Date.now())}
-                onChange={(value) => {
-                  props.formik.setFieldValue("depositClose", value);
-                }}
-              />
-            </LocalizationProvider>
-          </div>
-        </Card>
-
-        <br />
-
-        <Card>
-          <div className="f-d f-v-c f-h-sb">
-            <div>
-              <Typography variant="body" className="text-blue">
-                Min. deposit amount per wallet *
+              <Typography fontWeight={600} variant="body" className="text-blue">
+                Minimum contribution per wallet
               </Typography>
             </div>
             <div className="w-50">
@@ -131,8 +119,8 @@ export default function ERC20Step2(props) {
         <Card mb={2}>
           <div className="f-d f-v-c f-h-sb">
             <div>
-              <Typography variant="body" className="text-blue">
-                Max. deposit amount per wallet *
+              <Typography fontWeight={600} variant="body" className="text-blue">
+                Minimum contribution per wallet
               </Typography>
             </div>
             <div className="w-50">
@@ -176,8 +164,8 @@ export default function ERC20Step2(props) {
         <Card>
           <div className="f-d f-v-c f-h-sb">
             <div>
-              <Typography variant="body" className="text-blue">
-                Total amount your Station is raising *
+              <Typography fontWeight={600} variant="body" className="text-blue">
+                Fund raising goal
               </Typography>
             </div>
             <div className="w-50">
@@ -221,8 +209,30 @@ export default function ERC20Step2(props) {
         <Card>
           <div className="f-d f-v-c f-h-sb">
             <div>
-              <Typography variant="body" className="text-blue">
-                Price per token *
+              <Typography fontWeight={600} variant="body" className="text-blue">
+                Deadline
+              </Typography>
+            </div>
+
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DateTimePicker
+                value={props.formik.values.depositClose}
+                minDateTime={dayjs(Date.now())}
+                onChange={(value) => {
+                  props.formik.setFieldValue("depositClose", value);
+                }}
+              />
+            </LocalizationProvider>
+          </div>
+        </Card>
+
+        <br />
+
+        <Card>
+          <div className="f-d f-v-c f-h-sb">
+            <div>
+              <Typography fontWeight={600} variant="body" className="text-blue">
+                Price per token
               </Typography>
             </div>
             <div className="w-50">
