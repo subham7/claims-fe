@@ -207,6 +207,7 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
       title: "My Ownership",
       value: tokenType === "erc721" ? formatCash(myShare) : myShare.toFixed(2),
       tokenName: symbol,
+      isOwnership: true,
     },
     {
       containerClass: classes.ownershipContainer,
@@ -258,6 +259,7 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
               value={item.value}
               tokenName={item.tokenName}
               tokenType={tokenType}
+              isOwnership={item.isOwnership}
             />
           ))}
         </div>

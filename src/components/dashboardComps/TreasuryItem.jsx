@@ -10,6 +10,7 @@ const TreasuryItem = ({
   value,
   tokenName = "",
   tokenType,
+  isOwnership = false,
 }) => (
   <div className={containerClass}>
     <div className={classes.treasury}>
@@ -21,7 +22,7 @@ const TreasuryItem = ({
           {title}
         </Typography>
         <Typography className={classes.value} variant="inherit">
-          {value} {tokenType === "erc721" ? "" : "%"}
+          {value} {tokenType === "erc721" || !isOwnership ? "" : "%"}
           {tokenName && tokenType === "erc721" && (
             <span className={classes.title}>${tokenName}</span>
           )}
