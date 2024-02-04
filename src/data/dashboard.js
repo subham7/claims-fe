@@ -68,7 +68,7 @@ export const baseLinks = [
     title: "Transactions",
     routeHeader: "transactions",
   },
-  { icon: "document_icon", title: "Staking", routeHeader: "staking" },
+  { icon: "Wallet_icon", title: "Staking", routeHeader: "staking" },
   { icon: "astronaut_icon", title: "Members", routeHeader: "members" },
   // { icon: "document_icon", title: "Documents", routeHeader: "documents" },
   { icon: "settings_icon", title: "Settings", routeHeader: "settings" },

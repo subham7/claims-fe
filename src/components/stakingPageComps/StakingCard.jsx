@@ -43,7 +43,12 @@ const StakingCard = ({
           <div className={classes.taglist}>
             <div
               style={{
-                backgroundColor: risk === "Low" ? "#0ABB9270" : "#d5543870",
+                backgroundColor:
+                  risk === "Low"
+                    ? "#0ABB9270"
+                    : risk === "Medium"
+                    ? "#46370F"
+                    : "#d5543870",
               }}
               className={classes.tag}>{`${risk} risk`}</div>
             {tags &&
