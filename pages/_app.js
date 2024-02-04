@@ -15,6 +15,7 @@ import {
   gnosis,
   taikoJolnir,
   mainnet,
+  goerli,
 } from "wagmi/chains";
 import {
   lineaMainnetWalletConnect,
@@ -54,6 +55,7 @@ const chains = [
   taikoJolnir,
   scrollMainnet,
   mantaMainnet,
+  goerli,
 ];
 
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });

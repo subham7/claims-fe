@@ -60,8 +60,6 @@ export const proposalDisplayOptions = [
   },
 ];
 
-export const tableHeader = ["Name", "Holding", "Value in USD"];
-
 export const baseLinks = [
   { icon: "home_icon", title: "Dashboard", routeHeader: "dashboard" },
   { icon: "workflows_icon", title: "Activity", routeHeader: "proposals" },

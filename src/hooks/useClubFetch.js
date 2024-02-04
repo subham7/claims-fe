@@ -68,8 +68,19 @@ const useClubFetch = ({ daoAddress, networkId }) => {
     const fetchStationData = async () => {
       try {
         const data = await queryStationDataFromSubgraph(daoAddress, networkId);
+        const daoDetails = await getDaoDetails();
+        const depositTokenAddress = daoDetails.depositTokenAddress;
+
+        // Loop through the stations in data and add depositTokenAddress to each station
+        const updatedData = {
+          ...data,
+          stations: data.stations.map((station) => ({
+            ...station,
+            depositTokenAddress: depositTokenAddress,
+          })),
+        };
         if (data) {
-          setClubData(data);
+          setClubData(updatedData);
         }
       } catch (error) {
         console.log(error);
@@ -103,6 +114,7 @@ const useClubFetch = ({ daoAddress, networkId }) => {
               totalAmountRaised: clubData.stations[0].totalAmountRaised,
               distributionAmount: clubData.stations[0].distributionAmount,
               maxTokensPerUser: clubData.stations[0].maxTokensPerUser,
+              depositTokenAddress: clubData.stations[0].depositTokenAddress,
             }),
           );
         }
