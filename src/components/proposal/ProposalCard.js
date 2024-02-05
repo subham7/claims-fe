@@ -131,7 +131,7 @@ const ProposalCard = ({ proposal, daoAddress }) => {
           <div>
             <Typography fontSize={16} fontFamily={"avenir"} fontWeight={500}>
               Proposed by {shortAddress(proposal?.createdBy)} on{" "}
-              {new Date(String(proposal?.updateDate)).toLocaleDateString()}
+              {new Date(String(proposal?.updateDate)).toLocaleString()}
             </Typography>
           </div>
           <div>

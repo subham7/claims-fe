@@ -72,7 +72,7 @@ const TransactionItem = ({ item }) => {
         }
         variant="inherit">
         {item.to.toLowerCase() === gnosisAddress?.toLowerCase() ? "+" : "-"}
-        {value}
+        {Number(value).toFixed(4)}
       </Typography>
     </div>
   );

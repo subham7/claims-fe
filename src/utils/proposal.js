@@ -976,7 +976,15 @@ const restakeFinanceStakeMethodEncoded = ({
   depositAmount,
   networkId,
 }) => {
-  const abi = ["function deposit(uint256 vowID) external"];
+  const abi = [
+    {
+      inputs: [{ internalType: "uint256", name: "vowID", type: "uint256" }],
+      name: "deposit",
+      outputs: [],
+      stateMutability: "payable",
+      type: "function",
+    },
+  ];
 
   const restakeDepositPoolContract = new web3Call.eth.Contract(
     abi,

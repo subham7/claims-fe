@@ -803,8 +803,12 @@ export const stakingValidation = ({ amount, isRocketPool, isMantlePool }) => {
       .required("Amount is required")
       .moreThan(
         isRocketPool ? 0.01 : isMantlePool ? 0.02 : 0,
-        `Amount should be greater than ${
-          isRocketPool ? "0.01" : isMantlePool ? "0.02" : "0"
+        `${
+          isRocketPool
+            ? "Rocket Pool accepts a minimum of 0.01 ETH as deposits"
+            : isMantlePool
+            ? "Mantle Pool accepts a minimum of 0.02 ETH as deposits"
+            : "0"
         } `,
       )
       .max(amount, "You don't have enough ETH."),
