@@ -33,12 +33,12 @@ const useAppContractMethods = (params) => {
     return state.club.factoryData.assetsStoredOnGnosis;
   });
 
-  const getDaoDetails = async () => {
+  const getDaoDetails = async (stationAddress = daoAddress) => {
     const response = await readContractFunction({
       address: CHAIN_CONFIG[networkId].factoryContractAddress,
       abi: factoryContractABI,
       functionName: "getDAOdetails",
-      args: [daoAddress],
+      args: [stationAddress],
       account: walletAddress,
       networkId,
     });

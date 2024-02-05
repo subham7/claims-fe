@@ -215,7 +215,12 @@ export const getProposalValidationSchema = ({
               const decimals = await getDecimals(airdropToken);
               if (
                 Number(value) <=
-                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                  Number(
+                    convertFromWeiGovernance(
+                      convertToFullNumber(balance.toString()),
+                      decimals,
+                    ),
+                  ) &&
                 Number(value) > 0
               ) {
                 return true;
@@ -377,7 +382,12 @@ export const getProposalValidationSchema = ({
               const decimals = await getDecimals(customToken);
               if (
                 Number(value) <=
-                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                  Number(
+                    convertFromWeiGovernance(
+                      convertToFullNumber(balance.toString()),
+                      decimals,
+                    ),
+                  ) &&
                 Number(value) > 0
               ) {
                 return true;
@@ -503,7 +513,12 @@ export const getProposalValidationSchema = ({
               const decimals = await getDecimals(aaveDepositToken);
               if (
                 Number(value) <=
-                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                  Number(
+                    convertFromWeiGovernance(
+                      convertToFullNumber(balance.toString()),
+                      decimals,
+                    ),
+                  ) &&
                 Number(value) > 0
               ) {
                 return true;
@@ -537,7 +552,12 @@ export const getProposalValidationSchema = ({
               const decimals = await getDecimals(tokenAddress);
               if (
                 Number(value) <=
-                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                  Number(
+                    convertFromWeiGovernance(
+                      convertToFullNumber(balance.toString()),
+                      decimals,
+                    ),
+                  ) &&
                 Number(value) > 0
               ) {
                 return true;
@@ -585,7 +605,12 @@ export const getProposalValidationSchema = ({
               const decimals = await getDecimals(uniswapSwapToken);
               if (
                 Number(value) <=
-                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                  Number(
+                    convertFromWeiGovernance(
+                      convertToFullNumber(balance.toString()),
+                      decimals,
+                    ),
+                  ) &&
                 Number(value) > 0
               ) {
                 return true;
@@ -619,7 +644,12 @@ export const getProposalValidationSchema = ({
               }
               if (
                 Number(value) <=
-                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                  Number(
+                    convertFromWeiGovernance(
+                      convertToFullNumber(balance.toString()),
+                      decimals,
+                    ),
+                  ) &&
                 Number(value) > 0
               ) {
                 return true;
@@ -659,7 +689,12 @@ export const getProposalValidationSchema = ({
 
               if (
                 Number(value) <=
-                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                  Number(
+                    convertFromWeiGovernance(
+                      convertToFullNumber(balance.toString()),
+                      decimals,
+                    ),
+                  ) &&
                 Number(value) > 0
               ) {
                 return true;
