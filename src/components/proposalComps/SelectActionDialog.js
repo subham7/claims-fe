@@ -172,12 +172,12 @@ const SelectActionDialog = ({ open, onClose, daoAddress, networkId }) => {
               {proposalMenuItems("Administrative")}
             </div>
 
-            <Typography variant="inherit" className={classes.title}>
+            {/* <Typography variant="inherit" className={classes.title}>
               DeFi Pools
             </Typography>
             <div className={classes.section}>
               {proposalMenuItems("DeFi Pools")}
-            </div>
+            </div> */}
           </div>
         </DialogContent>
       </Dialog>

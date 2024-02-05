@@ -20,6 +20,7 @@ import TreasuryItem from "./TreasuryItem";
 import InviteModal from "@components/modals/InviteModal";
 import { fetchClubByDaoAddress, getTotalTreasuryAmount } from "api/club";
 import WalletsTabs from "./WalletsTabs";
+import useAppContractMethods from "hooks/useAppContractMethods";
 
 const Dashboard = ({ daoAddress, routeNeteworkId }) => {
   const gnosisAddress = useSelector((state) => {
@@ -51,6 +52,9 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
   const [allEOAWallets, setAllEOAWallets] = useState([]);
 
   const { getBalance, getDecimals } = useCommonContractMethods();
+  const { getERC20TotalSupply } = useAppContractMethods({
+    daoAddress,
+  });
 
   const clubData = useSelector((state) => {
     return state.club.clubData;
@@ -85,6 +89,7 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
             daoAddress,
           );
 
+          const totalSupply = await getERC20TotalSupply();
           const myBalance = await getBalance(daoAddress);
 
           // const decimals = await getDecimals(daoAddress);
@@ -92,6 +97,9 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
             convertToFullNumber(myBalance + ""),
             18,
           );
+
+          const percentageShare =
+            (balance / Number(convertFromWeiGovernance(totalSupply, 18))) * 100;
 
           if (tokenType === "erc721") {
             const imageUrl = await fetchImageUrl(daoAddress, clubData?.imgUrl);
@@ -106,8 +114,9 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
           setMyShare(
             tokenType === "erc721"
               ? convertToFullNumber(myBalance.toString())
-              : balance,
+              : percentageShare,
           );
+
           setClubDetails(clubDetails);
         }
       }
@@ -196,8 +205,9 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
       iconSrc: "/assets/icons/chart.svg",
       altText: "My Ownership",
       title: "My Ownership",
-      value: formatCash(myShare),
+      value: tokenType === "erc721" ? formatCash(myShare) : myShare.toFixed(2),
       tokenName: symbol,
+      isOwnership: true,
     },
     {
       containerClass: classes.ownershipContainer,
@@ -248,6 +258,8 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
               title={item.title}
               value={item.value}
               tokenName={item.tokenName}
+              tokenType={tokenType}
+              isOwnership={item.isOwnership}
             />
           ))}
         </div>

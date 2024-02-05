@@ -19,6 +19,7 @@ import {
   getTransactionHash,
   signAndConfirmTransaction,
 } from "utils/proposalData";
+import { eigenContractABI } from "abis/eigenContract";
 
 const useAppContractMethods = (params) => {
   const { daoAddress } = params ?? {};
@@ -294,6 +295,22 @@ const useAppContractMethods = (params) => {
     return res;
   };
 
+  const fetchEigenTokenBalance = async (gnosisAddress) => {
+    try {
+      const res = await readContractFunction({
+        address: CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+        abi: eigenContractABI,
+        functionName: "getDeposits",
+        args: [gnosisAddress],
+        account: walletAddress,
+        networkId,
+      });
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const createERC721DAO = async ({
     clubName,
     clubSymbol,
@@ -435,23 +452,24 @@ const useAppContractMethods = (params) => {
       CHAIN_CONFIG[networkId].gnosisTxUrl,
     );
 
-    const { transaction, approvalTransaction } = await getTransaction({
-      proposalData,
-      daoAddress,
-      factoryContractAddress,
-      approvalData,
-      safeThreshold,
-      transactionData,
-      airdropContractAddress,
-      tokenData,
-      gnosisAddress,
-      parameters,
-      isAssetsStoredOnGnosis,
-      networkId,
-      membersArray,
-      airDropAmountArray,
-    });
-
+    const { transaction, approvalTransaction, stakeETHTransaction } =
+      await getTransaction({
+        proposalData,
+        daoAddress,
+        walletAddress,
+        factoryContractAddress,
+        approvalData,
+        safeThreshold,
+        transactionData,
+        airdropContractAddress,
+        tokenData,
+        gnosisAddress,
+        parameters,
+        isAssetsStoredOnGnosis,
+        networkId,
+        membersArray,
+        airDropAmountArray,
+      });
     const txHash = await getTransactionHash(pid);
     const tx = txHash ? await safeService.getTransaction(txHash) : null;
 
@@ -464,6 +482,7 @@ const useAppContractMethods = (params) => {
             executionId,
             transaction,
             approvalTransaction,
+            stakeETHTransaction,
             nonce,
             proposalStatus,
           });
@@ -494,6 +513,7 @@ const useAppContractMethods = (params) => {
             executionId,
             transaction,
             approvalTransaction,
+            stakeETHTransaction,
             nonce: tx.nonce,
             executionStatus: proposalStatus,
           });
@@ -536,6 +556,7 @@ const useAppContractMethods = (params) => {
     getTokenGatingDetails,
     updateProposalAndExecution,
     toggleWhitelist,
+    fetchEigenTokenBalance,
   };
 };
 

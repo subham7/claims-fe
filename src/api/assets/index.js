@@ -142,3 +142,13 @@ export async function getNFTsByWallet(address) {
     console.log(error);
   }
 }
+
+export const getPriceRate = async (currencySymbol) => {
+  try {
+    return await axios.get(
+      `https://api.coinbase.com/v2/exchange-rates?currency=${currencySymbol}`,
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};

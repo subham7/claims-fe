@@ -23,6 +23,7 @@ export const OMIT_DAOS = [
   "0x067a544f00840056c8cdb7f9d9d73ac3611d37c9",
   "0x1ae43fb8283e45ae90d5bd9249cc7227fd6ecc73",
 ];
+export const REFERRAL_ADDRESS = "0xe5ff122f1dc6deceef651bb324f8e8136375d1a6";
 
 export const supportedChainsDrops = [
   "0x89",
@@ -36,6 +37,7 @@ export const supportedChainsDrops = [
   "0xa9",
   "0x28c5f",
   "0x1",
+  "0x5",
 ];
 
 export const CHAIN_CONFIG = {
@@ -110,12 +112,18 @@ export const CHAIN_CONFIG = {
     claimFactoryAddress: "0x14E92a30fc70F8544b0DDB5fd87B773bC0DD68e6",
     claimsSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/subham7/stnx-claim",
-    covalentNetworkName: "goerli-testnet",
+    covalentNetworkName: "eth-goerli",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0x07865c6E87B9F70255377e024ace6630C1Eaa37F",
     blockExplorerUrl: "https://goerli.etherscan.io",
     disburseContractAddress: "0x63D57d534a44f486EE2cCDcd53EbB7FA988cA5d5",
     gnosisTxUrl: "https://safe-transaction-goerli.safe.global/",
+    staderStakingPoolAddress: "0xd0e400Ec6Ed9C803A9D9D3a602494393E806F823",
+    staderETHxAddress: "0x3338eCd3ab3d3503c55c931d759fA6d78d287236",
+    eigenLayerDepositPoolAddress: "0x779d1b5315df083e3F9E94cB495983500bA8E907",
+    staderEigenStrategyAddress: "0x5d1E9DC056C906CBfe06205a39B0D965A6Df7C14",
+    staderKelpPoolAddress: "0xd51d846ba5032b9284b12850373ae2f053f977b3",
+    kelpRsETHAddress: "0xb4EA9175e99232560ac5dC2Bcbe4d7C833a15D56",
   },
   "0x1": {
     chainName: "Ethereum Mainnet",
@@ -143,6 +151,27 @@ export const CHAIN_CONFIG = {
     disburseContractAddress: "0x8b41c0aa45c86cebcfed5fb3744bf99ac8fb45c3",
     gnosisTxUrl: "https://safe-transaction-mainnet.safe.global/",
     logoUri: "/assets/networks/0x1.png",
+    kelpRsETHAddress: "0xA1290d69c65A6Fe4DF752f95823fae25cB99e5A7",
+    staderKelpPoolAddress: "0x036676389e48133B63a802f8635AD39E752D375D",
+    staderETHxAddress: "0xA35b1B31Ce002FBF2058D22F30f95D405200A15b",
+    staderStakingPoolAddress: "0xcf5EA1b38380f6aF39068375516Daf40Ed70D299",
+    staderEigenStrategyAddress: "0x9d7eD45EE2E8FC5482fa2428f15C971e6369011d",
+    eigenLayerDepositPoolAddress: "0x858646372CC42E1A627fcE94aa7A7033e7CF075A",
+    swellRswETHAddress: "0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0",
+    swellSwETHAddress: "0xf951E335afb289353dc249e82926178EaC7DEd78",
+    swellEigenStrategyAddress: "0x0Fe4F44beE93503346A3Ac9EE5A26b130a5796d6",
+    renzoStakingPoolAddress: "0x74a09653A083691711cF8215a6ab074BB4e99ef5",
+    renzoEzETHAddress: "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110",
+    lidoStETHAddress: "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
+    lidoEigenStrategyAddress: "0x93c4b944D05dfe6df7645A86cd2206016c51564D",
+    restakeDepositPoolAddress: "0xe384251B5f445A006519A2197bc6bD8E5fA228E5",
+    restakeRstETHAddress: "0xc3Ac43635d7Aa9Bf361094656C85de3311bE9a2c",
+    rocketDepositPoolAddress: "0xDD3f50F8A6CafbE9b31a427582963f465E745AF8",
+    rocketRETHAddress: "0xae78736Cd615f374D3085123A210448E74Fc6393",
+    rocketEigenStrategyAddress: "0x1BeE69b7dFFfA4E2d53C2a2Df135C388AD25dCD2",
+    mantleDepositPoolAddress: "0xe3cBd06D7dadB3F4e6557bAb7EdD924CD1489E8f",
+    mantleMEthAddress: "0xd5F7838F5C461fefF7FE49ea5ebaF7728bB0ADfa",
+    mantleEigenStrategyAddress: "0x298aFB19A105D59E74658C4C334Ff360BadE6dd2",
   },
   "0x2105": {
     chainName: "Base Mainnet",
@@ -2299,10 +2328,6 @@ export const stationNetworksChainId = [
     chainId: 1,
     networkId: "0x1",
   },
-  {
-    chainId: 5,
-    networkId: "0x5",
-  },
   // {
   //   chainId: 100,
   //   networkId: "0x64",
@@ -2313,4 +2338,4 @@ export const stationNetworksChainId = [
   },
 ];
 
-export const ALLOWED_NETWORKS_FOR_STATION = ["0x89", "0x1", "0x5", "0xe708"];
+export const ALLOWED_NETWORKS_FOR_STATION = ["0x89", "0x1", "0xe708"];
