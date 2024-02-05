@@ -77,7 +77,7 @@ const Members = ({ daoAddress }) => {
   const fetchTokenDetails = async () => {
     try {
       const depositTokenAddress = clubData.depositTokenAddress;
-      const isNativeToken = isNative(clubData.depositTokenAddress, networkId);
+      const isNativeToken = isNative(depositTokenAddress, networkId);
 
       const decimals = isNativeToken
         ? 18
@@ -99,7 +99,7 @@ const Members = ({ daoAddress }) => {
 
   useEffect(() => {
     fetchTokenDetails();
-  }, []);
+  }, [clubData]);
   const handleAddressClick = (event, address) => {
     event.preventDefault();
     window.open(
@@ -180,6 +180,7 @@ const Members = ({ daoAddress }) => {
       console.log(error);
     }
   };
+  console.log("token data", tokenDetails);
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(event.target.value);
@@ -367,8 +368,8 @@ const Members = ({ daoAddress }) => {
                             data.depositAmount,
                             tokenDetails.tokenDecimal,
                           ),
-                        ).toFixed(2)}{" "}
-                        {tokenDetails.symbol}
+                        ).toFixed(4)}{" "}
+                        {tokenDetails.tokenSymbol}
                       </Typography>
                     </TableCell>
 
