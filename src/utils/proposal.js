@@ -1897,7 +1897,7 @@ export const getTransaction = async ({
           CHAIN_CONFIG[networkId].swellRswETHAddress,
         ),
         data: swellEthStakeEncoded({
-          swellRswETHAddress: CHAIN_CONFIG[networkId].swellRswETHAddress,
+          swellETHAddress: CHAIN_CONFIG[networkId].swellRswETHAddress,
           web3Call,
         }),
         value: convertToWeiGovernance(depositAmount, 18).toString(),
