@@ -695,7 +695,7 @@ export const DEFI_PROPOSALS = ({
     },
 
     {
-      name: "Lido X Restake LRT",
+      name: "stETH X Restake LRT",
       logo: "/assets/images/restake.png",
       APY: "3.4",
       staked: restakeRstETHStaked,

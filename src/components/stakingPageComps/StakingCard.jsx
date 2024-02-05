@@ -3,6 +3,7 @@ import { Tooltip, Typography } from "@mui/material";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { useNetwork } from "wagmi";
 import classes from "./Staking.module.scss";
 import StakingModal from "./StakingModal";
@@ -26,6 +27,10 @@ const StakingCard = ({
   const [stakingResult, setStakingResult] = useState(null);
   const [proposalId, setProposalId] = useState("");
 
+  const isAdmin = useSelector((state) => {
+    return state.gnosis.adminUser;
+  });
+
   const handleStakingComplete = (result, proposalId = "") => {
     setShowStakingModal(false);
     setStakingResult(result);
@@ -40,23 +45,11 @@ const StakingCard = ({
     <>
       <div className={classes.stakingCard}>
         <div className={classes.tagContainer}>
-          <div className={classes.taglist}>
-            <div
-              style={{
-                backgroundColor:
-                  risk === "Low"
-                    ? "#0ABB9270"
-                    : risk === "Medium"
-                    ? "#46370F"
-                    : "#d5543870",
-              }}
-              className={classes.tag}>{`${risk} risk`}</div>
-            {tags &&
-              tags?.map((tag) => (
-                <div key={tag} className={classes.tag}>
-                  {tag}
-                </div>
-              ))}
+          <div className={classes.heading}>
+            <Image src={image} height={30} width={30} alt={name} />
+            <Typography fontSize={18} fontWeight={500} variant="inherit">
+              {name}
+            </Typography>
           </div>
 
           <Tooltip
@@ -77,11 +70,23 @@ const StakingCard = ({
           </Tooltip>
         </div>
 
-        <div className={classes.heading}>
-          <Image src={image} height={30} width={30} alt={name} />
-          <Typography fontSize={18} fontWeight={500} variant="inherit">
-            {name}
-          </Typography>
+        <div className={classes.taglist}>
+          <div
+            style={{
+              backgroundColor:
+                risk === "Low"
+                  ? "#0ABB9270"
+                  : risk === "Medium"
+                  ? "#46370F"
+                  : "#d5543870",
+            }}
+            className={classes.tag}>{`${risk} risk`}</div>
+          {tags &&
+            tags?.map((tag) => (
+              <div key={tag} className={classes.tag}>
+                {tag}
+              </div>
+            ))}
         </div>
 
         <div className={classes.apyContainer}>
@@ -112,6 +117,8 @@ const StakingCard = ({
 
         <div className={classes.buttonContainer}>
           <button
+            className={!isAdmin && classes.disabled}
+            disabled={!isAdmin}
             onClick={() => {
               setShowStakingModal(true);
             }}>

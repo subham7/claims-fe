@@ -7,7 +7,7 @@
   gap: 20px;
 
   .stakingCard {
-    width: 440px;
+    width: 410px;
     background-color: $background-primary;
     padding: 20px;
     border-radius: 12px;
@@ -18,17 +18,10 @@
       align-items: center;
       margin-bottom: 20px;
 
-      .taglist {
+      .heading {
         display: flex;
-        gap: 6px;
-
-        .tag {
-          font-size: 12px;
-          font-weight: 600;
-          padding: 4px 8px;
-          border-radius: 6px;
-          background-color: #282828;
-        }
+        align-items: center;
+        gap: 10px;
       }
 
       .icon {
@@ -36,12 +29,19 @@
       }
     }
 
-    .heading {
+    .taglist {
       display: flex;
-      align-items: center;
-      gap: 10px;
-      padding-bottom: 20px;
+      gap: 6px;
       border-bottom: 0.5px solid $divider-color;
+      padding-bottom: 20px;
+
+      .tag {
+        font-size: 10px;
+        font-weight: 500;
+        padding: 4px 8px;
+        border-radius: 6px;
+        background-color: #282828;
+      }
     }
 
     .apyContainer {
