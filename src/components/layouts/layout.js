@@ -6,6 +6,7 @@ import Navbar from "@components/ui/Navbar/Navbar";
 import Sidebar from "@components/ui/Sidebar/Sidebar";
 
 import CustomAlert from "@components/common/CustomAlert";
+import { showWrongNetworkModal } from "utils/helper";
 
 const drawerWidth = 50;
 
@@ -77,7 +78,7 @@ export default function Layout(props) {
                 {props.children}
               </div>
             </Box>
-            {/* {showWrongNetworkModal(networkId, routeNetworkId)} */}
+            {showWrongNetworkModal(networkId, routeNetworkId)}
           </>
         )}
         <CustomAlert />
