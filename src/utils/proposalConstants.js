@@ -9,6 +9,7 @@ import govIcon from "../../public/assets/icons/gov_icon.svg";
 import adduserIcon from "../../public/assets/icons/adduser_icon.svg";
 import removeUserIcon from "../../public/assets/icons/removeuser_icon.svg";
 import moneyIcon from "../../public/assets/icons/money_icon.svg";
+import { CHAIN_CONFIG } from "./constants";
 
 export const proposalActionCommands = {
   0: "Distribute tokens to members",
@@ -29,12 +30,16 @@ export const proposalActionCommands = {
   // 14: "Deposit tokens in AAVE pool",
   // 15: "Withdraw tokens from AAVE pool",
   // 16: "Whitelist addresses who mirrored Lens post",
-  // 17: "Stake tokens through stargate",
-  // 18: "Unstake tokens through stargate",
+  17: "Stake tokens through stargate",
+  18: "Unstake tokens through stargate",
   // 19: "Swap tokens through uniswap",
   21: "Send tokens through csv",
   22: "Send tokens to all members",
   23: "Send tokens pro rata basis",
+  24: "Deposit tokens with clip-finance",
+  25: "Withdraw tokens with clip-finance",
+  26: "Stake eth through eigen layer",
+  27: "Remove stake from eigen layer",
 };
 
 export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
@@ -370,20 +375,22 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
     //   section: "DeFi Pools",
     //   availableOnNetworkIds: ["0x89"],
     // },
-    // {
-    //   key: 17,
-    //   value: "Stake tokens through stargate",
-    //   text: "Stargate - Stake",
-    //   section: "DeFi Pools",
-    //   availableOnNetworkIds: ["0x89", "0xe708"],
-    // },
-    // {
-    //   key: 18,
-    //   value: "Unstake tokens through stargate",
-    //   text: "Stargate - Unstake",
-    //   section: "DeFi Pools",
-    //   availableOnNetworkIds: ["0x89", "0xe708"],
-    // },
+    {
+      key: 17,
+      value: "Stake tokens through stargate",
+      text: "Stargate - Stake",
+      section: "DeFi Pools",
+      icon: sendIcon,
+      availableOnNetworkIds: ["0x89", "0xe708"],
+    },
+    {
+      key: 18,
+      value: "Unstake tokens through stargate",
+      text: "Stargate - Unstake",
+      section: "DeFi Pools",
+      icon: sendIcon,
+      availableOnNetworkIds: ["0x89", "0xe708"],
+    },
     // {
     //   key: 19,
     //   value: "Swap tokens through uniswap",
@@ -415,5 +422,306 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
     //   icon: sendIcon,
     //   availableOnNetworkIds: ["0x89"],
     // },
+  ];
+};
+
+export const DEFI_PROPOSALS = ({
+  clipFinanceStaked = 0,
+  staderETHStaked = 0,
+  stargateStaked,
+  kelpEthStaked,
+  swellRswEthStaked,
+  swellEigenEthStaked,
+  renzoEzEthStaked,
+  networkId,
+  lidoEigenEthStaked,
+  restakeRstETHStaked,
+  rocketEigenStaked,
+  mantleEigenStaked,
+}) => {
+  return [
+    // {
+    //   name: "Clip Finance",
+    //   logo: "/assets/images/clipFinanceLogo.png",
+    //   APY: "17.36",
+    //   staked: clipFinanceStaked,
+    //   token: "USDC",
+    //   executionIds: {
+    //     Stake: 24,
+    //     Unstake: 25,
+    //   },
+    //   availableOnNetworkIds: ["0xe708"],
+    //   isUnstakeDisabled: true,
+    // },
+
+    {
+      name: "Stargate Finance",
+      logo: "/assets/icons/stargate.png",
+      APY: "11.34",
+      staked: stargateStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 17,
+        Unstake: 18,
+      },
+      availableOnNetworkIds: ["0xe708"],
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.stargateUnstakingAddresses
+        ? CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0]
+        : "",
+    },
+
+    {
+      name: "Stader X Eigen",
+      logo: "/assets/icons/stader.png",
+      APY: "3.4",
+      staked: staderETHStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 26,
+        Unstake: 27,
+      },
+      availableOnNetworkIds: ["0x1"],
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.staderETHxAddress
+        ? CHAIN_CONFIG[networkId].staderETHxAddress
+        : "",
+      isUnstakeDisabled: true,
+      risk: "Low",
+
+      info: (
+        <span>
+          This strategy earns Eigen Points by staking ETH on Stader to get ETHx
+          (an LST by Staderlabs with 3.4% APR on ETH) and by restaking ETHx
+          directly on Eigen Pool. All of it in a single transaction.
+          <br /> <br /> Reward points are accrued on your Stations treasury
+          address.
+        </span>
+      ),
+      tags: ["🏆 EIGEN POINTS", "⭐ STARS"],
+    },
+
+    {
+      name: "Lido X Eigen",
+      logo: "/assets/images/lido_eigen.png",
+      APY: "3.4",
+      staked: lidoEigenEthStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 39,
+        Unstake: 40,
+      },
+      availableOnNetworkIds: ["0x1"],
+      isUnstakeDisabled: true,
+      risk: "Low",
+
+      info: (
+        <span>
+          This strategy earns Eigen Points by staking ETH on Lido to get stETH
+          (an LST by Lido with 3.4% APR on ETH) and by restaking stETH directly
+          on Eigen Pool. All of it in a single transaction.
+          <br /> <br /> Reward points are accrued on your Stations treasury
+          address.
+        </span>
+      ),
+      tags: ["🏆 EIGEN POINTS", "⭐ STARS"],
+    },
+
+    {
+      name: "Rocket X Eigen",
+      logo: "/assets/images/rocket.png",
+      APY: "3.4",
+      staked: rocketEigenStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 43,
+        Unstake: 44,
+      },
+      availableOnNetworkIds: ["0x1"],
+      isUnstakeDisabled: true,
+      risk: "Low",
+
+      info: (
+        <span>
+          This strategy earns Eigen Points by staking ETH on Rocketpool to get
+          rETH (an LST by Rocketpool with 3.4% APR on ETH) and by restaking rETH
+          directly on Eigen Pool. All of it in a single transaction.
+          <br /> <br /> Reward points are accrued on your Stations treasury
+          address.
+        </span>
+      ),
+      tags: ["🏆 EIGEN POINTS", "⭐ STARS"],
+    },
+
+    {
+      name: "Mantle X Eigen",
+      logo: "/assets/icons/mantle.png",
+      APY: "7.23",
+      staked: mantleEigenStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 45,
+        Unstake: 46,
+      },
+      availableOnNetworkIds: ["0x1"],
+      isUnstakeDisabled: true,
+      risk: "Low",
+      info: (
+        <span>
+          This strategy earns Eigen Points by staking ETH on MantlePool to get
+          mETH (an LST by Mantle with ~7.23% APR on ETH) and by restaking mETH
+          directly on Eigen Pool. All of it in a single transaction.
+          <br /> <br /> Reward points are accrued on your Stations treasury
+          address.
+        </span>
+      ),
+      tags: ["🏆 EIGEN POINTS", "⭐ STARS"],
+    },
+
+    {
+      name: "Swell X Eigen",
+      logo: "/assets/icons/swell_eigen.png",
+      APY: "3.32",
+      staked: swellEigenEthStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 35,
+        Unstake: 36,
+      },
+      availableOnNetworkIds: ["0x1"],
+      isUnstakeDisabled: true,
+      info: (
+        <span>
+          This strategy earns Eigen Points + Swell Pearls by staking ETH on
+          Swell to get swETH (an LST by Swell with 3.32% APR on ETH) and by
+          restaking swETH directly on Eigen Pool. All of it in a single
+          transaction.
+          <br /> <br /> Reward points are accrued on your Stations treasury
+          address.
+        </span>
+      ),
+      tags: ["🏆 EIGEN POINTS", "⭐ STARS"],
+      risk: "Low",
+
+      // unstakeTokenAddress: CHAIN_CONFIG[networkId]?.swellRswETHAddress
+      //   ? CHAIN_CONFIG[networkId].swellRswETHAddress
+      //   : "",
+    },
+
+    {
+      name: "Stader X Kelp LRT",
+      logo: "/assets/icons/kelp.png",
+      APY: "3.4",
+      staked: kelpEthStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 31,
+        Unstake: 32,
+      },
+      availableOnNetworkIds: ["0x1"],
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.kelpRsETHAddress
+        ? CHAIN_CONFIG[networkId].kelpRsETHAddress
+        : "",
+      isUnstakeDisabled: true,
+      risk: "Low",
+      info: (
+        <span>
+          This strategy earns Eigen Points + Kelp Miles by staking ETH on Stader
+          to get ETHx (an LST by Staderlabs with 3.4% APR on ETH) and by
+          restaking ETHx via KelpDAO to get reETH(a liquid restaked token by
+          Kelp DAO). All of it in a single transaction.
+          <br /> <br /> Reward points are accrued on your Stations treasury
+          address.
+        </span>
+      ),
+      tags: ["🏆 EIGEN POINTS", "⭐ STARS", "🏆 KELP MILES"],
+    },
+
+    {
+      name: "Swell LRT",
+      logo: "/assets/icons/swell.png",
+      APY: "3.32",
+      staked: swellRswEthStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 33,
+        Unstake: 34,
+      },
+      availableOnNetworkIds: ["0x1"],
+      risk: "Medium",
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.swellRswETHAddress
+        ? CHAIN_CONFIG[networkId].swellRswETHAddress
+        : "",
+      isUnstakeDisabled: true,
+
+      info: (
+        <span>
+          This strategy earns Eigen Points + Swell Pearls by minting rswETH in
+          exchange of ETH. rswETH is a liquid restaked token by Swell. Minting 1
+          rswETH gives you 30 bonus Peals. <br />
+          <br />
+          This is a new protocol, deposit at your own risk. Reward points are
+          accrued on your Stations treasury address.
+        </span>
+      ),
+      tags: ["🏆 EIGEN POINTS", "⭐ STARS", "🐚 PEARLS"],
+    },
+
+    {
+      name: "Renzo Protocol LRT",
+      logo: "/assets/icons/renzo_logo.png",
+      APY: "2.99",
+      staked: renzoEzEthStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 37,
+        Unstake: 38,
+      },
+      availableOnNetworkIds: ["0x1"],
+      risk: "Medium",
+      // unstakeTokenAddress: CHAIN_CONFIG[networkId]?.swellRswETHAddress
+      //   ? CHAIN_CONFIG[networkId].swellRswETHAddress
+      //   : "",
+      isUnstakeDisabled: true,
+      info: (
+        <span>
+          This strategy earns Eigen Points + Renzo ezPoints by minting ezETH in
+          exchange of ETH. ezETH is a liquid restaked token by Rezo.
+          <br />
+          <br />
+          This is a new protocol, deposit at your own risk. Reward points are
+          accrued on your Stations treasury address.
+        </span>
+      ),
+      tags: ["🏆 EIGEN POINTS", "⭐ STARS", "🏆 exPoints"],
+    },
+
+    {
+      name: "stETH X Restake LRT",
+      logo: "/assets/images/restake.png",
+      APY: "3.4",
+      staked: restakeRstETHStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 41,
+        Unstake: 42,
+      },
+      availableOnNetworkIds: ["0x1"],
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.restakeRstETHAddress
+        ? CHAIN_CONFIG[networkId].restakeRstETHAddress
+        : "",
+      isUnstakeDisabled: true,
+      risk: "High",
+      info: (
+        <span>
+          This strategy swaps ETH for stETH and then restakes it to get rstETH
+          (LRT by restakefinance.com). You earn 3.4% native yield on holding the
+          LRT & ~10% APR from Eigen Rewards from Restake Finance.
+          <br />
+          <br />
+          This is a new protocol, deposit at your own risk. Reward points are
+          accrued on your Stations treasury address.
+        </span>
+      ),
+      tags: ["🏆 RSTK APR"],
+    },
   ];
 };

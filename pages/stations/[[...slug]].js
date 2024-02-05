@@ -17,6 +17,7 @@ import { OMIT_DAOS } from "utils/constants";
 import { shortAddress } from "utils/helper";
 import { useRouter } from "next/router";
 import BackdropLoader from "@components/common/BackdropLoader";
+import useAppContractMethods from "hooks/useAppContractMethods";
 
 const useStyles = makeStyles({
   container: {
@@ -122,6 +123,8 @@ const StationsPage = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
+  const { getDaoDetails } = useAppContractMethods();
+
   const handleCreateButtonClick = async () => {
     const { pathname } = router;
 
@@ -136,6 +139,8 @@ const StationsPage = () => {
         data.daoAddress,
         networkId,
       );
+      const daoDetails = await getDaoDetails(data.daoAddress);
+      const depositTokenAddress = daoDetails.depositTokenAddress;
 
       if (clubData?.stations?.length)
         dispatch(
@@ -159,6 +164,7 @@ const StationsPage = () => {
             totalAmountRaised: clubData.stations[0].totalAmountRaised,
             distributionAmount: clubData.stations[0].distributionAmount,
             maxTokensPerUser: clubData.stations[0].maxTokensPerUser,
+            depositTokenAddress: depositTokenAddress,
           }),
         );
       router.push(

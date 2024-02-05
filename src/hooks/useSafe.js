@@ -52,7 +52,6 @@ const useSafe = () => {
           addressList,
         });
       }
-      console.log(value);
 
       daoAddress =
         params.treasuryAddress === ZERO_ADDRESS

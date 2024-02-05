@@ -119,4 +119,8 @@ export const ProposalDetailStyles = makeStyles((theme) => ({
     background: "#8B5BF9",
     cursor: "pointer",
   },
+  verticalScroll: {
+    overflowY: "scroll",
+    height: "250px",
+  },
 }));

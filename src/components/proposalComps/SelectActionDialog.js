@@ -158,12 +158,7 @@ const SelectActionDialog = ({ open, onClose, daoAddress, networkId }) => {
             <div className={classes.section}>
               {proposalMenuItems("Manage Assets")}
             </div>
-            {/* <Typography variant="inherit" className={classes.title}>
-              DeFi Pools
-            </Typography>
-            <div className={classes.section}>
-              {proposalMenuItems("DeFi Pools")}
-            </div> */}
+
             <Typography variant="inherit" className={classes.title}>
               Deposits
             </Typography>
@@ -176,6 +171,13 @@ const SelectActionDialog = ({ open, onClose, daoAddress, networkId }) => {
             <div className={classes.section}>
               {proposalMenuItems("Administrative")}
             </div>
+
+            {/* <Typography variant="inherit" className={classes.title}>
+              DeFi Pools
+            </Typography>
+            <div className={classes.section}>
+              {proposalMenuItems("DeFi Pools")}
+            </div> */}
           </div>
         </DialogContent>
       </Dialog>

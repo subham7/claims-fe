@@ -181,7 +181,7 @@ export const factoryContractABI = [
         type: "address",
       },
       {
-        internalType: "address",
+        internalType: "address payable",
         name: "_daoAddress",
         type: "address",
       },
@@ -198,7 +198,7 @@ export const factoryContractABI = [
     ],
     name: "buyGovernanceTokenERC20DAO",
     outputs: [],
-    stateMutability: "nonpayable",
+    stateMutability: "payable",
     type: "function",
   },
   {
@@ -209,7 +209,7 @@ export const factoryContractABI = [
         type: "address",
       },
       {
-        internalType: "address",
+        internalType: "address payable",
         name: "_daoAddress",
         type: "address",
       },
@@ -230,39 +230,6 @@ export const factoryContractABI = [
       },
     ],
     name: "buyGovernanceTokenERC721DAO",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_daoAddress",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "_numOfTokensToBuy",
-        type: "uint256",
-      },
-      {
-        internalType: "string",
-        name: "_tokenURI",
-        type: "string",
-      },
-      {
-        internalType: "bool",
-        name: "isNFTGovernance",
-        type: "bool",
-      },
-      {
-        internalType: "bytes32[]",
-        name: "_proof",
-        type: "bytes32[]",
-      },
-    ],
-    name: "buyGovernanceTokenWithNative",
     outputs: [],
     stateMutability: "payable",
     type: "function",
@@ -717,7 +684,7 @@ export const factoryContractABI = [
         type: "uint256[]",
       },
       {
-        internalType: "address",
+        internalType: "address payable",
         name: "_daoAddress",
         type: "address",
       },

@@ -1,4 +1,13 @@
-import { Card, FormControlLabel, InputAdornment, Switch } from "@mui/material";
+import {
+  Card,
+  FormControl,
+  FormControlLabel,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
+  Switch,
+} from "@mui/material";
 import { Button, TextField, Typography } from "@components/ui";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
@@ -8,6 +17,7 @@ import UploadIcon from "@mui/icons-material/Upload";
 import Image from "next/image";
 import empty_nft from "../../../public/assets/icons/empty_nft.svg";
 import { useEffect, useState } from "react";
+import { CHAIN_CONFIG } from "utils/constants";
 
 export default function NFTStep2(props) {
   const [isVideo, setIsVideo] = useState(false);
@@ -145,11 +155,42 @@ export default function NFTStep2(props) {
       </Card>
 
       <br />
+      <Card>
+        <div className="f-d f-v-c f-h-sb">
+          <div>
+            <Typography variant="body" className="text-blue">
+              Deposit Token
+            </Typography>
+          </div>
+
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">Token</InputLabel>
+            <Select
+              labelId="depositToken-label"
+              id="depositToken"
+              name="depositToken"
+              value={props.formik.values.depositToken}
+              label="Token"
+              onChange={props.formik.handleChange}>
+              <MenuItem value={CHAIN_CONFIG[props.networkId].usdcAddress}>
+                USDC
+              </MenuItem>
+              <MenuItem value={CHAIN_CONFIG[props.networkId].nativeToken}>
+                {" "}
+                {CHAIN_CONFIG[props.networkId].nativeCurrency.symbol}
+              </MenuItem>
+            </Select>
+          </FormControl>
+        </div>
+      </Card>
+
+      <br />
+
       {/* price of nft input */}
       <Card>
         <div className="f-d f-v-c f-h-sb">
           <div>
-            <Typography variant="body">Set price per NFT (in USDC)</Typography>
+            <Typography variant="body">Set price per NFT</Typography>
           </div>
           <div className="w-50">
             <TextField
@@ -171,7 +212,13 @@ export default function NFTStep2(props) {
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end" sx={{ color: "#dcdcdc" }}>
-                    USDC
+                    {CHAIN_CONFIG[props.networkId].usdcAddress ===
+                    props.formik.values.depositToken
+                      ? "USDC"
+                      : CHAIN_CONFIG[props.networkId].nativeToken ===
+                        props.formik.values.depositToken
+                      ? CHAIN_CONFIG[props.networkId].nativeCurrency.symbol
+                      : ""}
                   </InputAdornment>
                 ),
               }}

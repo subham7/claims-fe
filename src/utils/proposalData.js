@@ -132,6 +132,34 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
       };
     case 20:
       return { "New nft supply": `${nftSupply}` };
+    case 24:
+      return {
+        "Deposit Amount :": `${convertFromWeiGovernance(
+          depositAmount,
+          decimals,
+        )} $${symbol}`,
+      };
+
+    case 25:
+      return {
+        "Withdraw Amount :": `${convertFromWeiGovernance(
+          withdrawAmount,
+          decimals,
+        )} $${symbol}`,
+      };
+
+    case 26:
+    case 31:
+    case 33:
+    case 35:
+    case 37:
+    case 39:
+    case 41:
+    case 43:
+    case 45:
+      return {
+        "Deposit Amount :": `${depositAmount} ETH`,
+      };
     default:
       return {};
   }
@@ -289,7 +317,7 @@ export const proposalFormData = ({
           <Typography mt={1} variant="proposalSubHeading">
             Download sample from{" "}
             <span style={{ color: "#3a7afd" }}>
-              <Link href={"/assets/csv/mintGt.csv"}>here</Link>
+              <Link href={"/assets/csv/sample.csv"}>here</Link>
             </span>
           </Typography>
         </>
@@ -805,7 +833,7 @@ export const proposalFormData = ({
             </Typography>
             <Select
               sx={{ marginTop: "0.5rem" }}
-              value={formik.values.aaveWithdrawToken}
+              value={formik.values.aaveDepositToken}
               onChange={(e) =>
                 formik.setFieldValue(
                   "aaveDepositToken",
@@ -1263,7 +1291,7 @@ export const proposalFormData = ({
           <Typography mt={1} variant="proposalSubHeading">
             Download sample from{" "}
             <span style={{ color: "#3a7afd" }}>
-              <Link href={"/assets/csv/mintGt.csv"}>here</Link>
+              <Link href={"/assets/csv/sample.csv"}>here</Link>
             </span>
           </Typography>
         </>
@@ -1326,6 +1354,221 @@ export const proposalFormData = ({
           />
         </>
       );
+
+    // case 24:
+    //   return (
+    //     <>
+    //       <Grid
+    //         container
+    //         direction={"column"}
+    //         ml={3}
+    //         mt={2}
+    //         // mb={}
+    //         sx={{ marginLeft: "0 !important" }}>
+    //         <Typography variant="proposalBody">
+    //           Token to be deposited
+    //         </Typography>
+    //         <Select
+    //           sx={{ marginTop: "0.5rem" }}
+    //           value={formik.values.clipFinanceDepositToken}
+    //           onChange={(e) =>
+    //             formik.setFieldValue(
+    //               "clipFinanceDepositToken",
+    //               filteredTokens.find(
+    //                 (token) => token.symbol === e.target.value,
+    //               ).address,
+    //             )
+    //           }
+    //           renderValue={(selected) => {
+    //             if (selected.length === 0) {
+    //               return "Select a command";
+    //             }
+    //             return selected;
+    //           }}
+    //           inputProps={{ "aria-label": "Without label" }}
+    //           name="clipFinanceDepositToken"
+    //           id="clipFinanceDepositToken">
+    //           {filteredTokens.map((token) => (
+    //             <MenuItem key={token.symbol} value={token.symbol}>
+    //               {token.symbol}
+    //             </MenuItem>
+    //           ))}
+    //         </Select>
+    //       </Grid>
+    //       <Grid
+    //         container
+    //         direction={"column"}
+    //         ml={3}
+    //         mt={2}
+    //         sx={{ marginLeft: "0 !important" }}>
+    //         <Typography variant="proposalBody">Amount of Tokens *</Typography>
+    //         <TextField
+    //           variant="outlined"
+    //           className={classes.textField}
+    //           placeholder="0"
+    //           type="number"
+    //           name="clipFinanceDepositAmount"
+    //           id="clipFinanceDepositAmount"
+    //           value={formik.values.clipFinanceDepositAmount}
+    //           onChange={formik.handleChange}
+    //           error={
+    //             formik.touched.clipFinanceDepositAmount &&
+    //             Boolean(formik.errors.clipFinanceDepositAmount)
+    //           }
+    //           helperText={
+    //             formik.touched.clipFinanceDepositAmount &&
+    //             formik.errors.clipFinanceDepositAmount
+    //           }
+    //           onWheel={(event) => event.target.blur()}
+    //         />
+    //       </Grid>
+    //     </>
+    //   );
+
+    // case 25:
+    //   return (
+    //     <>
+    //       <Grid
+    //         container
+    //         direction={"column"}
+    //         ml={3}
+    //         mt={2}
+    //         // mb={}
+    //         sx={{ marginLeft: "0 !important" }}>
+    //         <Typography variant="proposalBody">Token to be withdraw</Typography>
+    //         <Select
+    //           sx={{ marginTop: "0.5rem" }}
+    //           value={formik.values.clipFinanceWithdrawToken}
+    //           onChange={(e) =>
+    //             formik.setFieldValue(
+    //               "clipFinanceWithdrawToken",
+    //               filteredTokens.find(
+    //                 (token) => token.symbol === e.target.value,
+    //               ).address,
+    //             )
+    //           }
+    //           renderValue={(selected) => {
+    //             if (selected.length === 0) {
+    //               return "Select a command";
+    //             }
+    //             return selected;
+    //           }}
+    //           inputProps={{ "aria-label": "Without label" }}
+    //           name="clipFinanceWithdrawToken"
+    //           id="clipFinanceWithdrawToken">
+    //           {filteredTokens.map((token) => (
+    //             <MenuItem key={token.symbol} value={token.symbol}>
+    //               {token.symbol}
+    //             </MenuItem>
+    //           ))}
+    //         </Select>
+    //       </Grid>
+    //       <Grid
+    //         container
+    //         direction={"column"}
+    //         ml={3}
+    //         mt={2}
+    //         sx={{ marginLeft: "0 !important" }}>
+    //         <Typography variant="proposalBody">Amount of Tokens *</Typography>
+    //         <TextField
+    //           variant="outlined"
+    //           className={classes.textField}
+    //           placeholder="0"
+    //           type="number"
+    //           name="clipFinanceWithdrawAmount"
+    //           id="clipFinanceWithdrawAmount"
+    //           value={formik.values.clipFinanceWithdrawAmount}
+    //           onChange={formik.handleChange}
+    //           error={
+    //             formik.touched.clipFinanceWithdrawAmount &&
+    //             Boolean(formik.errors.clipFinanceWithdrawAmount)
+    //           }
+    //           helperText={
+    //             formik.touched.clipFinanceWithdrawAmount &&
+    //             formik.errors.clipFinanceWithdrawAmount
+    //           }
+    //           onWheel={(event) => event.target.blur()}
+    //         />
+    //       </Grid>
+    //     </>
+    //   );
+    // case 26:
+    //   return (
+    //     <Grid
+    //       container
+    //       direction={"column"}
+    //       ml={3}
+    //       mt={2}
+    //       sx={{ marginLeft: "0 !important" }}>
+    //       <Typography variant="proposalBody">
+    //         Amount of eth to stake *
+    //       </Typography>
+    //       <TextField
+    //         variant="outlined"
+    //         className={classes.textField}
+    //         placeholder="0"
+    //         type="number"
+    //         name="eigenStakeAmount"
+    //         id="eigenStakeAmount"
+    //         value={formik.values.eigenStakeAmount}
+    //         onChange={formik.handleChange}
+    //         InputProps={{
+    //           endAdornment: (
+    //             <InputAdornment style={{ color: "#6475A3" }} position="end">
+    //               ETH
+    //             </InputAdornment>
+    //           ),
+    //         }}
+    //         error={
+    //           formik.touched.eigenStakeAmount &&
+    //           Boolean(formik.errors.eigenStakeAmount)
+    //         }
+    //         helperText={
+    //           formik.touched.eigenStakeAmount && formik.errors.eigenStakeAmount
+    //         }
+    //         onWheel={(event) => event.target.blur()}
+    //       />
+    //     </Grid>
+    //   );
+    // case 27:
+    // return (
+    //   <Grid
+    //     container
+    //     direction={"column"}
+    //     ml={3}
+    //     mt={2}
+    //     sx={{ marginLeft: "0 !important" }}>
+    //     <Typography variant="proposalBody">
+    //       Amount of eth to remove from stake *
+    //     </Typography>
+    //     <TextField
+    //       variant="outlined"
+    //       className={classes.textField}
+    //       placeholder="0"
+    //       type="number"
+    //       name="eigenUnstakeAmount"
+    //       id="eigenUnstakeAmount"
+    //       value={formik.values.eigenUnstakeAmount}
+    //       onChange={formik.handleChange}
+    //       // InputProps={{
+    //       //   endAdornment: (
+    //       //     <InputAdornment style={{ color: "#6475A3" }} position="end">
+    //       //       ETH
+    //       //     </InputAdornment>
+    //       //   ),
+    //       // }}
+    //       error={
+    //         formik.touched.eigenUnstakeAmount &&
+    //         Boolean(formik.errors.eigenUnstakeAmount)
+    //       }
+    //       helperText={
+    //         formik.touched.eigenUnstakeAmount &&
+    //         formik.errors.eigenUnstakeAmount
+    //       }
+    //       onWheel={(event) => event.target.blur()}
+    //     />
+    //   </Grid>
+    // );
   }
 };
 
@@ -1519,25 +1762,20 @@ export const getProposalCommands = async ({
       };
     case 17:
       tokenDecimal = tokenData?.find(
-        (token) => token.address === values.stargateStakeToken,
+        (token) => token.address === values.stakeTokenAddress,
       ).decimals;
+
       return {
-        stakeToken: values.stargateStakeToken,
-        stakeAmount: convertToWeiGovernance(
-          values.stargateStakeAmount,
-          tokenDecimal,
-        ),
+        stakeToken: values.stakeTokenAddress,
+        stakeAmount: convertToWeiGovernance(values.stakeAmount, tokenDecimal),
       };
     case 18:
       tokenDecimal = tokenData?.find(
-        (token) => token.address === values.stargateUnstakeToken,
+        (token) => token.address === values.unstakeTokenAddress,
       ).decimals;
       return {
-        unstakeToken: values.stargateUnstakeToken,
-        unstakeAmount: convertToWeiGovernance(
-          values.stargateUnstakeAmount,
-          tokenDecimal,
-        ),
+        unstakeToken: values.unstakeTokenAddress,
+        unstakeAmount: convertToWeiGovernance(values.stakeAmount, tokenDecimal),
       };
     case 20:
       return {
@@ -1547,7 +1785,6 @@ export const getProposalCommands = async ({
       tokenDecimal = tokenData?.find(
         (token) => token.address === values.sendToken,
       ).decimals;
-      console.log("values", values);
       return {
         sendToken: values.sendToken,
         sendTokenAddresses: values.sendTokenAddresses,
@@ -1568,6 +1805,44 @@ export const getProposalCommands = async ({
         sendToken: values.sendToken,
         amountToSend: convertToWeiGovernance(values.amountToSend, tokenDecimal),
       };
+
+    case 24:
+      tokenDecimal = tokenData?.find(
+        (token) => token.address === values.stakeTokenAddress.toLowerCase(),
+      ).decimals;
+      return {
+        depositToken: values.stakeTokenAddress,
+        depositAmount: convertToWeiGovernance(values.stakeAmount, tokenDecimal),
+      };
+
+    // case 25:
+    //   tokenDecimal = tokenData?.find(
+    //     (token) => token.address === values.clipFinanceWithdrawToken,
+    //   ).decimals;
+    //   return {
+    //     depositToken: values.clipFinanceWithdrawToken,
+    //     depositAmount: convertToWeiGovernance(
+    //       values.clipFinanceWithdrawAmount,
+    //       tokenDecimal,
+    //     ),
+    //   };
+    case 26:
+    case 31:
+    case 33:
+    case 35:
+    case 37:
+    case 39:
+    case 41:
+    case 43:
+    case 45:
+      return {
+        depositToken: values.stakeTokenAddress,
+        depositAmount: values.stakeAmount,
+      };
+    // case 27:
+    //   return {
+    //     withdrawAmount: values.stakeAmount,
+    //   };
   }
 };
 
@@ -1752,6 +2027,40 @@ export const proposalDetailsData = ({
         Recipients: "All Members",
       };
       return responseData;
+    case 24:
+      responseData.data = {
+        "Deposit Amount": `${convertFromWeiGovernance(
+          depositAmount,
+          decimals ? decimals : 18,
+        )} ${symbol}`,
+      };
+
+      return responseData;
+
+    case 25:
+      responseData.data = {
+        "Withdraw Amount": `${convertFromWeiGovernance(
+          withdrawAmount,
+          decimals,
+        )} ${symbol}`,
+      };
+
+      return responseData;
+
+    case 26:
+    case 31:
+    case 33:
+    case 35:
+    case 37:
+    case 39:
+    case 41:
+    case 43:
+    case 45:
+      responseData.data = {
+        "Deposit Amount": `${depositAmount} ETH`,
+      };
+
+      return responseData;
 
     default:
       return {};
@@ -1776,6 +2085,7 @@ export const createOrUpdateSafeTransaction = async ({
   executionId,
   transaction,
   approvalTransaction,
+  stakeETHTransaction,
   nonce,
   executionStatus,
 }) => {
@@ -1790,6 +2100,7 @@ export const createOrUpdateSafeTransaction = async ({
     safeTransaction = await safeSdk.createTransaction({
       safeTransactionData: createSafeTransactionData({
         approvalTransaction,
+        stakeETHTransaction,
         transaction,
         nonce,
       }),

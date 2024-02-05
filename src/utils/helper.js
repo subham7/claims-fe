@@ -64,7 +64,7 @@ export const getIncreaseGasPrice = async (networkId = "0x89") => {
     if (networkId === "0x89") {
       increasedGasPrice = +gasPrice + 30000000000;
     } else {
-      increasedGasPrice = +gasPrice + 1000;
+      increasedGasPrice = +gasPrice + 10000000;
     }
 
     sessionStorage.setItem("gasPrice" + networkId, increasedGasPrice);
@@ -231,6 +231,7 @@ export const writeContractFunction = async ({
   args,
   account,
   networkId,
+  value,
 }) => {
   try {
     const publicClient = getPublicClient(networkId);
@@ -242,6 +243,7 @@ export const writeContractFunction = async ({
       functionName,
       args,
       account,
+      value,
     });
 
     const txHash = await walletClient.writeContract(request);
@@ -429,4 +431,11 @@ export const getLinks = (daoAddress, networkId) => {
     route: `/${link.routeHeader}/${daoAddress}/${networkId}`,
     id: String(index + 1),
   }));
+};
+
+export const isNative = (depositTokenAddress, networkId) => {
+  return (
+    depositTokenAddress.toLowerCase() ===
+    CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
+  );
 };
