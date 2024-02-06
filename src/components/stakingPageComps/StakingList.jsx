@@ -62,7 +62,7 @@ const StakingList = ({ daoAddress }) => {
   };
 
   useEffect(() => {
-    fetchEigenToken();
+    if (gnosisAddress) fetchEigenToken();
   }, [gnosisAddress]);
 
   useEffect(() => {
