@@ -759,7 +759,7 @@ Cast your vote before ${new Date(
           {/* voting process before Signature */}
           {governance || proposalData?.type === "survey" ? (
             <>
-              <Grid container mt={6}>
+              <Grid container mt={1}>
                 <Grid item md={12}>
                   {proposalData?.type === "action" ? (
                     proposalData?.status === "active" ? (
