@@ -12,7 +12,6 @@ import useAppContractMethods from "hooks/useAppContractMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 import { getPublicClient } from "utils/viemConfig";
-import { CHAIN_CONFIG } from "utils/constants";
 import { formatEther } from "viem";
 import { isNative } from "utils/helper";
 import WalletTracker from "@components/settingsComps/walletTracker/WalletTracker";
@@ -147,15 +146,9 @@ const Settings = ({ daoAddress }) => {
         balanceOfToken = await getBalance(factoryData.depositTokenAddress);
       }
 
-      const decimals = isNativeToken
-        ? 18
-        : await getDecimals(factoryData.depositTokenAddress);
-      const symbol = isNativeToken
-        ? CHAIN_CONFIG[networkId].nativeCurrency.symbol
-        : await getTokenSymbol(factoryData.depositTokenAddress);
-      const name = isNativeToken
-        ? CHAIN_CONFIG[networkId].nativeCurrency.name
-        : await getTokenName(factoryData.depositTokenAddress);
+      const decimals = await getDecimals(factoryData.depositTokenAddress);
+      const symbol = await getTokenSymbol(factoryData.depositTokenAddress);
+      const name = await getTokenName(factoryData.depositTokenAddress);
 
       const balanceConverted = convertFromWeiGovernance(
         balanceOfToken,
