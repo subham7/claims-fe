@@ -77,7 +77,6 @@ const useCommonContractMethods = () => {
   };
 
   const getDecimals = async (contractAddress) => {
-    debugger;
     try {
       const decimals = localStorage.getItem(
         `stationx-${contractAddress}-decimals`,

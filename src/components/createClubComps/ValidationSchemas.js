@@ -331,10 +331,11 @@ export const getProposalValidationSchema = ({
           const { actionCommand } = context.parent;
           if (actionCommand === 13) {
             try {
-              const { pricePerToken } = factoryData;
+              const { pricePerToken, depositTokenAddress } = factoryData;
+              const decimals = await getDecimals(depositTokenAddress);
               if (
                 Number(value) >
-                Number(convertFromWeiGovernance(pricePerToken, 6))
+                Number(convertFromWeiGovernance(pricePerToken, decimals))
               ) {
                 return true;
               } else return false;
