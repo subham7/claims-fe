@@ -875,11 +875,14 @@ const mantlePoolEigenStakeMethodEncoded = async ({
       .ethToMETH(convertToWeiGovernance(depositAmount, 18))
       .call();
 
+    const newMETHRecieved = convertFromWeiGovernance(mETHRecieved, 18);
+    const newMETH = newMETHRecieved.slice(0, -9) + "000000000";
+
     return eigenContract.methods
       .depositIntoStrategy(
         CHAIN_CONFIG[networkId].mantleEigenStrategyAddress,
         CHAIN_CONFIG[networkId].mantleMEthAddress,
-        mETHRecieved,
+        newMETH,
       )
       .encodeABI();
   }
