@@ -30,16 +30,12 @@ const TokenGatingModal = ({ closeModal, chooseTokens }) => {
 
     onSubmit: (values) => {
       let tokenSymbol,
-        tokenDecimal = 0;
+        tokenDecimal = 1;
       if (values.address) {
         const checkTokenGating = async () => {
           try {
             tokenSymbol = await getTokenSymbol(values.address);
-            try {
-              tokenDecimal = await getDecimals(values.address);
-            } catch (err) {
-              console.log(err);
-            }
+            tokenDecimal = await getDecimals(values.address);
 
             chooseTokens({
               tokenSymbol: tokenSymbol,

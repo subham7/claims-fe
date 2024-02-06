@@ -35,7 +35,6 @@ import { ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import useClubFetch from "hooks/useClubFetch";
 import { NFT_STORAGE_TOKEN } from "api/token";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
-import { isNative } from "utils/helper";
 
 const Create = () => {
   const steps = ["Add basic info", "Configure token", "Set controls"];
@@ -171,9 +170,7 @@ const Create = () => {
         });
         const depositTokenAddress = formikERC721Step2.values.depositToken;
 
-        const decimals = isNative(depositTokenAddress, networkId)
-          ? 18
-          : await getDecimals(depositTokenAddress);
+        const decimals = await getDecimals(depositTokenAddress);
 
         // dispatch(setUploadNFTLoading(false));
         try {
@@ -227,9 +224,7 @@ const Create = () => {
         try {
           const depositTokenAddress = formikERC20Step2.values.depositToken;
 
-          const decimals = isNative(depositTokenAddress, networkId)
-            ? 18
-            : await getDecimals(depositTokenAddress);
+          const decimals = await getDecimals(depositTokenAddress);
 
           const params = {
             clubName: formikStep1.values.clubName,

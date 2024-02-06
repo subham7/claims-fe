@@ -75,26 +75,17 @@ const Members = ({ daoAddress }) => {
   ];
 
   const fetchTokenDetails = async () => {
-    try {
-      const depositTokenAddress = clubData.depositTokenAddress;
-      const isNativeToken = isNative(depositTokenAddress, networkId);
+    const depositTokenAddress = clubData.depositTokenAddress;
+    const isNativeToken = isNative(depositTokenAddress, networkId);
 
-      const decimals = isNativeToken
-        ? 18
-        : await getDecimals(depositTokenAddress);
-      const symbol = isNativeToken
-        ? CHAIN_CONFIG[networkId].nativeCurrency.symbol
-        : await getTokenSymbol(depositTokenAddress);
+    const decimals = await getDecimals(depositTokenAddress);
+    const symbol = await getTokenSymbol(depositTokenAddress);
 
-      setTokenDetails({
-        tokenSymbol: symbol,
-        tokenDecimal: decimals,
-
-        isNativeToken: isNativeToken,
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    setTokenDetails({
+      tokenSymbol: symbol,
+      tokenDecimal: decimals,
+      isNativeToken: isNativeToken,
+    });
   };
 
   useEffect(() => {

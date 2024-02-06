@@ -74,8 +74,13 @@ const ERC721 = ({
   const router = useRouter();
   const dispatch = useDispatch();
 
-  const { approveDeposit, getDecimals, getTokenSymbol, getBalance } =
-    useCommonContractMethods();
+  const {
+    approveDeposit,
+    getDecimals,
+    getTokenSymbol,
+    getBalance,
+    getTokenName,
+  } = useCommonContractMethods();
 
   const { buyGovernanceTokenERC721DAO } = useAppContractMethods({ daoAddress });
 
@@ -111,16 +116,10 @@ const ERC721 = ({
 
         const isNativeToken = isNative(clubData.depositTokenAddress, networkId);
 
-        const decimals = isNativeToken
-          ? 18
-          : await getDecimals(depositTokenAddress);
-        const symbol = isNativeToken
-          ? CHAIN_CONFIG[networkId].nativeCurrency.symbol
-          : await getTokenSymbol(depositTokenAddress);
+        const decimals = await getDecimals(depositTokenAddress);
+        const symbol = await getTokenSymbol(depositTokenAddress);
+        const name = await getTokenName(depositTokenAddress);
 
-        const name = isNativeToken
-          ? CHAIN_CONFIG[networkId].nativeCurrency.symbol
-          : await getTokenSymbol(depositTokenAddress);
         let userBalance;
 
         if (isNativeToken) {

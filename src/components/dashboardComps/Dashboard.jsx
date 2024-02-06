@@ -108,8 +108,6 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
               (Number(myBalance) / Number(totalNftMinted)) * 100;
           }
 
-          // const decimals = await getDecimals(daoAddress);
-
           if (tokenType === "erc721") {
             const imageUrl = await fetchImageUrl(daoAddress, clubData?.imgUrl);
 

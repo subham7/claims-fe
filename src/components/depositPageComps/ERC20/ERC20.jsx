@@ -234,12 +234,8 @@ const ERC20 = ({
       const depositTokenAddress = clubData.depositTokenAddress;
       const isNativeToken = isNative(clubData.depositTokenAddress, networkId);
 
-      const decimals = isNativeToken
-        ? 18
-        : await getDecimals(depositTokenAddress);
-      const symbol = isNativeToken
-        ? CHAIN_CONFIG[networkId].nativeCurrency.symbol
-        : await getTokenSymbol(depositTokenAddress);
+      const decimals = await getDecimals(depositTokenAddress);
+      const symbol = await getTokenSymbol(depositTokenAddress);
       let userBalance;
 
       if (isNativeToken) {
