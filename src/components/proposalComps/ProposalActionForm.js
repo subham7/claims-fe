@@ -37,6 +37,10 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
     return state.club.erc721ClubDetails.isGovernanceActive;
   });
 
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
+  });
+
   const isGovernanceActive =
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
 
@@ -117,6 +121,7 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
         tokenData,
         networkId,
         classes,
+        clubData,
         handleChange,
         handleClick,
         hiddenFileInput,
