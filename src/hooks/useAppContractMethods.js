@@ -1,9 +1,6 @@
 import { useSelector } from "react-redux";
 import Web3 from "web3";
-import {
-  readContractFunction,
-  writeContractFunction,
-} from "utils/helper";
+import { readContractFunction, writeContractFunction } from "utils/helper";
 import { createProposalTxHash } from "../api/proposal";
 import { useAccount, useNetwork } from "wagmi";
 import { factoryContractABI } from "abis/factoryContract.js";
@@ -306,7 +303,8 @@ const useAppContractMethods = (params) => {
       });
       return res;
     } catch (error) {
-      throw error;
+      console.error(error);
+      return [];
     }
   };
 

@@ -24,7 +24,6 @@ const StakingList = ({ daoAddress }) => {
   const [unstakeRestakeRstETHToken, setUnstakeRestakeRstETHToken] = useState(0);
   const [unstakeRocketEigenToken, setUnstakeRocketEigenToken] = useState(0);
   const [unstakeMantleEigenToken, setUnstakeMantleEigenToken] = useState(0);
-  const [eigenTokensFetched, setEigenTokensFetched] = useState([]);
 
   const { getBalance, getDecimals } = useCommonContractMethods();
   const { fetchEigenTokenBalance } = useAppContractMethods({ daoAddress });
@@ -46,19 +45,58 @@ const StakingList = ({ daoAddress }) => {
   const fetchEigenToken = async () => {
     try {
       const data = await fetchEigenTokenBalance(gnosisAddress);
-      const convertedData = convertData(data);
-      setEigenTokensFetched(convertedData);
+
+      const [addresses, amounts] = data;
+
+      const formattedData = addresses?.map((address, index) => ({
+        tokenAddress: address,
+        amount: convertFromWeiGovernance(Number(amounts[index]), 18),
+      }));
+
+      let staderBalance = 0,
+        swellEigen = 0,
+        lidoEigen = 0,
+        mantleEigen = 0,
+        rocketEigen = 0;
+
+      formattedData.forEach((token) => {
+        const key = token.tokenAddress.toLowerCase();
+        if (
+          key ===
+          CHAIN_CONFIG[networkId]?.staderEigenStrategyAddress?.toLowerCase()
+        ) {
+          staderBalance = token.amount;
+        } else if (
+          key ===
+          CHAIN_CONFIG[networkId]?.swellEigenStrategyAddress?.toLowerCase()
+        ) {
+          swellEigen = token.amount;
+        } else if (
+          key ===
+          CHAIN_CONFIG[networkId]?.lidoEigenStrategyAddress?.toLowerCase()
+        ) {
+          lidoEigen = token.amount;
+        } else if (
+          key ===
+          CHAIN_CONFIG[networkId]?.rocketEigenStrategyAddress?.toLowerCase()
+        ) {
+          rocketEigen = token.amount;
+        } else if (
+          key ===
+          CHAIN_CONFIG[networkId]?.mantleEigenStrategyAddress?.toLowerCase()
+        ) {
+          mantleEigen = token.amount;
+        }
+
+        setUnstakeStaderToken(staderBalance);
+        setUnstakeSwellEigenToken(swellEigen);
+        setUnstakeRocketEigenToken(rocketEigen);
+        setUnstakeMantleEigenToken(mantleEigen);
+        setUnstakeLidoStETHToken(lidoEigen);
+      });
     } catch (error) {
       console.log(error);
     }
-  };
-
-  const convertData = (data) => {
-    const [addresses, amounts] = data;
-    return addresses.map((address, index) => ({
-      tokenAddress: address,
-      amount: convertFromWeiGovernance(Number(amounts[index]), 18),
-    }));
   };
 
   useEffect(() => {
@@ -69,15 +107,10 @@ const StakingList = ({ daoAddress }) => {
     const fetchBalances = async () => {
       let stargateBalance = 0,
         clipFinanceBalance = 0,
-        staderBalance = 0,
         kelpBalance = 0,
         swellRswETH = 0,
-        swellEigen = 0,
-        lidoEigen = 0,
         restakeRstETH = 0,
-        renzoEzEthBalance = 0,
-        mantleEigen = 0,
-        rocketEigen = 0;
+        renzoEzEthBalance = 0;
 
       if (networkId === "0xe708") {
         [stargateBalance, clipFinanceBalance] = await Promise.all([
@@ -89,19 +122,6 @@ const StakingList = ({ daoAddress }) => {
           ),
         ]);
       } else if (networkId === "0x1") {
-        const eigenBalances = {
-          [CHAIN_CONFIG[networkId]?.staderEigenStrategyAddress?.toLowerCase()]:
-            "staderBalance",
-          [CHAIN_CONFIG[networkId]?.swellEigenStrategyAddress?.toLowerCase()]:
-            "swellEigen",
-          [CHAIN_CONFIG[networkId]?.lidoEigenStrategyAddress?.toLowerCase()]:
-            "lidoEigen",
-          [CHAIN_CONFIG[networkId]?.rocketEigenStrategyAddress?.toLowerCase()]:
-            "rocketEigen",
-          [CHAIN_CONFIG[networkId]?.mantleEigenStrategyAddress?.toLowerCase()]:
-            "mantleEigen",
-        };
-
         renzoEzEthBalance = await fetchTokenBalance(
           CHAIN_CONFIG[networkId].renzoEzETHAddress,
         );
@@ -117,36 +137,14 @@ const StakingList = ({ daoAddress }) => {
         restakeRstETH = await fetchTokenBalance(
           CHAIN_CONFIG[networkId].restakeRstETHAddress,
         );
-
-        eigenTokensFetched.forEach((token) => {
-          const key = token.tokenAddress.toLowerCase();
-          if (eigenBalances[key]) {
-            if (eigenBalances[key] === "staderBalance") {
-              staderBalance = token.amount;
-            } else if (eigenBalances[key] === "swellEigen") {
-              swellEigen = token.amount;
-            } else if (eigenBalances[key] === "lidoEigen") {
-              lidoEigen = token.amount;
-            } else if (eigenBalances[key] === "rocketEigen") {
-              rocketEigen = token.amount;
-            } else if (eigenBalances[key] === "mantleEigen") {
-              mantleEigen = token.amount;
-            }
-          }
-        });
       }
 
       setUnstakeTokenBalance(stargateBalance);
       setUnstakeClipFinanceToken(clipFinanceBalance);
-      setUnstakeStaderToken(staderBalance);
       setUnstakeKelpToken(kelpBalance);
       setUnstakeSwellRswETHToken(swellRswETH);
-      setUnstakeSwellEigenToken(swellEigen);
       setUnstakeRenzoEzETHToken(renzoEzEthBalance);
-      setUnstakeLidoStETHToken(lidoEigen);
       setUnstakeRestakeRstETHToken(restakeRstETH);
-      setUnstakeRocketEigenToken(rocketEigen);
-      setUnstakeMantleEigenToken(mantleEigen);
     };
 
     fetchBalances();
