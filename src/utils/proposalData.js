@@ -11,13 +11,19 @@ import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "./globalFunctions";
-import { extractNftAdressAndId, getSafeSdk, shortAddress } from "./helper";
+import {
+  extractNftAdressAndId,
+  getSafeSdk,
+  isNative,
+  shortAddress,
+} from "./helper";
 import Link from "next/link";
 import { getWhiteListMerkleRoot } from "api/whitelist";
 import { fetchLensActionAddresses, handleFetchFollowers } from "./lensHelper";
 import { proposalActionCommands } from "./proposalConstants";
 import { getProposalTxHash } from "api/proposal";
 import { createSafeTransactionData } from "./proposal";
+import { CHAIN_CONFIG } from "./constants";
 
 export const proposalData = ({ data, decimals, factoryData, symbol }) => {
   const {
@@ -67,12 +73,12 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
       return {
         "Raise Amount :":
           (convertToWeiGovernance(
-            convertToWeiGovernance(totalDeposits, 6) /
+            convertToWeiGovernance(totalDeposits, decimals) /
               factoryData?.pricePerToken,
             18,
           ) /
             10 ** 18) *
-          convertFromWeiGovernance(factoryData?.pricePerToken, 6),
+          convertFromWeiGovernance(factoryData?.pricePerToken, decimals),
       };
     case 4:
       return {
@@ -103,7 +109,7 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
     case 16:
       return { "Lens profile link": lensPostLink };
     case 13:
-      return { "Price per token": `${pricePerToken} USDC` };
+      return { "New price per token": `${pricePerToken}` };
     case 14:
       return {
         "Deposit token": symbol,
@@ -176,8 +182,11 @@ export const proposalFormData = ({
   file,
   nftData,
   filteredTokens,
+  clubData,
 }) => {
   const executionId = formik.values.actionCommand;
+  const isNativeClub = isNative(clubData.depositTokenAddress, networkId);
+
   switch (executionId) {
     case 0:
       return (
@@ -395,7 +404,9 @@ export const proposalFormData = ({
             InputProps={{
               endAdornment: (
                 <InputAdornment style={{ color: "#6475A3" }} position="end">
-                  USDC
+                  {isNativeClub
+                    ? CHAIN_CONFIG[networkId].nativeCurrency.symbol
+                    : "USDC"}
                 </InputAdornment>
               ),
             }}
@@ -802,7 +813,9 @@ export const proposalFormData = ({
             InputProps={{
               endAdornment: (
                 <InputAdornment style={{ color: "#6475A3" }} position="end">
-                  USDC
+                  {isNativeClub
+                    ? CHAIN_CONFIG[networkId].nativeCurrency.symbol
+                    : "USDC"}
                 </InputAdornment>
               ),
             }}
@@ -1912,12 +1925,12 @@ export const proposalDetailsData = ({
       responseData.data = {
         "Raise Amount :":
           (convertToWeiGovernance(
-            convertToWeiGovernance(totalDeposits, 6) /
+            convertToWeiGovernance(totalDeposits, decimals) /
               factoryData?.pricePerToken,
             18,
           ) /
             10 ** 18) *
-          convertFromWeiGovernance(factoryData?.pricePerToken, 6),
+          convertFromWeiGovernance(factoryData?.pricePerToken, decimals),
       };
       return responseData;
 
@@ -1963,7 +1976,7 @@ export const proposalDetailsData = ({
       return responseData;
 
     case 13:
-      responseData.data = { "Price per token": `${pricePerToken} USDC` };
+      responseData.data = { "New price per token": `${pricePerToken}` };
       return responseData;
 
     case 14:

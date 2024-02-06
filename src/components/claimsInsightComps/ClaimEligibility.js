@@ -20,22 +20,13 @@ const ClaimEligibility = ({
 
   useEffect(() => {
     const fetchWhiteListTokenDetails = async () => {
-      try {
-        let decimals;
-        const symbol = await getTokenSymbol(whitelistTokenAddress);
-        try {
-          decimals = await getDecimals(whitelistTokenAddress);
-        } catch (error) {
-          console.log(error);
-        }
+      const symbol = await getTokenSymbol(whitelistTokenAddress);
+      const decimals = await getDecimals(whitelistTokenAddress);
 
-        setWhitelistTokenData({
-          decimals: decimals ? decimals : 1,
-          symbol,
-        });
-      } catch (error) {
-        console.log(error);
-      }
+      setWhitelistTokenData({
+        decimals: decimals,
+        symbol,
+      });
     };
 
     fetchWhiteListTokenDetails();

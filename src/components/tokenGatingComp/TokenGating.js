@@ -132,19 +132,8 @@ const TokenGating = ({ daoAddress }) => {
       const tokenASymbol = await getTokenSymbol(tokenGatingDetails[0].tokenA);
       const tokenBSymbol = await getTokenSymbol(tokenGatingDetails[0]?.tokenB);
 
-      let tokenADecimal, tokenBDecimal;
-
-      try {
-        tokenADecimal = await getDecimals(tokenGatingDetails[0]?.tokenA);
-      } catch (error) {
-        console.log(error);
-      }
-
-      try {
-        tokenBDecimal = await getDecimals(tokenGatingDetails[0]?.tokenB);
-      } catch (error) {
-        console.log(error);
-      }
+      const tokenADecimal = await getDecimals(tokenGatingDetails[0]?.tokenA);
+      const tokenBDecimal = await getDecimals(tokenGatingDetails[0]?.tokenB);
 
       setDisplayTokenDetails({
         tokenASymbol: tokenASymbol,
