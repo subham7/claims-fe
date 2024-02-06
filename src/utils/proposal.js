@@ -886,7 +886,7 @@ const mantlePoolEigenStakeMethodEncoded = async ({
       .depositIntoStrategy(
         CHAIN_CONFIG[networkId].mantleEigenStrategyAddress,
         CHAIN_CONFIG[networkId].mantleMEthAddress,
-        newMETH,
+        convertToWeiGovernance(newMETH, 18),
       )
       .encodeABI();
   }
