@@ -67,12 +67,12 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
       return {
         "Raise Amount :":
           (convertToWeiGovernance(
-            convertToWeiGovernance(totalDeposits, 6) /
+            convertToWeiGovernance(totalDeposits, decimals) /
               factoryData?.pricePerToken,
             18,
           ) /
             10 ** 18) *
-          convertFromWeiGovernance(factoryData?.pricePerToken, 6),
+          convertFromWeiGovernance(factoryData?.pricePerToken, decimals),
       };
     case 4:
       return {
@@ -103,7 +103,7 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
     case 16:
       return { "Lens profile link": lensPostLink };
     case 13:
-      return { "Price per token": `${pricePerToken} USDC` };
+      return { "New price per token": `${pricePerToken}` };
     case 14:
       return {
         "Deposit token": symbol,
@@ -1912,12 +1912,12 @@ export const proposalDetailsData = ({
       responseData.data = {
         "Raise Amount :":
           (convertToWeiGovernance(
-            convertToWeiGovernance(totalDeposits, 6) /
+            convertToWeiGovernance(totalDeposits, decimals) /
               factoryData?.pricePerToken,
             18,
           ) /
             10 ** 18) *
-          convertFromWeiGovernance(factoryData?.pricePerToken, 6),
+          convertFromWeiGovernance(factoryData?.pricePerToken, decimals),
       };
       return responseData;
 
@@ -1963,7 +1963,7 @@ export const proposalDetailsData = ({
       return responseData;
 
     case 13:
-      responseData.data = { "Price per token": `${pricePerToken} USDC` };
+      responseData.data = { "New price per token": `${pricePerToken}` };
       return responseData;
 
     case 14:

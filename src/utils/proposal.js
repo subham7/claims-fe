@@ -232,6 +232,7 @@ export const getEncodedData = async ({
   getNftOwnersCount,
   networkId,
   gnosisAddress,
+  getDecimals,
 }) => {
   let membersArray = [];
   let airDropAmountArray = [];
@@ -263,6 +264,8 @@ export const getEncodedData = async ({
   } = proposalData.commands[0];
   let iface;
   if (contractABI) iface = new Interface(contractABI);
+  const tokenDecimals = await getDecimals(factoryData?.depositTokenAddress);
+
   switch (executionId) {
     case 0:
       const membersData = await subgraphQuery(
@@ -373,7 +376,8 @@ export const getEncodedData = async ({
     case 3:
       data = iface.encodeFunctionData("updateTotalRaiseAmount", [
         convertToWeiGovernance(
-          convertToWeiGovernance(totalDeposits, 6) / factoryData?.pricePerToken,
+          convertToWeiGovernance(totalDeposits, tokenDecimals) /
+            factoryData?.pricePerToken,
           18,
         ),
         factoryData?.pricePerToken,
@@ -496,14 +500,14 @@ export const getEncodedData = async ({
     case 13:
       data = iface.encodeFunctionData("updateTotalRaiseAmount", [
         convertToFullNumber(factoryData?.distributionAmount + ""),
-        convertToWeiGovernance(pricePerToken, 6),
+        convertToWeiGovernance(pricePerToken, tokenDecimals),
         daoAddress,
       ]);
       return { data };
     case 20:
       data = iface.encodeFunctionData("updateTotalRaiseAmount", [
         nftSupply,
-        convertToWeiGovernance(factoryData?.pricePerToken, 6),
+        convertToWeiGovernance(factoryData?.pricePerToken, tokenDecimals),
         daoAddress,
       ]);
       return { data };

@@ -135,7 +135,7 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   const { getERC20TotalSupply, updateProposalAndExecution, getNftOwnersCount } =
     useAppContractMethods({ daoAddress });
 
-  const { getBalance } = useCommonContractMethods();
+  const { getBalance, getDecimals } = useCommonContractMethods();
 
   const isOwner = useCallback(async () => {
     if (gnosisAddress) {
@@ -361,6 +361,7 @@ Cast your vote before ${new Date(
     } = await getEncodedData({
       getERC20TotalSupply,
       getBalance,
+      getDecimals,
       proposalData,
       daoAddress,
       clubData,
