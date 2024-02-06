@@ -525,31 +525,31 @@ export const DEFI_PROPOSALS = ({
       tags: ["🏆 EIGEN POINTS", "⭐ STARS"],
     },
 
-    {
-      name: "Rocket X Eigen",
-      logo: "/assets/images/rocket.png",
-      APY: "3.4",
-      staked: rocketEigenStaked,
-      token: "ETH",
-      executionIds: {
-        Stake: 43,
-        Unstake: 44,
-      },
-      availableOnNetworkIds: ["0x1"],
-      isUnstakeDisabled: true,
-      risk: "Low",
+    // {
+    //   name: "Rocket X Eigen",
+    //   logo: "/assets/images/rocket.png",
+    //   APY: "3.4",
+    //   staked: rocketEigenStaked,
+    //   token: "ETH",
+    //   executionIds: {
+    //     Stake: 43,
+    //     Unstake: 44,
+    //   },
+    //   availableOnNetworkIds: ["0x1"],
+    //   isUnstakeDisabled: true,
+    //   risk: "Low",
 
-      info: (
-        <span>
-          This strategy earns Eigen Points by staking ETH on Rocketpool to get
-          rETH (an LST by Rocketpool with 3.4% APR on ETH) and by restaking rETH
-          directly on Eigen Pool. All of it in a single transaction.
-          <br /> <br /> Reward points are accrued on your Stations treasury
-          address.
-        </span>
-      ),
-      tags: ["🏆 EIGEN POINTS", "⭐ STARS"],
-    },
+    //   info: (
+    //     <span>
+    //       This strategy earns Eigen Points by staking ETH on Rocketpool to get
+    //       rETH (an LST by Rocketpool with 3.4% APR on ETH) and by restaking rETH
+    //       directly on Eigen Pool. All of it in a single transaction.
+    //       <br /> <br /> Reward points are accrued on your Stations treasury
+    //       address.
+    //     </span>
+    //   ),
+    //   tags: ["🏆 EIGEN POINTS", "⭐ STARS"],
+    // },
 
     {
       name: "Mantle X Eigen",

@@ -879,11 +879,14 @@ const mantlePoolEigenStakeMethodEncoded = async ({
       .ethToMETH(convertToWeiGovernance(depositAmount, 18))
       .call();
 
+    const newMETHRecieved = convertFromWeiGovernance(mETHRecieved, 18);
+    const newMETH = newMETHRecieved.slice(0, -9) + "000000000";
+
     return eigenContract.methods
       .depositIntoStrategy(
         CHAIN_CONFIG[networkId].mantleEigenStrategyAddress,
         CHAIN_CONFIG[networkId].mantleMEthAddress,
-        mETHRecieved,
+        newMETH,
       )
       .encodeABI();
   }
@@ -1032,13 +1035,17 @@ const swellEigenStakeMethodEncoded = async ({
 
     const ethToSwETHRate = await swETHContract.methods.ethToSwETHRate().call();
 
-    const previewAmount = Number(depositAmount) * Number(ethToSwETHRate);
+    const depositAmountToWei = convertToWeiGovernance(depositAmount, 18);
+    const depositAmountBN = new web3Call.utils.BN(depositAmountToWei);
+    const ethToSwETHRateBN = new web3Call.utils.BN(ethToSwETHRate);
+    const previewAmountBN = depositAmountBN.mul(ethToSwETHRateBN);
+    const previewAmount = web3Call.utils.fromWei(previewAmountBN, "ether");
 
     return eigenContract.methods
       .depositIntoStrategy(
         CHAIN_CONFIG[networkId].swellEigenStrategyAddress,
         CHAIN_CONFIG[networkId].swellSwETHAddress,
-        convertToFullNumber(previewAmount.toString()).split(".")[0],
+        previewAmount.toString().split(".")[0],
       )
       .encodeABI();
   }
