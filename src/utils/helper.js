@@ -64,7 +64,7 @@ export const getIncreaseGasPrice = async (networkId = "0x89") => {
   if (networkId === "0x89") {
     increasedGasPrice = +gasPrice + 30000000000;
   } else {
-    increasedGasPrice = +gasPrice + 100000000;
+    increasedGasPrice = +gasPrice + 1000000;
   }
 
   return increasedGasPrice;

@@ -1,7 +1,6 @@
 import { useSelector } from "react-redux";
 import Web3 from "web3";
 import {
-  getIncreaseGasPrice,
   readContractFunction,
   writeContractFunction,
 } from "utils/helper";
@@ -529,8 +528,8 @@ const useAppContractMethods = (params) => {
         return tx;
       }
     } else {
-      const options = { gasPrice: await getIncreaseGasPrice(networkId) };
-      const executeTxResponse = await safeSdk.executeTransaction(tx, options);
+      // const options = { gasPrice: await getIncreaseGasPrice(networkId) };
+      const executeTxResponse = await safeSdk.executeTransaction(tx);
       const receipt =
         executeTxResponse.transactionResponse &&
         (await executeTxResponse.transactionResponse.wait());
