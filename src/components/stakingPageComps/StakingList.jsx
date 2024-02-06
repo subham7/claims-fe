@@ -90,15 +90,15 @@ const StakingList = ({ daoAddress }) => {
         ]);
       } else if (networkId === "0x1") {
         const eigenBalances = {
-          [CHAIN_CONFIG[networkId]?.staderETHxAddress?.toLowerCase()]:
+          [CHAIN_CONFIG[networkId]?.staderEigenStrategyAddress?.toLowerCase()]:
             "staderBalance",
-          [CHAIN_CONFIG[networkId]?.swellSwETHAddress?.toLowerCase()]:
+          [CHAIN_CONFIG[networkId]?.swellEigenStrategyAddress?.toLowerCase()]:
             "swellEigen",
-          [CHAIN_CONFIG[networkId]?.lidoStETHAddress?.toLowerCase()]:
+          [CHAIN_CONFIG[networkId]?.lidoEigenStrategyAddress?.toLowerCase()]:
             "lidoEigen",
-          [CHAIN_CONFIG[networkId]?.rocketRETHAddress?.toLowerCase()]:
+          [CHAIN_CONFIG[networkId]?.rocketEigenStrategyAddress?.toLowerCase()]:
             "rocketEigen",
-          [CHAIN_CONFIG[networkId]?.mantleMEthAddress?.toLowerCase()]:
+          [CHAIN_CONFIG[networkId]?.mantleEigenStrategyAddress?.toLowerCase()]:
             "mantleEigen",
         };
 
