@@ -8,9 +8,12 @@ import { useSelector } from "react-redux";
 import { ProposalCardStyles } from "@components/proposalComps/ProposalCardStyles";
 import useCommonContractMethods from "hooks/useCommonContractMehods.js";
 import { proposalData } from "utils/proposalData.js";
-import { shortAddress } from "utils/helper.js";
+import { isNative, shortAddress } from "utils/helper.js";
+import { useNetwork } from "wagmi";
 
 const ProposalCard = ({ proposal, daoAddress }) => {
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
   const classes = ProposalCardStyles();
 
   const tokenType = useSelector((state) => {
@@ -18,6 +21,10 @@ const ProposalCard = ({ proposal, daoAddress }) => {
   });
   const factoryData = useSelector((state) => {
     return state.club.factoryData;
+  });
+
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
   });
 
   const [tokenDetails, setTokenDetails] = useState({
@@ -32,7 +39,9 @@ const ProposalCard = ({ proposal, daoAddress }) => {
     try {
       if (proposal) {
         let decimal = 18;
-
+        let symbol = "";
+        const depositTokenAddress = clubData.depositTokenAddress;
+        const isNativeToken = isNative(clubData.depositTokenAddress, networkId);
         const {
           executionId,
           airDropToken,
@@ -68,7 +77,7 @@ const ProposalCard = ({ proposal, daoAddress }) => {
           );
         }
 
-        const symbol = await getTokenSymbol(
+        symbol = await getTokenSymbol(
           executionId === 0
             ? airDropToken
             : executionId === 1
@@ -87,18 +96,20 @@ const ProposalCard = ({ proposal, daoAddress }) => {
             ? swapToken
             : executionId === 21 || executionId === 22 || executionId === 23
             ? sendToken
+            : executionId === 13
+            ? depositTokenAddress
             : "",
         );
 
         setTokenDetails({
-          decimals: decimal,
+          decimals: isNativeToken ? 18 : decimal,
           symbol: symbol,
         });
       }
     } catch (error) {
       console.log(error);
     }
-  }, [proposal, tokenType, daoAddress]);
+  }, [proposal, tokenType, daoAddress, clubData, networkId]);
 
   useEffect(() => {
     fetchTokenDetails();

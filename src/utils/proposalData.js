@@ -109,7 +109,7 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
     case 16:
       return { "Lens profile link": lensPostLink };
     case 13:
-      return { "New price per token": `${pricePerToken}` };
+      return { "New price per token": `${pricePerToken} ${symbol}` };
     case 14:
       return {
         "Deposit token": symbol,
@@ -1976,7 +1976,9 @@ export const proposalDetailsData = ({
       return responseData;
 
     case 13:
-      responseData.data = { "New price per token": `${pricePerToken}` };
+      responseData.data = {
+        "New price per token": `${pricePerToken} ${symbol}`,
+      };
       return responseData;
 
     case 14:

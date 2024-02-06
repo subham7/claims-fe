@@ -5,6 +5,8 @@ import { useSelector } from "react-redux";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { proposalDetailsData } from "utils/proposalData";
+import { isNative } from "utils/helper";
+import { useNetwork } from "wagmi";
 
 const useStyles = makeStyles({
   listFont2: {
@@ -19,6 +21,8 @@ const useStyles = makeStyles({
 });
 
 const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
   const classes = useStyles();
 
   const { getDecimals, getTokenSymbol } = useCommonContractMethods();
@@ -29,6 +33,10 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
 
   const factoryData = useSelector((state) => {
     return state.club.factoryData;
+  });
+
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
   });
 
   const [proposalDetails, setProposalDetails] = useState({});
@@ -77,6 +85,9 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
 
   const fetchAirDropContractDetails = useCallback(async () => {
     try {
+      const depositTokenAddress = clubData.depositTokenAddress;
+      const isNativeToken = isNative(clubData.depositTokenAddress, networkId);
+
       if (
         airDropToken ||
         customToken ||
@@ -85,7 +96,8 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
         stakeToken ||
         unstakeToken ||
         swapToken ||
-        sendToken
+        sendToken ||
+        depositTokenAddress
       ) {
         const decimal = await getDecimals(
           airDropToken
@@ -119,7 +131,9 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
             ? unstakeToken
             : swapToken
             ? swapToken
-            : sendToken,
+            : sendToken
+            ? sendToken
+            : depositTokenAddress,
         );
 
         const amount = convertFromWeiGovernance(
@@ -135,7 +149,7 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
           decimal,
         );
         setTokenDetails({
-          decimals: decimal,
+          decimals: isNativeToken ? 18 : decimal,
           symbol: symbol,
           amount,
         });
