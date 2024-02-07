@@ -316,8 +316,8 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
             </>
           ) : (
             <div className={classes.collectiblesContainer}>
-              {nftData.length ? (
-                nftData.map((nft) => {
+              {nftData?.length ? (
+                nftData?.map((nft) => {
                   return nft.collection_assets.map((asset, index) => {
                     const n = asset?.assets[0] ?? {};
                     return (
