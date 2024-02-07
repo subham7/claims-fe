@@ -105,9 +105,13 @@ const useSafe = () => {
           await uploadNFT(daoAddress?.toLowerCase(), imageLink);
         }
         setLoader(false);
-        router.push(`/dashboard/${daoAddress}/${networkId}`, undefined, {
-          shallow: true,
-        });
+        router.push(
+          `/dashboard/${daoAddress}/${networkId}?create=true`,
+          undefined,
+          {
+            shallow: true,
+          },
+        );
         openAnnouncement(true);
       } catch (error) {
         // dispatch(setCreateDaoAuthorized(false));

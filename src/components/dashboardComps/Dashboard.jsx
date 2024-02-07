@@ -21,6 +21,8 @@ import InviteModal from "@components/modals/InviteModal";
 import { fetchClubByDaoAddress, getTotalTreasuryAmount } from "api/club";
 import WalletsTabs from "./WalletsTabs";
 import useAppContractMethods from "hooks/useAppContractMethods";
+import { useRouter } from "next/router";
+import StatusModal from "@components/modals/StatusModal/StatusModal";
 
 const Dashboard = ({ daoAddress, routeNeteworkId }) => {
   const gnosisAddress = useSelector((state) => {
@@ -30,6 +32,9 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
   const { chain } = useNetwork();
   const dispatch = useDispatch();
   const networkId = "0x" + chain?.id.toString(16);
+
+  const router = useRouter();
+  const { create, join } = router.query;
 
   const [assetType, setAssetType] = useState("erc20");
   const [tokenDetails, setTokenDetails] = useState({
@@ -50,6 +55,7 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
     networkId,
   });
   const [allEOAWallets, setAllEOAWallets] = useState([]);
+  const [showTwitterModal, setShowTwitterModal] = useState(true);
 
   const { getBalance, getDecimals } = useCommonContractMethods();
   const { getERC20TotalSupply, getNftOwnersCount } = useAppContractMethods({
@@ -363,6 +369,24 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
           networkId={networkId}
           onClose={() => {
             setShowInviteModal(false);
+          }}
+        />
+      )}
+
+      {(create || join) && showTwitterModal && (
+        <StatusModal
+          onClose={() => setShowTwitterModal(false)}
+          heading={`Successfully ${
+            create ? "created" : join ? "joined" : ""
+          } a station`}
+          subheading={"Let your friends know what they are missing out!"}
+          buttonText={"Share on Twitter"}
+          onButtonClick={() => {
+            window.open(
+              `https://twitter.com/intent/tweet?text=I've become a member of ${clubData?.name} by joining their station on @stationxnetwork %0A%0AJoin the station:
+              https://app.stationx.network/join/${daoAddress}/${networkId}`,
+              "_blank",
+            );
           }}
         />
       )}
