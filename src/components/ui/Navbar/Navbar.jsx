@@ -47,8 +47,8 @@ const Navbar = () => {
             <div onClick={showNetworkModalHandler} className={classes.switch}>
               <Image
                 src={CHAIN_CONFIG[networkId]?.logoUri}
-                height={25}
-                width={25}
+                height={20}
+                width={20}
                 alt={CHAIN_CONFIG[networkId]?.shortName}
                 className={classes.networkImg}
               />

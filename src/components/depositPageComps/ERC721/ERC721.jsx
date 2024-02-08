@@ -338,7 +338,7 @@ const ERC721 = ({
           }}
           buttonText="Go to Dashboard"
           onButtonClick={() => {
-            router.push(`/dashboard/${daoAddress}/${networkId}`);
+            router.push(`/dashboard/${daoAddress}/${networkId}?join=true`);
           }}
         />
       ) : failed ? (

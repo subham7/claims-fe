@@ -2,22 +2,34 @@ import React, { useContext, useEffect } from "react";
 import { AnnouncementContext } from "./AnnouncementContext";
 import CloseIcon from "@mui/icons-material/Close";
 import { useRouter } from "next/router";
+import { useNetwork } from "wagmi";
 
 const AnnouncementBar = () => {
-  const { showAnnouncement, closeAnnouncement } =
+  const { showAnnouncement, closeAnnouncement, openAnnouncement } =
     useContext(AnnouncementContext);
   const router = useRouter();
 
-  const [daoAddress, networkId = "0x89"] = router?.query?.slug ?? [];
+  const [daoAddress] = router?.query?.slug ?? [];
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   useEffect(() => {
-    if (router.pathname.includes("staking")) {
+    if (
+      router.pathname.includes("staking") ||
+      router.pathname.includes("join")
+    ) {
       closeAnnouncement();
+    } else {
+      openAnnouncement();
     }
   }, [router.pathname]);
 
   if (!showAnnouncement) {
     return null; // Hide the announcement bar if showAnnouncement is false
+  }
+
+  if (networkId !== "0x1") {
+    return null;
   }
 
   return (
