@@ -24,7 +24,10 @@ const Mint = ({
   allowanceValue,
   tokenDetails,
   networkId,
+  userBalance,
 }) => {
+  const inputValue = clubData.pricePerToken * count;
+
   const isButtonDisabled = () => {
     if (isSignable) {
       if (
@@ -47,10 +50,12 @@ const Mint = ({
       return !isEligibleForTokenGating;
     }
 
+    if ((userBalance ?? 0) < inputValue) {
+      return true;
+    }
+
     return false;
   };
-
-  const inputValue = clubData.pricePerToken * count;
 
   return (
     <div className={classes.mintContainer}>
@@ -63,6 +68,7 @@ const Mint = ({
         )}{" "}
         {tokenDetails.tokenSymbol}
       </h2>
+      <h5>Your balance - {Number(userBalance ?? 0).toFixed(4)}</h5>
 
       <div>
         <div className={classes.counterContainer}>
