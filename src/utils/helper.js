@@ -128,6 +128,8 @@ export function returnRemainingTime(epochTime) {
 }
 
 export const showWrongNetworkModal = (networkId, routeNetworkId) => {
+  networkId = networkId?.toLowerCase();
+  routeNetworkId = routeNetworkId?.toLowerCase();
   if (
     (routeNetworkId &&
       routeNetworkId !== networkId &&

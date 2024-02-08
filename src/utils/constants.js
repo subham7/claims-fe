@@ -383,7 +383,7 @@ export const CHAIN_CONFIG = {
     factoryContractAddress: "",
     claimFactoryAddress: "0x50702Fd9086BAbDB0A3A576bFe22D4dD47b09937",
     claimsSubgraphUrl:
-      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-berachain/0.0.1/gn",
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-berachain/0.0.3/gn",
     nativeToken: "",
     usdcAddress: "",
     airdropContractAddress: "",
