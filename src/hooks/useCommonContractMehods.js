@@ -8,6 +8,7 @@ import {
 } from "utils/helper";
 import { encodePacked } from "viem";
 import { CHAIN_CONFIG, ZERO_ADDRESS } from "utils/constants";
+import { getPublicClient } from "utils/viemConfig";
 
 const useCommonContractMethods = () => {
   const { address: walletAddress } = useAccount();
@@ -110,15 +111,22 @@ const useCommonContractMethods = () => {
   const getBalance = async (contractAddress, safeAddress = "") => {
     try {
       if (contractAddress) {
-        const response = await readContractFunction({
-          address: contractAddress,
-          abi: erc20TokenABI,
-          functionName: "balanceOf",
-          args: [safeAddress ? safeAddress : walletAddress],
-          networkId,
-        });
+        if (isNative(contractAddress, networkId)) {
+          const response = await getPublicClient(networkId).getBalance({
+            address: safeAddress ? safeAddress : walletAddress,
+          });
+          return Number(response);
+        } else {
+          const response = await readContractFunction({
+            address: contractAddress,
+            abi: erc20TokenABI,
+            functionName: "balanceOf",
+            args: [safeAddress ? safeAddress : walletAddress],
+            networkId,
+          });
 
-        return Number(response);
+          return Number(response);
+        }
       } else {
         return 0;
       }
