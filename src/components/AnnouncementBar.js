@@ -1,38 +1,70 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { AnnouncementContext } from "./AnnouncementContext";
 import CloseIcon from "@mui/icons-material/Close";
+import { useRouter } from "next/router";
+import { useNetwork } from "wagmi";
 
 const AnnouncementBar = () => {
-  const { showAnnouncement, closeAnnouncement } =
+  const { showAnnouncement, closeAnnouncement, openAnnouncement } =
     useContext(AnnouncementContext);
+  const router = useRouter();
+
+  const [daoAddress] = router?.query?.slug ?? [];
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
+
+  useEffect(() => {
+    if (
+      router.pathname.includes("staking") ||
+      router.pathname.includes("join")
+    ) {
+      closeAnnouncement();
+    } else {
+      openAnnouncement();
+    }
+  }, [router.pathname]);
 
   if (!showAnnouncement) {
     return null; // Hide the announcement bar if showAnnouncement is false
+  }
+
+  if (networkId !== "0x1") {
+    return null;
   }
 
   return (
     <div
       style={{
         display: "flex",
-        background:
-          "transparent linear-gradient(270deg, #FF2281 0%, #B76CFD 100%) 0% 0% no-repeat padding-box",
+        background: "#fff",
         alignItems: "center",
         justifyContent: "center",
-        position: "fixed",
-        bottom: 0,
+        position: "sticky",
+        top: 0,
         width: "100vw",
         zIndex: "9999",
-        padding: ".5rem 0",
+        padding: ".3rem 0",
       }}>
-      <p style={{ margin: "0 0", color: "#fff" }}>
-        Astronauts 🧑‍🚀 StationX is currently in testing environment, we’re fixing
-        stuff rapidly. Sign up for the V1 beta version coming soon{" "}
-        <a
-          href="https://www.stationx.network/"
-          target="blank"
-          style={{ textDecoration: "underline" }}>
+      <p style={{ margin: "0 0", color: "#000", fontWeight: 500 }}>
+        {daoAddress
+          ? "Earn Stars, Eigen points and other protocol points. Pool ETH inside the station & stake "
+          : "Eigen Exploration is on. Earn stars, eigen points & other protocol rewards. Create your Defi Squad "}
+
+        <span
+          onClick={() => {
+            if (daoAddress) {
+              router.push(`/staking/${daoAddress}/${networkId}`);
+            } else {
+              router.push("/stations");
+            }
+          }}
+          style={{
+            textDecoration: "underline",
+            cursor: "pointer",
+            fontWeight: 700,
+          }}>
           here
-        </a>
+        </span>
       </p>
 
       <CloseIcon
@@ -41,7 +73,7 @@ const AnnouncementBar = () => {
           position: "absolute",
           right: "2",
           cursor: "pointer",
-          color: "#fff",
+          color: "#000",
         }}
       />
     </div>

@@ -37,11 +37,6 @@ const StatusModal = ({
       </Typography>
 
       <Button
-        // onClick={() => {
-        //   if (isError) {
-        //     onClose();
-        //   } else router.push(dashboardRoute);
-        // }}
         onClick={onButtonClick}
         variant="outlined"
         color={isError ? "error" : "primary"}

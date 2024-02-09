@@ -23,6 +23,7 @@ export const slice = createSlice({
       totalAmountRaised: null,
       distributionAmount: null,
       maxTokensPerUser: null,
+      depositTokenAddress: null,
     },
     erc20ClubDetails: {
       quorum: null,
@@ -79,6 +80,7 @@ export const slice = createSlice({
       state.clubData.totalAmountRaised = action.payload.totalAmountRaised;
       state.clubData.quorum = action.payload.quorum;
       state.clubData.imgUrl = action.payload.imgUrl;
+      state.clubData.depositTokenAddress = action.payload.depositTokenAddress;
     },
     addErc20ClubDetails: (state, action) => {
       state.erc20ClubDetails.quorum = action.payload.quorum;

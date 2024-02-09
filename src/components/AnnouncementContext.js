@@ -9,9 +9,13 @@ export const AnnouncementProvider = ({ children }) => {
     setShowAnnouncement(false);
   };
 
+  const openAnnouncement = () => {
+    setShowAnnouncement(true);
+  };
+
   return (
     <AnnouncementContext.Provider
-      value={{ showAnnouncement, closeAnnouncement }}>
+      value={{ showAnnouncement, closeAnnouncement, openAnnouncement }}>
       {children}
     </AnnouncementContext.Provider>
   );

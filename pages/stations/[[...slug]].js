@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Layout from "@components/layouts/layout";
-import InviteCard from "@components/cards/InviteCard";
+// import InviteCard from "@components/cards/InviteCard";
 import { Grid, Card, Divider, Stack, ListItemButton } from "@mui/material";
 import { Button, Typography } from "@components/ui";
 import Web3 from "web3";
@@ -17,6 +17,7 @@ import { OMIT_DAOS } from "utils/constants";
 import { shortAddress } from "utils/helper";
 import { useRouter } from "next/router";
 import BackdropLoader from "@components/common/BackdropLoader";
+import useAppContractMethods from "hooks/useAppContractMethods";
 
 const useStyles = makeStyles({
   container: {
@@ -122,6 +123,8 @@ const StationsPage = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
+  const { getDaoDetails } = useAppContractMethods();
+
   const handleCreateButtonClick = async () => {
     const { pathname } = router;
 
@@ -136,6 +139,8 @@ const StationsPage = () => {
         data.daoAddress,
         networkId,
       );
+      const daoDetails = await getDaoDetails(data.daoAddress);
+      const depositTokenAddress = daoDetails.depositTokenAddress;
 
       if (clubData?.stations?.length)
         dispatch(
@@ -159,6 +164,7 @@ const StationsPage = () => {
             totalAmountRaised: clubData.stations[0].totalAmountRaised,
             distributionAmount: clubData.stations[0].distributionAmount,
             maxTokensPerUser: clubData.stations[0].maxTokensPerUser,
+            depositTokenAddress: depositTokenAddress,
           }),
         );
       router.push(
@@ -223,99 +229,97 @@ const StationsPage = () => {
   return (
     <Layout showSidebar={false} faucet={false}>
       <div className={classes.container}>
-        {isUserWhitelisted ? (
-          <Grid
-            container
-            direction="row"
-            justifyContent="center"
-            alignItems="start"
-            mt={2}
-            mb={0}>
-            <Grid item md={5}>
-              <Card>
-                <div className={classes.flex}>
-                  <Grid item>
-                    <Typography variant="heading">My Stations</Typography>
-                  </Grid>
-                  <Grid>
-                    <Button onClick={handleCreateButtonClick}>
-                      Create new
-                    </Button>
-                  </Grid>
-                </div>
-                <Divider className={classes.divider} />
-                <div>
-                  <div style={{ overflowY: "scroll", maxHeight: "60vh" }}>
-                    {walletAddress && clubListData.length ? (
-                      clubListData
-                        .reverse()
-                        .filter((club) => !OMIT_DAOS.includes(club.daoAddress))
-                        .map((club, key) => {
-                          return (
-                            <ListItemButton
-                              style={{ marginBottom: "8px" }}
-                              key={key}
-                              onClick={(e) => {
-                                handleItemClick(clubListData[key]);
-                              }}>
-                              <Grid container className={classes.flexContainer}>
-                                <Grid item md={6}>
-                                  <Stack spacing={0}>
-                                    <Typography variant="subheading">
-                                      {club.daoName}
-                                    </Typography>
-                                    <Typography
-                                      variant="body"
-                                      className="text-blue">
-                                      {shortAddress(club.userAddress)}
-                                    </Typography>
-                                  </Stack>
-                                </Grid>
-                                <Grid>
-                                  <Stack
-                                    spacing={0}
-                                    alignItems="flex-end"
-                                    justifyContent="flex-end">
-                                    <Typography
-                                      variant="body"
-                                      className="text-blue">
-                                      {club.isAdmin ? "Admin" : "Member"}
-                                    </Typography>
-                                  </Stack>
-                                </Grid>
+        {/* {isUserWhitelisted ? ( */}
+        <Grid
+          container
+          direction="row"
+          justifyContent="center"
+          alignItems="start"
+          mt={2}
+          mb={0}>
+          <Grid item md={5}>
+            <Card>
+              <div className={classes.flex}>
+                <Grid item>
+                  <Typography variant="heading">My Stations</Typography>
+                </Grid>
+                <Grid>
+                  <Button onClick={handleCreateButtonClick}>Create new</Button>
+                </Grid>
+              </div>
+              <Divider className={classes.divider} />
+              <div>
+                <div style={{ overflowY: "scroll", maxHeight: "60vh" }}>
+                  {walletAddress && clubListData.length ? (
+                    clubListData
+                      .reverse()
+                      .filter((club) => !OMIT_DAOS.includes(club.daoAddress))
+                      .map((club, key) => {
+                        return (
+                          <ListItemButton
+                            style={{ marginBottom: "8px" }}
+                            key={key}
+                            onClick={(e) => {
+                              handleItemClick(clubListData[key]);
+                            }}>
+                            <Grid container className={classes.flexContainer}>
+                              <Grid item md={6}>
+                                <Stack spacing={0}>
+                                  <Typography variant="subheading">
+                                    {club.daoName}
+                                  </Typography>
+                                  <Typography
+                                    variant="body"
+                                    className="text-blue">
+                                    {shortAddress(club.userAddress)}
+                                  </Typography>
+                                </Stack>
                               </Grid>
-                            </ListItemButton>
-                          );
-                        })
-                    ) : (
-                      <div
+                              <Grid>
+                                <Stack
+                                  spacing={0}
+                                  alignItems="flex-end"
+                                  justifyContent="flex-end">
+                                  <Typography
+                                    variant="body"
+                                    className="text-blue">
+                                    {club.isAdmin ? "Admin" : "Member"}
+                                  </Typography>
+                                </Stack>
+                              </Grid>
+                            </Grid>
+                          </ListItemButton>
+                        );
+                      })
+                  ) : (
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexDirection: "column",
+                      }}>
+                      <h3
                         style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexDirection: "column",
+                          fontSize: "20px",
+                          fontWeight: "400",
+                          marginBottom: 0,
                         }}>
-                        <h3
-                          style={{
-                            fontSize: "20px",
-                            fontWeight: "400",
-                            marginBottom: 0,
-                          }}>
-                          No stations found
-                        </h3>
-                        <p style={{ color: "#dcdcdc", fontWeight: "300" }}>
-                          Station(s) you created or a part of appear here
-                        </p>
-                      </div>
-                    )}
-                  </div>
+                        No stations found
+                      </h3>
+                      <p style={{ color: "#dcdcdc", fontWeight: "300" }}>
+                        Station(s) you created or a part of appear here
+                      </p>
+                    </div>
+                  )}
                 </div>
-              </Card>
-            </Grid>
+              </div>
+            </Card>
           </Grid>
-        ) : (
-          <InviteCard setIsUserWhitelisted={setIsUserWhitelisted} />
-        )}
+        </Grid>
+        {/* // ) : (
+        //   <InviteCard setIsUserWhitelisted={setIsUserWhitelisted} />
+        // )} */}
       </div>
     </Layout>
   );

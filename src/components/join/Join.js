@@ -114,19 +114,9 @@ const Join = ({ daoAddress }) => {
           tokenGatingDetails[0]?.tokenB,
         );
 
-        let tokenADecimal, tokenBDecimal;
+        const tokenADecimal = await getDecimals(tokenGatingDetails[0]?.tokenA);
 
-        try {
-          tokenADecimal = await getDecimals(tokenGatingDetails[0]?.tokenA);
-        } catch (error) {
-          console.log(error);
-        }
-
-        try {
-          tokenBDecimal = await getDecimals(tokenGatingDetails[0]?.tokenB);
-        } catch (error) {
-          console.log(error);
-        }
+        const tokenBDecimal = await getDecimals(tokenGatingDetails[0]?.tokenB);
 
         setGatedTokenDetails({
           tokenASymbol: tokenASymbol,

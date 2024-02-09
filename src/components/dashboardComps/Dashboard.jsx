@@ -1,10 +1,6 @@
 import ComponentHeader from "@components/common/ComponentHeader";
 import { Tab, Tabs } from "@mui/material";
-import {
-  getAssetsByDaoAddress,
-  getNFTsByDaoAddress,
-  getUploadedNFT,
-} from "api/assets";
+import { getAssetsOfWallet, getNFTsByWallet, getUploadedNFT } from "api/assets";
 import { getProposalByDaoAddress } from "api/proposal";
 import { getTotalNumberOfTokenHolders } from "api/token";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
@@ -13,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addNftsOwnedByDao } from "redux/reducers/club";
 import { CHAIN_CONFIG } from "utils/constants";
 import { convertFromWeiGovernance, getImageURL } from "utils/globalFunctions";
-import { convertToFullNumber, formatCash } from "utils/helper";
+import { convertToFullNumber } from "utils/helper";
 import { useNetwork } from "wagmi";
 import AssetsTable from "./AssetsTable";
 import classes from "./Dashboard.module.scss";
@@ -24,6 +20,9 @@ import TreasuryItem from "./TreasuryItem";
 import InviteModal from "@components/modals/InviteModal";
 import { fetchClubByDaoAddress, getTotalTreasuryAmount } from "api/club";
 import WalletsTabs from "./WalletsTabs";
+import useAppContractMethods from "hooks/useAppContractMethods";
+import { useRouter } from "next/router";
+import StatusModal from "@components/modals/StatusModal/StatusModal";
 
 const Dashboard = ({ daoAddress, routeNeteworkId }) => {
   const gnosisAddress = useSelector((state) => {
@@ -33,6 +32,9 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
   const { chain } = useNetwork();
   const dispatch = useDispatch();
   const networkId = "0x" + chain?.id.toString(16);
+
+  const router = useRouter();
+  const { create, join } = router.query;
 
   const [assetType, setAssetType] = useState("erc20");
   const [tokenDetails, setTokenDetails] = useState({
@@ -53,8 +55,12 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
     networkId,
   });
   const [allEOAWallets, setAllEOAWallets] = useState([]);
+  const [showTwitterModal, setShowTwitterModal] = useState(true);
 
   const { getBalance, getDecimals } = useCommonContractMethods();
+  const { getERC20TotalSupply, getNftOwnersCount } = useAppContractMethods({
+    daoAddress,
+  });
 
   const clubData = useSelector((state) => {
     return state.club.clubData;
@@ -83,19 +89,30 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
       if (daoAddress && networkId) {
         if (clubData) {
           const clubDetails = {};
+          let totalSupply, totalNftMinted, percentageShare, balance, myBalance;
 
           const noOfHolders = await getTotalNumberOfTokenHolders(
             CHAIN_CONFIG[networkId]?.covalentNetworkName,
             daoAddress,
           );
 
-          const myBalance = await getBalance(daoAddress);
+          if (tokenType === "erc20") {
+            totalSupply = await getERC20TotalSupply();
+            myBalance = await getBalance(daoAddress);
+            balance = convertFromWeiGovernance(
+              convertToFullNumber(myBalance + ""),
+              18,
+            );
 
-          // const decimals = await getDecimals(daoAddress);
-          const balance = convertFromWeiGovernance(
-            convertToFullNumber(myBalance + ""),
-            18,
-          );
+            percentageShare =
+              (balance / Number(convertFromWeiGovernance(totalSupply, 18))) *
+              100;
+          } else if (tokenType === "erc721") {
+            totalNftMinted = await getNftOwnersCount();
+            myBalance = await getBalance(daoAddress);
+            percentageShare =
+              (Number(myBalance) / Number(totalNftMinted)) * 100;
+          }
 
           if (tokenType === "erc721") {
             const imageUrl = await fetchImageUrl(daoAddress, clubData?.imgUrl);
@@ -107,11 +124,8 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
 
           clubDetails.noOfMembers = noOfHolders ?? 1;
 
-          setMyShare(
-            tokenType === "erc721"
-              ? convertToFullNumber(myBalance.toString())
-              : balance,
-          );
+          setMyShare(percentageShare ? Number(percentageShare) : 0);
+
           setClubDetails(clubDetails);
         }
       }
@@ -123,12 +137,11 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
   const fetchAssets = async () => {
     try {
       if (networkId !== "undefined") {
-        const assetsData = await getAssetsByDaoAddress(
+        const assetsData = await getAssetsOfWallet(
           currentEOAWallet.walletAddress,
-          currentEOAWallet.networkId,
         );
         setTokenDetails({
-          tokenPriceList: assetsData?.data?.tokenPriceList,
+          tokenPriceList: assetsData?.data,
         });
       }
     } catch (error) {
@@ -138,12 +151,9 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
 
   const fetchNfts = async () => {
     try {
-      const nftsData = await getNFTsByDaoAddress(
-        currentEOAWallet.walletAddress,
-        currentEOAWallet.networkId,
-      );
-      setNftData(nftsData.data.items);
-      dispatch(addNftsOwnedByDao(nftsData.data.items));
+      const nftsData = await getNFTsByWallet(currentEOAWallet.walletAddress);
+      setNftData(nftsData?.data?.data);
+      dispatch(addNftsOwnedByDao(nftsData?.data?.data));
     } catch (error) {
       console.log(error);
     }
@@ -204,8 +214,9 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
       iconSrc: "/assets/icons/chart.svg",
       altText: "My Ownership",
       title: "My Ownership",
-      value: formatCash(myShare),
+      value: myShare.toFixed(2),
       tokenName: symbol,
+      isOwnership: true,
     },
     {
       containerClass: classes.ownershipContainer,
@@ -255,7 +266,7 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
               altText={item.altText}
               title={item.title}
               value={item.value}
-              tokenName={item.tokenName}
+              isOwnership={item.isOwnership}
             />
           ))}
         </div>
@@ -311,31 +322,30 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
             </>
           ) : (
             <div className={classes.collectiblesContainer}>
-              {nftData.length ? (
-                nftData.map((nft, index) => (
-                  <img
-                    onClick={() => {
-                      window.open(
-                        `https://opensea.io/assets/matic/${nft.contract_address}/${nft?.nft_data[0]?.token_id}`,
-                        "_blank",
-                      );
-                    }}
-                    key={
-                      nft?.nft_data[0]?.token_id
-                        ? nft?.nft_data[0]?.token_id
-                        : index
-                    }
-                    src={
-                      nft?.nft_data[0]?.external_data?.image_1024
-                        ? nft?.nft_data[0]?.external_data?.image_1024
-                        : "/assets/NFT_IMAGES/3.png"
-                    }
-                    alt={nft?.contract_name ? nft?.contract_name : "NFT"}
-                    height={230}
-                    width={230}
-                    className={classes.nft}
-                  />
-                ))
+              {nftData?.length ? (
+                nftData?.map((nft) => {
+                  return nft.collection_assets.map((asset, index) => {
+                    const n = asset?.assets[0] ?? {};
+                    return (
+                      <img
+                        onClick={() => {
+                          window.open(
+                            `https://opensea.io/assets/matic/${
+                              asset?.contract_address
+                            }/${n?.token_id ?? "0"}`,
+                            "_blank",
+                          );
+                        }}
+                        key={"nft" + index}
+                        src={n?.image_uri ?? "/assets/NFT_IMAGES/3.png"}
+                        alt={n?.contract_name ?? "NFT"}
+                        height={230}
+                        width={230}
+                        className={classes.nft}
+                      />
+                    );
+                  });
+                })
               ) : (
                 <NoTokens
                   title="No collectibles in treasury"
@@ -359,6 +369,24 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
           networkId={networkId}
           onClose={() => {
             setShowInviteModal(false);
+          }}
+        />
+      )}
+
+      {(create || join) && showTwitterModal && (
+        <StatusModal
+          onClose={() => setShowTwitterModal(false)}
+          heading={`Successfully ${
+            create ? "created" : join ? "joined" : ""
+          } a station`}
+          subheading={"Let your friends know what they are missing out!"}
+          buttonText={"Share on Twitter"}
+          onButtonClick={() => {
+            window.open(
+              `https://twitter.com/intent/tweet?text=I've become a member of ${clubData?.name} by joining their station on @stationxnetwork %0A%0AJoin the station:
+              https://app.stationx.network/join/${daoAddress}/${networkId}`,
+              "_blank",
+            );
           }}
         />
       )}

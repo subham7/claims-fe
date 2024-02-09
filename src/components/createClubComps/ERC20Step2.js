@@ -1,43 +1,101 @@
-import { Card, InputAdornment } from "@mui/material";
-import { TextField, Typography } from "@components/ui";
+import {
+  Card,
+  FormControl,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
+  Typography,
+} from "@mui/material";
+import { TextField } from "@components/ui";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { ERC20Step2Styles } from "./CreateClubStyles";
+import { CHAIN_CONFIG } from "utils/constants";
+import { getPriceRate } from "api/assets";
+import { useEffect, useState } from "react";
+
+const PriceRateDiv = ({ currentUSDCRate, value }) => {
+  return (
+    <div
+      style={{
+        textAlign: "right",
+        color: "#707070",
+      }}>
+      {Number(value) > 0 &&
+        `
+      ~ $${Number(currentUSDCRate * value).toFixed(2)}`}
+    </div>
+  );
+};
 
 export default function ERC20Step2(props) {
   const classes = ERC20Step2Styles();
+  const [currentUSDCRate, setCurrentUSDCRate] = useState(0);
+
+  const fetchPriceRate = async (symbol) => {
+    try {
+      const { data } = await getPriceRate(symbol);
+      setCurrentUSDCRate(data.data.rates.USDC);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPriceRate(CHAIN_CONFIG[props.networkId].nativeCurrency.symbol);
+  }, []);
 
   return (
     <>
       <div className="f-d f-vt t-pad-d w-100">
-        <Typography variant="body" className="text-blue">
-          Set deposit rules for members
+        <Typography
+          fontSize={24}
+          fontWeight={600}
+          variant="body"
+          className="text-blue">
+          Contribution rules
         </Typography>
 
-        <Typography variant="info" className="text-light-gray tb-pad-1">
-          Community members will receive membership token(s) when they join this
-          station.
+        <Typography
+          fontSize={16}
+          color={"#a0a0a0"}
+          variant="info"
+          className="text-light-gray tb-pad-1">
+          Configure parameters to deposit into the station’s treasury. Members
+          mint their share tokens by contributing funds (USDC or native
+          currency) to your station.
         </Typography>
 
         <Card>
           <div className="f-d f-v-c f-h-sb">
             <div>
-              <Typography variant="body" className="text-blue">
-                Last date for members to deposit & join
+              <Typography fontWeight={600} variant="body" className="text-blue">
+                Choose currency (mode of contribution)
               </Typography>
             </div>
-
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DateTimePicker
-                value={props.formik.values.depositClose}
-                minDateTime={dayjs(Date.now())}
-                onChange={(value) => {
-                  props.formik.setFieldValue("depositClose", value);
-                }}
-              />
-            </LocalizationProvider>
+            <div className="w-50">
+              <FormControl fullWidth>
+                <InputLabel>Token</InputLabel>
+                <Select
+                  id="depositToken"
+                  name="depositToken"
+                  value={props.formik.values.depositToken}
+                  label="Token"
+                  onChange={props.formik.handleChange}
+                  fullWidth>
+                  <MenuItem value={CHAIN_CONFIG[props.networkId].usdcAddress}>
+                    USDC
+                  </MenuItem>
+                  <MenuItem value={CHAIN_CONFIG[props.networkId].nativeToken}>
+                    {" "}
+                    {CHAIN_CONFIG[props.networkId].nativeCurrency.symbol}
+                  </MenuItem>
+                </Select>
+              </FormControl>
+            </div>
           </div>
         </Card>
 
@@ -46,8 +104,8 @@ export default function ERC20Step2(props) {
         <Card>
           <div className="f-d f-v-c f-h-sb">
             <div>
-              <Typography variant="body" className="text-blue">
-                Min. deposit amount per wallet *
+              <Typography fontWeight={600} variant="body" className="text-blue">
+                Minimum contribution per wallet
               </Typography>
             </div>
             <div className="w-50">
@@ -70,12 +128,25 @@ export default function ERC20Step2(props) {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end" sx={{ color: "#dcdcdc" }}>
-                      USDC
+                      {CHAIN_CONFIG[props.networkId].usdcAddress ===
+                      props.formik.values.depositToken
+                        ? "USDC"
+                        : CHAIN_CONFIG[props.networkId].nativeToken ===
+                          props.formik.values.depositToken
+                        ? CHAIN_CONFIG[props.networkId].nativeCurrency.symbol
+                        : ""}
                     </InputAdornment>
                   ),
                 }}
                 onWheel={(event) => event.target.blur()}
               />
+              {CHAIN_CONFIG[props.networkId].nativeToken ===
+                props.formik.values.depositToken && (
+                <PriceRateDiv
+                  currentUSDCRate={currentUSDCRate}
+                  value={props.formik.values.minDepositPerUser}
+                />
+              )}
             </div>
           </div>
         </Card>
@@ -85,8 +156,8 @@ export default function ERC20Step2(props) {
         <Card mb={2}>
           <div className="f-d f-v-c f-h-sb">
             <div>
-              <Typography variant="body" className="text-blue">
-                Max. deposit amount per wallet *
+              <Typography fontWeight={600} variant="body" className="text-blue">
+                Maximum contribution per wallet
               </Typography>
             </div>
             <div className="w-50">
@@ -109,12 +180,25 @@ export default function ERC20Step2(props) {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end" sx={{ color: "#dcdcdc" }}>
-                      USDC
+                      {CHAIN_CONFIG[props.networkId].usdcAddress ===
+                      props.formik.values.depositToken
+                        ? "USDC"
+                        : CHAIN_CONFIG[props.networkId].nativeToken ===
+                          props.formik.values.depositToken
+                        ? CHAIN_CONFIG[props.networkId].nativeCurrency.symbol
+                        : ""}
                     </InputAdornment>
                   ),
                 }}
                 onWheel={(event) => event.target.blur()}
               />
+              {CHAIN_CONFIG[props.networkId].nativeToken ===
+                props.formik.values.depositToken && (
+                <PriceRateDiv
+                  currentUSDCRate={currentUSDCRate}
+                  value={props.formik.values.maxDepositPerUser}
+                />
+              )}
             </div>
           </div>
         </Card>
@@ -124,8 +208,8 @@ export default function ERC20Step2(props) {
         <Card>
           <div className="f-d f-v-c f-h-sb">
             <div>
-              <Typography variant="body" className="text-blue">
-                Total amount your Station is raising *
+              <Typography fontWeight={600} variant="body" className="text-blue">
+                Fund raising goal
               </Typography>
             </div>
             <div className="w-50">
@@ -148,12 +232,25 @@ export default function ERC20Step2(props) {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end" sx={{ color: "#dcdcdc" }}>
-                      USDC
+                      {CHAIN_CONFIG[props.networkId].usdcAddress ===
+                      props.formik.values.depositToken
+                        ? "USDC"
+                        : CHAIN_CONFIG[props.networkId].nativeToken ===
+                          props.formik.values.depositToken
+                        ? CHAIN_CONFIG[props.networkId].nativeCurrency.symbol
+                        : ""}
                     </InputAdornment>
                   ),
                 }}
                 onWheel={(event) => event.target.blur()}
               />
+              {CHAIN_CONFIG[props.networkId].nativeToken ===
+                props.formik.values.depositToken && (
+                <PriceRateDiv
+                  currentUSDCRate={currentUSDCRate}
+                  value={props.formik.values.totalRaiseAmount}
+                />
+              )}
             </div>
           </div>
         </Card>
@@ -163,8 +260,30 @@ export default function ERC20Step2(props) {
         <Card>
           <div className="f-d f-v-c f-h-sb">
             <div>
-              <Typography variant="body" className="text-blue">
-                Price per token *
+              <Typography fontWeight={600} variant="body" className="text-blue">
+                Deadline
+              </Typography>
+            </div>
+
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DateTimePicker
+                value={props.formik.values.depositClose}
+                minDateTime={dayjs(Date.now())}
+                onChange={(value) => {
+                  props.formik.setFieldValue("depositClose", value);
+                }}
+              />
+            </LocalizationProvider>
+          </div>
+        </Card>
+
+        <br />
+
+        <Card>
+          <div className="f-d f-v-c f-h-sb">
+            <div>
+              <Typography fontWeight={600} variant="body" className="text-blue">
+                Set price per station token
               </Typography>
             </div>
             <div className="w-50">
@@ -187,12 +306,25 @@ export default function ERC20Step2(props) {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end" sx={{ color: "#dcdcdc" }}>
-                      USDC
+                      {CHAIN_CONFIG[props.networkId].usdcAddress ===
+                      props.formik.values.depositToken
+                        ? "USDC"
+                        : CHAIN_CONFIG[props.networkId].nativeToken ===
+                          props.formik.values.depositToken
+                        ? CHAIN_CONFIG[props.networkId].nativeCurrency.symbol
+                        : ""}
                     </InputAdornment>
                   ),
                 }}
                 onWheel={(event) => event.target.blur()}
               />
+              {CHAIN_CONFIG[props.networkId].nativeToken ===
+                props.formik.values.depositToken && (
+                <PriceRateDiv
+                  currentUSDCRate={currentUSDCRate}
+                  value={props.formik.values.pricePerToken}
+                />
+              )}
             </div>
           </div>
         </Card>

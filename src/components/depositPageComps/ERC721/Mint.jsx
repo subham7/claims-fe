@@ -3,6 +3,7 @@ import React from "react";
 import { AiFillMinusCircle, AiFillPlusCircle } from "react-icons/ai";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import classes from "./Mint.module.scss";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const Mint = ({
   clubData,
@@ -21,7 +22,12 @@ const Mint = ({
   isSignable,
   approveERC721Handler,
   allowanceValue,
+  tokenDetails,
+  networkId,
+  userBalance,
 }) => {
+  const inputValue = clubData.pricePerToken * count;
+
   const isButtonDisabled = () => {
     if (isSignable) {
       if (
@@ -44,15 +50,25 @@ const Mint = ({
       return !isEligibleForTokenGating;
     }
 
+    if ((userBalance ?? 0) < inputValue) {
+      return true;
+    }
+
     return false;
   };
-
-  const inputValue = clubData.pricePerToken * count;
 
   return (
     <div className={classes.mintContainer}>
       <Typography variant="inherit">Price per piece</Typography>
-      <h2> {convertFromWeiGovernance(clubData?.pricePerToken, 6)} USDC</h2>
+      <h2>
+        {" "}
+        {convertFromWeiGovernance(
+          clubData?.pricePerToken,
+          tokenDetails.tokenDecimal,
+        )}{" "}
+        {tokenDetails.tokenSymbol}
+      </h2>
+      <h5>Your balance - {Number(userBalance ?? 0).toFixed(4)}</h5>
 
       <div>
         <div className={classes.counterContainer}>
@@ -76,9 +92,11 @@ const Mint = ({
         </div>
         <Button
           onClick={
-            Number(inputValue) > allowanceValue
-              ? approveERC721Handler
-              : claimNFTHandler
+            Number(inputValue) > allowanceValue &&
+            clubData.depositTokenAddress !==
+              CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
+              ? claimNFTHandler
+              : approveERC721Handler
           }
           sx={{
             width: "130px",
@@ -87,9 +105,11 @@ const Mint = ({
           variant="contained">
           {hasClaimed
             ? "Minted"
-            : Number(inputValue) > allowanceValue
-            ? "Approve"
-            : "Mint"}
+            : Number(inputValue) > allowanceValue &&
+              clubData.depositTokenAddress !==
+                CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
+            ? "Mint"
+            : "Approve"}
         </Button>
       </div>
 

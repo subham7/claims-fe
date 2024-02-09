@@ -116,3 +116,39 @@ export async function getUploadedNFT(daoAddress) {
     },
   });
 }
+
+export async function getAssetsOfWallet(address) {
+  try {
+    return await axios.get(MAIN_API_URL + `club/hot-wallets/${address}`, {
+      headers: {
+        Authorization: "Bearer " + getJwtToken(),
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getNFTsByWallet(address) {
+  try {
+    return await axios.get(MAIN_API_URL + `club/hot-wallets/nft/${address}`, {
+      headers: {
+        Authorization: "Bearer " + getJwtToken(),
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const getPriceRate = async (currencySymbol) => {
+  try {
+    return await axios.get(
+      `https://api.coinbase.com/v2/exchange-rates?currency=${currencySymbol}`,
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};

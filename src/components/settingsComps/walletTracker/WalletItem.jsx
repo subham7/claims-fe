@@ -10,7 +10,6 @@ import BackdropLoader from "@components/common/BackdropLoader";
 import { useAccount } from "wagmi";
 import { setAlertData } from "redux/reducers/alert";
 import { useDispatch } from "react-redux";
-import { CHAIN_CONFIG } from "utils/constants";
 
 const WalletItem = ({
   networkId,
@@ -74,9 +73,9 @@ const WalletItem = ({
       <div className={classes.flexContainer}>
         <div className={classes.imageContainer}>
           <Image
-            src={`/assets/networks/${networkId}.png`}
-            height={25}
-            width={25}
+            src={`/assets/icons/Wallet_icon.svg`}
+            height={20}
+            width={20}
             alt={networkId}
           />
         </div>
@@ -101,18 +100,6 @@ const WalletItem = ({
               }),
             );
           }}
-        />
-        <Image
-          onClick={() => {
-            window.open(
-              `${CHAIN_CONFIG[networkId].blockExplorerUrl}/address/${walletAddress}`,
-              "_blank",
-            );
-          }}
-          src={"/assets/icons/etherscan.png"}
-          height={18}
-          width={18}
-          alt="Etherscan link"
         />
         {isRemovable && isAdminUser && (
           <AiFillMinusCircle

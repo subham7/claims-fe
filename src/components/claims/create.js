@@ -201,9 +201,7 @@ const CreateClaim = () => {
         blockNumber: values?.blockNumber,
       };
 
-      const decimals = await getDecimals(data.airdropTokenAddress);
-
-      // fetch Block number
+      const decimals = await getDecimals(data?.airdropTokenAddress);
 
       setLoading(true);
       let snapshotData;
@@ -297,14 +295,7 @@ const CreateClaim = () => {
         const loadClaimsContractFactoryData_Token = async () => {
           try {
             let tokenGatingDecimals = 1;
-
-            if (data.daoTokenAddress !== ZERO_ADDRESS) {
-              try {
-                tokenGatingDecimals = await getDecimals(data.daoTokenAddress);
-              } catch (error) {
-                console.log(error);
-              }
-            }
+            tokenGatingDecimals = await getDecimals(data?.daoTokenAddress);
 
             // if airdroping from contract then approve erc20
             if (!hasAllowanceMechanism) {

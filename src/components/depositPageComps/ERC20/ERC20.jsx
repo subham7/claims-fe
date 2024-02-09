@@ -21,6 +21,9 @@ import { whitelistOnDeposit } from "api/invite/invite";
 import StatusModal from "@components/modals/StatusModal/StatusModal";
 import { useRouter } from "next/router";
 import { setAlertData } from "redux/reducers/alert";
+import { getPublicClient } from "utils/viemConfig";
+import { formatEther } from "viem";
+import { isNative } from "utils/helper";
 
 const DepositInputComponents = ({
   formik,
@@ -65,9 +68,10 @@ const ERC20 = ({
   const [failed, setFailed] = useState(null);
   const [active, setActive] = useState(false);
   const [tokenDetails, setTokenDetails] = useState({
-    tokenDecimal: 6,
-    tokenSymbol: "USDC",
+    tokenDecimal: 0,
+    tokenSymbol: "",
     userBalance: 0,
+    isNativeToken: false,
   });
   const [members, setMembers] = useState([]);
   const [uploadedDocInfo, setUploadedDocInfo] = useState({});
@@ -82,6 +86,7 @@ const ERC20 = ({
   const dispatch = useDispatch();
   const { approveDeposit, getDecimals, getTokenSymbol, getBalance } =
     useCommonContractMethods();
+  const publicClient = getPublicClient(networkId);
 
   const { buyGovernanceTokenERC20DAO } = useAppContractMethods({ daoAddress });
   const { address: walletAddress } = useAccount();
@@ -199,7 +204,6 @@ const ERC20 = ({
           values.tokenInput,
           tokenDetails?.tokenDecimal,
         );
-
         await buyGovernanceTokenERC20DAO(
           walletAddress,
           convertToWeiGovernance(
@@ -207,6 +211,10 @@ const ERC20 = ({
             18,
           ),
           whitelistUserData?.proof ? whitelistUserData.proof : [],
+          clubData.depositTokenAddress.toLowerCase() ===
+            CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
+            ? inputValue
+            : "0",
         );
 
         setLoading(false);
@@ -223,15 +231,31 @@ const ERC20 = ({
 
   const fetchTokenDetails = async () => {
     try {
-      const depositTokenAddress = CHAIN_CONFIG[networkId].usdcAddress;
+      const depositTokenAddress = clubData.depositTokenAddress;
+      const isNativeToken = isNative(clubData.depositTokenAddress, networkId);
+
       const decimals = await getDecimals(depositTokenAddress);
       const symbol = await getTokenSymbol(depositTokenAddress);
-      const userBalance = await getBalance(depositTokenAddress);
+      let userBalance;
+
+      if (isNativeToken) {
+        userBalance = formatEther(
+          await publicClient.getBalance({
+            address: walletAddress,
+          }),
+        );
+      } else {
+        userBalance = convertFromWeiGovernance(
+          await getBalance(depositTokenAddress),
+          decimals,
+        );
+      }
 
       setTokenDetails({
         tokenSymbol: symbol,
         tokenDecimal: decimals,
-        userBalance: convertFromWeiGovernance(userBalance, decimals),
+        userBalance: userBalance,
+        isNativeToken: isNativeToken,
       });
     } catch (error) {
       console.log(error);
@@ -340,14 +364,14 @@ const ERC20 = ({
       {depositSuccessfull ? (
         <StatusModal
           heading={"Hurray! We made it"}
-          subheading="Deposited $USDC onchain successfully."
+          subheading="You have deposited successfully."
           isError={false}
           onClose={() => {
             setDepositSuccessfull(false);
           }}
           buttonText="Go to Dashboard"
           onButtonClick={() => {
-            router.push(`/dashboard/${daoAddress}/${networkId}`);
+            router.push(`/dashboard/${daoAddress}/${networkId}?join=true`);
           }}
         />
       ) : failed ? (

@@ -16,6 +16,9 @@ import { CHAIN_CONFIG } from "utils/constants";
 import { whitelistOnDeposit } from "api/invite/invite";
 import StatusModal from "@components/modals/StatusModal/StatusModal";
 import { setAlertData } from "redux/reducers/alert";
+import { formatEther } from "viem";
+import { getPublicClient } from "utils/viemConfig";
+import { isNative } from "utils/helper";
 
 const DepositInputComponents = ({ depositPreRequisitesProps, mintProps }) => {
   return (
@@ -41,10 +44,10 @@ const ERC721 = ({
   fetchCurrentAllowance,
 }) => {
   const [tokenDetails, setTokenDetails] = useState({
-    tokenDecimal: 6,
-    tokenSymbol: "USDC",
+    tokenDecimal: 0,
+    tokenSymbol: "",
     userBalance: 0,
-    tokenName: "USDC (Pos)",
+    tokenName: "",
   });
   const [active, setActive] = useState(false);
   const [members, setMembers] = useState([]);
@@ -58,6 +61,7 @@ const ERC721 = ({
   const [isSigned, setIsSigned] = useState(false);
   const [isW8BenSigned, setIsW8BenSigned] = useState(false);
   const [uploadedDocInfo, setUploadedDocInfo] = useState({});
+  const publicClient = getPublicClient(networkId);
 
   const day = Math.floor(new Date().getTime() / 1000.0);
   const day1 = dayjs.unix(day);
@@ -70,8 +74,13 @@ const ERC721 = ({
   const router = useRouter();
   const dispatch = useDispatch();
 
-  const { approveDeposit, getDecimals, getTokenSymbol, getBalance } =
-    useCommonContractMethods();
+  const {
+    approveDeposit,
+    getDecimals,
+    getTokenSymbol,
+    getBalance,
+    getTokenName,
+  } = useCommonContractMethods();
 
   const { buyGovernanceTokenERC721DAO } = useAppContractMethods({ daoAddress });
 
@@ -102,17 +111,35 @@ const ERC721 = ({
         } else {
           setHasClaimed(false);
         }
-        const depositTokenAddress = CHAIN_CONFIG[networkId].usdcAddress;
+
+        const depositTokenAddress = clubData.depositTokenAddress;
+
+        const isNativeToken = isNative(clubData.depositTokenAddress, networkId);
+
         const decimals = await getDecimals(depositTokenAddress);
         const symbol = await getTokenSymbol(depositTokenAddress);
-        const name = await getTokenSymbol(depositTokenAddress);
-        const userBalance = await getBalance(depositTokenAddress);
+        const name = await getTokenName(depositTokenAddress);
+
+        let userBalance;
+
+        if (isNativeToken) {
+          userBalance = formatEther(
+            await publicClient.getBalance({
+              address: walletAddress,
+            }),
+          );
+        } else {
+          userBalance = convertFromWeiGovernance(
+            await getBalance(depositTokenAddress),
+            decimals,
+          );
+        }
 
         setTokenDetails({
           tokenSymbol: symbol,
           tokenName: name,
           tokenDecimal: decimals,
-          userBalance: convertFromWeiGovernance(userBalance, decimals),
+          userBalance: userBalance,
         });
       }
     } catch (error) {
@@ -165,6 +192,10 @@ const ERC721 = ({
         clubData?.imageUrl,
         count,
         whitelistUserData?.proof ? whitelistUserData.proof : [],
+        clubData.depositTokenAddress.toLowerCase() ===
+          CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
+          ? (clubData?.pricePerToken * count).toString()
+          : "0",
       );
       setLoading(false);
       setClaimSuccessfull(true);
@@ -276,6 +307,9 @@ const ERC721 = ({
               isSignable,
               approveERC721Handler,
               allowanceValue,
+              tokenDetails,
+              networkId,
+              userBalance: tokenDetails?.userBalance,
             }}
           />
         }
@@ -305,7 +339,7 @@ const ERC721 = ({
           }}
           buttonText="Go to Dashboard"
           onButtonClick={() => {
-            router.push(`/dashboard/${daoAddress}/${networkId}`);
+            router.push(`/dashboard/${daoAddress}/${networkId}?join=true`);
           }}
         />
       ) : failed ? (

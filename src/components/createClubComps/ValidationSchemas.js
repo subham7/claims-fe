@@ -215,7 +215,12 @@ export const getProposalValidationSchema = ({
               const decimals = await getDecimals(airdropToken);
               if (
                 Number(value) <=
-                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                  Number(
+                    convertFromWeiGovernance(
+                      convertToFullNumber(balance.toString()),
+                      decimals,
+                    ),
+                  ) &&
                 Number(value) > 0
               ) {
                 return true;
@@ -301,11 +306,14 @@ export const getProposalValidationSchema = ({
           const { actionCommand } = context.parent;
           if (actionCommand === 3) {
             try {
-              const { distributionAmount, pricePerToken } = factoryData;
+              const { distributionAmount, pricePerToken, depositTokenAddress } =
+                factoryData;
+
+              const tokenDecimals = await getDecimals(depositTokenAddress);
               if (
                 Number(value) >
                 Number(convertFromWeiGovernance(distributionAmount, 18)) *
-                  Number(convertFromWeiGovernance(pricePerToken, 6))
+                  Number(convertFromWeiGovernance(pricePerToken, tokenDecimals))
               ) {
                 return true;
               } else return false;
@@ -326,10 +334,12 @@ export const getProposalValidationSchema = ({
           const { actionCommand } = context.parent;
           if (actionCommand === 13) {
             try {
-              const { pricePerToken } = factoryData;
+              const { pricePerToken, depositTokenAddress } = factoryData;
+              const decimals = await getDecimals(depositTokenAddress);
+              debugger;
               if (
                 Number(value) >
-                Number(convertFromWeiGovernance(pricePerToken, 6))
+                Number(convertFromWeiGovernance(pricePerToken, decimals))
               ) {
                 return true;
               } else return false;
@@ -377,7 +387,12 @@ export const getProposalValidationSchema = ({
               const decimals = await getDecimals(customToken);
               if (
                 Number(value) <=
-                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                  Number(
+                    convertFromWeiGovernance(
+                      convertToFullNumber(balance.toString()),
+                      decimals,
+                    ),
+                  ) &&
                 Number(value) > 0
               ) {
                 return true;
@@ -503,7 +518,12 @@ export const getProposalValidationSchema = ({
               const decimals = await getDecimals(aaveDepositToken);
               if (
                 Number(value) <=
-                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                  Number(
+                    convertFromWeiGovernance(
+                      convertToFullNumber(balance.toString()),
+                      decimals,
+                    ),
+                  ) &&
                 Number(value) > 0
               ) {
                 return true;
@@ -537,7 +557,12 @@ export const getProposalValidationSchema = ({
               const decimals = await getDecimals(tokenAddress);
               if (
                 Number(value) <=
-                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                  Number(
+                    convertFromWeiGovernance(
+                      convertToFullNumber(balance.toString()),
+                      decimals,
+                    ),
+                  ) &&
                 Number(value) > 0
               ) {
                 return true;
@@ -585,7 +610,12 @@ export const getProposalValidationSchema = ({
               const decimals = await getDecimals(uniswapSwapToken);
               if (
                 Number(value) <=
-                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                  Number(
+                    convertFromWeiGovernance(
+                      convertToFullNumber(balance.toString()),
+                      decimals,
+                    ),
+                  ) &&
                 Number(value) > 0
               ) {
                 return true;
@@ -619,7 +649,12 @@ export const getProposalValidationSchema = ({
               }
               if (
                 Number(value) <=
-                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                  Number(
+                    convertFromWeiGovernance(
+                      convertToFullNumber(balance.toString()),
+                      decimals,
+                    ),
+                  ) &&
                 Number(value) > 0
               ) {
                 return true;
@@ -659,37 +694,12 @@ export const getProposalValidationSchema = ({
 
               if (
                 Number(value) <=
-                  Number(convertFromWeiGovernance(balance, decimals)) &&
-                Number(value) > 0
-              ) {
-                return true;
-              } else return false;
-            } catch (error) {
-              return false;
-            }
-          }
-          return true;
-        },
-      ),
-
-    clipFinanceDepositAmount: yup
-      .number("Please enter amount")
-      .test(
-        "invalidClipFinanceDepositAmount",
-        `Enter an amount less or equal to treasury balance`,
-        async (value, context) => {
-          const { actionCommand, clipFinanceDepositToken } = context.parent;
-
-          if (actionCommand === 24) {
-            try {
-              const balance = await getBalance(
-                clipFinanceDepositToken,
-                gnosisAddress,
-              );
-              const decimals = await getDecimals(clipFinanceDepositToken);
-              if (
-                Number(value) <=
-                  Number(convertFromWeiGovernance(balance, decimals)) &&
+                  Number(
+                    convertFromWeiGovernance(
+                      convertToFullNumber(balance.toString()),
+                      decimals,
+                    ),
+                  ) &&
                 Number(value) > 0
               ) {
                 return true;
@@ -759,5 +769,23 @@ export const eoaWalletTrackerValidation = yup.object({
   walletAddress: yup
     .string("Enter wallet address")
     .required("Wallet address is required"),
-  networkId: yup.string("Select network").required("Network is required"),
 });
+
+export const stakingValidation = ({ amount, isRocketPool, isMantlePool }) => {
+  return yup.object({
+    stakeAmount: yup
+      .number()
+      .required("Amount is required")
+      .moreThan(
+        isRocketPool ? 0.01 : isMantlePool ? 0.02 : 0,
+        `${
+          isRocketPool
+            ? "Rocket Pool accepts a minimum of 0.01 ETH as deposits"
+            : isMantlePool
+            ? "Mantle Pool accepts a minimum of 0.02 ETH as deposits"
+            : "0"
+        } `,
+      )
+      .max(amount, "You don't have enough ETH."),
+  });
+};

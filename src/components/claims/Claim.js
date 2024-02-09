@@ -16,7 +16,7 @@ import useDropsContractMethods from "hooks/useDropsContractMethods";
 import { CircularProgress, Skeleton, Typography } from "@mui/material";
 import { getClaimDetails, getUserProofAndBalance } from "api/claims";
 import ClaimInput from "./ClaimInput";
-import { ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
+import { ZERO_MERKLE_ROOT } from "utils/constants";
 import PublicPageLayout from "@components/common/PublicPageLayout";
 import TwitterSharingModal from "@components/modals/TwitterSharingModal";
 import { setAlertData } from "redux/reducers/alert";
@@ -115,20 +115,10 @@ const Claim = ({ claimAddress }) => {
       const tokenDecimal = await getDecimals(claims[0].airdropToken);
       const tokenSymbol = await getTokenSymbol(claims[0].airdropToken);
 
-      let whitelistTokenSymbol = "";
-      let whitelistTokenDecimal = 1;
-
-      try {
-        if (
-          dropsData?.permission !== "3" &&
-          claims[0].whitelistToken !== ZERO_ADDRESS
-        ) {
-          whitelistTokenSymbol = await getTokenSymbol(claims[0].whitelistToken);
-          whitelistTokenDecimal = await getDecimals(claims[0].whitelistToken);
-        }
-      } catch (error) {
-        console.log(error);
-      }
+      const whitelistTokenSymbol = await getTokenSymbol(
+        claims[0].whitelistToken,
+      );
+      const whitelistTokenDecimal = await getDecimals(claims[0].whitelistToken);
 
       setTokenDetails({
         tokenDecimal: tokenDecimal,

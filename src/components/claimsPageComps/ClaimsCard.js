@@ -139,16 +139,12 @@ const ClaimsCard = ({
   }, [currentTime, endDate, startDate]);
 
   const fetchContractDetails = async () => {
-    try {
-      setClaimEnabled(active);
-      const tokenDecimals = await getDecimals(airdropTokenAddress);
-      const tokenSymbol = await getTokenSymbol(airdropTokenAddress);
+    setClaimEnabled(active);
+    const tokenDecimals = await getDecimals(airdropTokenAddress);
+    const tokenSymbol = await getTokenSymbol(airdropTokenAddress);
 
-      setDecimals(tokenDecimals);
-      setSymbol(tokenSymbol);
-    } catch (error) {
-      console.log(error);
-    }
+    setDecimals(tokenDecimals);
+    setSymbol(tokenSymbol);
   };
 
   useEffect(() => {

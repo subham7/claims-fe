@@ -7,6 +7,7 @@ import {
   mainnet,
   gnosis,
   taikoJolnir,
+  goerli,
 } from "viem/chains";
 import {
   CHAIN_CONFIG,
@@ -19,6 +20,7 @@ import {
 
 const viemChains = {
   "0x89": polygon,
+  "0x5": goerli,
   "0xe708": lineaMainnetWalletConnect,
   "0x2105": base,
   "0xa4b1": arbitrum,
@@ -30,6 +32,7 @@ const viemChains = {
   "0xa9": mantaMainnet,
   "0x28c5f": taikoJolnir,
   "0x138d5": beraMainnetWalletConnect,
+  "0x5": goerli,
 };
 
 export const getPublicClient = (networkId) => {
