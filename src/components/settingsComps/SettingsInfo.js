@@ -24,6 +24,8 @@ import EditDetails from "./modals/EditDetails";
 import { useNetwork } from "wagmi";
 import { getTotalTreasuryAmount } from "api/club";
 import { useSelector } from "react-redux";
+import { isNative } from "utils/helper";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const SettingsInfo = ({
   daoDetails,
@@ -41,6 +43,7 @@ const SettingsInfo = ({
   const [open, setOpen] = useState(false);
 
   const [treasuryAmount, setTreasuryAmount] = useState(0);
+  const [isNativeToken, setIsNativeToken] = useState(0);
 
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
@@ -69,9 +72,11 @@ const SettingsInfo = ({
 
   useEffect(() => {
     if (daoAddress) {
+      const isNativeToken = isNative(clubData?.depositTokenAddress, networkId);
+      setIsNativeToken(isNativeToken);
       fetchTreasuryDetails();
     }
-  }, [daoAddress]);
+  }, [daoAddress, clubData?.depositTokenAddress, networkId]);
 
   return (
     <>
@@ -439,13 +444,18 @@ const SettingsInfo = ({
                                 daoDetails.isTotalSupplyUnlimited ? (
                                   "Unlimited"
                                 ) : (
-                                  (
+                                  ` ${(
                                     daoDetails.distributionAmt *
                                     convertFromWeiGovernance(
                                       daoDetails.pricePerToken,
-                                      6,
+                                      isNativeToken ? 18 : 6,
                                     )
-                                  ).toFixed(3)
+                                  ).toFixed(2)} ${
+                                    isNativeToken
+                                      ? CHAIN_CONFIG[networkId].nativeCurrency
+                                          .symbol
+                                      : "USDC"
+                                  } `
                                 )
                               ) : (
                                 <Skeleton

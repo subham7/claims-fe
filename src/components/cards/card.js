@@ -1,4 +1,5 @@
-import { Button, Typography } from "@components/ui";
+import { Button } from "@components/ui";
+import { Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React from "react";
 
@@ -8,7 +9,7 @@ const useStyles = makeStyles({
     flexDirection: "column",
     padding: "30px 40px",
     borderRadius: "20px",
-    width: "481px",
+    width: "520px",
     background: "#151515",
     cursor: "pointer",
     height: "fit-content",
@@ -26,8 +27,12 @@ const NewCard = ({ title, subtitle, onClick, buttonText }) => {
 
   return (
     <div className={classes.card}>
-      <Typography variant="heading">{title}</Typography>
-      <Typography variant="body">{subtitle}</Typography>
+      <Typography mb={-2} fontSize={28} fontWeight={600} variant="heading">
+        {title}
+      </Typography>
+      <Typography color={"gray"} variant="body">
+        {subtitle}
+      </Typography>
       <Button onClick={onClick}>{buttonText}</Button>
     </div>
   );

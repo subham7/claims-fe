@@ -60,8 +60,6 @@ export const proposalDisplayOptions = [
   },
 ];
 
-export const tableHeader = ["Name", "Holding", "Value in USD"];
-
 export const baseLinks = [
   { icon: "home_icon", title: "Dashboard", routeHeader: "dashboard" },
   { icon: "workflows_icon", title: "Activity", routeHeader: "proposals" },
@@ -70,6 +68,7 @@ export const baseLinks = [
     title: "Transactions",
     routeHeader: "transactions",
   },
+  { icon: "Wallet_icon", title: "Staking", routeHeader: "staking" },
   { icon: "astronaut_icon", title: "Members", routeHeader: "members" },
   // { icon: "document_icon", title: "Documents", routeHeader: "documents" },
   { icon: "settings_icon", title: "Settings", routeHeader: "settings" },

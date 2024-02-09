@@ -1,12 +1,12 @@
 import { Box, CssBaseline, Grid, Typography } from "@mui/material";
 import { useAccount, useNetwork } from "wagmi";
 import useClubFetch from "hooks/useClubFetch";
-import { showWrongNetworkModal } from "utils/helper";
 import { makeStyles } from "@mui/styles";
 import Navbar from "@components/ui/Navbar/Navbar";
 import Sidebar from "@components/ui/Sidebar/Sidebar";
 
 import CustomAlert from "@components/common/CustomAlert";
+import { showWrongNetworkModal } from "utils/helper";
 
 const drawerWidth = 50;
 

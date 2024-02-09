@@ -6,12 +6,17 @@ import { factoryContractABI } from "abis/factoryContract.js";
 import { erc721DaoABI } from "abis/erc721Dao";
 import { erc20DaoABI } from "abis/erc20Dao";
 import { seaportABI } from "abis/seaport";
+import { stakeETHABI } from "abis/stakeEth";
+import { eigenContractABI } from "abis/eigenContract";
 import { subgraphQuery } from "./subgraphs";
-import { convertToWeiGovernance } from "./globalFunctions";
+import {
+  convertFromWeiGovernance,
+  convertToWeiGovernance,
+} from "./globalFunctions";
 import { Interface } from "ethers";
 import { fulfillOrder, retrieveNftListing } from "api/assets";
 import { SEAPORT_CONTRACT_ADDRESS } from "api";
-import { CHAIN_CONFIG } from "./constants";
+import { CHAIN_CONFIG, REFERRAL_ADDRESS } from "./constants";
 import {
   QUERY_ALL_MEMBERS,
   QUERY_STATION_DETAILS,
@@ -26,6 +31,18 @@ import { uniswapABI } from "abis/uniswapABI";
 import { encodeFunctionData } from "viem";
 import { Batch } from "abis/clip-finance/batch";
 import { StrategyRouter } from "abis/clip-finance/stragetgyRouter";
+import { getClipBalanceInShares } from "api/defi";
+import axios from "axios";
+import { SharesPool } from "abis/clip-finance/sharesPool";
+import { SharesToken } from "abis/clip-finance/sharesToken";
+import { kelpPoolABI } from "abis/kelp/kelpPoolContract";
+import { rswETHABI } from "abis/swell/rswETHContract";
+import { swETHABI } from "abis/swell/swETHContract";
+import { renzoStakingPoolABI } from "abis/renzo/renzoStakingPoolContract";
+import { stETHTokenABI } from "abis/lido/lidoStETHContract";
+import { rocketPoolABI } from "abis/rocketPool/rocketPoolContract";
+import { rETHTokenABI } from "abis/rocketPool/rETHTokenContract";
+import { mantlePoolABI } from "abis/mantlePool/manelPoolContract";
 
 export const fetchProposals = async (daoAddress, type) => {
   let proposalData;
@@ -215,6 +232,7 @@ export const getEncodedData = async ({
   getNftOwnersCount,
   networkId,
   gnosisAddress,
+  getDecimals,
 }) => {
   let membersArray = [];
   let airDropAmountArray = [];
@@ -246,6 +264,8 @@ export const getEncodedData = async ({
   } = proposalData.commands[0];
   let iface;
   if (contractABI) iface = new Interface(contractABI);
+  const tokenDecimals = await getDecimals(factoryData?.depositTokenAddress);
+
   switch (executionId) {
     case 0:
       const membersData = await subgraphQuery(
@@ -356,7 +376,8 @@ export const getEncodedData = async ({
     case 3:
       data = iface.encodeFunctionData("updateTotalRaiseAmount", [
         convertToWeiGovernance(
-          convertToWeiGovernance(totalDeposits, 6) / factoryData?.pricePerToken,
+          convertToWeiGovernance(totalDeposits, tokenDecimals) /
+            factoryData?.pricePerToken,
           18,
         ),
         factoryData?.pricePerToken,
@@ -479,14 +500,14 @@ export const getEncodedData = async ({
     case 13:
       data = iface.encodeFunctionData("updateTotalRaiseAmount", [
         convertToFullNumber(factoryData?.distributionAmount + ""),
-        convertToWeiGovernance(pricePerToken, 6),
+        convertToWeiGovernance(pricePerToken, tokenDecimals),
         daoAddress,
       ]);
       return { data };
     case 20:
       data = iface.encodeFunctionData("updateTotalRaiseAmount", [
         nftSupply,
-        convertToWeiGovernance(factoryData?.pricePerToken, 6),
+        convertToWeiGovernance(factoryData?.pricePerToken, tokenDecimals),
         daoAddress,
       ]);
       return { data };
@@ -541,6 +562,41 @@ const approveDepositWithEncodeABI = (
   }
 };
 
+const checkSwapAvailability = async ({
+  web3Call,
+  networkId,
+  depositAmount,
+}) => {
+  try {
+    const sharesTokenContract = new web3Call.eth.Contract(
+      SharesToken,
+      CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
+    );
+
+    const sharesInPool = await sharesTokenContract.methods
+      .balanceOf(CHAIN_CONFIG[networkId].clipFinanceSharesPoolAddressLinea)
+      .call();
+
+    const res = await axios.get(
+      "https://shares-pool-csynu.ondigitalocean.app/get-one-usd-in-shares?chain=linea",
+    );
+
+    const rate = res.data?.data?.oneUsdInShares;
+    const sharesUsdValueInPool = Number(sharesInPool) / Number(rate);
+    const depositAmountInUsd = convertFromWeiGovernance(depositAmount, 6);
+
+    if (Number(depositAmountInUsd) <= Number(sharesUsdValueInPool)) {
+      // Opt for sharesPool deposit
+      return true;
+    } else {
+      // Opt for batch deposit
+      return false;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const clipFinanceBatchDeposit = async ({
   depositToken,
   depositAmount,
@@ -565,7 +621,113 @@ const clipFinanceBatchDeposit = async ({
     .depositToBatch(depositToken, depositAmount, "")
     .encodeABI();
 
-  return { data, depositFee };
+  const allocateData = strategyRouterContract.methods
+    .allocateToStrategies()
+    .encodeABI();
+
+  return { data, depositFee, allocateData };
+};
+
+const clipFinanceSharesPoolDeposit = async ({
+  depositAmount,
+  web3Call,
+  networkId,
+  depositToken,
+}) => {
+  try {
+    const res = await axios.get(
+      `https://shares-pool-csynu.ondigitalocean.app/deposit?chain=linea&token=usdc.e&amount=${convertFromWeiGovernance(
+        depositAmount,
+        6,
+      )}`,
+    );
+
+    const swapData = [
+      depositToken,
+      true,
+      res.data?.data?.amountIn,
+      res.data?.data?.amountOut,
+      res.data?.data?.deadline,
+      res.data?.data?.fee,
+      res.data?.data?.signature,
+    ];
+
+    const sharesPoolContract = new web3Call.eth.Contract(
+      SharesPool,
+      CHAIN_CONFIG[networkId].clipFinanceSharesPoolAddressLinea,
+    );
+
+    const data = sharesPoolContract.methods
+      .swapShares(
+        swapData,
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+      )
+      .encodeABI();
+
+    return { data, depositFee: res.data?.data?.fee };
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const clipFinanceSharesPoolWithdraw = async ({
+  sharesToWithdraw,
+  web3Call,
+  networkId,
+}) => {
+  try {
+    const res = await axios.get(
+      `https://shares-pool-csynu.ondigitalocean.app/withdrawl?chain=linea&token=usdc.e&amount=${sharesToWithdraw}`,
+    );
+
+    const swapData = [
+      CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
+      false,
+      res.data?.data?.amountIn,
+      res.data?.data?.amountOut,
+      res.data?.data?.deadline,
+      res.data?.data?.fee,
+      res.data?.data?.signature,
+    ];
+
+    const sharesPoolContract = new web3Call.eth.Contract(
+      SharesPool,
+      CHAIN_CONFIG[networkId].clipFinanceSharesPoolAddressLinea,
+    );
+
+    const data = sharesPoolContract.methods
+      .swapShares(
+        swapData,
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+      )
+      .encodeABI();
+
+    return { data, depositFee: res.data.data.fee };
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const calculateSharesToWithdraw = async ({
+  withdrawAmount,
+  web3Call,
+  gnosisAddress,
+  networkId,
+}) => {
+  const shares = await getClipBalanceInShares(gnosisAddress);
+
+  const strategyRouterContract = new web3Call.eth.Contract(
+    StrategyRouter,
+    CHAIN_CONFIG[networkId].clipFinanceStrategyRouterAddressLinea,
+  );
+
+  const usdFromShares = await strategyRouterContract.methods
+    .calculateSharesUsdValue(shares)
+    .call();
+
+  const sharesToWithdraw =
+    (Number(withdrawAmount) * Number(shares)) / Number(usdFromShares);
+  return sharesToWithdraw;
 };
 
 const transferNFTfromSafe = (
@@ -602,6 +764,350 @@ const airdropTokenMethodEncoded = (
 
     return actionContractSend.methods
       .airDropToken(airdropTokenAddress, amountArray, members)
+      .encodeABI();
+  }
+};
+
+const depositEthForEigen = (contractAddress, walletAddress, web3Call) => {
+  if (contractAddress) {
+    const stakeETHContractCall = new web3Call.eth.Contract(
+      stakeETHABI,
+      contractAddress,
+    );
+
+    return stakeETHContractCall?.methods
+      ?.deposit(walletAddress, "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+      .encodeABI();
+  }
+};
+
+const depositETHInStader = (staderPoolAddress, walletAddress, web3Call) => {
+  if (staderPoolAddress) {
+    const staderStakingPoolContract = new web3Call.eth.Contract(
+      stakeETHABI,
+      staderPoolAddress,
+    );
+
+    return staderStakingPoolContract?.methods
+      ?.deposit(walletAddress, "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+      .encodeABI();
+  }
+};
+
+const kelpStakeMethodEncoded = async (
+  kelpPoolContractAddress,
+  depositAmount,
+  web3Call,
+  networkId,
+) => {
+  if (kelpPoolContractAddress) {
+    const kelpPoolContract = new web3Call.eth.Contract(
+      kelpPoolABI,
+      kelpPoolContractAddress,
+    );
+
+    const previewAmount = await getStaderPreview(
+      CHAIN_CONFIG[networkId].staderStakingPoolAddress,
+      convertToWeiGovernance(depositAmount, 18).toString(),
+      web3Call,
+    );
+
+    return kelpPoolContract.methods
+      .depositAsset(
+        CHAIN_CONFIG[networkId].staderETHxAddress,
+        previewAmount,
+        0,
+        "",
+      )
+      .encodeABI();
+  }
+};
+
+const renzoEthStakeEncoded = ({ renzoStakingPoolAddress, web3Call }) => {
+  if (renzoStakingPoolAddress) {
+    const renzoStakingPoolContract = new web3Call.eth.Contract(
+      renzoStakingPoolABI, // OR swETHABI
+      renzoStakingPoolAddress,
+    );
+
+    return renzoStakingPoolContract.methods
+      .depositETH(REFERRAL_ADDRESS)
+      .encodeABI();
+  }
+};
+
+const matlePoolStakeEncoded = async ({
+  web3Call,
+  networkId,
+  depositAmount,
+}) => {
+  const mantlePoolContract = new web3Call.eth.Contract(
+    mantlePoolABI,
+    CHAIN_CONFIG[networkId].mantleDepositPoolAddress,
+  );
+
+  const mETHRecieved = await mantlePoolContract.methods
+    .ethToMETH(convertToWeiGovernance(depositAmount, 18))
+    .call();
+
+  const minimumMEthRecieved =
+    Number(convertFromWeiGovernance(mETHRecieved, 18)) * 0.99;
+
+  return mantlePoolContract.methods
+    .stake(convertToWeiGovernance(minimumMEthRecieved, 18))
+    .encodeABI();
+};
+
+const mantlePoolEigenStakeMethodEncoded = async ({
+  eigenContractAddress,
+  depositAmount,
+  web3Call,
+  networkId,
+}) => {
+  if (eigenContractAddress) {
+    const eigenContract = new web3Call.eth.Contract(
+      eigenContractABI,
+      eigenContractAddress,
+    );
+
+    const mantlePoolContract = new web3Call.eth.Contract(
+      mantlePoolABI,
+      CHAIN_CONFIG[networkId].mantleDepositPoolAddress,
+    );
+
+    const mETHRecieved = await mantlePoolContract.methods
+      .ethToMETH(convertToWeiGovernance(depositAmount, 18))
+      .call();
+
+    const newMETHRecieved = convertFromWeiGovernance(mETHRecieved, 18);
+    const newMETH = newMETHRecieved.slice(0, -9) + "000000000";
+
+    return eigenContract.methods
+      .depositIntoStrategy(
+        CHAIN_CONFIG[networkId].mantleEigenStrategyAddress,
+        CHAIN_CONFIG[networkId].mantleMEthAddress,
+        convertToWeiGovernance(newMETH, 18),
+      )
+      .encodeABI();
+  }
+};
+
+const rocketPoolStakeEncoded = ({ web3Call, networkId }) => {
+  const rocketPoolContract = new web3Call.eth.Contract(
+    rocketPoolABI,
+    CHAIN_CONFIG[networkId].rocketDepositPoolAddress,
+  );
+
+  return rocketPoolContract.methods.deposit().encodeABI();
+};
+
+const rocketPoolEigenStakeMethodEncoded = async ({
+  eigenContractAddress,
+  depositAmount,
+  web3Call,
+  networkId,
+}) => {
+  if (eigenContractAddress) {
+    const eigenContract = new web3Call.eth.Contract(
+      eigenContractABI,
+      eigenContractAddress,
+    );
+
+    const rETHContract = new web3Call.eth.Contract(
+      rETHTokenABI,
+      CHAIN_CONFIG[networkId].rocketRETHAddress,
+    );
+
+    const previewAmount = await rETHContract.methods
+      .getRethValue(convertToWeiGovernance(depositAmount, 18))
+      .call();
+
+    return eigenContract.methods
+      .depositIntoStrategy(
+        CHAIN_CONFIG[networkId].rocketEigenStrategyAddress,
+        CHAIN_CONFIG[networkId].rocketRETHAddress,
+        previewAmount,
+      )
+      .encodeABI();
+  }
+};
+
+const lidoEthStakeEncoded = ({ web3Call, networkId }) => {
+  const lidoTokenContract = new web3Call.eth.Contract(
+    stETHTokenABI,
+    CHAIN_CONFIG[networkId].lidoStETHAddress,
+  );
+
+  return lidoTokenContract.methods
+    .submit(REFERRAL_ADDRESS) // referall
+    .encodeABI();
+};
+
+const lidoEigneStakeMethodEncoded = async ({
+  eigenContractAddress,
+  depositAmount,
+  web3Call,
+  networkId,
+}) => {
+  if (eigenContractAddress) {
+    const eigenContract = new web3Call.eth.Contract(
+      eigenContractABI,
+      eigenContractAddress,
+    );
+
+    const stETHContract = new web3Call.eth.Contract(
+      stETHTokenABI,
+      CHAIN_CONFIG[networkId].lidoStETHAddress,
+    );
+
+    const sharesAllocated = await stETHContract.methods
+      .getSharesByPooledEth(convertToWeiGovernance(depositAmount, 18))
+      .call();
+
+    const stETHAllocated = await stETHContract.methods
+      .getPooledEthByShares(sharesAllocated)
+      .call();
+
+    return eigenContract.methods
+      .depositIntoStrategy(
+        CHAIN_CONFIG[networkId].lidoEigenStrategyAddress,
+        CHAIN_CONFIG[networkId].lidoStETHAddress,
+        stETHAllocated,
+      )
+      .encodeABI();
+  }
+};
+
+const restakeFinanceStakeMethodEncoded = ({
+  web3Call,
+  depositAmount,
+  networkId,
+}) => {
+  const abi = [
+    {
+      inputs: [{ internalType: "uint256", name: "vowID", type: "uint256" }],
+      name: "deposit",
+      outputs: [],
+      stateMutability: "payable",
+      type: "function",
+    },
+  ];
+
+  const restakeDepositPoolContract = new web3Call.eth.Contract(
+    abi,
+    CHAIN_CONFIG[networkId].restakeDepositPoolAddress,
+  );
+
+  return restakeDepositPoolContract.methods
+    .deposit(convertToWeiGovernance(depositAmount, 18))
+    .encodeABI();
+};
+
+const swellEthStakeEncoded = ({ swellETHAddress, web3Call }) => {
+  if (swellETHAddress) {
+    const swellRswETHContract = new web3Call.eth.Contract(
+      rswETHABI, // OR swETHABI
+      swellETHAddress,
+    );
+
+    return swellRswETHContract.methods
+      .depositWithReferral(REFERRAL_ADDRESS)
+      .encodeABI();
+  }
+};
+
+const swellEigenStakeMethodEncoded = async ({
+  eigenContractAddress,
+  depositAmount,
+  web3Call,
+  networkId,
+}) => {
+  if (eigenContractAddress) {
+    const eigenContract = new web3Call.eth.Contract(
+      eigenContractABI,
+      eigenContractAddress,
+    );
+
+    const swETHContract = new web3Call.eth.Contract(
+      swETHABI,
+      CHAIN_CONFIG[networkId].swellSwETHAddress,
+    );
+
+    const ethToSwETHRate = await swETHContract.methods.ethToSwETHRate().call();
+
+    const depositAmountToWei = convertToWeiGovernance(depositAmount, 18);
+    const depositAmountBN = new web3Call.utils.BN(depositAmountToWei);
+    const ethToSwETHRateBN = new web3Call.utils.BN(ethToSwETHRate);
+    const previewAmountBN = depositAmountBN.mul(ethToSwETHRateBN);
+    const previewAmount = web3Call.utils.fromWei(previewAmountBN, "ether");
+
+    return eigenContract.methods
+      .depositIntoStrategy(
+        CHAIN_CONFIG[networkId].swellEigenStrategyAddress,
+        CHAIN_CONFIG[networkId].swellSwETHAddress,
+        previewAmount.toString().split(".")[0],
+      )
+      .encodeABI();
+  }
+};
+
+const getStaderPreview = (contractAddress, amount, web3Call) => {
+  if (contractAddress) {
+    const stakeETHContractCall = new web3Call.eth.Contract(
+      stakeETHABI,
+      contractAddress,
+    );
+
+    return stakeETHContractCall?.methods?.previewDeposit(amount).call();
+  }
+};
+
+const eigenStakeMethodEncoded = async (
+  eigenContractAddress,
+  amount,
+  web3Call,
+  networkId,
+) => {
+  if (eigenContractAddress) {
+    const eigneContract = new web3Call.eth.Contract(
+      eigenContractABI, // KELP Pool ABI
+      eigenContractAddress, // KELP Pool Address
+    );
+
+    const previewAmount = await getStaderPreview(
+      CHAIN_CONFIG[networkId].staderStakingPoolAddress,
+      amount,
+      web3Call,
+    );
+
+    return eigneContract.methods
+      .depositIntoStrategy(
+        CHAIN_CONFIG[networkId].staderEigenStrategyAddress, // Strategy Address
+        CHAIN_CONFIG[networkId].staderETHxAddress, // Stader Eth Token Address
+        previewAmount,
+      )
+      .encodeABI();
+  }
+};
+
+const eigenUnstakeMethodEncoded = async (
+  eigenContractAddress,
+  gnosisAddress,
+  eigenUnstakeAmount,
+  web3Call,
+) => {
+  if (eigenContractAddress) {
+    const eigneContract = new web3Call.eth.Contract(
+      eigenContractABI,
+      eigenContractAddress,
+    );
+
+    return eigneContract.methods
+      .removeShares(
+        gnosisAddress,
+        "0x5d1E9DC056C906CBfe06205a39B0D965A6Df7C14",
+        eigenUnstakeAmount,
+      )
       .encodeABI();
   }
 };
@@ -778,6 +1284,7 @@ const disburseTokenMethodEncoded = (
 export const getTransaction = async ({
   proposalData,
   daoAddress,
+  walletAddress,
   factoryContractAddress,
   approvalData,
   transactionData,
@@ -806,12 +1313,13 @@ export const getTransaction = async ({
     unstakeAmount,
     sendTokenAmounts,
     sendTokenAddresses,
+    eigenStakeAmount,
+    eigenUnstakeAmount,
   } = proposalData.commands[0];
-
-  console.log("xxxxD", depositAmount, tokenData);
 
   let approvalTransaction;
   let transaction;
+  let stakeETHTransaction;
   const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
 
   switch (executionId) {
@@ -1194,42 +1702,482 @@ export const getTransaction = async ({
 
     case 24:
       // token Data === usdc address
-      const { data, depositFee } = await clipFinanceBatchDeposit({
+
+      const isSharesPoolSwapAvailable = await checkSwapAvailability({
+        web3Call,
         depositAmount,
-        depositToken: tokenData,
         networkId,
+      });
+
+      if (isSharesPoolSwapAvailable) {
+        // Shares Pool Deposit
+        const { data, depositFee } = await clipFinanceSharesPoolDeposit({
+          depositAmount,
+          networkId,
+          web3Call,
+          depositToken: tokenData,
+        });
+
+        approvalTransaction = {
+          to: Web3.utils.toChecksumAddress(tokenData),
+          data: approveDepositWithEncodeABI(
+            tokenData,
+            CHAIN_CONFIG[networkId].clipFinanceSharesPoolAddressLinea,
+            depositAmount,
+            web3Call,
+          ),
+          value: "0",
+        };
+        transaction = {
+          to: Web3.utils.toChecksumAddress(
+            CHAIN_CONFIG[networkId]?.clipFinanceSharesPoolAddressLinea,
+          ),
+          data: data,
+          value: depositFee,
+        };
+
+        return { transaction, approvalTransaction };
+      } else {
+        // Batch Deposit
+        const { data, depositFee, allocateData } =
+          await clipFinanceBatchDeposit({
+            depositAmount,
+            depositToken: tokenData,
+            networkId,
+            web3Call,
+          });
+        approvalTransaction = {
+          to: Web3.utils.toChecksumAddress(tokenData),
+          data: approveDepositWithEncodeABI(
+            tokenData,
+            CHAIN_CONFIG[networkId].clipFinanceStrategyRouterAddressLinea,
+            depositAmount,
+            web3Call,
+          ),
+          value: "0",
+        };
+        transaction = {
+          to: Web3.utils.toChecksumAddress(
+            CHAIN_CONFIG[networkId]?.clipFinanceStrategyRouterAddressLinea,
+          ),
+          data: data,
+          value: depositFee,
+        };
+        stakeETHTransaction = {
+          to: Web3.utils.toChecksumAddress(
+            CHAIN_CONFIG[networkId]?.clipFinanceStrategyRouterAddressLinea,
+          ),
+          data: allocateData,
+          value: "0",
+        };
+
+        return { transaction, approvalTransaction, stakeETHTransaction };
+      }
+    case 25:
+      const sharesToWithdraw = await calculateSharesToWithdraw({
+        gnosisAddress,
+        networkId,
+        web3Call,
+        withdrawAmount,
+      });
+
+      const { data, depositFee } = await clipFinanceSharesPoolWithdraw({
+        networkId,
+        sharesToWithdraw,
         web3Call,
       });
 
       approvalTransaction = {
-        to: Web3.utils.toChecksumAddress(tokenData),
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
+        ),
         data: approveDepositWithEncodeABI(
-          tokenData,
-          CHAIN_CONFIG[networkId].clipFinanceStrategyRouterAddressLinea,
-          depositAmount,
+          CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
+          CHAIN_CONFIG[networkId].clipFinanceSharesPoolAddressLinea,
+          withdrawAmount,
           web3Call,
         ),
         value: "0",
       };
+
       transaction = {
         to: Web3.utils.toChecksumAddress(
-          CHAIN_CONFIG[networkId]?.clipFinanceStrategyRouterAddressLinea,
+          CHAIN_CONFIG[networkId]?.clipFinanceSharesPoolAddressLinea,
         ),
         data: data,
         value: depositFee,
       };
 
       return { transaction, approvalTransaction };
+
+    case 26:
+      //this txn will be diff for stader, lido, ankr, etc
+      //currently, this is for stader
+      stakeETHTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].staderStakingPoolAddress, // Stader Staking Pool Address -
+        ),
+        data: depositEthForEigen(
+          CHAIN_CONFIG[networkId].staderStakingPoolAddress, //  Stader Staking Pool Address
+          gnosisAddress,
+          web3Call,
+        ),
+        value: convertToWeiGovernance(depositAmount, 18).toString(),
+      };
+
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].staderETHxAddress, // Stader Ethx Address - swETH Address
+        ),
+        data: approveDepositWithEncodeABI(
+          CHAIN_CONFIG[networkId].staderETHxAddress,
+          CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress, // Eigen Layer Deposit Pool Address - (KELP pool)
+          convertToWeiGovernance(depositAmount, 18).toString(),
+          web3Call,
+        ),
+        value: "0",
+      };
+
+      const stakeData = await eigenStakeMethodEncoded(
+        CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress, // KELP Pool
+        convertToWeiGovernance(depositAmount, 18).toString(),
+        web3Call,
+        networkId,
+      );
+
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+        ),
+        data: stakeData,
+        value: 0,
+      };
+      return { stakeETHTransaction, transaction, approvalTransaction };
+    case 27:
+      const unstakeData = await eigenUnstakeMethodEncoded(
+        "0x779d1b5315df083e3F9E94cB495983500bA8E907",
+        gnosisAddress,
+        eigenUnstakeAmount.toString(),
+        web3Call,
+      );
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          "0x779d1b5315df083e3F9E94cB495983500bA8E907",
+        ),
+        data: unstakeData,
+        value: 0,
+      };
+      return { transaction };
+
+    case 31:
+      stakeETHTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].staderStakingPoolAddress, // Stader Staking Pool Address
+        ),
+        data: depositETHInStader(
+          CHAIN_CONFIG[networkId].staderStakingPoolAddress, //  Stader Staking Pool Address
+          gnosisAddress,
+          web3Call,
+        ),
+        value: convertToWeiGovernance(depositAmount, 18).toString(),
+      };
+
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].staderETHxAddress, // Stader Ethx Address
+        ),
+        data: approveDepositWithEncodeABI(
+          CHAIN_CONFIG[networkId].staderETHxAddress,
+          CHAIN_CONFIG[networkId].staderKelpPoolAddress, // (KELP pool)
+          convertToWeiGovernance(depositAmount, 18).toString(),
+          web3Call,
+        ),
+        value: "0",
+      };
+
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].staderKelpPoolAddress,
+        ),
+        data: await kelpStakeMethodEncoded(
+          CHAIN_CONFIG[networkId].staderKelpPoolAddress,
+          depositAmount,
+          web3Call,
+          networkId,
+        ),
+        value: "0",
+      };
+
+      return { stakeETHTransaction, approvalTransaction, transaction };
+
+    case 33:
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].swellRswETHAddress,
+        ),
+        data: swellEthStakeEncoded({
+          swellETHAddress: CHAIN_CONFIG[networkId].swellRswETHAddress,
+          web3Call,
+        }),
+        value: convertToWeiGovernance(depositAmount, 18).toString(),
+      };
+
+      return { transaction };
+
+    case 35:
+      stakeETHTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].swellSwETHAddress,
+        ),
+        data: swellEthStakeEncoded({
+          swellETHAddress: CHAIN_CONFIG[networkId].swellSwETHAddress,
+          web3Call,
+        }),
+        value: convertToWeiGovernance(depositAmount, 18).toString(),
+      };
+
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].swellSwETHAddress,
+        ),
+        data: approveDepositWithEncodeABI(
+          CHAIN_CONFIG[networkId].swellSwETHAddress,
+          CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress, // Eigen Layer Deposit Pool Address
+          convertToWeiGovernance(depositAmount, 18).toString(),
+          web3Call,
+        ),
+        value: "0",
+      };
+
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+        ),
+        data: await swellEigenStakeMethodEncoded({
+          eigenContractAddress:
+            CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+          depositAmount,
+          web3Call,
+          networkId,
+        }),
+        value: "0",
+      };
+
+      return { stakeETHTransaction, approvalTransaction, transaction };
+
+    case 37:
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].renzoStakingPoolAddress,
+        ),
+        data: renzoEthStakeEncoded({
+          renzoStakingPoolAddress:
+            CHAIN_CONFIG[networkId].renzoStakingPoolAddress,
+          web3Call,
+        }),
+        value: convertToWeiGovernance(depositAmount, 18).toString(),
+      };
+
+      return { transaction };
+
+    case 39:
+      stakeETHTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].lidoStETHAddress,
+        ),
+
+        data: lidoEthStakeEncoded({
+          networkId,
+          web3Call,
+        }),
+        value: convertToWeiGovernance(depositAmount, 18).toString(),
+      };
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].lidoStETHAddress,
+        ),
+
+        data: approveDepositWithEncodeABI(
+          CHAIN_CONFIG[networkId].lidoStETHAddress,
+          CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+          convertToWeiGovernance(depositAmount, 18).toString(),
+          web3Call,
+        ),
+
+        value: "0",
+      };
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+        ),
+        data: await lidoEigneStakeMethodEncoded({
+          depositAmount,
+          networkId,
+          web3Call,
+          eigenContractAddress:
+            CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+        }),
+        value: "0",
+      };
+
+      return { stakeETHTransaction, approvalTransaction, transaction };
+
+    case 41:
+      stakeETHTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].lidoStETHAddress,
+        ),
+        data: lidoEthStakeEncoded({
+          networkId,
+          web3Call,
+        }),
+        value: convertToWeiGovernance(depositAmount, 18).toString(),
+      };
+
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].lidoStETHAddress,
+        ),
+        data: approveDepositWithEncodeABI(
+          CHAIN_CONFIG[networkId].lidoStETHAddress,
+          CHAIN_CONFIG[networkId].restakeDepositPoolAddress,
+          convertToWeiGovernance(depositAmount, 18).toString(),
+          web3Call,
+        ),
+        value: "0",
+      };
+
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].restakeDepositPoolAddress,
+        ),
+        data: restakeFinanceStakeMethodEncoded({
+          depositAmount,
+          networkId,
+          web3Call,
+        }),
+        value: "0",
+      };
+
+      return { stakeETHTransaction, approvalTransaction, transaction };
+
+    case 43:
+      stakeETHTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].rocketDepositPoolAddress,
+        ),
+        data: rocketPoolStakeEncoded({
+          networkId,
+          web3Call,
+        }),
+        value: convertToWeiGovernance(depositAmount, 18).toString(),
+      };
+
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].rocketRETHAddress,
+        ),
+        data: approveDepositWithEncodeABI(
+          CHAIN_CONFIG[networkId].rocketRETHAddress,
+          CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+          convertToWeiGovernance(depositAmount, 18).toString(),
+          web3Call,
+        ),
+        value: "0",
+      };
+
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+        ),
+        data: await rocketPoolEigenStakeMethodEncoded({
+          depositAmount,
+          networkId,
+          web3Call,
+          eigenContractAddress:
+            CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+        }),
+        value: "0",
+      };
+
+      return { stakeETHTransaction, approvalTransaction, transaction };
+
+    case 45:
+      stakeETHTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].mantleDepositPoolAddress,
+        ),
+        data: await matlePoolStakeEncoded({
+          networkId,
+          web3Call,
+          depositAmount,
+        }),
+        value: convertToWeiGovernance(depositAmount, 18).toString(),
+      };
+
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].mantleMEthAddress,
+        ),
+        data: approveDepositWithEncodeABI(
+          CHAIN_CONFIG[networkId].mantleMEthAddress,
+          CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+          convertToWeiGovernance(depositAmount, 18).toString(),
+          web3Call,
+        ),
+        value: "0",
+      };
+
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+        ),
+        data: await mantlePoolEigenStakeMethodEncoded({
+          depositAmount,
+          networkId,
+          web3Call,
+          eigenContractAddress:
+            CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+        }),
+        value: "0",
+      };
+
+      return { stakeETHTransaction, approvalTransaction, transaction };
   }
 };
 
 export const createSafeTransactionData = ({
   approvalTransaction,
+  stakeETHTransaction,
   transaction,
   nonce,
 }) => {
   try {
-    if (approvalTransaction === "" || approvalTransaction === undefined) {
+    if (stakeETHTransaction !== "" && stakeETHTransaction !== undefined) {
+      return [
+        {
+          to: stakeETHTransaction?.to,
+          data: stakeETHTransaction?.data,
+          value: stakeETHTransaction?.value,
+          nonce,
+        },
+        {
+          to: approvalTransaction?.to,
+          data: approvalTransaction?.data,
+          value: approvalTransaction?.value,
+          nonce,
+        },
+        {
+          to: transaction?.to,
+          data: transaction?.data,
+          value: transaction?.value,
+          nonce,
+        },
+      ];
+    } else if (
+      approvalTransaction === "" ||
+      approvalTransaction === undefined
+    ) {
       return {
         to: transaction?.to,
         data: transaction?.data,
@@ -1283,7 +2231,18 @@ export const getTokenTypeByExecutionId = (commands) => {
     case 23:
       return commands[0]?.sendToken;
     case 24:
+    case 26:
+    case 31:
+    case 33:
+    case 35:
+    case 37:
+    case 39:
+    case 41:
+    case 43:
+    case 45:
       return commands[0]?.depositToken;
+    case 25:
+      return commands[0]?.withdrawToken;
     default:
       return "";
   }

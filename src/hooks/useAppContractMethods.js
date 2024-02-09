@@ -1,10 +1,6 @@
 import { useSelector } from "react-redux";
 import Web3 from "web3";
-import {
-  getIncreaseGasPrice,
-  readContractFunction,
-  writeContractFunction,
-} from "utils/helper";
+import { readContractFunction, writeContractFunction } from "utils/helper";
 import { createProposalTxHash } from "../api/proposal";
 import { useAccount, useNetwork } from "wagmi";
 import { factoryContractABI } from "abis/factoryContract.js";
@@ -19,6 +15,7 @@ import {
   getTransactionHash,
   signAndConfirmTransaction,
 } from "utils/proposalData";
+import { eigenContractABI } from "abis/eigenContract";
 
 const useAppContractMethods = (params) => {
   const { daoAddress } = params ?? {};
@@ -32,12 +29,12 @@ const useAppContractMethods = (params) => {
     return state.club.factoryData.assetsStoredOnGnosis;
   });
 
-  const getDaoDetails = async () => {
+  const getDaoDetails = async (stationAddress = daoAddress) => {
     const response = await readContractFunction({
       address: CHAIN_CONFIG[networkId].factoryContractAddress,
       abi: factoryContractABI,
       functionName: "getDAOdetails",
-      args: [daoAddress],
+      args: [stationAddress],
       account: walletAddress,
       networkId,
     });
@@ -160,6 +157,7 @@ const useAppContractMethods = (params) => {
     tokenUriOfNFT,
     numOfTokens,
     merkleProof,
+    value,
   ) => {
     try {
       const res = await writeContractFunction({
@@ -174,6 +172,7 @@ const useAppContractMethods = (params) => {
           merkleProof,
         ],
         account: walletAddress,
+        value: value,
         networkId,
       });
       return res;
@@ -186,7 +185,17 @@ const useAppContractMethods = (params) => {
     userAddress,
     numOfTokens,
     merkleProof,
+    value,
   ) => {
+    console.log({
+      address: CHAIN_CONFIG[networkId].factoryContractAddress,
+      abi: factoryContractABI,
+      functionName: "buyGovernanceTokenERC20DAO",
+      args: [userAddress, daoAddress, numOfTokens, merkleProof],
+      account: walletAddress,
+      value: value,
+      networkId,
+    });
     try {
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
@@ -194,6 +203,7 @@ const useAppContractMethods = (params) => {
         functionName: "buyGovernanceTokenERC20DAO",
         args: [userAddress, daoAddress, numOfTokens, merkleProof],
         account: walletAddress,
+        value: value,
         networkId,
       });
       return res;
@@ -281,6 +291,23 @@ const useAppContractMethods = (params) => {
     return res;
   };
 
+  const fetchEigenTokenBalance = async (gnosisAddress) => {
+    try {
+      const res = await readContractFunction({
+        address: CHAIN_CONFIG[networkId].eigenLayerDepositPoolAddress,
+        abi: eigenContractABI,
+        functionName: "getDeposits",
+        args: [gnosisAddress],
+        account: walletAddress,
+        networkId,
+      });
+      return res;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  };
+
   const createERC721DAO = async ({
     clubName,
     clubSymbol,
@@ -351,7 +378,7 @@ const useAppContractMethods = (params) => {
     quorum,
     threshold,
     safeThreshold,
-    depositTokenAddress,
+    depositToken,
     treasuryAddress,
     addressList,
     isGovernanceActive,
@@ -377,7 +404,7 @@ const useAppContractMethods = (params) => {
           quorum,
           threshold,
           safeThreshold,
-          depositTokenAddress,
+          depositToken,
           treasuryAddress,
           addressList,
           isGovernanceActive,
@@ -422,23 +449,24 @@ const useAppContractMethods = (params) => {
       CHAIN_CONFIG[networkId].gnosisTxUrl,
     );
 
-    const { transaction, approvalTransaction } = await getTransaction({
-      proposalData,
-      daoAddress,
-      factoryContractAddress,
-      approvalData,
-      safeThreshold,
-      transactionData,
-      airdropContractAddress,
-      tokenData,
-      gnosisAddress,
-      parameters,
-      isAssetsStoredOnGnosis,
-      networkId,
-      membersArray,
-      airDropAmountArray,
-    });
-
+    const { transaction, approvalTransaction, stakeETHTransaction } =
+      await getTransaction({
+        proposalData,
+        daoAddress,
+        walletAddress,
+        factoryContractAddress,
+        approvalData,
+        safeThreshold,
+        transactionData,
+        airdropContractAddress,
+        tokenData,
+        gnosisAddress,
+        parameters,
+        isAssetsStoredOnGnosis,
+        networkId,
+        membersArray,
+        airDropAmountArray,
+      });
     const txHash = await getTransactionHash(pid);
     const tx = txHash ? await safeService.getTransaction(txHash) : null;
 
@@ -451,6 +479,7 @@ const useAppContractMethods = (params) => {
             executionId,
             transaction,
             approvalTransaction,
+            stakeETHTransaction,
             nonce,
             proposalStatus,
           });
@@ -481,6 +510,7 @@ const useAppContractMethods = (params) => {
             executionId,
             transaction,
             approvalTransaction,
+            stakeETHTransaction,
             nonce: tx.nonce,
             executionStatus: proposalStatus,
           });
@@ -496,8 +526,8 @@ const useAppContractMethods = (params) => {
         return tx;
       }
     } else {
-      const options = { gasPrice: await getIncreaseGasPrice(networkId) };
-      const executeTxResponse = await safeSdk.executeTransaction(tx, options);
+      // const options = { gasPrice: await getIncreaseGasPrice(networkId) };
+      const executeTxResponse = await safeSdk.executeTransaction(tx);
       const receipt =
         executeTxResponse.transactionResponse &&
         (await executeTxResponse.transactionResponse.wait());
@@ -523,6 +553,7 @@ const useAppContractMethods = (params) => {
     getTokenGatingDetails,
     updateProposalAndExecution,
     toggleWhitelist,
+    fetchEigenTokenBalance,
   };
 };
 

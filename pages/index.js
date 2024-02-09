@@ -144,9 +144,9 @@ const App = () => {
             }}>
             <NewCard
               onClick={showStationsHandler}
-              title={"Manage Stations"}
+              title={"Stations"}
               subtitle={
-                "Creating a Station is the easiest way to start managing money/assets towards shared goals"
+                "Seamlessly move capital with friends or community towards shared goals. Start onchain Syndicates, Venture DAOs, Collectives or DeFi Squads in less than 60 seconds."
               }
               buttonText={
                 ALLOWED_NETWORKS_FOR_STATION.includes(networkId)
@@ -156,9 +156,9 @@ const App = () => {
             />
             <NewCard
               onClick={claimsHandler}
-              title={"DropX"}
+              title={"Drops"}
               subtitle={
-                "Set up custom drops instantly to distribute tokens/NFTs to your community anywhere."
+                "Bulk distribute tokens or create custom drop pages for your community. Example - distribute profits, rewards, airdrops, or literally any other token distribution use-case."
               }
               buttonText="Enter App"
             />

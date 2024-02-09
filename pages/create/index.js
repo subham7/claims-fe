@@ -31,9 +31,10 @@ import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import useSafe from "../../src/hooks/useSafe";
 import Layout from "../../src/components/layouts/layout";
 import { useAccount, useNetwork } from "wagmi";
-import { CHAIN_CONFIG, ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
+import { ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import useClubFetch from "hooks/useClubFetch";
 import { NFT_STORAGE_TOKEN } from "api/token";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
 
 const Create = () => {
   const steps = ["Add basic info", "Configure token", "Set controls"];
@@ -44,7 +45,7 @@ const Create = () => {
 
   const { address: walletAddress } = useAccount();
   useClubFetch({ networkId: networkId });
-
+  const { getDecimals } = useCommonContractMethods();
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const [open, setOpen] = useState(false);
@@ -72,12 +73,13 @@ const Create = () => {
         if (
           formikStep1.values.clubTokenType === "Non Transferable ERC20 Token"
         ) {
-          return <ERC20Step2 formik={formikERC20Step2} />;
+          return <ERC20Step2 formik={formikERC20Step2} networkId={networkId} />;
         } else {
           return (
             <NFTStep2
               formik={formikERC721Step2}
               uploadInputRef={uploadInputRef}
+              networkId={networkId}
             />
           );
         }
@@ -104,6 +106,7 @@ const Create = () => {
 
   const formikERC20Step2 = useFormik({
     initialValues: {
+      depositToken: "",
       depositClose: dayjs(Date.now() + 3600 * 1000 * 24),
       minDepositPerUser: "",
       maxDepositPerUser: "",
@@ -120,6 +123,7 @@ const Create = () => {
     initialValues: {
       nftImage: "",
       isNftTransferable: false,
+      depositToken: "",
       pricePerToken: "",
       maxTokensPerUser: "",
       isNftTotalSupplylimited: false,
@@ -152,6 +156,7 @@ const Create = () => {
     onSubmit: async (values) => {
       setOpen(true);
       setLoader(true);
+
       if (formikStep1.values.clubTokenType === "NFT") {
         // dispatch(setUploadNFTLoading(true));
         const client = new NFTStorage({
@@ -163,6 +168,9 @@ const Create = () => {
           description: "nft image",
           image: formikERC721Step2.values.nftImage,
         });
+        const depositTokenAddress = formikERC721Step2.values.depositToken;
+
+        const decimals = await getDecimals(depositTokenAddress);
 
         // dispatch(setUploadNFTLoading(false));
         try {
@@ -174,7 +182,7 @@ const Create = () => {
             quorum: formikStep3.values.quorum * 100,
             threshold: formikStep3.values.threshold * 100,
             safeThreshold: formikStep3.values.safeThreshold ?? 0,
-            depositTokenAddress: CHAIN_CONFIG[networkId].usdcAddress,
+            depositTokenAddress: depositTokenAddress,
             treasuryAddress:
               formikStep3.values.safeAddress.length > 0
                 ? formikStep3.values.safeAddress
@@ -185,7 +193,7 @@ const Create = () => {
               : 0,
             pricePerToken: convertToWeiGovernance(
               formikERC721Step2.values.pricePerToken,
-              6,
+              decimals,
             ),
             isNftTransferable: formikERC721Step2.values.isNftTransferable,
             isNftTotalSupplyUnlimited:
@@ -214,6 +222,10 @@ const Create = () => {
         }
       } else {
         try {
+          const depositTokenAddress = formikERC20Step2.values.depositToken;
+
+          const decimals = await getDecimals(depositTokenAddress);
+
           const params = {
             clubName: formikStep1.values.clubName,
             clubSymbol: formikStep1.values.clubSymbol,
@@ -224,22 +236,23 @@ const Create = () => {
             ),
             pricePerToken: convertToWeiGovernance(
               formikERC20Step2.values.pricePerToken,
-              6,
+              decimals,
             ),
             minDepositPerUser: convertToWeiGovernance(
               formikERC20Step2.values.minDepositPerUser,
-              6,
+              decimals,
             ),
             maxDepositPerUser: convertToWeiGovernance(
               formikERC20Step2.values.maxDepositPerUser,
-              6,
+              decimals,
             ),
             ownerFeePerDepositPercent: 0 * 100,
             depositClose: dayjs(formikERC20Step2.values.depositClose).unix(),
             quorum: formikStep3.values.quorum * 100,
             threshold: formikStep3.values.threshold * 100,
             safeThreshold: formikStep3.values.safeThreshold ?? 0,
-            depositTokenAddress: CHAIN_CONFIG[networkId].usdcAddress,
+            // depositTokenAddress: CHAIN_CONFIG[networkId].usdcAddress,
+            depositToken: formikERC20Step2.values.depositToken,
             treasuryAddress:
               formikStep3.values.safeAddress.length > 0
                 ? formikStep3.values.safeAddress

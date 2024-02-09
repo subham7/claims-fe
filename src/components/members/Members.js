@@ -17,7 +17,7 @@ import { Typography, Button } from "@components/ui";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
-import { getAllEntities, shortAddress } from "utils/helper";
+import { getAllEntities, isNative, shortAddress } from "utils/helper";
 import { useFormik } from "formik";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
@@ -32,21 +32,10 @@ import { CHAIN_CONFIG } from "utils/constants";
 import { getDefaultProfile } from "utils/lensHelper";
 import BackdropLoader from "@components/common/BackdropLoader";
 import ComponentHeader from "@components/common/ComponentHeader";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
 
 const Members = ({ daoAddress }) => {
-  const [membersData, setMembersData] = useState([]);
-  const [memberProfiles, setMemberProfiles] = useState();
-
-  const [loading, setLoading] = useState(false);
-  const [downloadLoading, setDownloadLoading] = useState(false);
-
-  const header = [
-    "Member address",
-    "Deposit amount",
-    "Station tokens",
-    "Joined on",
-  ];
-
+  const { getDecimals, getTokenSymbol } = useCommonContractMethods();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
 
@@ -62,6 +51,46 @@ const Members = ({ daoAddress }) => {
     return state.club.clubData.deployedTime;
   });
 
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
+  });
+
+  const [membersData, setMembersData] = useState([]);
+  const [memberProfiles, setMemberProfiles] = useState();
+
+  const [tokenDetails, setTokenDetails] = useState({
+    tokenDecimal: 0,
+    tokenSymbol: "",
+    isNativeToken: false,
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [downloadLoading, setDownloadLoading] = useState(false);
+
+  const header = [
+    "Member address",
+    "Deposit amount",
+    "Station tokens",
+    "Joined on",
+  ];
+
+  const fetchTokenDetails = async () => {
+    const depositTokenAddress = clubData.depositTokenAddress;
+    const isNativeToken = isNative(depositTokenAddress, networkId);
+
+    const decimals = await getDecimals(depositTokenAddress);
+    const symbol = await getTokenSymbol(depositTokenAddress);
+
+    setTokenDetails({
+      tokenSymbol: symbol,
+      tokenDecimal: decimals,
+      isNativeToken: isNativeToken,
+    });
+  };
+
+  useEffect(() => {
+    fetchTokenDetails();
+  }, [clubData]);
   const handleAddressClick = (event, address) => {
     event.preventDefault();
     window.open(
@@ -142,6 +171,7 @@ const Members = ({ daoAddress }) => {
       console.log(error);
     }
   };
+  console.log("token data", tokenDetails);
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(event.target.value);
@@ -325,9 +355,12 @@ const Members = ({ daoAddress }) => {
                       <Typography
                         sx={{ fontSize: "14px !important", fontWeight: "400" }}>
                         {Number(
-                          convertFromWeiGovernance(data.depositAmount, 6),
-                        ).toFixed(2)}{" "}
-                        USDC
+                          convertFromWeiGovernance(
+                            data.depositAmount,
+                            tokenDetails.tokenDecimal,
+                          ),
+                        ).toFixed(4)}{" "}
+                        {tokenDetails.tokenSymbol}
                       </Typography>
                     </TableCell>
 

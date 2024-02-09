@@ -6,8 +6,9 @@ import {
   Slider,
   ToggleButton,
   ToggleButtonGroup,
+  Typography,
 } from "@mui/material";
-import { TextField, Typography } from "@components/ui";
+import { TextField } from "@components/ui";
 
 import CustomSlider from "../slider";
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
@@ -77,16 +78,28 @@ export default function Step3(props) {
 
   return (
     <div className="f-d f-vt t-pad-d w-100">
-      <Typography variant="body" className="text-blue">
-        Collectively manage your club’s investments through governance that
-        works for you.
+      <Typography
+        fontWeight={600}
+        fontSize={24}
+        mb={1}
+        variant="body"
+        className="text-blue ">
+        Treasury
       </Typography>
-      <br />
-      <Typography variant="body" className="text-blue b-pad-1">
-        Configure Treasury
+
+      <Typography
+        mb={3}
+        fontSize={16}
+        color={"#a0a0a0"}
+        variant="info"
+        className="text-light-gray ">
+        Almost done! Configure your station’s multisig, this is where all the
+        deposits hit. Spin up a new multisig as treasury or use an existing
+        multisig wallet.
       </Typography>
-      <Typography variant="body" className="text-light-gray">
-        Where do you want to store funds/assets of this station?
+
+      <Typography fontWeight={600} variant="body" className="text-light-gray">
+        Multisig
       </Typography>
 
       <ToggleButtonGroup
@@ -120,7 +133,10 @@ export default function Step3(props) {
       {props.formik.values.deploySafe === "oldSafe" &&
         allSafeAddresses?.length > 0 && (
           <>
-            <Typography variant="body" className="text-blue t-pad-d b-pad-1">
+            <Typography
+              fontWeight={600}
+              variant="body"
+              className="text-blue t-pad-d b-pad-1">
               Select from existing multi-sig wallet(s)
             </Typography>
             <Autocomplete
@@ -206,8 +222,12 @@ export default function Step3(props) {
       {props.formik.values.deploySafe === "newSafe" && (
         <>
           <br />
-          <Typography variant="body" className="text-blue">
-            Wallet Signators
+          <Typography
+            fontWeight={600}
+            mb={1}
+            variant="body"
+            className="text-blue">
+            Wallet Signators / admins
           </Typography>
 
           <Card className="tb-pad-0 b-mar-1">
@@ -291,21 +311,25 @@ export default function Step3(props) {
           {props.formik.values.addressList?.length ? (
             <div>
               <div>
-                <Typography variant="body" className="text-blue">
-                  Min.{" "}
+                <Typography
+                  fontWeight={600}
+                  variant="body"
+                  className="text-blue">
+                  Minimum{" "}
                   <Box
                     sx={{ color: "#2D55FF" }}
                     fontWeight="fontWeightBold"
                     display="inline">
-                    number of signature needed
+                    signatures
                   </Box>{" "}
-                  to execute a proposal{" "}
-                  <Box fontWeight="fontWeightBold" display="inline">
-                    (Safe threshold)
-                  </Box>{" "}
+                  needed to execute transaction(s).
                 </Typography>
               </div>
-              <Card className="b-mar-1">
+              <Card
+                sx={{
+                  marginTop: "8px",
+                }}
+                className="b-mar-1">
                 <div className="tb-pad-1 lr-pad-1">
                   <Slider
                     defaultValue={1}
@@ -333,11 +357,12 @@ export default function Step3(props) {
 
       <br />
 
-      <Typography variant="body" className="text-blue">
-        Governance
-      </Typography>
-      <Typography variant="info" className="text-light-gray">
-        Who can create transaction(s) inside your station?
+      <Typography
+        fontWeight={600}
+        mb={1}
+        variant="info"
+        className="text-light-gray">
+        Decision-making of the station
       </Typography>
 
       <ToggleButtonGroup
