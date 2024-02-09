@@ -71,7 +71,6 @@ const CreateClaim = () => {
 
       if (networkId === "0x138d5") {
         const tokenList = await getTokensListBeraChain(walletAddress);
-        console.log("tokenList=====================> ", tokenList);
         return tokenList?.data?.result;
       }
 
