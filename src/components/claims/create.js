@@ -13,7 +13,11 @@ import {
   claimStep2ValidationSchema,
 } from "../createClubComps/ValidationSchemas";
 import { useAccount, useNetwork } from "wagmi";
-import { getTokensList, getTokensListOfManta } from "api/token";
+import {
+  getTokensList,
+  getTokensListBeraChain,
+  getTokensListOfManta,
+} from "api/token";
 import { getUserTokenData } from "utils/helper";
 import { CHAIN_CONFIG, ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
@@ -63,6 +67,11 @@ const CreateClaim = () => {
       if (networkId === "0xa9") {
         const tokensList = await getTokensListOfManta(walletAddress);
         return tokensList?.data?.result;
+      }
+
+      if (networkId === "0x138d5") {
+        const tokenList = await getTokensListBeraChain(walletAddress);
+        return tokenList?.data?.result;
       }
 
       const covalentNetworkName = CHAIN_CONFIG[networkId]?.covalentNetworkName;
