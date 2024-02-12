@@ -309,6 +309,7 @@ const ERC721 = ({
               allowanceValue,
               tokenDetails,
               networkId,
+              userBalance: tokenDetails?.userBalance,
             }}
           />
         }
