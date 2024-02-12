@@ -24,7 +24,7 @@ import EditDetails from "./modals/EditDetails";
 import { useNetwork } from "wagmi";
 import { getTotalTreasuryAmount } from "api/club";
 import { useSelector } from "react-redux";
-import { isNative } from "utils/helper";
+import { convertToFullNumber, isNative } from "utils/helper";
 import { CHAIN_CONFIG } from "utils/constants";
 
 const SettingsInfo = ({
@@ -555,7 +555,9 @@ const SettingsInfo = ({
                     <Typography variant="p" className={classes.valuesStyle}>
                       {walletAddress ? (
                         convertFromWeiGovernance(
-                          daoDetails.clubTokensMinted,
+                          convertToFullNumber(
+                            daoDetails.clubTokensMinted.toString(),
+                          ),
                           daoDetails.decimals,
                         ) *
                           convertFromWeiGovernance(

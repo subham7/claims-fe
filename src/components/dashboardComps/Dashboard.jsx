@@ -138,7 +138,9 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
     try {
       if (networkId !== "undefined") {
         const assetsData = await getAssetsOfWallet(
-          currentEOAWallet.walletAddress,
+          currentEOAWallet.walletAddress
+            ? currentEOAWallet.walletAddress
+            : gnosisAddress,
         );
         setTokenDetails({
           tokenPriceList: assetsData?.data,
@@ -171,7 +173,9 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
   const fetchTreasuryDetails = async () => {
     try {
       if (networkId !== "undefined") {
-        const assetsData = await getTotalTreasuryAmount(daoAddress);
+        const assetsData = await getTotalTreasuryAmount(
+          daoAddress.toLowerCase(),
+        );
 
         setTreasuryAmount(assetsData?.balance);
       }
@@ -238,11 +242,17 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
   }, [gnosisAddress, networkId, daoAddress, clubData]);
 
   useEffect(() => {
-    if (currentEOAWallet && networkId && daoAddress && clubData) {
+    if (
+      currentEOAWallet &&
+      networkId &&
+      daoAddress &&
+      clubData &&
+      gnosisAddress
+    ) {
       fetchAssets();
       fetchNfts();
     }
-  }, [currentEOAWallet]);
+  }, [currentEOAWallet, gnosisAddress, networkId, daoAddress, clubData]);
 
   return (
     <div className={classes.main}>
