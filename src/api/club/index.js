@@ -69,7 +69,7 @@ export const uploadToAWS = async (fileName, reader) => {
 export const createStation = async (data) => {
   try {
     const res = await axios.post(`${MAIN_API_URL}club/create`, data);
-    return res.data;
+    return res.status;
   } catch (error) {
     console.log(error);
   }
