@@ -24,8 +24,6 @@ import {
 } from "utils/constants";
 import "../styles/globals.scss";
 import Script from "next/script";
-import { AnnouncementProvider } from "@components/AnnouncementContext";
-import AnnouncementBar from "@components/AnnouncementBar";
 
 const API_URL = "https://api.lens.dev";
 
@@ -99,10 +97,7 @@ function MyApp({ Component, pageProps }) {
         <ApolloProvider client={apolloClient}>
           <WagmiConfig config={wagmiConfig}>
             <Provider store={store}>
-              <AnnouncementProvider>
-                <AnnouncementBar />
-                <Component {...pageProps} />
-              </AnnouncementProvider>
+              <Component {...pageProps} />
             </Provider>
           </WagmiConfig>
         </ApolloProvider>

@@ -60,14 +60,16 @@ const AssetsTable = ({ tableData }) => {
                       </div>
                     </TableCell>
                     <TableCell className={classes.tableCell}>
-                      {convertFromWeiGovernance(token.balance, token.decimals)}{" "}
+                      {Number(
+                        convertFromWeiGovernance(token.balance, token.decimals),
+                      ).toFixed(4)}{" "}
                       {token.symbol}
                     </TableCell>
                     <TableCell className={classes.tableCell}>
                       {CHAIN_CONFIG[token?.networkId]?.shortName ?? ""}
                     </TableCell>
                     <TableCell className={classes.tableCell}>
-                      ${token?.usd?.usdValue ?? 0}
+                      ${Number(token?.usd?.usdValue ?? 0).toFixed(4)}
                     </TableCell>
                   </TableRow>
                 )}

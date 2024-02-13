@@ -117,8 +117,8 @@ const StakingCard = ({
 
         <div className={classes.buttonContainer}>
           <button
-            className={!isAdmin && classes.disabled}
-            disabled={!isAdmin}
+            className={isUnstakeDisabled && classes.disabled}
+            disabled={isUnstakeDisabled} // Temporary  disabled as Eigen is stopped
             onClick={() => {
               setShowStakingModal(true);
             }}>
