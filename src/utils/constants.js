@@ -39,6 +39,7 @@ export const supportedChainsDrops = [
   "0x1",
   "0x138d5",
   "0x5",
+  "0xa0c71fd",
 ];
 
 export const CHAIN_CONFIG = {
@@ -424,6 +425,29 @@ export const CHAIN_CONFIG = {
     disburseContractAddress: "0x7aA33CC623Db79d5fFa859bA6cBE2Fb93c237401",
     logoUri: "/assets/networks/0x138d5.png",
   },
+  "0xa0c71fd": {
+    chainName: "Blast Sepolia",
+    shortName: "Blast",
+    chainId: 168587773,
+    nativeCurrency: {
+      name: "ETH",
+      decimals: 18,
+      symbol: "ETH",
+    },
+    rpcUrls: ["https://sepolia.blast.io"],
+    appRpcUrl: `https://sepolia.blast.io`,
+    stationSubgraphUrl: "",
+    covalentNetworkName: "",
+    factoryContractAddress: "",
+    claimFactoryAddress: "",
+    claimsSubgraphUrl: "",
+    nativeToken: "",
+    usdcAddress: "",
+    airdropContractAddress: "",
+    blockExplorerUrl: "https://testnet.blastscan.io/",
+    disburseContractAddress: "",
+    logoUri: "/assets/networks/0xa0c71fd.png",
+  },
 };
 
 export const lineaMainnetWalletConnect = {
@@ -466,6 +490,37 @@ export const beraMainnetWalletConnect = {
   blockExplorers: {
     etherscan: { name: "ArtioExplorer", url: "https://artio.beratrail.io/" },
     default: { name: "ArtioExplorer", url: "https://artio.beratrail.io/" },
+  },
+  contracts: {
+    multicall3: {
+      address: "",
+      blockCreated: "",
+    },
+  },
+};
+
+export const blastMainnetWalletConnect = {
+  id: 168587773,
+  name: "Blast Sepolia",
+  network: "blast",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ether ",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    public: { http: ["https://sepolia.blast.io/"] },
+    default: { http: ["https://sepolia.blast.io/"] },
+  },
+  blockExplorers: {
+    etherscan: {
+      name: "BlastSepoliaExplorer",
+      url: "https://testnet.blastscan.io/",
+    },
+    default: {
+      name: "BlastSepoliaExplorer",
+      url: "https://testnet.blastscan.io/",
+    },
   },
   contracts: {
     multicall3: {
@@ -697,6 +752,10 @@ export const dropsNetworksChaindId = [
   {
     chainId: 80085,
     networkId: "0x138d5",
+  },
+  {
+    chainId: 168587773,
+    networkId: "0xa0c71fd",
   },
 ];
 
