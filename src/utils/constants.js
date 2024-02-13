@@ -439,7 +439,7 @@ export const CHAIN_CONFIG = {
     stationSubgraphUrl: "",
     covalentNetworkName: "",
     factoryContractAddress: "",
-    claimFactoryAddress: "",
+    claimFactoryAddress: "0x50702Fd9086BAbDB0A3A576bFe22D4dD47b09937",
     claimsSubgraphUrl: "",
     nativeToken: "",
     usdcAddress: "",

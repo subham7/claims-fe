@@ -43,6 +43,16 @@ export const getTokensListBeraChain = async (walletAddress) => {
   }
 };
 
+export const getTokensListBlast = async (walletAddress) => {
+  try {
+    return await axios.get(
+      `https://api.routescan.io/v2/network/testnet/evm/168587773/etherscan/api?module=account&action=addresstokenbalance&address=${walletAddress}`,
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const getTotalNumberOfTokenHolders = async (
   networkName,
   tokenAddress,

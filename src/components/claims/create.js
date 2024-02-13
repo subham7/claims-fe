@@ -16,6 +16,7 @@ import { useAccount, useNetwork } from "wagmi";
 import {
   getTokensList,
   getTokensListBeraChain,
+  getTokensListBlast,
   getTokensListOfManta,
 } from "api/token";
 import { getUserTokenData } from "utils/helper";
@@ -71,6 +72,11 @@ const CreateClaim = () => {
 
       if (networkId === "0x138d5") {
         const tokenList = await getTokensListBeraChain(walletAddress);
+        return tokenList?.data?.result;
+      }
+
+      if (networkId === "0xa0c71fd") {
+        const tokenList = await getTokensListBlast(walletAddress);
         return tokenList?.data?.result;
       }
 
