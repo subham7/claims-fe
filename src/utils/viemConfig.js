@@ -16,6 +16,7 @@ import {
   mantaMainnet,
   mantleMainnetViem,
   scrollMainnet,
+  blastMainnetWalletConnect,
 } from "utils/constants";
 
 const viemChains = {
@@ -33,6 +34,7 @@ const viemChains = {
   "0x28c5f": taikoJolnir,
   "0x138d5": beraMainnetWalletConnect,
   "0x5": goerli,
+  "0xa0c71fd": blastMainnetWalletConnect,
 };
 
 export const getPublicClient = (networkId) => {
