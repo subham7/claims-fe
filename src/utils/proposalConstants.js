@@ -438,6 +438,7 @@ export const DEFI_PROPOSALS = ({
   restakeRstETHStaked,
   rocketEigenStaked,
   mantleEigenStaked,
+  layerBankStaked,
 }) => {
   return [
     // {
@@ -709,6 +710,35 @@ export const DEFI_PROPOSALS = ({
         ? CHAIN_CONFIG[networkId].restakeRstETHAddress
         : "",
       isUnstakeDisabled: true,
+      risk: "High",
+      info: (
+        <span>
+          This strategy swaps ETH for stETH and then restakes it to get rstETH
+          (LRT by restakefinance.com). You earn 3.4% native yield on holding the
+          LRT & ~10% APR from Eigen Rewards from Restake Finance.
+          <br />
+          <br />
+          This is a new protocol, deposit at your own risk. Reward points are
+          accrued on your Stations treasury address.
+        </span>
+      ),
+      tags: ["🏆 RSTK APR"],
+    },
+    {
+      name: " LayerBank",
+      logo: "/assets/images/restake.png",
+      APY: "3.4",
+      staked: layerBankStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 47,
+        Unstake: 48,
+      },
+      availableOnNetworkIds: ["0xe708"],
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.layerBankToken
+        ? CHAIN_CONFIG[networkId].layerBankToken
+        : "",
+      isUnstakeDisabled: false,
       risk: "High",
       info: (
         <span>
