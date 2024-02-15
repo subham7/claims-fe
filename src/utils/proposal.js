@@ -900,7 +900,6 @@ const layerBankStakeMethodEncoded = async ({
   web3Call,
   networkId,
 }) => {
-  console.log("here");
   if (layerBankToken) {
     const layerBankContract = new web3Call.eth.Contract(
       LayerBankABI,
@@ -920,7 +919,6 @@ const layerBankUnStakeMethodEncoded = async ({
   web3Call,
   networkId,
 }) => {
-  console.log("here");
   if (layerBankToken) {
     const layerBankContract = new web3Call.eth.Contract(
       LayerBankABI,
@@ -2197,7 +2195,6 @@ export const getTransaction = async ({
       };
       return { transaction };
     case 48:
-      console.log("unstake amount", unstakeAmount);
       approvalTransaction = {
         to: Web3.utils.toChecksumAddress(
           CHAIN_CONFIG[networkId].layerBankToken,

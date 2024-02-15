@@ -222,7 +222,6 @@ const CreateProposalDialog = ({ daoAddress }) => {
           daoAddress,
           networkId,
         });
-        console.log("commands", commands);
         commands = {
           executionId: values.actionCommand,
           ...commands,

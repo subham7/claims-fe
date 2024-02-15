@@ -69,7 +69,6 @@ const StakingModal = ({
 
   const fetchTokens = async () => {
     if (daoAddress && gnosisAddress && networkId) {
-      debugger;
       const tokensList = await getTokensList(
         CHAIN_CONFIG[networkId].covalentNetworkName,
         gnosisAddress,
