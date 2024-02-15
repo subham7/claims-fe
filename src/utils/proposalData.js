@@ -1785,10 +1785,11 @@ export const getProposalCommands = async ({
         stakeAmount: convertToWeiGovernance(values.stakeAmount, tokenDecimal),
       };
     case 18:
-      // case 48:
-      console.log("tokenData", tokenData);
+    case 48:
       tokenDecimal = tokenData?.find(
-        (token) => token.address === values.unstakeTokenAddress,
+        (token) =>
+          token.address.toLowerCase() ===
+          values.unstakeTokenAddress.toLowerCase(),
       ).decimals;
       return {
         unstakeToken: values.unstakeTokenAddress,

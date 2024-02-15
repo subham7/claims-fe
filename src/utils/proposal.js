@@ -928,7 +928,7 @@ const layerBankUnStakeMethodEncoded = async ({
     );
 
     return layerBankContract.methods
-      .redeemToken(layerBankToken, convertToWeiGovernance(unstakeAmount, 18))
+      .redeemToken(layerBankToken, unstakeAmount)
       .encodeABI();
   }
 };
