@@ -196,6 +196,7 @@ const useAppContractMethods = (params) => {
       value: value,
       networkId,
     });
+    debugger;
     try {
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
@@ -208,6 +209,7 @@ const useAppContractMethods = (params) => {
       });
       return res;
     } catch (error) {
+      console.log(error);
       throw error;
     }
   };

@@ -900,6 +900,7 @@ const layerBankStakeMethodEncoded = async ({
   web3Call,
   networkId,
 }) => {
+  console.log("here");
   if (layerBankToken) {
     const layerBankContract = new web3Call.eth.Contract(
       LayerBankABI,
@@ -908,6 +909,26 @@ const layerBankStakeMethodEncoded = async ({
 
     return layerBankContract.methods
       .supply(layerBankToken, convertToWeiGovernance(depositAmount, 18))
+      .encodeABI();
+  }
+};
+
+const layerBankUnStakeMethodEncoded = async ({
+  layerBankToken,
+  layerBankPoolAddress,
+  unstakeAmount,
+  web3Call,
+  networkId,
+}) => {
+  console.log("here");
+  if (layerBankToken) {
+    const layerBankContract = new web3Call.eth.Contract(
+      LayerBankABI,
+      layerBankPoolAddress,
+    );
+
+    return layerBankContract.methods
+      .redeemToken(layerBankToken, convertToWeiGovernance(unstakeAmount, 18))
       .encodeABI();
   }
 };
@@ -2172,9 +2193,35 @@ export const getTransaction = async ({
           networkId,
           web3Call,
         }),
+        value: convertToWeiGovernance(depositAmount, 18).toString(),
+      };
+      return { transaction };
+    case 48:
+      console.log("unstake amount", unstakeAmount);
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].layerBankToken,
+        ),
+        data: approveDepositWithEncodeABI(
+          CHAIN_CONFIG[networkId].layerBankToken,
+          CHAIN_CONFIG[networkId].layerBankPool,
+          convertToWeiGovernance(unstakeAmount, 18).toString(),
+          web3Call,
+        ),
         value: "0",
       };
-      return { stakeETHTransaction, approvalTransaction, transaction };
+      transaction = {
+        to: Web3.utils.toChecksumAddress(CHAIN_CONFIG[networkId].layerBankPool),
+        data: await layerBankUnStakeMethodEncoded({
+          layerBankToken: CHAIN_CONFIG[networkId].layerBankToken,
+          layerBankPoolAddress: CHAIN_CONFIG[networkId].layerBankPool,
+          unstakeAmount,
+          networkId,
+          web3Call,
+        }),
+        value: "0",
+      };
+      return { transaction };
   }
 };
 
@@ -2257,6 +2304,7 @@ export const getTokenTypeByExecutionId = (commands) => {
     case 17:
       return commands[0]?.stakeToken;
     case 18:
+    case 48:
       return commands[0]?.unstakeToken;
     case 21:
     case 22:

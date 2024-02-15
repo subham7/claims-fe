@@ -69,6 +69,7 @@ const StakingModal = ({
 
   const fetchTokens = async () => {
     if (daoAddress && gnosisAddress && networkId) {
+      debugger;
       const tokensList = await getTokensList(
         CHAIN_CONFIG[networkId].covalentNetworkName,
         gnosisAddress,
@@ -152,7 +153,7 @@ const StakingModal = ({
           createdBy: walletAddress,
           votingDuration: dayjs().add(100, "year").unix(),
           votingOptions: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
-          commands,
+          commands: [commands],
           type: "action",
           tokenType,
           daoAddress: daoAddress,

@@ -132,6 +132,7 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
         "Stake amount": convertFromWeiGovernance(stakeAmount, decimals),
       };
     case 18:
+    case 48:
       return {
         "Unstake token": symbol,
         "Unstake amount": convertFromWeiGovernance(unstakeAmount, decimals),
@@ -1784,6 +1785,8 @@ export const getProposalCommands = async ({
         stakeAmount: convertToWeiGovernance(values.stakeAmount, tokenDecimal),
       };
     case 18:
+      // case 48:
+      console.log("tokenData", tokenData);
       tokenDecimal = tokenData?.find(
         (token) => token.address === values.unstakeTokenAddress,
       ).decimals;
@@ -2012,6 +2015,7 @@ export const proposalDetailsData = ({
       return responseData;
 
     case 18:
+    case 48:
       responseData.data = {
         "Unstake token": symbol,
         "Unstake amount": convertFromWeiGovernance(unstakeAmount, decimals),
