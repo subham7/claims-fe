@@ -26,51 +26,98 @@ const useAppContractMethods = (params) => {
   const networkId = "0x" + chain?.id.toString(16);
 
   const isAssetsStoredOnGnosis = useSelector((state) => {
-    return state.club.factoryData.assetsStoredOnGnosis;
+    return state.club.clubData.assetsStoredOnGnosis;
   });
 
-  const getDaoDetails = async (stationAddress = daoAddress) => {
-    const response = await readContractFunction({
-      address: CHAIN_CONFIG[networkId].factoryContractAddress,
-      abi: factoryContractABI,
-      functionName: "getDAOdetails",
-      args: [stationAddress],
-      account: walletAddress,
-      networkId: routeNetworkId ?? networkId,
-    });
+  const FACTORY_CONTRACT_ADDRESS =
+    CHAIN_CONFIG[routeNetworkId ? routeNetworkId : networkId]
+      ?.factoryContractAddress;
+  const FACTORY_CONTRACT_ADDRESS_CROSS_CHAIN =
+    CHAIN_CONFIG[networkId]?.factoryContractAddress;
 
-    return response
-      ? {
-          ...response,
-          depositCloseTime: Number(response?.depositCloseTime),
-          distributionAmount: Number(response?.distributionAmount),
-          maxDepositPerUser: Number(response?.maxDepositPerUser),
-          minDepositPerUser: Number(response?.minDepositPerUser),
-          ownerFeePerDepositPercent: Number(
-            response?.ownerFeePerDepositPercent,
-          ),
-          pricePerToken: Number(response?.pricePerToken),
-        }
-      : {};
+  const estimateFeesLayerZero = async (chainId, fnName, payload) => {
+    try {
+      const iface = new Interface(factoryContractABI);
+
+      const callData = iface.encodeFunctionData(fnName, [...payload]);
+
+      const fees = await readContractFunction({
+        address: CHAIN_CONFIG[networkId].layer0Endpoint,
+        abi: layerZeroEndpointAbi,
+        functionName: "estimateFees",
+        args: [
+          CHAIN_CONFIG[chainId].layer0ChainId,
+          CHAIN_CONFIG[networkId].factoryContractAddress,
+          callData,
+          false,
+          "0x",
+        ],
+        networkId,
+      });
+      return ((Number(fees[0]) * 4) / 10 ** 18).toFixed(1).toString();
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const getDaoDetails = async (stationAddress = daoAddress, isCrossChain) => {
+    try {
+      const response = await readContractFunction({
+        address: isCrossChain
+          ? FACTORY_CONTRACT_ADDRESS_CROSS_CHAIN
+          : FACTORY_CONTRACT_ADDRESS,
+        abi: factoryContractABI,
+        functionName: "getDAOdetails",
+        args: [stationAddress],
+        account: walletAddress,
+        networkId: isCrossChain
+          ? networkId
+          : routeNetworkId
+          ? routeNetworkId
+          : networkId,
+      });
+
+      return response
+        ? {
+            ...response,
+            depositCloseTime: Number(response?.depositCloseTime),
+            distributionAmount: Number(response?.distributionAmount),
+            maxDepositPerUser: Number(response?.maxDepositPerUser),
+            minDepositPerUser: Number(response?.minDepositPerUser),
+            ownerFeePerDepositPercent: Number(
+              response?.ownerFeePerDepositPercent,
+            ),
+            pricePerToken: Number(response?.pricePerToken),
+          }
+        : {};
+    } catch (error) {
+      console.error(error);
+      return {};
+    }
   };
 
   const getERC20DAOdetails = async () => {
-    const response = await readContractFunction({
-      address: daoAddress,
-      abi: erc20DaoABI,
-      functionName: "getERC20DAOdetails",
-      args: [],
-      account: walletAddress,
-      networkId,
-    });
+    try {
+      const response = await readContractFunction({
+        address: daoAddress,
+        abi: erc20DaoABI,
+        functionName: "getERC20DAOdetails",
+        args: [],
+        account: walletAddress,
+        networkId: routeNetworkId ? routeNetworkId : networkId,
+      });
 
-    return response
-      ? {
-          ...response,
-          quorum: Number(response?.quorum),
-          threshold: Number(response?.threshold),
-        }
-      : {};
+      return response
+        ? {
+            ...response,
+            quorum: Number(response?.quorum),
+            threshold: Number(response?.threshold),
+          }
+        : {};
+    } catch (error) {
+      console.error(error);
+      return {};
+    }
   };
 
   const getERC721DAOdetails = async () => {

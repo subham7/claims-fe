@@ -281,6 +281,7 @@ export const getEncodedData = async ({
         CHAIN_CONFIG[networkId]?.airdropContractAddress,
         airDropAmount,
       ]);
+
       if (airDropCarryFee !== 0) {
         const carryFeeAmount = (airDropAmount * airDropCarryFee) / 100;
         airDropAmountArray = await Promise.all(

@@ -50,8 +50,8 @@ const Join = ({ daoAddress }) => {
     return state.club.clubData.tokenType;
   });
 
-  const factoryData = useSelector((state) => {
-    return state.club.factoryData;
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
   });
 
   const { getDecimals, getBalance, getTokenSymbol, checkCurrentAllowance } =
@@ -67,11 +67,11 @@ const Join = ({ daoAddress }) => {
   const fetchErc20ContractDetails = async () => {
     try {
       setLoading(true);
-      if (factoryData?.depositCloseTime)
+      if (clubData?.depositCloseTime)
         setDaoDetails({
-          depositDeadline: factoryData?.depositCloseTime,
-          minDeposit: factoryData?.minDepositPerUser,
-          maxDeposit: factoryData?.maxDepositPerUser,
+          depositDeadline: clubData?.depositCloseTime,
+          minDeposit: clubData?.minDepositPerUser,
+          maxDeposit: clubData?.maxDepositPerUser,
         });
 
       setLoading(false);
@@ -88,9 +88,9 @@ const Join = ({ daoAddress }) => {
     try {
       setLoading(true);
       const nftMinted = await getNftOwnersCount();
-      if (factoryData?.depositCloseTime && nftMinted >= 0) {
+      if (clubData?.depositCloseTime && nftMinted >= 0) {
         setDaoDetails({
-          depositDeadline: factoryData?.depositCloseTime,
+          depositDeadline: clubData?.depositCloseTime,
           nftMinted: nftMinted,
         });
       }
@@ -205,14 +205,14 @@ const Join = ({ daoAddress }) => {
   }, [walletAddress, daoAddress, networkId]);
 
   useEffect(() => {
-    if (daoAddress) {
+    if (daoAddress && clubData) {
       if (TOKEN_TYPE === "erc20") {
         fetchErc20ContractDetails();
       } else if (TOKEN_TYPE === "erc721") {
         fetchErc721ContractDetails();
       }
     }
-  }, [TOKEN_TYPE, factoryData, daoAddress, networkId]);
+  }, [TOKEN_TYPE, clubData, daoAddress]);
 
   useEffect(() => {
     try {

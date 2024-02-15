@@ -19,9 +19,6 @@ const ProposalCard = ({ proposal, daoAddress }) => {
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
   });
-  const factoryData = useSelector((state) => {
-    return state.club.factoryData;
-  });
 
   const clubData = useSelector((state) => {
     return state.club.clubData;
@@ -120,7 +117,7 @@ const ProposalCard = ({ proposal, daoAddress }) => {
       data: proposal.commands[0],
       decimals: tokenDetails.decimals,
       symbol: tokenDetails.symbol,
-      factoryData,
+      clubData,
     });
     setProposalDetails(response);
   };

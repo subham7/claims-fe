@@ -128,10 +128,6 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   const [isCancelExecuted, setIsCancelExecuted] = useState(false);
   const [isRejectTxnSigned, setIsRejectTxnSigned] = useState(false);
 
-  const factoryData = useSelector((state) => {
-    return state.club.factoryData;
-  });
-
   const { getERC20TotalSupply, updateProposalAndExecution, getNftOwnersCount } =
     useAppContractMethods({ daoAddress });
 
@@ -365,7 +361,7 @@ Cast your vote before ${new Date(
       proposalData,
       daoAddress,
       clubData,
-      factoryData,
+      clubData,
       contractABI: ABI,
       setMembers,
       getNftOwnersCount,
@@ -711,11 +707,12 @@ Cast your vote before ${new Date(
 
           {/* Proposal Info and Signators */}
           <Grid container spacing={2} mt={4} mb={3}>
-            {proposalData && factoryData && proposalData.type !== "survey" && (
+            {proposalData && clubData && proposalData.type !== "survey" && (
               <ProposalExecutionInfo
                 proposalData={proposalData}
                 fetched={fetched}
-                daoDetails={factoryData}
+                daoDetails={clubData}
+                routeNetworkId={routeNetworkId}
               />
             )}
 

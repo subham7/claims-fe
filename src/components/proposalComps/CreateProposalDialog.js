@@ -86,10 +86,6 @@ const CreateProposalDialog = ({ daoAddress }) => {
 
   const { getBalance, getDecimals } = useCommonContractMethods();
 
-  const factoryData = useSelector((state) => {
-    return state.club.factoryData;
-  });
-
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
@@ -204,7 +200,7 @@ const CreateProposalDialog = ({ daoAddress }) => {
       getBalance,
       getDecimals,
       gnosisAddress,
-      factoryData,
+      clubData,
       walletAddress,
       daoAddress,
       getERC20TotalSupply,
