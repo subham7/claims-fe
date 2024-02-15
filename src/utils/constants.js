@@ -355,6 +355,8 @@ export const CHAIN_CONFIG = {
     blockExplorerUrl: "https://blockscout.scroll.io/",
     disburseContractAddress: "0x3DA9Fb55Ab77b10F99C1C1f52C150280dbd5a611",
     logoUri: "/assets/networks/0x82750.png",
+    //@todo: add txn url here.
+    gnosisTxUrl: "",
   },
   "0xa9": {
     chainName: "Manta",
