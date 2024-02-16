@@ -47,9 +47,9 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
   let filteredTokens = [];
   tokenData?.map((token) => {
     if (
-      token.address !== CHAIN_CONFIG[networkId].nativeToken &&
+      token.address !== CHAIN_CONFIG[networkId]?.nativeToken &&
       Web3.utils.toChecksumAddress(token.address) ===
-        CHAIN_CONFIG[networkId].usdcAddress
+        CHAIN_CONFIG[networkId]?.usdcAddress
     ) {
       filteredTokens.push(token);
     }

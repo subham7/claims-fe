@@ -1,7 +1,10 @@
 import { Button, Typography } from "@mui/material";
 import React from "react";
 import { AiFillMinusCircle, AiFillPlusCircle } from "react-icons/ai";
-import { convertFromWeiGovernance } from "utils/globalFunctions";
+import {
+  convertFromWeiGovernance,
+  convertToWeiGovernance,
+} from "utils/globalFunctions";
 import classes from "./Mint.module.scss";
 import { CHAIN_CONFIG } from "utils/constants";
 
@@ -37,20 +40,20 @@ const Mint = ({
         if (!isSigned) return true;
         if (!isW8BenSigned) return true;
       }
-    }
-    if (remainingDays <= 0 && remainingTimeInSecs < 0) return true;
-    if (hasClaimed) return true;
-    if (
+    } else if (remainingDays <= 0 && remainingTimeInSecs < 0) return true;
+    else if (hasClaimed) return true;
+    else if (
       whitelistUserData?.setWhitelist === true &&
       whitelistUserData?.proof === null
     )
       return true;
-
-    if (isTokenGated) {
+    else if (isTokenGated) {
       return !isEligibleForTokenGating;
-    }
-
-    if ((userBalance ?? 0) < inputValue) {
+    } else if (inputValue === 0) return true;
+    else if (
+      (convertToWeiGovernance(userBalance, tokenDetails.tokenDecimal) ?? 0) <
+      inputValue
+    ) {
       return true;
     }
 

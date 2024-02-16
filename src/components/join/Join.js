@@ -172,8 +172,8 @@ const Join = ({ daoAddress }) => {
   const fetchCurrentAllowance = async () => {
     try {
       const currentAllowance = await checkCurrentAllowance(
-        CHAIN_CONFIG[networkId].usdcAddress,
-        CHAIN_CONFIG[networkId].factoryContractAddress,
+        CHAIN_CONFIG[networkId]?.usdcAddress,
+        CHAIN_CONFIG[networkId]?.factoryContractAddress,
       );
 
       setAllowanceValue(Number(currentAllowance));
@@ -208,7 +208,7 @@ const Join = ({ daoAddress }) => {
     if (daoAddress) {
       if (TOKEN_TYPE === "erc20") {
         fetchErc20ContractDetails();
-      } else {
+      } else if (TOKEN_TYPE === "erc721") {
         fetchErc721ContractDetails();
       }
     }
@@ -220,7 +220,7 @@ const Join = ({ daoAddress }) => {
       const fetchData = async () => {
         if (daoAddress && daoDetails) {
           const data = await queryAllMembersFromSubgraph(daoAddress, networkId);
-          const userDepositAmount = data?.users.find(
+          const userDepositAmount = data?.users?.find(
             (user) => user.userAddress === walletAddress,
           )?.depositAmount;
           if (userDepositAmount !== undefined && +userDepositAmount > 0) {
@@ -271,8 +271,8 @@ const Join = ({ daoAddress }) => {
   useEffect(() => {
     fetchCurrentAllowance();
   }, [
-    CHAIN_CONFIG[networkId].usdcAddress,
-    CHAIN_CONFIG[networkId].factoryContractAddress,
+    CHAIN_CONFIG[networkId]?.usdcAddress,
+    CHAIN_CONFIG[networkId]?.factoryContractAddress,
   ]);
 
   return (

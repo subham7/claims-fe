@@ -140,16 +140,19 @@ const useAppContractMethods = (params) => {
   };
 
   const getNftOwnersCount = async () => {
-    const response = await readContractFunction({
-      address: daoAddress,
-      abi: erc721DaoABI,
-      functionName: "_tokenIdTracker",
-      args: [],
-      account: walletAddress,
-      networkId,
-    });
-
-    return Number(response ?? 0);
+    try {
+      const response = await readContractFunction({
+        address: daoAddress,
+        abi: erc721DaoABI,
+        functionName: "_tokenIdTracker",
+        args: [],
+        account: walletAddress,
+        networkId,
+      });
+      return Number(response ?? 0);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const buyGovernanceTokenERC721DAO = async (
