@@ -220,7 +220,7 @@ const Join = ({ daoAddress }) => {
       const fetchData = async () => {
         if (daoAddress && daoDetails) {
           const data = await queryAllMembersFromSubgraph(daoAddress, networkId);
-          const userDepositAmount = data?.users.find(
+          const userDepositAmount = data?.users?.find(
             (user) => user.userAddress === walletAddress,
           )?.depositAmount;
           if (userDepositAmount !== undefined && +userDepositAmount > 0) {
