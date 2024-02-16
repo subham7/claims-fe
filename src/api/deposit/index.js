@@ -16,11 +16,7 @@ export const editDepositConfig = async (data, daoAddress) => {
 
 export const editMembersFormData = async (data) => {
   try {
-    const response = await axios.post(
-      `${MAIN_API_URL}document/user`,
-
-      data,
-    );
+    const response = await axios.post(`${MAIN_API_URL}document/user`, data);
     return response.data;
   } catch (error) {
     console.log(error);
@@ -29,10 +25,12 @@ export const editMembersFormData = async (data) => {
 
 export const hasUserSigned = async (docIdentifier, walletAddress) => {
   try {
-    const response = await axios.get(
-      `${MAIN_API_URL}document/${docIdentifier}/user/${walletAddress}`,
-    );
-    return response.data;
+    if (docIdentifier) {
+      const response = await axios.get(
+        `${MAIN_API_URL}document/${docIdentifier}/user/${walletAddress}`,
+      );
+      return response.data;
+    }
   } catch (error) {
     console.log(error);
   }

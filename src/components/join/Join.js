@@ -172,8 +172,8 @@ const Join = ({ daoAddress }) => {
   const fetchCurrentAllowance = async () => {
     try {
       const currentAllowance = await checkCurrentAllowance(
-        CHAIN_CONFIG[networkId].usdcAddress,
-        CHAIN_CONFIG[networkId].factoryContractAddress,
+        CHAIN_CONFIG[networkId]?.usdcAddress,
+        CHAIN_CONFIG[networkId]?.factoryContractAddress,
       );
 
       setAllowanceValue(Number(currentAllowance));
@@ -208,7 +208,7 @@ const Join = ({ daoAddress }) => {
     if (daoAddress) {
       if (TOKEN_TYPE === "erc20") {
         fetchErc20ContractDetails();
-      } else {
+      } else if (TOKEN_TYPE === "erc721") {
         fetchErc721ContractDetails();
       }
     }
@@ -271,8 +271,8 @@ const Join = ({ daoAddress }) => {
   useEffect(() => {
     fetchCurrentAllowance();
   }, [
-    CHAIN_CONFIG[networkId].usdcAddress,
-    CHAIN_CONFIG[networkId].factoryContractAddress,
+    CHAIN_CONFIG[networkId]?.usdcAddress,
+    CHAIN_CONFIG[networkId]?.factoryContractAddress,
   ]);
 
   return (
