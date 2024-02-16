@@ -204,7 +204,6 @@ const Create = () => {
             allowWhiteList: false,
             merkleRoot: ZERO_MERKLE_ROOT,
           };
-
           initiateConnection(
             params,
             dispatch,

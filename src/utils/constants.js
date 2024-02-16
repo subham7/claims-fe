@@ -341,19 +341,23 @@ export const CHAIN_CONFIG = {
       symbol: "ETH",
     },
     rpcUrls: ["https://rpc.scroll.io"],
-    appRpcUrl: `https://scroll.blockpi.network/v1/rpc/public	`,
-    stationSubgraphUrl: "",
-    covalentNetworkName: "scroll-mainnet",
-    factoryContractAddress: "0xa2b1079BeEC97C2CA4283e1439E59967B41fb41c",
+    appRpcUrl: `https://sparkling-young-spring.scroll-mainnet.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_SCROLL_API_KEY}/`,
+    factoryContractAddress: "0x42a3a866dd9D40078f6009EFa03494ECc8EA5755",
+    //change this
     claimFactoryAddress: "0x563993D2c56628cfBBdec3FC3B3fb94744BbA9A6",
+    //change this
     claimsSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-scroll/prod/gn",
-    nativeToken: "",
+    stationSubgraphUrl:
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-scroll/prod/gn",
+    covalentNetworkName: "scroll-mainnet",
+    nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
-    airdropContractAddress: "",
+    airdropContractAddress: "0xA0113FF935416ad6E2F0DD689329Ec13Fc062389",
     blockExplorerUrl: "https://blockscout.scroll.io/",
     disburseContractAddress: "0x3DA9Fb55Ab77b10F99C1C1f52C150280dbd5a611",
     logoUri: "/assets/networks/0x82750.png",
+    gnosisTxUrl: "https://transaction.safe.scroll.xyz",
   },
   "0xa9": {
     chainName: "Manta",
@@ -704,7 +708,25 @@ export const contractNetworks = {
     createCallAbi: createCallAbi, // Optional. Only needed with web3.js
     simulateTxAccessorAbi: simulateTxAccessorAbi, // Optional. Only needed with web3.js
   },
-  // berachain testnet
+  // scroll
+  [534352]: {
+    safeMasterCopyAddress: "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
+    safeProxyFactoryAddress: "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2",
+    multiSendAddress: "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761",
+    multiSendCallOnlyAddress: "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D",
+    fallbackHandlerAddress: "0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4",
+    signMessageLibAddress: "0xA65387F16B013cf2Af4605Ad8aA5ec25a2cbA3a2",
+    createCallAddress: "0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4",
+    simulateTxAccessorAddress: "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
+    safeMasterCopyAbi: safeMasterCopyAbi, // Optional. Only needed with web3.js
+    safeProxyFactoryAbi: safeProxyFactoryAbi, // Optional. Only needed with web3.js
+    multiSendAbi: multiSendAbi, // Optional. Only needed with web3.js
+    multiSendCallOnlyAbi: multiSendCallOnlyAbi, // Optional. Only needed with web3.js
+    fallbackHandlerAbi: fallbackHandlerAbi, // Optional. Only needed with web3.js
+    signMessageLibAbi: signMessageLibAbi, // Optional. Only needed with web3.js
+    createCallAbi: createCallAbi, // Optional. Only needed with web3.js
+    simulateTxAccessorAbi: simulateTxAccessorAbi, // Optional. Only needed with web3.js
+  },
 };
 
 export const dropsNetworksChaindId = [
@@ -779,6 +801,12 @@ export const stationNetworksChainId = [
     chainId: 59144,
     networkId: "0xe708",
   },
+  { chainId: 534352, networkId: "0x82750" },
 ];
 
-export const ALLOWED_NETWORKS_FOR_STATION = ["0x89", "0x1", "0xe708"];
+export const ALLOWED_NETWORKS_FOR_STATION = [
+  "0x89",
+  "0x1",
+  "0xe708",
+  "0x82750",
+];
