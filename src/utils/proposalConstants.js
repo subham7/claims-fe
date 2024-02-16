@@ -734,7 +734,7 @@ export const DEFI_PROPOSALS = ({
         Stake: 47,
         Unstake: 48,
       },
-      availableOnNetworkIds: ["0xe708"],
+      availableOnNetworkIds: ["0xe708", "0x82750"],
       unstakeTokenAddress: CHAIN_CONFIG[networkId]?.layerBankToken
         ? CHAIN_CONFIG[networkId].layerBankToken
         : "",

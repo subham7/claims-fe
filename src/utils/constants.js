@@ -358,6 +358,8 @@ export const CHAIN_CONFIG = {
     disburseContractAddress: "0x3DA9Fb55Ab77b10F99C1C1f52C150280dbd5a611",
     logoUri: "/assets/networks/0x82750.png",
     gnosisTxUrl: "https://transaction.safe.scroll.xyz",
+    layerBankToken: "0x274C3795dadfEbf562932992bF241ae087e0a98C",
+    layerBankPool: "0xEC53c830f4444a8A56455c6836b5D2aA794289Aa",
   },
   "0xa9": {
     chainName: "Manta",
