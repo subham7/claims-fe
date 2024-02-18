@@ -110,7 +110,7 @@ const Members = ({ daoAddress }) => {
 
         if (data?.users) {
           setMembersData(data?.users);
-          const memberAddresses = data?.users.map((item) => item.userAddress);
+          const memberAddresses = data?.users?.map((item) => item.userAddress);
 
           const profiles = await getDefaultProfile(memberAddresses);
 
@@ -152,7 +152,7 @@ const Members = ({ daoAddress }) => {
 
       if (data?.users) {
         setMembersData(data?.users);
-        const memberAddresses = data?.users.map((item) => item.userAddress);
+        const memberAddresses = data?.users?.map((item) => item.userAddress);
 
         const profiles = await getDefaultProfile(memberAddresses);
 

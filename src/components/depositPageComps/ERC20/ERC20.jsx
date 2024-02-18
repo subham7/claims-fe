@@ -286,16 +286,23 @@ const ERC20 = ({
 
     const isRemainingTimeInvalid =
       remainingDays < 0 || remainingTimeInSecs <= 0;
+
     if (isRemainingTimeInvalid) return true;
-    if (isTokenGated && !isEligibleForTokenGating) return true;
-    if (+clubData?.raiseAmount <= +clubData?.totalAmountRaised) return true;
-    if (+remainingClaimAmount <= 0) return true;
-    if (
+    else if (isTokenGated && !isEligibleForTokenGating) return true;
+    else if (+clubData?.raiseAmount <= +clubData?.totalAmountRaised)
+      return true;
+    else if (+remainingClaimAmount <= 0) return true;
+    else if (
       whitelistUserData?.setWhitelist === true &&
       whitelistUserData?.proof === null
     )
       return true;
-    return false;
+    else if (formik.values.tokenInput === 0) return true;
+    else if (Number(tokenDetails.userBalance) === 0) return true;
+    else if (Number(tokenDetails.userBalance) < formik.values.tokenInput)
+      return true;
+    else if (formik.errors.tokenInput) return true;
+    else return false;
   };
 
   useEffect(() => {

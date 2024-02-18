@@ -1,4 +1,4 @@
-import { Box, FormControl, MenuItem, Select, Typography } from "@mui/material";
+import { FormControl, MenuItem, Select, Typography } from "@mui/material";
 import { TextField } from "@components/ui";
 
 export default function Step1(props) {
@@ -89,9 +89,9 @@ export default function Step1(props) {
         </Select>
       </FormControl>
 
-      <br />
+      {/* <br /> */}
 
-      <Typography mb={1} fontWeight={600} variant="body" className="text-blue">
+      {/* <Typography mb={1} fontWeight={600} variant="body" className="text-blue">
         What will you use the Station for?
       </Typography>
 
@@ -113,10 +113,10 @@ export default function Step1(props) {
           <MenuItem value={"Manage grants"}>Manage grants</MenuItem>
           <MenuItem value={"Others"}>Others</MenuItem>
         </Select>
-      </FormControl>
+      </FormControl> */}
 
-      <br />
-
+      {/* <br /> */}
+      {/* 
       <Typography fontWeight={600} variant="body" className="text-blue">
         Email
         <Box sx={{ ml: 1 }} fontWeight="Normal" display="inline">
@@ -132,7 +132,7 @@ export default function Step1(props) {
         value={props.formik.values.email}
         error={props.formik.touched.email && Boolean(props.formik.errors.email)}
         helperText={props.formik.touched.email && props.formik.errors.email}
-      />
+      /> */}
     </div>
   );
 }

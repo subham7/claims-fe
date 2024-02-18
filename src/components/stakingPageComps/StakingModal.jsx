@@ -106,8 +106,8 @@ const StakingModal = ({
     initialValues: {
       stakeTokenAddress:
         token === "USDC"
-          ? CHAIN_CONFIG[networkId].usdcAddress
-          : CHAIN_CONFIG[networkId].nativeToken,
+          ? CHAIN_CONFIG[networkId]?.usdcAddress
+          : CHAIN_CONFIG[networkId]?.nativeToken,
       stakeAmount: 0,
       note: "",
       actionCommand: Number(executionId),
