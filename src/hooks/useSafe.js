@@ -12,12 +12,12 @@ import { ZERO_ADDRESS } from "utils/constants";
 import { uploadNFT } from "api/assets";
 import { handleSignMessage, uploadFileToAWS } from "utils/helper";
 import { setAlertData } from "redux/reducers/alert";
-import { AnnouncementContext } from "@components/AnnouncementContext";
-import { useContext } from "react";
+// import { AnnouncementContext } from "@components/AnnouncementContext";
+// import { useContext } from "react";
 
 const useSafe = () => {
   const { createERC721DAO, createERC20DAO } = useAppContractMethods();
-  const { openAnnouncement } = useContext(AnnouncementContext);
+  // const { openAnnouncement } = useContext(AnnouncementContext);
   const router = useRouter();
 
   const initiateConnection = async (
@@ -112,7 +112,7 @@ const useSafe = () => {
             shallow: true,
           },
         );
-        openAnnouncement(true);
+        // openAnnouncement(true);
       } catch (error) {
         // dispatch(setCreateDaoAuthorized(false));
         // dispatch(setCreateSafeError(true));
