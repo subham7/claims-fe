@@ -263,6 +263,8 @@ export const CHAIN_CONFIG = {
       "0xaad094f6a75a14417d39f04e690fc216f080a41a": 13,
     },
     logoUri: "/assets/networks/0xe708.png",
+    layerBankToken: "0xc7D8489DaE3D2EbEF075b1dB2257E2c231C9D231",
+    layerBankPool: "0x009a0b7C38B542208936F1179151CD08E2943833",
   },
   "0x38": {
     chainName: "BNB Smart Chain",
@@ -356,6 +358,8 @@ export const CHAIN_CONFIG = {
     disburseContractAddress: "0x3DA9Fb55Ab77b10F99C1C1f52C150280dbd5a611",
     logoUri: "/assets/networks/0x82750.png",
     gnosisTxUrl: "https://transaction.safe.scroll.xyz",
+    layerBankToken: "0x274C3795dadfEbf562932992bF241ae087e0a98C",
+    layerBankPool: "0xEC53c830f4444a8A56455c6836b5D2aA794289Aa",
   },
   "0xa9": {
     chainName: "Manta",

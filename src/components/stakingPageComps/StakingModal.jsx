@@ -109,6 +109,7 @@ const StakingModal = ({
           ? CHAIN_CONFIG[networkId]?.usdcAddress
           : CHAIN_CONFIG[networkId]?.nativeToken,
       stakeAmount: 0,
+      unStakeAmount: 0,
       note: "",
       actionCommand: Number(executionId),
       unstakeTokenAddress: unstakeTokenAddress,
@@ -152,7 +153,7 @@ const StakingModal = ({
           createdBy: walletAddress,
           votingDuration: dayjs().add(100, "year").unix(),
           votingOptions: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
-          commands,
+          commands: [commands],
           type: "action",
           tokenType,
           daoAddress: daoAddress,

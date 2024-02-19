@@ -214,6 +214,7 @@ const CreateProposalDialog = ({ daoAddress }) => {
     onSubmit: async (values) => {
       try {
         setLoaderOpen(true);
+
         let commands = await getProposalCommands({
           values,
           tokenData,
@@ -221,7 +222,6 @@ const CreateProposalDialog = ({ daoAddress }) => {
           daoAddress,
           networkId,
         });
-
         commands = {
           executionId: values.actionCommand,
           ...commands,
