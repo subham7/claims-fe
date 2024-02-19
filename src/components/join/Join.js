@@ -196,13 +196,13 @@ const Join = ({ daoAddress }) => {
 
   useEffect(() => {
     if (daoAddress) getDepositPreRequisites(daoAddress);
-  }, [daoAddress, walletAddress]);
+  }, [daoAddress, walletAddress, networkId]);
 
   useEffect(() => {
     if (walletAddress && daoAddress) {
       fetchTokenGatingDetials();
     }
-  }, [walletAddress, daoAddress]);
+  }, [walletAddress, daoAddress, networkId]);
 
   useEffect(() => {
     if (daoAddress) {
@@ -212,7 +212,7 @@ const Join = ({ daoAddress }) => {
         fetchErc721ContractDetails();
       }
     }
-  }, [TOKEN_TYPE, factoryData, daoAddress]);
+  }, [TOKEN_TYPE, factoryData, daoAddress, networkId]);
 
   useEffect(() => {
     try {
@@ -250,7 +250,7 @@ const Join = ({ daoAddress }) => {
       console.log(error);
       setLoading(false);
     }
-  }, [daoAddress, daoDetails, walletAddress]);
+  }, [daoAddress, daoDetails, networkId, walletAddress]);
 
   useEffect(() => {
     const fetchMerkleProof = async () => {
@@ -266,13 +266,14 @@ const Join = ({ daoAddress }) => {
       }
     };
     fetchMerkleProof();
-  }, [daoAddress, walletAddress]);
+  }, [daoAddress, walletAddress, networkId]);
 
   useEffect(() => {
     fetchCurrentAllowance();
   }, [
     CHAIN_CONFIG[networkId]?.usdcAddress,
     CHAIN_CONFIG[networkId]?.factoryContractAddress,
+    networkId,
   ]);
 
   return (

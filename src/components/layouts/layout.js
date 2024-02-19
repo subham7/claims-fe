@@ -19,7 +19,7 @@ const useStyles = makeStyles({
 
 export default function Layout(props) {
   const { showSidebar = true, daoAddress, networkId: routeNetworkId } = props;
-  useClubFetch({ daoAddress, networkId: routeNetworkId });
+  useClubFetch({ daoAddress, routeNetworkId: routeNetworkId });
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
 
