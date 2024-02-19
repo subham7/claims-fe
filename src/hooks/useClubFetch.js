@@ -40,6 +40,7 @@ const useClubFetch = ({ daoAddress, routeNetworkId }) => {
     getERC721DAOdetails,
   } = useAppContractMethods({
     daoAddress,
+    routeNetworkId,
   });
 
   useEffect(() => {

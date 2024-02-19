@@ -18,7 +18,7 @@ import {
 import { eigenContractABI } from "abis/eigenContract";
 
 const useAppContractMethods = (params) => {
-  const { daoAddress } = params ?? {};
+  const { daoAddress, routeNetworkId } = params ?? {};
 
   const { address: walletAddress } = useAccount();
 
@@ -36,7 +36,7 @@ const useAppContractMethods = (params) => {
       functionName: "getDAOdetails",
       args: [stationAddress],
       account: walletAddress,
-      networkId,
+      networkId: routeNetworkId ?? networkId,
     });
 
     return response
