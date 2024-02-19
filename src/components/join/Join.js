@@ -164,7 +164,7 @@ const Join = ({ daoAddress }) => {
         }
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setLoading(false);
     }
   };
@@ -178,7 +178,7 @@ const Join = ({ daoAddress }) => {
 
       setAllowanceValue(Number(currentAllowance));
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -247,7 +247,7 @@ const Join = ({ daoAddress }) => {
       walletAddress && fetchData();
       setLoading(false);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setLoading(false);
     }
   }, [daoAddress, daoDetails, networkId, walletAddress]);
@@ -262,7 +262,7 @@ const Join = ({ daoAddress }) => {
 
         setWhitelistUserData(whitelistData);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     };
     fetchMerkleProof();

@@ -150,6 +150,7 @@ const useCommonContractMethods = () => {
         return currentAllowance;
       }
     } catch (error) {
+      console.error(error);
       throw error;
     }
   };
@@ -188,6 +189,7 @@ const useCommonContractMethods = () => {
           });
           return res;
         } catch (error) {
+          console.error(error);
           throw error;
         }
       }
@@ -195,10 +197,14 @@ const useCommonContractMethods = () => {
   };
 
   const encode = (address, amount) => {
-    const types = ["address", "uint256"];
-    const values = [address, amount];
-    const encodedData = encodePacked(types, values);
-    return encodedData;
+    try {
+      const types = ["address", "uint256"];
+      const values = [address, amount];
+      const encodedData = encodePacked(types, values);
+      return encodedData;
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return {
