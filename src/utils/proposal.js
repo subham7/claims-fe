@@ -2302,10 +2302,8 @@ export const getTransaction = async ({
       // };
       transaction = {
         to: Web3.utils.toChecksumAddress(CHAIN_CONFIG[networkId].layerBankPool),
-        data: await layerBankUnStakeMethodEncoded({
-          layerBankToken: CHAIN_CONFIG[networkId].layerBankToken,
-          layerBankPoolAddress: CHAIN_CONFIG[networkId].layerBankPool,
-          unstakeAmount,
+        data: await mendiUsdcUnstakeMethodEncoded({
+          unstakeAmount: unstakeAmount,
           networkId,
           web3Call,
         }),
