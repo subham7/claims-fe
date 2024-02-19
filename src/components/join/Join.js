@@ -294,6 +294,7 @@ const Join = ({ daoAddress }) => {
           isSignable={isSignable}
           allowanceValue={allowanceValue}
           fetchCurrentAllowance={fetchCurrentAllowance}
+          fetchErc20ContractDetails={fetchErc20ContractDetails}
         />
       ) : TOKEN_TYPE === "erc721" ? (
         <ERC721
@@ -309,6 +310,7 @@ const Join = ({ daoAddress }) => {
           isSignable={isSignable}
           allowanceValue={allowanceValue}
           fetchCurrentAllowance={fetchCurrentAllowance}
+          fetchErc721ContractDetails={fetchErc721ContractDetails}
         />
       ) : null}
 
