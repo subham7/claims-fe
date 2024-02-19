@@ -922,15 +922,7 @@ const mendiUsdcUnstakeMethodEncoded = async ({
       CHAIN_CONFIG[networkId].mendiTokenAddress,
     );
 
-    const exchangeRate = await mendiPoolContract.methods.exchangeRateStored();
-
-    const amt = 0.1 / convertFromWeiGovernance(204063005190340, 18);
-
-    const decimals = await mendiPoolContract.methods.decimals();
-
-    return mendiPoolContract.methods
-      .redeem(convertToWeiGovernance(unstakeAmount, decimals))
-      .encodeABI();
+    return mendiPoolContract.methods.redeem(unstakeAmount).encodeABI();
   }
 };
 
@@ -2301,7 +2293,9 @@ export const getTransaction = async ({
       //   value: "0",
       // };
       transaction = {
-        to: Web3.utils.toChecksumAddress(CHAIN_CONFIG[networkId].layerBankPool),
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].mendiTokenAddress,
+        ),
         data: await mendiUsdcUnstakeMethodEncoded({
           unstakeAmount: unstakeAmount,
           networkId,
@@ -2393,6 +2387,7 @@ export const getTokenTypeByExecutionId = (commands) => {
       return commands[0]?.stakeToken;
     case 18:
     case 48:
+    case 50:
       return commands[0]?.unstakeToken;
     case 21:
     case 22:

@@ -7,12 +7,8 @@ import { useNetwork } from "wagmi";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { CHAIN_CONFIG } from "utils/constants";
 import { useSelector } from "react-redux";
-import {
-  convertFromWeiGovernance,
-  convertToWeiGovernance,
-} from "utils/globalFunctions";
+import { convertFromWeiGovernance } from "utils/globalFunctions";
 import useAppContractMethods from "hooks/useAppContractMethods";
-import { convertToFullNumber } from "utils/helper";
 
 const StakingList = ({ daoAddress }) => {
   const { chain } = useNetwork();
@@ -139,8 +135,6 @@ const StakingList = ({ daoAddress }) => {
 
           fetchTokenBalance(CHAIN_CONFIG[networkId].mendiTokenAddress),
         ]);
-
-        mendiExchangeRate = await fetchMendiUsdcExhcangeRate();
       } else if (networkId === "0x1") {
         renzoEzEthBalance = await fetchTokenBalance(
           CHAIN_CONFIG[networkId].renzoEzETHAddress,
@@ -166,17 +160,7 @@ const StakingList = ({ daoAddress }) => {
       setUnstakeRenzoEzETHToken(renzoEzEthBalance);
       setUnstakeRestakeRstETHToken(restakeRstETH);
       setUnstakeLayerBankToken(layerBankEthBalance);
-      setUnstakeMendiUsdcToken(
-        convertFromWeiGovernance(
-          convertToFullNumber(
-            (
-              Number(mendiExchangeRate) *
-              Number(convertToWeiGovernance(mendiUSDCBalance, 8))
-            ).toString(),
-          ),
-          24,
-        ),
-      );
+      setUnstakeMendiUsdcToken(mendiUSDCBalance);
     };
 
     fetchBalances();
