@@ -274,6 +274,7 @@ const Join = ({ daoAddress }) => {
     CHAIN_CONFIG[networkId]?.usdcAddress,
     CHAIN_CONFIG[networkId]?.factoryContractAddress,
     networkId,
+    walletAddress,
   ]);
 
   return (

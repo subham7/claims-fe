@@ -311,7 +311,7 @@ const ERC20 = ({
 
   useEffect(() => {
     fetchTokenDetails();
-  }, [networkId]);
+  }, [networkId, walletAddress]);
 
   useEffect(() => {
     if (daoAddress) {
