@@ -17,12 +17,14 @@ const useCommonContractMethods = () => {
 
   const getTokenSymbol = async (contractAddress) => {
     try {
-      const symbol = localStorage.getItem(`stationx-${contractAddress}-symbol`);
+      const symbol = localStorage.getItem(
+        `stationx-${contractAddress}-${networkId}-symbol`,
+      );
       if (symbol) {
         return symbol;
       } else if (isNative(contractAddress, networkId)) {
         localStorage.setItem(
-          `stationx-${contractAddress}-name`,
+          `stationx-${contractAddress}-${networkId}-name`,
           CHAIN_CONFIG[networkId].nativeCurrency.symbol,
         );
         return CHAIN_CONFIG[networkId].nativeCurrency.symbol;
@@ -36,7 +38,10 @@ const useCommonContractMethods = () => {
           args: [],
           networkId,
         });
-        localStorage.setItem(`stationx-${contractAddress}-name`, response);
+        localStorage.setItem(
+          `stationx-${contractAddress}-${networkId}-name`,
+          response,
+        );
         return response;
       } else {
         return "";
@@ -49,12 +54,14 @@ const useCommonContractMethods = () => {
 
   const getTokenName = async (contractAddress) => {
     try {
-      const name = localStorage.getItem(`stationx-${contractAddress}-name`);
+      const name = localStorage.getItem(
+        `stationx-${contractAddress}-${networkId}--name`,
+      );
       if (name) {
         return name;
       } else if (isNative(contractAddress, networkId)) {
         localStorage.setItem(
-          `stationx-${contractAddress}-name`,
+          `stationx-${contractAddress}-${networkId}-name`,
           CHAIN_CONFIG[networkId].nativeCurrency.name,
         );
         return CHAIN_CONFIG[networkId].nativeCurrency.name;
@@ -66,7 +73,10 @@ const useCommonContractMethods = () => {
           args: [],
           networkId,
         });
-        localStorage.setItem(`stationx-${contractAddress}-name`, response);
+        localStorage.setItem(
+          `stationx-${contractAddress}-${networkId}-name`,
+          response,
+        );
         return response;
       } else {
         return "";
@@ -80,12 +90,15 @@ const useCommonContractMethods = () => {
   const getDecimals = async (contractAddress) => {
     try {
       const decimals = localStorage.getItem(
-        `stationx-${contractAddress}-decimals`,
+        `stationx-${contractAddress}-${networkId}-decimals`,
       );
       if (decimals) {
         return Number(decimals);
       } else if (isNative(contractAddress, networkId)) {
-        localStorage.setItem(`stationx-${contractAddress}-decimals`, 18);
+        localStorage.setItem(
+          `stationx-${contractAddress}-${networkId}-decimals`,
+          18,
+        );
         return 18;
       } else if (contractAddress === ZERO_ADDRESS) {
         return 1;
@@ -97,7 +110,10 @@ const useCommonContractMethods = () => {
           args: [],
           networkId,
         });
-        localStorage.setItem(`stationx-${contractAddress}-decimals`, response);
+        localStorage.setItem(
+          `stationx-${contractAddress}-${networkId}-decimals`,
+          response,
+        );
         return response;
       } else {
         return 1;
