@@ -11,7 +11,6 @@ import { convertToFullNumber, handleSignMessage } from "utils/helper";
 import { useAccount, useNetwork } from "wagmi";
 import AssetsTable from "./AssetsTable";
 import classes from "./Dashboard.module.scss";
-import { tableHeader } from "../../data/dashboard";
 import DashboardActivities from "./DashboardActivities";
 import NoTokens from "./NoTokens";
 import TreasuryItem from "./TreasuryItem";
@@ -332,10 +331,7 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
           {assetType === "erc20" ? (
             <>
               {tokenDetails?.tokenPriceList?.length ? (
-                <AssetsTable
-                  tableData={tokenDetails.tokenPriceList}
-                  tableHeader={tableHeader}
-                />
+                <AssetsTable tableData={tokenDetails.tokenPriceList} />
               ) : (
                 <NoTokens
                   title="No tokens in treasury"

@@ -95,7 +95,7 @@ const Mint = ({
         </div>
         <Button
           onClick={
-            Number(inputValue) > allowanceValue &&
+            Number(inputValue) <= allowanceValue &&
             clubData.depositTokenAddress !==
               CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
               ? claimNFTHandler
@@ -108,7 +108,7 @@ const Mint = ({
           variant="contained">
           {hasClaimed
             ? "Minted"
-            : Number(inputValue) > allowanceValue &&
+            : Number(inputValue) <= allowanceValue &&
               clubData.depositTokenAddress !==
                 CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
             ? "Mint"

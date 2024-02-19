@@ -103,9 +103,9 @@ const ERC20 = ({
         daoAddress,
         networkId,
       );
-      if (users) setMembers(users);
+      if (users) setMembers(users?.reverse());
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -222,7 +222,7 @@ const ERC20 = ({
         await whitelistOnDeposit(walletAddress);
         formik.values.tokenInput = 0;
       } catch (error) {
-        console.log(error);
+        console.error(error);
         setFailed(true);
         setLoading(false);
       }
@@ -258,7 +258,7 @@ const ERC20 = ({
         isNativeToken: isNativeToken,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -271,7 +271,7 @@ const ERC20 = ({
       );
       setUploadedDocInfo(document);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -311,7 +311,7 @@ const ERC20 = ({
 
   useEffect(() => {
     fetchTokenDetails();
-  }, []);
+  }, [networkId]);
 
   useEffect(() => {
     if (daoAddress) {

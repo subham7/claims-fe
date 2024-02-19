@@ -234,7 +234,7 @@ const ERC721 = ({
 
   useEffect(() => {
     fetchTokenDetails();
-  }, [daoAddress]);
+  }, [daoAddress, networkId]);
 
   useEffect(() => {
     const fetchSubgraphData = async () => {

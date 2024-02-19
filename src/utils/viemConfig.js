@@ -40,7 +40,7 @@ const viemChains = {
 export const getPublicClient = (networkId) => {
   const client = createPublicClient({
     chain: viemChains[networkId],
-    transport: http(CHAIN_CONFIG[networkId]?.appRpcUrl),
+    transport: http(CHAIN_CONFIG[networkId]?.appRpcUrl || window.ethereum),
   });
 
   return client;
