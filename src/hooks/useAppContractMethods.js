@@ -36,7 +36,7 @@ const useAppContractMethods = (params) => {
       functionName: "getDAOdetails",
       args: [stationAddress],
       account: walletAddress,
-      networkId: routeNetworkId,
+      networkId: routeNetworkId ?? networkId,
     });
 
     return response
