@@ -7,8 +7,12 @@ import { useNetwork } from "wagmi";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { CHAIN_CONFIG } from "utils/constants";
 import { useSelector } from "react-redux";
-import { convertFromWeiGovernance } from "utils/globalFunctions";
+import {
+  convertFromWeiGovernance,
+  convertToWeiGovernance,
+} from "utils/globalFunctions";
 import useAppContractMethods from "hooks/useAppContractMethods";
+import { convertToFullNumber } from "utils/helper";
 
 const StakingList = ({ daoAddress }) => {
   const { chain } = useNetwork();
@@ -25,9 +29,11 @@ const StakingList = ({ daoAddress }) => {
   const [unstakeRocketEigenToken, setUnstakeRocketEigenToken] = useState(0);
   const [unstakeMantleEigenToken, setUnstakeMantleEigenToken] = useState(0);
   const [unstakeLayerBankToken, setUnstakeLayerBankToken] = useState(0);
+  const [unstakeMendiUsdcToken, setUnstakeMendiUsdcToken] = useState(0);
 
   const { getBalance, getDecimals } = useCommonContractMethods();
-  const { fetchEigenTokenBalance } = useAppContractMethods({ daoAddress });
+  const { fetchEigenTokenBalance, fetchMendiUsdcExhcangeRate } =
+    useAppContractMethods({ daoAddress });
 
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
@@ -112,19 +118,29 @@ const StakingList = ({ daoAddress }) => {
         swellRswETH = 0,
         restakeRstETH = 0,
         renzoEzEthBalance = 0,
+        mendiUSDCBalance = 0,
+        mendiExchangeRate = 0,
         layerBankEthBalance = 0;
 
       if (networkId === "0xe708") {
-        [stargateBalance, clipFinanceBalance, layerBankEthBalance] =
-          await Promise.all([
-            fetchTokenBalance(
-              CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0],
-            ),
-            fetchTokenBalance(
-              CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
-            ),
-            fetchTokenBalance(CHAIN_CONFIG[networkId].layerBankToken),
-          ]);
+        [
+          stargateBalance,
+          clipFinanceBalance,
+          layerBankEthBalance,
+          mendiUSDCBalance,
+        ] = await Promise.all([
+          fetchTokenBalance(
+            CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0],
+          ),
+          fetchTokenBalance(
+            CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
+          ),
+          fetchTokenBalance(CHAIN_CONFIG[networkId].layerBankToken),
+
+          fetchTokenBalance(CHAIN_CONFIG[networkId].mendiTokenAddress),
+        ]);
+
+        mendiExchangeRate = await fetchMendiUsdcExhcangeRate();
       } else if (networkId === "0x1") {
         renzoEzEthBalance = await fetchTokenBalance(
           CHAIN_CONFIG[networkId].renzoEzETHAddress,
@@ -150,6 +166,17 @@ const StakingList = ({ daoAddress }) => {
       setUnstakeRenzoEzETHToken(renzoEzEthBalance);
       setUnstakeRestakeRstETHToken(restakeRstETH);
       setUnstakeLayerBankToken(layerBankEthBalance);
+      setUnstakeMendiUsdcToken(
+        convertFromWeiGovernance(
+          convertToFullNumber(
+            (
+              Number(mendiExchangeRate) *
+              Number(convertToWeiGovernance(mendiUSDCBalance, 8))
+            ).toString(),
+          ),
+          24,
+        ),
+      );
     };
 
     fetchBalances();
@@ -175,6 +202,7 @@ const StakingList = ({ daoAddress }) => {
           rocketEigenStaked: Number(unstakeRocketEigenToken),
           mantleEigenStaked: Number(unstakeMantleEigenToken),
           layerBankStaked: Number(unstakeLayerBankToken),
+          mendiStaked: Number(unstakeMendiUsdcToken),
           networkId,
         })
           .filter((item) => item.availableOnNetworkIds.includes(networkId))

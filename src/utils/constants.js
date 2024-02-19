@@ -265,6 +265,7 @@ export const CHAIN_CONFIG = {
     logoUri: "/assets/networks/0xe708.png",
     layerBankToken: "0xc7D8489DaE3D2EbEF075b1dB2257E2c231C9D231",
     layerBankPool: "0x009a0b7C38B542208936F1179151CD08E2943833",
+    mendiTokenAddress: "0x333d8b480bdb25ea7be4dd87eeb359988ce1b30d",
   },
   "0x38": {
     chainName: "BNB Smart Chain",

@@ -46,7 +46,15 @@ const StakingCard = ({
       <div className={classes.stakingCard}>
         <div className={classes.tagContainer}>
           <div className={classes.heading}>
-            <Image src={image} height={30} width={30} alt={name} />
+            <Image
+              style={{
+                borderRadius: "50px",
+              }}
+              src={image}
+              height={30}
+              width={30}
+              alt={name}
+            />
             <Typography fontSize={18} fontWeight={500} variant="inherit">
               {name}
             </Typography>
