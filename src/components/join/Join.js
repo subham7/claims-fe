@@ -164,7 +164,7 @@ const Join = ({ daoAddress }) => {
         }
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setLoading(false);
     }
   };
@@ -178,7 +178,7 @@ const Join = ({ daoAddress }) => {
 
       setAllowanceValue(Number(currentAllowance));
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -196,13 +196,13 @@ const Join = ({ daoAddress }) => {
 
   useEffect(() => {
     if (daoAddress) getDepositPreRequisites(daoAddress);
-  }, [daoAddress, walletAddress]);
+  }, [daoAddress, walletAddress, networkId]);
 
   useEffect(() => {
     if (walletAddress && daoAddress) {
       fetchTokenGatingDetials();
     }
-  }, [walletAddress, daoAddress]);
+  }, [walletAddress, daoAddress, networkId]);
 
   useEffect(() => {
     if (daoAddress) {
@@ -212,7 +212,7 @@ const Join = ({ daoAddress }) => {
         fetchErc721ContractDetails();
       }
     }
-  }, [TOKEN_TYPE, factoryData, daoAddress]);
+  }, [TOKEN_TYPE, factoryData, daoAddress, networkId]);
 
   useEffect(() => {
     try {
@@ -247,10 +247,10 @@ const Join = ({ daoAddress }) => {
       walletAddress && fetchData();
       setLoading(false);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setLoading(false);
     }
-  }, [daoAddress, daoDetails, walletAddress]);
+  }, [daoAddress, daoDetails, networkId, walletAddress]);
 
   useEffect(() => {
     const fetchMerkleProof = async () => {
@@ -262,17 +262,19 @@ const Join = ({ daoAddress }) => {
 
         setWhitelistUserData(whitelistData);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     };
     fetchMerkleProof();
-  }, [daoAddress, walletAddress]);
+  }, [daoAddress, walletAddress, networkId]);
 
   useEffect(() => {
     fetchCurrentAllowance();
   }, [
     CHAIN_CONFIG[networkId]?.usdcAddress,
     CHAIN_CONFIG[networkId]?.factoryContractAddress,
+    networkId,
+    walletAddress,
   ]);
 
   return (
@@ -292,6 +294,7 @@ const Join = ({ daoAddress }) => {
           isSignable={isSignable}
           allowanceValue={allowanceValue}
           fetchCurrentAllowance={fetchCurrentAllowance}
+          fetchErc20ContractDetails={fetchErc20ContractDetails}
         />
       ) : TOKEN_TYPE === "erc721" ? (
         <ERC721
@@ -307,6 +310,7 @@ const Join = ({ daoAddress }) => {
           isSignable={isSignable}
           allowanceValue={allowanceValue}
           fetchCurrentAllowance={fetchCurrentAllowance}
+          fetchErc721ContractDetails={fetchErc721ContractDetails}
         />
       ) : null}
 

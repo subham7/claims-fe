@@ -124,6 +124,8 @@ export function returnRemainingTime(epochTime) {
 }
 
 export const showWrongNetworkModal = (networkId, routeNetworkId) => {
+  networkId = networkId?.toLowerCase();
+  routeNetworkId = routeNetworkId?.toLowerCase();
   if (
     (routeNetworkId &&
       routeNetworkId !== networkId &&
@@ -208,10 +210,11 @@ export const getUserTokenData = async (
 
   return filteredData?.map((token) => {
     return {
-      balance: token.balance,
-      address: token.contract_address || token.contractAddress,
-      decimals: token.contract_decimals || token.decimals,
-      symbol: token.contract_ticker_symbol || token.symbol,
+      balance: token.balance || token.TokenQuantity,
+      address:
+        token.contract_address || token.contractAddress || token.TokenAddress,
+      decimals: token.contract_decimals || token.decimals || token.TokenDivisor,
+      symbol: token.contract_ticker_symbol || token.symbol || token.TokenSymbol,
     };
   });
 };

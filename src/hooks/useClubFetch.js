@@ -14,13 +14,15 @@ import {
 // import { fetchConfigById } from "../api/config";
 
 import { convertToFullNumber, getSafeSdk } from "../utils/helper";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import { useRouter } from "next/router";
 import useAppContractMethods from "./useAppContractMethods";
 import { queryStationDataFromSubgraph } from "utils/stationsSubgraphHelper";
 
-const useClubFetch = ({ daoAddress, networkId }) => {
+const useClubFetch = ({ daoAddress, routeNetworkId }) => {
   const [clubData, setClubData] = useState();
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   const dispatch = useDispatch();
 
@@ -38,36 +40,16 @@ const useClubFetch = ({ daoAddress, networkId }) => {
     getERC721DAOdetails,
   } = useAppContractMethods({
     daoAddress,
+    routeNetworkId,
   });
-
-  // useEffect(() => {
-  //   const getNetworkConfig = async () => {
-  //     try {
-  //       const networkData = await fetchConfigById(networkId);
-
-  //       dispatch(
-  //         addContractAddress({
-  //           factoryContractAddress: networkData?.data[0]?.factoryContract,
-  //           usdcContractAddress: networkData?.data[0]?.depositTokenContract,
-  //           actionContractAddress:
-  //             networkData?.data[0]?.tokenTransferActionContract,
-  //           subgraphUrl: networkData?.data[0]?.subgraph,
-  //           transactionUrl: networkData?.data[0]?.gnosisTransactionUrl,
-  //           networkHex: networkData?.data[0]?.networkHex,
-  //           networkId: networkData?.data[0]?.networkId,
-  //         }),
-  //       );
-  //     } catch (e) {
-  //       console.error(e);
-  //     }
-  //   };
-  //   networkId && getNetworkConfig();
-  // }, [networkId]);
 
   useEffect(() => {
     const fetchStationData = async () => {
       try {
-        const data = await queryStationDataFromSubgraph(daoAddress, networkId);
+        const data = await queryStationDataFromSubgraph(
+          daoAddress,
+          routeNetworkId,
+        );
         const daoDetails = await getDaoDetails();
         const depositTokenAddress = daoDetails.depositTokenAddress;
 
@@ -86,12 +68,12 @@ const useClubFetch = ({ daoAddress, networkId }) => {
         console.log(error);
       }
     };
-    if (daoAddress && networkId && walletAddress) fetchStationData();
-  }, [daoAddress, networkId, walletAddress, reduxClubData]);
+    if (daoAddress && routeNetworkId && walletAddress) fetchStationData();
+  }, [daoAddress, routeNetworkId, networkId, walletAddress, reduxClubData]);
 
   useEffect(() => {
     const addClubDataToRedux = async () => {
-      if (!reduxClubData.gnosisAddress && networkId) {
+      if (!reduxClubData.gnosisAddress && routeNetworkId) {
         if (clubData) {
           dispatch(
             addClubData({
@@ -122,7 +104,7 @@ const useClubFetch = ({ daoAddress, networkId }) => {
     };
 
     addClubDataToRedux();
-  }, [reduxClubData, networkId, daoAddress, clubData]);
+  }, [reduxClubData, routeNetworkId, networkId, daoAddress, clubData]);
 
   const checkUserExists = async () => {
     try {
@@ -211,13 +193,19 @@ const useClubFetch = ({ daoAddress, networkId }) => {
   useEffect(() => {
     if (
       walletAddress &&
-      networkId &&
+      routeNetworkId &&
       daoAddress &&
       reduxClubData.gnosisAddress
     ) {
       checkUserExists();
     }
-  }, [walletAddress, networkId, daoAddress, reduxClubData.gnosisAddress]);
+  }, [
+    walletAddress,
+    routeNetworkId,
+    daoAddress,
+    networkId,
+    reduxClubData.gnosisAddress,
+  ]);
 };
 
 export default useClubFetch;

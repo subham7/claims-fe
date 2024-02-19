@@ -43,6 +43,7 @@ import { stETHTokenABI } from "abis/lido/lidoStETHContract";
 import { rocketPoolABI } from "abis/rocketPool/rocketPoolContract";
 import { rETHTokenABI } from "abis/rocketPool/rETHTokenContract";
 import { mantlePoolABI } from "abis/mantlePool/manelPoolContract";
+import { LayerBankABI } from "abis/layerBankContract";
 
 export const fetchProposals = async (daoAddress, type) => {
   let proposalData;
@@ -888,6 +889,44 @@ const mantlePoolEigenStakeMethodEncoded = async ({
         CHAIN_CONFIG[networkId].mantleMEthAddress,
         convertToWeiGovernance(newMETH, 18),
       )
+      .encodeABI();
+  }
+};
+
+const layerBankStakeMethodEncoded = async ({
+  layerBankToken,
+  layerBankPoolAddress,
+  depositAmount,
+  web3Call,
+  networkId,
+}) => {
+  if (layerBankToken) {
+    const layerBankContract = new web3Call.eth.Contract(
+      LayerBankABI,
+      layerBankPoolAddress,
+    );
+
+    return layerBankContract.methods
+      .supply(layerBankToken, convertToWeiGovernance(depositAmount, 18))
+      .encodeABI();
+  }
+};
+
+const layerBankUnStakeMethodEncoded = async ({
+  layerBankToken,
+  layerBankPoolAddress,
+  unstakeAmount,
+  web3Call,
+  networkId,
+}) => {
+  if (layerBankToken) {
+    const layerBankContract = new web3Call.eth.Contract(
+      LayerBankABI,
+      layerBankPoolAddress,
+    );
+
+    return layerBankContract.methods
+      .redeemToken(layerBankToken, unstakeAmount)
       .encodeABI();
   }
 };
@@ -2142,7 +2181,44 @@ export const getTransaction = async ({
         value: "0",
       };
 
-      return { stakeETHTransaction, approvalTransaction, transaction };
+    case 47:
+      transaction = {
+        to: Web3.utils.toChecksumAddress(CHAIN_CONFIG[networkId].layerBankPool),
+        data: await layerBankStakeMethodEncoded({
+          layerBankToken: CHAIN_CONFIG[networkId].layerBankToken,
+          layerBankPoolAddress: CHAIN_CONFIG[networkId].layerBankPool,
+          depositAmount,
+          networkId,
+          web3Call,
+        }),
+        value: convertToWeiGovernance(depositAmount, 18).toString(),
+      };
+      return { transaction };
+    case 48:
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].layerBankToken,
+        ),
+        data: approveDepositWithEncodeABI(
+          CHAIN_CONFIG[networkId].layerBankToken,
+          CHAIN_CONFIG[networkId].layerBankPool,
+          convertToWeiGovernance(unstakeAmount, 18).toString(),
+          web3Call,
+        ),
+        value: "0",
+      };
+      transaction = {
+        to: Web3.utils.toChecksumAddress(CHAIN_CONFIG[networkId].layerBankPool),
+        data: await layerBankUnStakeMethodEncoded({
+          layerBankToken: CHAIN_CONFIG[networkId].layerBankToken,
+          layerBankPoolAddress: CHAIN_CONFIG[networkId].layerBankPool,
+          unstakeAmount,
+          networkId,
+          web3Call,
+        }),
+        value: "0",
+      };
+      return { transaction };
   }
 };
 
@@ -2225,6 +2301,7 @@ export const getTokenTypeByExecutionId = (commands) => {
     case 17:
       return commands[0]?.stakeToken;
     case 18:
+    case 48:
       return commands[0]?.unstakeToken;
     case 21:
     case 22:
@@ -2239,6 +2316,7 @@ export const getTokenTypeByExecutionId = (commands) => {
     case 39:
     case 41:
     case 43:
+    case 47:
     case 45:
       return commands[0]?.depositToken;
     case 25:

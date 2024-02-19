@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { queryLatestMembersFromSubgraph } from "utils/stationsSubgraphHelper";
+import {
+  queryLatestMembersFromSubgraph,
+  queryStationDataFromSubgraph,
+} from "utils/stationsSubgraphHelper";
 import dayjs from "dayjs";
 import DepositInput from "./DepositInput";
 import { useFormik } from "formik";
@@ -24,6 +27,7 @@ import { setAlertData } from "redux/reducers/alert";
 import { getPublicClient } from "utils/viemConfig";
 import { formatEther } from "viem";
 import { isNative } from "utils/helper";
+import { addClubData } from "redux/reducers/club";
 
 const DepositInputComponents = ({
   formik,
@@ -62,6 +66,7 @@ const ERC20 = ({
   depositConfig,
   allowanceValue,
   fetchCurrentAllowance,
+  fetchErc20ContractDetails,
 }) => {
   const [loading, setLoading] = useState(false);
   const [depositSuccessfull, setDepositSuccessfull] = useState(null);
@@ -88,7 +93,9 @@ const ERC20 = ({
     useCommonContractMethods();
   const publicClient = getPublicClient(networkId);
 
-  const { buyGovernanceTokenERC20DAO } = useAppContractMethods({ daoAddress });
+  const { buyGovernanceTokenERC20DAO, getDaoDetails } = useAppContractMethods({
+    daoAddress,
+  });
   const { address: walletAddress } = useAccount();
 
   const day = Math.floor(new Date().getTime() / 1000.0);
@@ -103,9 +110,9 @@ const ERC20 = ({
         daoAddress,
         networkId,
       );
-      if (users) setMembers(users);
+      if (users) setMembers(users?.reverse());
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -191,6 +198,51 @@ const ERC20 = ({
     }
   };
 
+  const fetchStationData = async () => {
+    try {
+      const data = await queryStationDataFromSubgraph(daoAddress, networkId);
+      const daoDetails = await getDaoDetails();
+      const depositTokenAddress = daoDetails.depositTokenAddress;
+
+      // Loop through the stations in data and add depositTokenAddress to each station
+      const updatedData = {
+        ...data,
+        stations: data?.stations?.map((station) => ({
+          ...station,
+          depositTokenAddress: depositTokenAddress,
+        })),
+      };
+      if (updatedData?.stations?.length > 0) {
+        dispatch(
+          addClubData({
+            gnosisAddress: updatedData.stations[0].gnosisAddress,
+            isGtTransferable: updatedData.stations[0].isGtTransferable,
+            name: updatedData.stations[0].name,
+            ownerAddress: updatedData.stations[0].ownerAddress,
+            symbol: updatedData.stations[0].symbol,
+            tokenType: updatedData.stations[0].tokenType,
+            membersCount: updatedData.stations[0].membersCount,
+            deployedTime: updatedData.stations[0].timeStamp,
+            imgUrl: updatedData.stations[0].imageUrl,
+            minDepositAmount: updatedData.stations[0].minDepositAmount,
+            maxDepositAmount: updatedData.stations[0].maxDepositAmount,
+            pricePerToken: updatedData.stations[0].pricePerToken,
+            isGovernanceActive: updatedData.stations[0].isGovernanceActive,
+            quorum: updatedData.stations[0].quorum,
+            threshold: updatedData.stations[0].threshold,
+            raiseAmount: updatedData.stations[0].raiseAmount,
+            totalAmountRaised: updatedData.stations[0].totalAmountRaised,
+            distributionAmount: updatedData.stations[0].distributionAmount,
+            maxTokensPerUser: updatedData.stations[0].maxTokensPerUser,
+            depositTokenAddress: updatedData.stations[0].depositTokenAddress,
+          }),
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const formik = useFormik({
     initialValues: {
       tokenInput: 0,
@@ -217,12 +269,20 @@ const ERC20 = ({
             : "0",
         );
 
+        await whitelistOnDeposit(walletAddress);
+
+        setTimeout(() => {
+          fetchTokenDetails();
+          fetchActivities();
+          fetchErc20ContractDetails();
+          fetchStationData();
+        }, 500);
+
         setLoading(false);
         setDepositSuccessfull(true);
-        await whitelistOnDeposit(walletAddress);
         formik.values.tokenInput = 0;
       } catch (error) {
-        console.log(error);
+        console.error(error);
         setFailed(true);
         setLoading(false);
       }
@@ -258,7 +318,7 @@ const ERC20 = ({
         isNativeToken: isNativeToken,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -271,7 +331,7 @@ const ERC20 = ({
       );
       setUploadedDocInfo(document);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -311,7 +371,7 @@ const ERC20 = ({
 
   useEffect(() => {
     fetchTokenDetails();
-  }, []);
+  }, [networkId, walletAddress]);
 
   useEffect(() => {
     if (daoAddress) {

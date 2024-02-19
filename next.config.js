@@ -15,6 +15,7 @@ const nextConfig = {
       "logos.covalenthq.com",
       "cryptologos.cc",
       "www.datocms-assets.com",
+      "assets.safe.linea.build",
     ],
   },
   webpack: (config, { isServer }) => {

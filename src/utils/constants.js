@@ -37,7 +37,9 @@ export const supportedChainsDrops = [
   "0xa9",
   "0x28c5f",
   "0x1",
+  "0x138d5",
   "0x5",
+  "0xa0c71fd",
 ];
 
 export const CHAIN_CONFIG = {
@@ -261,6 +263,8 @@ export const CHAIN_CONFIG = {
       "0xaad094f6a75a14417d39f04e690fc216f080a41a": 13,
     },
     logoUri: "/assets/networks/0xe708.png",
+    layerBankToken: "0xc7D8489DaE3D2EbEF075b1dB2257E2c231C9D231",
+    layerBankPool: "0x009a0b7C38B542208936F1179151CD08E2943833",
   },
   "0x38": {
     chainName: "BNB Smart Chain",
@@ -337,19 +341,25 @@ export const CHAIN_CONFIG = {
       symbol: "ETH",
     },
     rpcUrls: ["https://rpc.scroll.io"],
-    appRpcUrl: `https://scroll.blockpi.network/v1/rpc/public	`,
-    stationSubgraphUrl: "",
-    covalentNetworkName: "scroll-mainnet",
-    factoryContractAddress: "0xa2b1079BeEC97C2CA4283e1439E59967B41fb41c",
+    appRpcUrl: `https://sparkling-young-spring.scroll-mainnet.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_SCROLL_API_KEY}/`,
+    factoryContractAddress: "0x42a3a866dd9D40078f6009EFa03494ECc8EA5755",
+    //change this
     claimFactoryAddress: "0x563993D2c56628cfBBdec3FC3B3fb94744BbA9A6",
+    //change this
     claimsSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-scroll/prod/gn",
-    nativeToken: "",
+    stationSubgraphUrl:
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-scroll/prod/gn",
+    covalentNetworkName: "scroll-mainnet",
+    nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
-    airdropContractAddress: "",
+    airdropContractAddress: "0xA0113FF935416ad6E2F0DD689329Ec13Fc062389",
     blockExplorerUrl: "https://blockscout.scroll.io/",
     disburseContractAddress: "0x3DA9Fb55Ab77b10F99C1C1f52C150280dbd5a611",
     logoUri: "/assets/networks/0x82750.png",
+    gnosisTxUrl: "https://transaction.safe.scroll.xyz",
+    layerBankToken: "0x274C3795dadfEbf562932992bF241ae087e0a98C",
+    layerBankPool: "0xEC53c830f4444a8A56455c6836b5D2aA794289Aa",
   },
   "0xa9": {
     chainName: "Manta",
@@ -399,6 +409,54 @@ export const CHAIN_CONFIG = {
     disburseContractAddress: "0x3DA9Fb55Ab77b10F99C1C1f52C150280dbd5a611",
     logoUri: "/assets/networks/0x28c5f.png",
   },
+  "0x138d5": {
+    chainName: "Bera Testnet",
+    shortName: "Berachain",
+    chainId: 80085,
+    nativeCurrency: {
+      name: "ETH",
+      decimals: 18,
+      symbol: "ETH",
+    },
+    rpcUrls: ["https://artio.rpc.berachain.com"],
+    appRpcUrl: `https://artio.rpc.berachain.com`,
+    stationSubgraphUrl: "",
+    covalentNetworkName: "",
+    factoryContractAddress: "",
+    claimFactoryAddress: "0x50702Fd9086BAbDB0A3A576bFe22D4dD47b09937",
+    claimsSubgraphUrl:
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-berachain/0.0.3/gn",
+    nativeToken: "",
+    usdcAddress: "",
+    airdropContractAddress: "",
+    blockExplorerUrl: "https://artio.beratrail.io",
+    disburseContractAddress: "0x7aA33CC623Db79d5fFa859bA6cBE2Fb93c237401",
+    logoUri: "/assets/networks/0x138d5.png",
+  },
+  "0xa0c71fd": {
+    chainName: "Blast Sepolia",
+    shortName: "Blast",
+    chainId: 168587773,
+    nativeCurrency: {
+      name: "ETH",
+      decimals: 18,
+      symbol: "ETH",
+    },
+    rpcUrls: ["https://sepolia.blast.io"],
+    appRpcUrl: `https://sepolia.blast.io`,
+    stationSubgraphUrl: "",
+    covalentNetworkName: "",
+    factoryContractAddress: "",
+    claimFactoryAddress: "0x50702Fd9086BAbDB0A3A576bFe22D4dD47b09937",
+    claimsSubgraphUrl:
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-blast/prod/gn",
+    nativeToken: "",
+    usdcAddress: "",
+    airdropContractAddress: "",
+    blockExplorerUrl: "https://testnet.blastscan.io/",
+    disburseContractAddress: "",
+    logoUri: "/assets/networks/0xa0c71fd.png",
+  },
 };
 
 export const lineaMainnetWalletConnect = {
@@ -422,6 +480,61 @@ export const lineaMainnetWalletConnect = {
     multicall3: {
       address: "0xcA11bde05977b3631167028862bE2a173976CA11",
       blockCreated: 42,
+    },
+  },
+};
+export const beraMainnetWalletConnect = {
+  id: 80085,
+  name: "Bera",
+  network: "bera",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ether ",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    public: { http: ["https://artio.rpc.berachain.com"] },
+    default: { http: ["https://artio.rpc.berachain.com"] },
+  },
+  blockExplorers: {
+    etherscan: { name: "ArtioExplorer", url: "https://artio.beratrail.io/" },
+    default: { name: "ArtioExplorer", url: "https://artio.beratrail.io/" },
+  },
+  contracts: {
+    multicall3: {
+      address: "",
+      blockCreated: "",
+    },
+  },
+};
+
+export const blastMainnetWalletConnect = {
+  id: 168587773,
+  name: "Blast Sepolia",
+  network: "blast",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ether ",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    public: { http: ["https://sepolia.blast.io/"] },
+    default: { http: ["https://sepolia.blast.io/"] },
+  },
+  blockExplorers: {
+    etherscan: {
+      name: "BlastSepoliaExplorer",
+      url: "https://testnet.blastscan.io/",
+    },
+    default: {
+      name: "BlastSepoliaExplorer",
+      url: "https://testnet.blastscan.io/",
+    },
+  },
+  contracts: {
+    multicall3: {
+      address: "",
+      blockCreated: "",
     },
   },
 };
@@ -502,6 +615,7 @@ export const mantleMainnetViem = {
 };
 
 export const contractNetworks = {
+  // base
   [8453]: {
     safeMasterCopyAddress: "0x69f4D1788e39c87893C980c06EdF4b7f686e2938",
     safeProxyFactoryAddress: "0xC22834581EbC8527d974F8a1c97E1bEA4EF910BC",
@@ -520,6 +634,7 @@ export const contractNetworks = {
     createCallAbi: createCallAbi, // Optional. Only needed with web3.js
     simulateTxAccessorAbi: simulateTxAccessorAbi, // Optional. Only needed with web3.js
   },
+  // linea mainnet
   [59144]: {
     safeMasterCopyAddress: "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
     safeProxyFactoryAddress: "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2",
@@ -538,7 +653,8 @@ export const contractNetworks = {
     createCallAbi: createCallAbi, // Optional. Only needed with web3.js
     simulateTxAccessorAbi: simulateTxAccessorAbi, // Optional. Only needed with web3.js
   },
-  [59144]: {
+  // gnosis
+  [100]: {
     safeMasterCopyAddress: "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
     safeProxyFactoryAddress: "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2",
     multiSendAddress: "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761",
@@ -547,1728 +663,71 @@ export const contractNetworks = {
     signMessageLibAddress: "0xA65387F16B013cf2Af4605Ad8aA5ec25a2cbA3a2",
     createCallAddress: "0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4",
     simulateTxAccessorAddress: "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
-    safeMasterCopyAbi: [
-      {
-        inputs: [],
-        stateMutability: "nonpayable",
-        type: "constructor",
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: "address",
-            name: "owner",
-            type: "address",
-          },
-        ],
-        name: "AddedOwner",
-        type: "event",
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: "bytes32",
-            name: "approvedHash",
-            type: "bytes32",
-          },
-          {
-            indexed: true,
-            internalType: "address",
-            name: "owner",
-            type: "address",
-          },
-        ],
-        name: "ApproveHash",
-        type: "event",
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: "address",
-            name: "handler",
-            type: "address",
-          },
-        ],
-        name: "ChangedFallbackHandler",
-        type: "event",
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: "address",
-            name: "guard",
-            type: "address",
-          },
-        ],
-        name: "ChangedGuard",
-        type: "event",
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: "uint256",
-            name: "threshold",
-            type: "uint256",
-          },
-        ],
-        name: "ChangedThreshold",
-        type: "event",
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: "address",
-            name: "module",
-            type: "address",
-          },
-        ],
-        name: "DisabledModule",
-        type: "event",
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: "address",
-            name: "module",
-            type: "address",
-          },
-        ],
-        name: "EnabledModule",
-        type: "event",
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: "bytes32",
-            name: "txHash",
-            type: "bytes32",
-          },
-          {
-            indexed: false,
-            internalType: "uint256",
-            name: "payment",
-            type: "uint256",
-          },
-        ],
-        name: "ExecutionFailure",
-        type: "event",
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: "address",
-            name: "module",
-            type: "address",
-          },
-        ],
-        name: "ExecutionFromModuleFailure",
-        type: "event",
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: "address",
-            name: "module",
-            type: "address",
-          },
-        ],
-        name: "ExecutionFromModuleSuccess",
-        type: "event",
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: "bytes32",
-            name: "txHash",
-            type: "bytes32",
-          },
-          {
-            indexed: false,
-            internalType: "uint256",
-            name: "payment",
-            type: "uint256",
-          },
-        ],
-        name: "ExecutionSuccess",
-        type: "event",
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: "address",
-            name: "owner",
-            type: "address",
-          },
-        ],
-        name: "RemovedOwner",
-        type: "event",
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: "address",
-            name: "sender",
-            type: "address",
-          },
-          {
-            indexed: false,
-            internalType: "uint256",
-            name: "value",
-            type: "uint256",
-          },
-        ],
-        name: "SafeReceived",
-        type: "event",
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: "address",
-            name: "initiator",
-            type: "address",
-          },
-          {
-            indexed: false,
-            internalType: "address[]",
-            name: "owners",
-            type: "address[]",
-          },
-          {
-            indexed: false,
-            internalType: "uint256",
-            name: "threshold",
-            type: "uint256",
-          },
-          {
-            indexed: false,
-            internalType: "address",
-            name: "initializer",
-            type: "address",
-          },
-          {
-            indexed: false,
-            internalType: "address",
-            name: "fallbackHandler",
-            type: "address",
-          },
-        ],
-        name: "SafeSetup",
-        type: "event",
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: "bytes32",
-            name: "msgHash",
-            type: "bytes32",
-          },
-        ],
-        name: "SignMsg",
-        type: "event",
-      },
-      {
-        stateMutability: "nonpayable",
-        type: "fallback",
-      },
-      {
-        inputs: [],
-        name: "VERSION",
-        outputs: [
-          {
-            internalType: "string",
-            name: "",
-            type: "string",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "owner",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "_threshold",
-            type: "uint256",
-          },
-        ],
-        name: "addOwnerWithThreshold",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "bytes32",
-            name: "hashToApprove",
-            type: "bytes32",
-          },
-        ],
-        name: "approveHash",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "",
-            type: "address",
-          },
-          {
-            internalType: "bytes32",
-            name: "",
-            type: "bytes32",
-          },
-        ],
-        name: "approvedHashes",
-        outputs: [
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "uint256",
-            name: "_threshold",
-            type: "uint256",
-          },
-        ],
-        name: "changeThreshold",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "bytes32",
-            name: "dataHash",
-            type: "bytes32",
-          },
-          {
-            internalType: "bytes",
-            name: "data",
-            type: "bytes",
-          },
-          {
-            internalType: "bytes",
-            name: "signatures",
-            type: "bytes",
-          },
-          {
-            internalType: "uint256",
-            name: "requiredSignatures",
-            type: "uint256",
-          },
-        ],
-        name: "checkNSignatures",
-        outputs: [],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "bytes32",
-            name: "dataHash",
-            type: "bytes32",
-          },
-          {
-            internalType: "bytes",
-            name: "data",
-            type: "bytes",
-          },
-          {
-            internalType: "bytes",
-            name: "signatures",
-            type: "bytes",
-          },
-        ],
-        name: "checkSignatures",
-        outputs: [],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "prevModule",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "module",
-            type: "address",
-          },
-        ],
-        name: "disableModule",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "domainSeparator",
-        outputs: [
-          {
-            internalType: "bytes32",
-            name: "",
-            type: "bytes32",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "module",
-            type: "address",
-          },
-        ],
-        name: "enableModule",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "to",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "value",
-            type: "uint256",
-          },
-          {
-            internalType: "bytes",
-            name: "data",
-            type: "bytes",
-          },
-          {
-            internalType: "enum Enum.Operation",
-            name: "operation",
-            type: "uint8",
-          },
-          {
-            internalType: "uint256",
-            name: "safeTxGas",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "baseGas",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "gasPrice",
-            type: "uint256",
-          },
-          {
-            internalType: "address",
-            name: "gasToken",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "refundReceiver",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "_nonce",
-            type: "uint256",
-          },
-        ],
-        name: "encodeTransactionData",
-        outputs: [
-          {
-            internalType: "bytes",
-            name: "",
-            type: "bytes",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "to",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "value",
-            type: "uint256",
-          },
-          {
-            internalType: "bytes",
-            name: "data",
-            type: "bytes",
-          },
-          {
-            internalType: "enum Enum.Operation",
-            name: "operation",
-            type: "uint8",
-          },
-          {
-            internalType: "uint256",
-            name: "safeTxGas",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "baseGas",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "gasPrice",
-            type: "uint256",
-          },
-          {
-            internalType: "address",
-            name: "gasToken",
-            type: "address",
-          },
-          {
-            internalType: "address payable",
-            name: "refundReceiver",
-            type: "address",
-          },
-          {
-            internalType: "bytes",
-            name: "signatures",
-            type: "bytes",
-          },
-        ],
-        name: "execTransaction",
-        outputs: [
-          {
-            internalType: "bool",
-            name: "success",
-            type: "bool",
-          },
-        ],
-        stateMutability: "payable",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "to",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "value",
-            type: "uint256",
-          },
-          {
-            internalType: "bytes",
-            name: "data",
-            type: "bytes",
-          },
-          {
-            internalType: "enum Enum.Operation",
-            name: "operation",
-            type: "uint8",
-          },
-        ],
-        name: "execTransactionFromModule",
-        outputs: [
-          {
-            internalType: "bool",
-            name: "success",
-            type: "bool",
-          },
-        ],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "to",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "value",
-            type: "uint256",
-          },
-          {
-            internalType: "bytes",
-            name: "data",
-            type: "bytes",
-          },
-          {
-            internalType: "enum Enum.Operation",
-            name: "operation",
-            type: "uint8",
-          },
-        ],
-        name: "execTransactionFromModuleReturnData",
-        outputs: [
-          {
-            internalType: "bool",
-            name: "success",
-            type: "bool",
-          },
-          {
-            internalType: "bytes",
-            name: "returnData",
-            type: "bytes",
-          },
-        ],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "getChainId",
-        outputs: [
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "start",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "pageSize",
-            type: "uint256",
-          },
-        ],
-        name: "getModulesPaginated",
-        outputs: [
-          {
-            internalType: "address[]",
-            name: "array",
-            type: "address[]",
-          },
-          {
-            internalType: "address",
-            name: "next",
-            type: "address",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "getOwners",
-        outputs: [
-          {
-            internalType: "address[]",
-            name: "",
-            type: "address[]",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "uint256",
-            name: "offset",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "length",
-            type: "uint256",
-          },
-        ],
-        name: "getStorageAt",
-        outputs: [
-          {
-            internalType: "bytes",
-            name: "",
-            type: "bytes",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "getThreshold",
-        outputs: [
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "to",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "value",
-            type: "uint256",
-          },
-          {
-            internalType: "bytes",
-            name: "data",
-            type: "bytes",
-          },
-          {
-            internalType: "enum Enum.Operation",
-            name: "operation",
-            type: "uint8",
-          },
-          {
-            internalType: "uint256",
-            name: "safeTxGas",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "baseGas",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "gasPrice",
-            type: "uint256",
-          },
-          {
-            internalType: "address",
-            name: "gasToken",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "refundReceiver",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "_nonce",
-            type: "uint256",
-          },
-        ],
-        name: "getTransactionHash",
-        outputs: [
-          {
-            internalType: "bytes32",
-            name: "",
-            type: "bytes32",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "module",
-            type: "address",
-          },
-        ],
-        name: "isModuleEnabled",
-        outputs: [
-          {
-            internalType: "bool",
-            name: "",
-            type: "bool",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "owner",
-            type: "address",
-          },
-        ],
-        name: "isOwner",
-        outputs: [
-          {
-            internalType: "bool",
-            name: "",
-            type: "bool",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "nonce",
-        outputs: [
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "prevOwner",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "owner",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "_threshold",
-            type: "uint256",
-          },
-        ],
-        name: "removeOwner",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "to",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "value",
-            type: "uint256",
-          },
-          {
-            internalType: "bytes",
-            name: "data",
-            type: "bytes",
-          },
-          {
-            internalType: "enum Enum.Operation",
-            name: "operation",
-            type: "uint8",
-          },
-        ],
-        name: "requiredTxGas",
-        outputs: [
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
-        ],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "handler",
-            type: "address",
-          },
-        ],
-        name: "setFallbackHandler",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "guard",
-            type: "address",
-          },
-        ],
-        name: "setGuard",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address[]",
-            name: "_owners",
-            type: "address[]",
-          },
-          {
-            internalType: "uint256",
-            name: "_threshold",
-            type: "uint256",
-          },
-          {
-            internalType: "address",
-            name: "to",
-            type: "address",
-          },
-          {
-            internalType: "bytes",
-            name: "data",
-            type: "bytes",
-          },
-          {
-            internalType: "address",
-            name: "fallbackHandler",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "paymentToken",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "payment",
-            type: "uint256",
-          },
-          {
-            internalType: "address payable",
-            name: "paymentReceiver",
-            type: "address",
-          },
-        ],
-        name: "setup",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "bytes32",
-            name: "",
-            type: "bytes32",
-          },
-        ],
-        name: "signedMessages",
-        outputs: [
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "targetContract",
-            type: "address",
-          },
-          {
-            internalType: "bytes",
-            name: "calldataPayload",
-            type: "bytes",
-          },
-        ],
-        name: "simulateAndRevert",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "prevOwner",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "oldOwner",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "newOwner",
-            type: "address",
-          },
-        ],
-        name: "swapOwner",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        stateMutability: "payable",
-        type: "receive",
-      },
-    ], // Optional. Only needed with web3.js
-    safeProxyFactoryAbi: [
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: "contract GnosisSafeProxy",
-            name: "proxy",
-            type: "address",
-          },
-          {
-            indexed: false,
-            internalType: "address",
-            name: "singleton",
-            type: "address",
-          },
-        ],
-        name: "ProxyCreation",
-        type: "event",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "_singleton",
-            type: "address",
-          },
-          {
-            internalType: "bytes",
-            name: "initializer",
-            type: "bytes",
-          },
-          {
-            internalType: "uint256",
-            name: "saltNonce",
-            type: "uint256",
-          },
-        ],
-        name: "calculateCreateProxyWithNonceAddress",
-        outputs: [
-          {
-            internalType: "contract GnosisSafeProxy",
-            name: "proxy",
-            type: "address",
-          },
-        ],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "singleton",
-            type: "address",
-          },
-          {
-            internalType: "bytes",
-            name: "data",
-            type: "bytes",
-          },
-        ],
-        name: "createProxy",
-        outputs: [
-          {
-            internalType: "contract GnosisSafeProxy",
-            name: "proxy",
-            type: "address",
-          },
-        ],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "_singleton",
-            type: "address",
-          },
-          {
-            internalType: "bytes",
-            name: "initializer",
-            type: "bytes",
-          },
-          {
-            internalType: "uint256",
-            name: "saltNonce",
-            type: "uint256",
-          },
-          {
-            internalType: "contract IProxyCreationCallback",
-            name: "callback",
-            type: "address",
-          },
-        ],
-        name: "createProxyWithCallback",
-        outputs: [
-          {
-            internalType: "contract GnosisSafeProxy",
-            name: "proxy",
-            type: "address",
-          },
-        ],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "_singleton",
-            type: "address",
-          },
-          {
-            internalType: "bytes",
-            name: "initializer",
-            type: "bytes",
-          },
-          {
-            internalType: "uint256",
-            name: "saltNonce",
-            type: "uint256",
-          },
-        ],
-        name: "createProxyWithNonce",
-        outputs: [
-          {
-            internalType: "contract GnosisSafeProxy",
-            name: "proxy",
-            type: "address",
-          },
-        ],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "proxyCreationCode",
-        outputs: [
-          {
-            internalType: "bytes",
-            name: "",
-            type: "bytes",
-          },
-        ],
-        stateMutability: "pure",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "proxyRuntimeCode",
-        outputs: [
-          {
-            internalType: "bytes",
-            name: "",
-            type: "bytes",
-          },
-        ],
-        stateMutability: "pure",
-        type: "function",
-      },
-    ], // Optional. Only needed with web3.js
-    multiSendAbi: [
-      {
-        inputs: [],
-        stateMutability: "nonpayable",
-        type: "constructor",
-      },
-      {
-        inputs: [
-          {
-            internalType: "bytes",
-            name: "transactions",
-            type: "bytes",
-          },
-        ],
-        name: "multiSend",
-        outputs: [],
-        stateMutability: "payable",
-        type: "function",
-      },
-    ], // Optional. Only needed with web3.js
-    multiSendCallOnlyAbi: [
-      {
-        inputs: [
-          {
-            internalType: "bytes",
-            name: "transactions",
-            type: "bytes",
-          },
-        ],
-        name: "multiSend",
-        outputs: [],
-        stateMutability: "payable",
-        type: "function",
-      },
-    ], // Optional. Only needed with web3.js
-    fallbackHandlerAbi: [
-      {
-        inputs: [],
-        name: "NAME",
-        outputs: [
-          {
-            internalType: "string",
-            name: "",
-            type: "string",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "VERSION",
-        outputs: [
-          {
-            internalType: "string",
-            name: "",
-            type: "string",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "bytes",
-            name: "message",
-            type: "bytes",
-          },
-        ],
-        name: "getMessageHash",
-        outputs: [
-          {
-            internalType: "bytes32",
-            name: "",
-            type: "bytes32",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "contract GnosisSafe",
-            name: "safe",
-            type: "address",
-          },
-          {
-            internalType: "bytes",
-            name: "message",
-            type: "bytes",
-          },
-        ],
-        name: "getMessageHashForSafe",
-        outputs: [
-          {
-            internalType: "bytes32",
-            name: "",
-            type: "bytes32",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "getModules",
-        outputs: [
-          {
-            internalType: "address[]",
-            name: "",
-            type: "address[]",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "bytes32",
-            name: "_dataHash",
-            type: "bytes32",
-          },
-          {
-            internalType: "bytes",
-            name: "_signature",
-            type: "bytes",
-          },
-        ],
-        name: "isValidSignature",
-        outputs: [
-          {
-            internalType: "bytes4",
-            name: "",
-            type: "bytes4",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "bytes",
-            name: "_data",
-            type: "bytes",
-          },
-          {
-            internalType: "bytes",
-            name: "_signature",
-            type: "bytes",
-          },
-        ],
-        name: "isValidSignature",
-        outputs: [
-          {
-            internalType: "bytes4",
-            name: "",
-            type: "bytes4",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "",
-            type: "address",
-          },
-          {
-            internalType: "uint256[]",
-            name: "",
-            type: "uint256[]",
-          },
-          {
-            internalType: "uint256[]",
-            name: "",
-            type: "uint256[]",
-          },
-          {
-            internalType: "bytes",
-            name: "",
-            type: "bytes",
-          },
-        ],
-        name: "onERC1155BatchReceived",
-        outputs: [
-          {
-            internalType: "bytes4",
-            name: "",
-            type: "bytes4",
-          },
-        ],
-        stateMutability: "pure",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
-          {
-            internalType: "bytes",
-            name: "",
-            type: "bytes",
-          },
-        ],
-        name: "onERC1155Received",
-        outputs: [
-          {
-            internalType: "bytes4",
-            name: "",
-            type: "bytes4",
-          },
-        ],
-        stateMutability: "pure",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
-          {
-            internalType: "bytes",
-            name: "",
-            type: "bytes",
-          },
-        ],
-        name: "onERC721Received",
-        outputs: [
-          {
-            internalType: "bytes4",
-            name: "",
-            type: "bytes4",
-          },
-        ],
-        stateMutability: "pure",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "targetContract",
-            type: "address",
-          },
-          {
-            internalType: "bytes",
-            name: "calldataPayload",
-            type: "bytes",
-          },
-        ],
-        name: "simulate",
-        outputs: [
-          {
-            internalType: "bytes",
-            name: "response",
-            type: "bytes",
-          },
-        ],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "bytes4",
-            name: "interfaceId",
-            type: "bytes4",
-          },
-        ],
-        name: "supportsInterface",
-        outputs: [
-          {
-            internalType: "bool",
-            name: "",
-            type: "bool",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
-          {
-            internalType: "bytes",
-            name: "",
-            type: "bytes",
-          },
-          {
-            internalType: "bytes",
-            name: "",
-            type: "bytes",
-          },
-        ],
-        name: "tokensReceived",
-        outputs: [],
-        stateMutability: "pure",
-        type: "function",
-      },
-    ], // Optional. Only needed with web3.js
-    signMessageLibAbi: [
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: "bytes32",
-            name: "msgHash",
-            type: "bytes32",
-          },
-        ],
-        name: "SignMsg",
-        type: "event",
-      },
-      {
-        inputs: [
-          {
-            internalType: "bytes",
-            name: "message",
-            type: "bytes",
-          },
-        ],
-        name: "getMessageHash",
-        outputs: [
-          {
-            internalType: "bytes32",
-            name: "",
-            type: "bytes32",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "bytes",
-            name: "_data",
-            type: "bytes",
-          },
-        ],
-        name: "signMessage",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-    ], // Optional. Only needed with web3.js
-    createCallAbi: [
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: "address",
-            name: "newContract",
-            type: "address",
-          },
-        ],
-        name: "ContractCreation",
-        type: "event",
-      },
-      {
-        inputs: [
-          {
-            internalType: "uint256",
-            name: "value",
-            type: "uint256",
-          },
-          {
-            internalType: "bytes",
-            name: "deploymentData",
-            type: "bytes",
-          },
-        ],
-        name: "performCreate",
-        outputs: [
-          {
-            internalType: "address",
-            name: "newContract",
-            type: "address",
-          },
-        ],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "uint256",
-            name: "value",
-            type: "uint256",
-          },
-          {
-            internalType: "bytes",
-            name: "deploymentData",
-            type: "bytes",
-          },
-          {
-            internalType: "bytes32",
-            name: "salt",
-            type: "bytes32",
-          },
-        ],
-        name: "performCreate2",
-        outputs: [
-          {
-            internalType: "address",
-            name: "newContract",
-            type: "address",
-          },
-        ],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-    ], // Optional. Only needed with web3.js
-    simulateTxAccessorAbi: [
-      {
-        inputs: [],
-        stateMutability: "nonpayable",
-        type: "constructor",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "to",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "value",
-            type: "uint256",
-          },
-          {
-            internalType: "bytes",
-            name: "data",
-            type: "bytes",
-          },
-          {
-            internalType: "enum Enum.Operation",
-            name: "operation",
-            type: "uint8",
-          },
-        ],
-        name: "simulate",
-        outputs: [
-          {
-            internalType: "uint256",
-            name: "estimate",
-            type: "uint256",
-          },
-          {
-            internalType: "bool",
-            name: "success",
-            type: "bool",
-          },
-          {
-            internalType: "bytes",
-            name: "returnData",
-            type: "bytes",
-          },
-        ],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-    ], // Optional. Only needed with web3.js
+    safeMasterCopyAbi: safeMasterCopyAbi, // Optional. Only needed with web3.js
+    safeProxyFactoryAbi: safeProxyFactoryAbi, // Optional. Only needed with web3.js
+    multiSendAbi: multiSendAbi, // Optional. Only needed with web3.js
+    multiSendCallOnlyAbi: multiSendCallOnlyAbi, // Optional. Only needed with web3.js
+    fallbackHandlerAbi: fallbackHandlerAbi, // Optional. Only needed with web3.js
+    signMessageLibAbi: signMessageLibAbi, // Optional. Only needed with web3.js
+    createCallAbi: createCallAbi, // Optional. Only needed with web3.js
+    simulateTxAccessorAbi: simulateTxAccessorAbi, // Optional. Only needed with web3.js
+  },
+  // arbitrum
+  [42161]: {
+    safeMasterCopyAddress: "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
+    safeProxyFactoryAddress: "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2",
+    multiSendAddress: "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761",
+    multiSendCallOnlyAddress: "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D",
+    fallbackHandlerAddress: "0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4",
+    signMessageLibAddress: "0xA65387F16B013cf2Af4605Ad8aA5ec25a2cbA3a2",
+    createCallAddress: "0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4",
+    simulateTxAccessorAddress: "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
+    safeMasterCopyAbi: safeMasterCopyAbi, // Optional. Only needed with web3.js
+    safeProxyFactoryAbi: safeProxyFactoryAbi, // Optional. Only needed with web3.js
+    multiSendAbi: multiSendAbi, // Optional. Only needed with web3.js
+    multiSendCallOnlyAbi: multiSendCallOnlyAbi, // Optional. Only needed with web3.js
+    fallbackHandlerAbi: fallbackHandlerAbi, // Optional. Only needed with web3.js
+    signMessageLibAbi: signMessageLibAbi, // Optional. Only needed with web3.js
+    createCallAbi: createCallAbi, // Optional. Only needed with web3.js
+    simulateTxAccessorAbi: simulateTxAccessorAbi, // Optional. Only needed with web3.js
+  },
+  // BSC
+  [56]: {
+    safeMasterCopyAddress: "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
+    safeProxyFactoryAddress: "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2",
+    multiSendAddress: "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761",
+    multiSendCallOnlyAddress: "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D",
+    fallbackHandlerAddress: "0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4",
+    signMessageLibAddress: "0xA65387F16B013cf2Af4605Ad8aA5ec25a2cbA3a2",
+    createCallAddress: "0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4",
+    simulateTxAccessorAddress: "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
+    safeMasterCopyAbi: safeMasterCopyAbi, // Optional. Only needed with web3.js
+    safeProxyFactoryAbi: safeProxyFactoryAbi, // Optional. Only needed with web3.js
+    multiSendAbi: multiSendAbi, // Optional. Only needed with web3.js
+    multiSendCallOnlyAbi: multiSendCallOnlyAbi, // Optional. Only needed with web3.js
+    fallbackHandlerAbi: fallbackHandlerAbi, // Optional. Only needed with web3.js
+    signMessageLibAbi: signMessageLibAbi, // Optional. Only needed with web3.js
+    createCallAbi: createCallAbi, // Optional. Only needed with web3.js
+    simulateTxAccessorAbi: simulateTxAccessorAbi, // Optional. Only needed with web3.js
+  },
+  // scroll
+  [534352]: {
+    safeMasterCopyAddress: "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
+    safeProxyFactoryAddress: "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2",
+    multiSendAddress: "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761",
+    multiSendCallOnlyAddress: "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D",
+    fallbackHandlerAddress: "0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4",
+    signMessageLibAddress: "0xA65387F16B013cf2Af4605Ad8aA5ec25a2cbA3a2",
+    createCallAddress: "0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4",
+    simulateTxAccessorAddress: "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
+    safeMasterCopyAbi: safeMasterCopyAbi, // Optional. Only needed with web3.js
+    safeProxyFactoryAbi: safeProxyFactoryAbi, // Optional. Only needed with web3.js
+    multiSendAbi: multiSendAbi, // Optional. Only needed with web3.js
+    multiSendCallOnlyAbi: multiSendCallOnlyAbi, // Optional. Only needed with web3.js
+    fallbackHandlerAbi: fallbackHandlerAbi, // Optional. Only needed with web3.js
+    signMessageLibAbi: signMessageLibAbi, // Optional. Only needed with web3.js
+    createCallAbi: createCallAbi, // Optional. Only needed with web3.js
+    simulateTxAccessorAbi: simulateTxAccessorAbi, // Optional. Only needed with web3.js
   },
 };
 
@@ -2317,6 +776,14 @@ export const dropsNetworksChaindId = [
     chainId: 1,
     networkId: "0x1",
   },
+  {
+    chainId: 80085,
+    networkId: "0x138d5",
+  },
+  {
+    chainId: 168587773,
+    networkId: "0xa0c71fd",
+  },
 ];
 
 export const stationNetworksChainId = [
@@ -2336,6 +803,12 @@ export const stationNetworksChainId = [
     chainId: 59144,
     networkId: "0xe708",
   },
+  { chainId: 534352, networkId: "0x82750" },
 ];
 
-export const ALLOWED_NETWORKS_FOR_STATION = ["0x89", "0x1", "0xe708"];
+export const ALLOWED_NETWORKS_FOR_STATION = [
+  "0x89",
+  "0x1",
+  "0xe708",
+  "0x82750",
+];

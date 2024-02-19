@@ -11,10 +11,12 @@ import {
 } from "viem/chains";
 import {
   CHAIN_CONFIG,
+  beraMainnetWalletConnect,
   lineaMainnetWalletConnect,
   mantaMainnet,
   mantleMainnetViem,
   scrollMainnet,
+  blastMainnetWalletConnect,
 } from "utils/constants";
 
 const viemChains = {
@@ -30,13 +32,15 @@ const viemChains = {
   "0x82750": scrollMainnet,
   "0xa9": mantaMainnet,
   "0x28c5f": taikoJolnir,
+  "0x138d5": beraMainnetWalletConnect,
   "0x5": goerli,
+  "0xa0c71fd": blastMainnetWalletConnect,
 };
 
 export const getPublicClient = (networkId) => {
   const client = createPublicClient({
     chain: viemChains[networkId],
-    transport: http(CHAIN_CONFIG[networkId]?.appRpcUrl),
+    transport: http(CHAIN_CONFIG[networkId]?.appRpcUrl || window.ethereum),
   });
 
   return client;

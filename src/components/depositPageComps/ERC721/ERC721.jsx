@@ -3,7 +3,10 @@ import DepositPreRequisites from "../DepositPreRequisites";
 import { useDispatch, useSelector } from "react-redux";
 import { getUploadedNFT } from "api/assets";
 import { convertFromWeiGovernance, getImageURL } from "utils/globalFunctions";
-import { queryLatestMembersFromSubgraph } from "utils/stationsSubgraphHelper";
+import {
+  queryLatestMembersFromSubgraph,
+  queryStationDataFromSubgraph,
+} from "utils/stationsSubgraphHelper";
 import dayjs from "dayjs";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useAppContractMethods from "hooks/useAppContractMethods";
@@ -19,6 +22,7 @@ import { setAlertData } from "redux/reducers/alert";
 import { formatEther } from "viem";
 import { getPublicClient } from "utils/viemConfig";
 import { isNative } from "utils/helper";
+import { addClubData } from "redux/reducers/club";
 
 const DepositInputComponents = ({ depositPreRequisitesProps, mintProps }) => {
   return (
@@ -42,6 +46,7 @@ const ERC721 = ({
   isSignable,
   allowanceValue,
   fetchCurrentAllowance,
+  fetchErc721ContractDetails,
 }) => {
   const [tokenDetails, setTokenDetails] = useState({
     tokenDecimal: 0,
@@ -82,7 +87,9 @@ const ERC721 = ({
     getTokenName,
   } = useCommonContractMethods();
 
-  const { buyGovernanceTokenERC721DAO } = useAppContractMethods({ daoAddress });
+  const { buyGovernanceTokenERC721DAO, getDaoDetails } = useAppContractMethods({
+    daoAddress,
+  });
 
   const clubData = useSelector((state) => {
     return state.club.clubData;
@@ -147,6 +154,51 @@ const ERC721 = ({
     }
   };
 
+  const fetchStationData = async () => {
+    try {
+      const data = await queryStationDataFromSubgraph(daoAddress, networkId);
+      const daoDetails = await getDaoDetails();
+      const depositTokenAddress = daoDetails.depositTokenAddress;
+
+      // Loop through the stations in data and add depositTokenAddress to each station
+      const updatedData = {
+        ...data,
+        stations: data?.stations?.map((station) => ({
+          ...station,
+          depositTokenAddress: depositTokenAddress,
+        })),
+      };
+      if (updatedData?.stations?.length > 0) {
+        dispatch(
+          addClubData({
+            gnosisAddress: updatedData.stations[0].gnosisAddress,
+            isGtTransferable: updatedData.stations[0].isGtTransferable,
+            name: updatedData.stations[0].name,
+            ownerAddress: updatedData.stations[0].ownerAddress,
+            symbol: updatedData.stations[0].symbol,
+            tokenType: updatedData.stations[0].tokenType,
+            membersCount: updatedData.stations[0].membersCount,
+            deployedTime: updatedData.stations[0].timeStamp,
+            imgUrl: updatedData.stations[0].imageUrl,
+            minDepositAmount: updatedData.stations[0].minDepositAmount,
+            maxDepositAmount: updatedData.stations[0].maxDepositAmount,
+            pricePerToken: updatedData.stations[0].pricePerToken,
+            isGovernanceActive: updatedData.stations[0].isGovernanceActive,
+            quorum: updatedData.stations[0].quorum,
+            threshold: updatedData.stations[0].threshold,
+            raiseAmount: updatedData.stations[0].raiseAmount,
+            totalAmountRaised: updatedData.stations[0].totalAmountRaised,
+            distributionAmount: updatedData.stations[0].distributionAmount,
+            maxTokensPerUser: updatedData.stations[0].maxTokensPerUser,
+            depositTokenAddress: updatedData.stations[0].depositTokenAddress,
+          }),
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const approveERC721Handler = async () => {
     setLoading(true);
     try {
@@ -197,9 +249,17 @@ const ERC721 = ({
           ? (clubData?.pricePerToken * count).toString()
           : "0",
       );
+      await whitelistOnDeposit(walletAddress);
+
+      setTimeout(() => {
+        fetchErc721ContractDetails();
+        fetchTokenDetails();
+        fetchActivities();
+        fetchStationData();
+      }, 500);
+
       setLoading(false);
       setClaimSuccessfull(true);
-      await whitelistOnDeposit(walletAddress);
     } catch (error) {
       console.log(error);
       setLoading(false);
@@ -234,7 +294,7 @@ const ERC721 = ({
 
   useEffect(() => {
     fetchTokenDetails();
-  }, [daoAddress]);
+  }, [daoAddress, networkId, walletAddress]);
 
   useEffect(() => {
     const fetchSubgraphData = async () => {

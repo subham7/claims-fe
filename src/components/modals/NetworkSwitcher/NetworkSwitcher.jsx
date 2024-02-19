@@ -13,7 +13,7 @@ const NetworkSwitcher = ({ onClose, supportedNetworks }) => {
   const switchNetworkHandler = async (networkId) => {
     setLoading(true);
     if (typeof window !== "undefined") {
-      if (window.ethereum.networkVersion !== networkId) {
+      if (window?.ethereum?.networkVersion !== networkId) {
         try {
           await requestEthereumChain("wallet_switchEthereumChain", [
             { chainId: networkId },

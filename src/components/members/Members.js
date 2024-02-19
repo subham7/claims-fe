@@ -359,7 +359,7 @@ const Members = ({ daoAddress }) => {
                             data.depositAmount,
                             tokenDetails.tokenDecimal,
                           ),
-                        ).toFixed(4)}{" "}
+                        ).toFixed(5)}{" "}
                         {tokenDetails.tokenSymbol}
                       </Typography>
                     </TableCell>
