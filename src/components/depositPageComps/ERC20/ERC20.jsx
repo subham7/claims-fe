@@ -418,6 +418,7 @@ const ERC20 = ({
         socialData={clubInfo}
         isDeposit={true}
         bio={clubInfo?.bio}
+        imgUrl={clubInfo?.bannerImage}
         eligibilityProps={{
           gatedTokenDetails: gatedTokenDetails,
           isDeposit: true,

@@ -153,6 +153,7 @@ const EditDetails = ({
         twitter: values.twitter,
         discord: values.discord,
         telegram: values.telegram,
+        bannerImage: fileLink ? fileLink : bannerData?.bannerImage,
       });
     }
   };
@@ -196,9 +197,7 @@ const EditDetails = ({
       setLoaderOpen(true);
       try {
         let fileLink = "";
-        if (isClaims) {
-          fileLink = await readFileAsync();
-        }
+        fileLink = await readFileAsync();
         const res = await sendRequest(values, fileLink);
         updateUIAfterSuccess();
       } catch (error) {
@@ -268,53 +267,51 @@ const EditDetails = ({
           padding: "3rem",
         }}>
         <form className={classes.form}>
-          {isClaims ? (
-            <Grid item md={6} mb={2}>
-              <Typography variant="inherit" className={classes.wrapTextIcon}>
-                Upload Banner{" "}
-              </Typography>
-              <span className={classes.smallText}>
-                (recommended dimension - 16:8)
-              </span>
-              <p className={classes.error}>
-                {selectedFile?.size > FIVE_MB
-                  ? "Image exceeds max size, please add image below 5 mb"
-                  : null}
-              </p>
+          <Grid item md={6} mb={2}>
+            <Typography variant="inherit" className={classes.wrapTextIcon}>
+              Upload Banner{" "}
+            </Typography>
+            <span className={classes.smallText}>
+              (recommended dimension - 16:8)
+            </span>
+            <p className={classes.error}>
+              {selectedFile?.size > FIVE_MB
+                ? "Image exceeds max size, please add image below 5 mb"
+                : null}
+            </p>
 
-              {bannerData?.imageLinks?.banner || selectedFile ? (
-                <div className={classes.bannerContainer}>
-                  <Image
-                    className={classes.bannerImage}
-                    src={
-                      selectedFile
-                        ? URL.createObjectURL(selectedFile)
-                        : bannerData?.imageLinks?.banner
-                    }
-                    fill
-                    alt="Banner Image"
-                  />
-                </div>
-              ) : null}
-              <Button
-                variant="normal"
-                onClick={(e) => {
-                  uploadInputRef.current.click();
-                }}>
-                <UploadIcon fontSize="8px" />
-                Upload
-              </Button>
-              <input
-                name="banner"
-                accept="image/*"
-                type="file"
-                id="select-image"
-                style={{ display: "none" }}
-                ref={uploadInputRef}
-                onChange={selectFile}
-              />
-            </Grid>
-          ) : null}
+            {bannerData?.imageLinks?.banner || selectedFile ? (
+              <div className={classes.bannerContainer}>
+                <Image
+                  className={classes.bannerImage}
+                  src={
+                    selectedFile
+                      ? URL.createObjectURL(selectedFile)
+                      : bannerData?.imageLinks?.banner
+                  }
+                  fill
+                  alt="Banner Image"
+                />
+              </div>
+            ) : null}
+            <Button
+              variant="normal"
+              onClick={(e) => {
+                uploadInputRef.current.click();
+              }}>
+              <UploadIcon fontSize="8px" />
+              Upload
+            </Button>
+            <input
+              name="banner"
+              accept="image/*"
+              type="file"
+              id="select-image"
+              style={{ display: "none" }}
+              ref={uploadInputRef}
+              onChange={selectFile}
+            />
+          </Grid>
 
           <Grid item md={6} mb={2}>
             <Typography variant="inherit" className={classes.wrapTextIcon}>
