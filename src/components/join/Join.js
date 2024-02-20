@@ -324,6 +324,7 @@ const Join = ({ daoAddress, routeNetworkId }) => {
           allowanceValue={allowanceValue}
           fetchCurrentAllowance={fetchCurrentAllowance}
           fetchErc721ContractDetails={fetchErc721ContractDetails}
+          routeNetworkId={routeNetworkId}
         />
       ) : null}
 

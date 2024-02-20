@@ -203,12 +203,15 @@ const ERC20 = ({
 
   const fetchStationData = async () => {
     try {
-      const data = await queryStationDataFromSubgraph(daoAddress, networkId);
+      const data = await queryStationDataFromSubgraph(
+        daoAddress,
+        routeNetworkId,
+      );
       if (data?.stations?.length > 0) {
         dispatch(
           addClubData({
             ...clubData,
-            totalAmountRaised: data.stations[0].totalAmountRaised,
+            totalAmountRaised: data?.stations[0]?.totalAmountRaised,
           }),
         );
       }
@@ -265,7 +268,6 @@ const ERC20 = ({
 
   const fetchTokenDetails = async () => {
     try {
-      debugger;
       const depositTokenAddress = clubData.depositTokenAddress;
       const isNativeToken = isNative(
         clubData.depositTokenAddress,
