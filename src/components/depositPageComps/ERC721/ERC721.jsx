@@ -103,6 +103,13 @@ const ERC721 = ({
       );
       if (users) setMembers(users);
     } catch (error) {
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Unable to fetch latest Activity!",
+          severity: "error",
+        }),
+      );
       console.log(error);
     }
   };
@@ -173,6 +180,13 @@ const ERC721 = ({
         );
       }
     } catch (error) {
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Unable to fetch Station Data!",
+          severity: "error",
+        }),
+      );
       console.log(error);
     }
   };
@@ -262,6 +276,13 @@ const ERC721 = ({
       );
       setUploadedDocInfo(document);
     } catch (error) {
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Unable to fetch docs !",
+          severity: "error",
+        }),
+      );
       console.log(error);
     }
   };
@@ -285,6 +306,13 @@ const ERC721 = ({
           setImgUrl(imageUrl);
         }
       } catch (error) {
+        dispatch(
+          setAlertData({
+            open: true,
+            message: "Unable to fetch data from subgraph !",
+            severity: "error",
+          }),
+        );
         console.log(error);
       }
     };

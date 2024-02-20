@@ -327,6 +327,13 @@ const ERC20 = ({
       );
       setUploadedDocInfo(document);
     } catch (error) {
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Unable to fetch docs!",
+          severity: "error",
+        }),
+      );
       console.error(error);
     }
   };
