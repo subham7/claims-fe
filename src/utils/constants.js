@@ -57,7 +57,7 @@ export const CHAIN_CONFIG = {
     claimFactoryAddress: "0x47e6bFA71e490ADC8f0E33385aAdF85282E71002",
     factoryContractAddress: "0x726D3e4fBD321c4cD88769C16f5BAFfaC98D95Ad",
     stationSubgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/subham7/stnx-be-polygon",
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-polygon/prod/gn",
     claimsSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-polygon/prod/gn",
     covalentNetworkName: "matic-mainnet",
