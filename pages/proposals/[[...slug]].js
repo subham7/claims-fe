@@ -25,9 +25,13 @@ const ProposalPage = () => {
   return (
     <Layout daoAddress={daoAddress} networkId={networkId} page={2}>
       {proposalId ? (
-        <ProposalDetail pid={proposalId} daoAddress={daoAddress} />
+        <ProposalDetail
+          pid={proposalId}
+          daoAddress={daoAddress}
+          routeNetworkId={networkId}
+        />
       ) : (
-        <Proposal daoAddress={daoAddress} />
+        <Proposal daoAddress={daoAddress} routeNetworkId={networkId} />
       )}
     </Layout>
   );

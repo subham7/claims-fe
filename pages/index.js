@@ -7,7 +7,6 @@ import Layout from "../src/components/layouts/layout";
 import { BsFillPlayFill } from "react-icons/bs";
 import VideoModal from "../src/components/modals/VideoModal";
 import { useNetwork } from "wagmi";
-import useClubFetch from "hooks/useClubFetch";
 import {
   ALLOWED_NETWORKS_FOR_STATION,
   stationNetworksChainId,
@@ -115,7 +114,6 @@ const App = () => {
 
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
-  useClubFetch({ networkId });
   const router = useRouter();
 
   const showStationsHandler = async () => {

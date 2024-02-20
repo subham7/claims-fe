@@ -11,16 +11,13 @@ import { proposalData } from "utils/proposalData.js";
 import { isNative, shortAddress } from "utils/helper.js";
 import { useNetwork } from "wagmi";
 
-const ProposalCard = ({ proposal, daoAddress }) => {
+const ProposalCard = ({ proposal, daoAddress, routeNetworkId }) => {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
   const classes = ProposalCardStyles();
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
-  });
-  const factoryData = useSelector((state) => {
-    return state.club.factoryData;
   });
 
   const clubData = useSelector((state) => {
@@ -33,7 +30,9 @@ const ProposalCard = ({ proposal, daoAddress }) => {
   });
   const [proposalDetails, setProposalDetails] = useState({});
 
-  const { getDecimals, getTokenSymbol } = useCommonContractMethods();
+  const { getDecimals, getTokenSymbol } = useCommonContractMethods({
+    routeNetworkId,
+  });
 
   const fetchTokenDetails = useCallback(async () => {
     try {
@@ -120,7 +119,7 @@ const ProposalCard = ({ proposal, daoAddress }) => {
       data: proposal.commands[0],
       decimals: tokenDetails.decimals,
       symbol: tokenDetails.symbol,
-      factoryData,
+      clubData,
     });
     setProposalDetails(response);
   };

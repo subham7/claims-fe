@@ -1,5 +1,5 @@
-import { Button, Typography } from "@mui/material";
-import React from "react";
+import { Button, CircularProgress, Typography } from "@mui/material";
+import React, { useState } from "react";
 import { AiFillMinusCircle, AiFillPlusCircle } from "react-icons/ai";
 import {
   convertFromWeiGovernance,
@@ -7,6 +7,9 @@ import {
 } from "utils/globalFunctions";
 import classes from "./Mint.module.scss";
 import { CHAIN_CONFIG } from "utils/constants";
+import { useAccount } from "wagmi";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { switchNetworkHandler } from "utils/helper";
 
 const Mint = ({
   clubData,
@@ -28,7 +31,20 @@ const Mint = ({
   tokenDetails,
   networkId,
   userBalance,
+  routeNetworkId,
 }) => {
+  const { address: walletAddress } = useAccount();
+  const { open } = useWeb3Modal();
+  const [loading, setLoading] = useState(false);
+
+  const connectWalletHandler = async () => {
+    try {
+      await open();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const inputValue = clubData.pricePerToken * count;
 
   const isButtonDisabled = () => {
@@ -73,7 +89,7 @@ const Mint = ({
       </h2>
       <h5>Your balance - {Number(userBalance ?? 0).toFixed(4)}</h5>
 
-      <div>
+      <div className={classes.flex}>
         <div className={classes.counterContainer}>
           <div className={classes.buttons}>
             <AiFillMinusCircle
@@ -93,27 +109,63 @@ const Mint = ({
             />
           </div>
         </div>
-        <Button
-          onClick={
-            Number(inputValue) <= allowanceValue &&
-            clubData.depositTokenAddress !==
-              CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
-              ? claimNFTHandler
-              : approveERC721Handler
-          }
-          sx={{
-            width: "130px",
-          }}
-          disabled={isButtonDisabled()}
-          variant="contained">
-          {hasClaimed
-            ? "Minted"
-            : Number(inputValue) <= allowanceValue &&
+
+        {walletAddress && networkId === routeNetworkId ? (
+          <Button
+            onClick={
+              Number(inputValue) <= allowanceValue &&
               clubData.depositTokenAddress !==
                 CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
-            ? "Mint"
-            : "Approve"}
-        </Button>
+                ? claimNFTHandler
+                : approveERC721Handler
+            }
+            sx={{
+              width: "100%",
+              padding: "10px 20px",
+              margin: "10px 0",
+              fontFamily: "inherit",
+            }}
+            disabled={isButtonDisabled()}
+            variant="contained">
+            {hasClaimed
+              ? "Minted"
+              : Number(inputValue) <= allowanceValue &&
+                clubData.depositTokenAddress !==
+                  CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
+              ? "Mint"
+              : "Approve"}
+          </Button>
+        ) : walletAddress && networkId !== routeNetworkId ? (
+          <Button
+            onClick={() => {
+              switchNetworkHandler(routeNetworkId, setLoading);
+            }}
+            variant="contained"
+            sx={{
+              width: "100%",
+              padding: "10px 20px",
+              margin: "10px 0",
+              fontFamily: "inherit",
+            }}>
+            {loading ? (
+              <CircularProgress size={25} />
+            ) : (
+              `Switch to ${CHAIN_CONFIG[routeNetworkId]?.shortName}`
+            )}
+          </Button>
+        ) : (
+          <Button
+            onClick={connectWalletHandler}
+            variant="contained"
+            sx={{
+              width: "100%",
+              padding: "10px 0",
+              margin: "10px 0",
+              fontFamily: "inherit",
+            }}>
+            Connect
+          </Button>
+        )}
       </div>
 
       <Typography variant="inherit">

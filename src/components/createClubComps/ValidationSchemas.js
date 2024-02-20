@@ -336,7 +336,6 @@ export const getProposalValidationSchema = ({
             try {
               const { pricePerToken, depositTokenAddress } = factoryData;
               const decimals = await getDecimals(depositTokenAddress);
-              debugger;
               if (
                 Number(value) >
                 Number(convertFromWeiGovernance(pricePerToken, decimals))
