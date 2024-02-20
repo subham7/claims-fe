@@ -41,7 +41,6 @@ const Settings = ({ daoAddress }) => {
     nftURI: "",
     ownerFee: 0,
     nftMinted: 0,
-    balanceOfClubToken: 0,
     assetsStoredOnGnosis: true,
   });
   const [erc20TokenDetails, setErc20TokenDetails] = useState({
@@ -85,7 +84,6 @@ const Settings = ({ daoAddress }) => {
     getERC20DAOdetails,
     getERC721DAOdetails,
     getERC20TotalSupply,
-    getDaoBalance,
     getNftOwnersCount,
   } = useAppContractMethods({ daoAddress });
 
@@ -94,7 +92,6 @@ const Settings = ({ daoAddress }) => {
 
   const fetchErc20ContractDetails = useCallback(async () => {
     try {
-      const balanceOfClubToken = await getDaoBalance();
       const erc20Data = await getERC20DAOdetails();
       const erc20DaoDecimal = await getDecimals(daoAddress);
       const clubTokensMinted = await getERC20TotalSupply();
@@ -107,7 +104,6 @@ const Settings = ({ daoAddress }) => {
           isGovernance: erc20Data.isGovernanceActive,
           decimals: erc20DaoDecimal,
           clubTokensMinted: clubTokensMinted,
-          balanceOfClubToken: convertFromWeiGovernance(balanceOfClubToken, 18),
           isTokenGated: clubData.isTokenGatingApplied,
           minDeposit: clubData.minDepositPerUser,
           maxDeposit: clubData.maxDepositPerUser,
@@ -165,7 +161,6 @@ const Settings = ({ daoAddress }) => {
     try {
       const erc721Data = await getERC721DAOdetails();
 
-      const balanceOfClubToken = await getDaoBalance(true);
       const nftMinted = await getNftOwnersCount();
 
       if (erc721Data && clubData) {
@@ -177,7 +172,6 @@ const Settings = ({ daoAddress }) => {
           isGovernance: erc721Data.isGovernanceActive,
           maxTokensPerUser: erc721Data.maxTokensPerUser,
           isTotalSupplyUnlimited: erc721Data.isNftTotalSupplyUnlimited,
-          balanceOfClubToken: balanceOfClubToken,
           nftMinted: nftMinted,
           isTransferable: erc721Data.isTransferable,
           createdBy: erc721Data.ownerAddress,

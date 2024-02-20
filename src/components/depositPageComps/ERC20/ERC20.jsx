@@ -93,7 +93,7 @@ const ERC20 = ({
     useCommonContractMethods();
   const publicClient = getPublicClient(networkId);
 
-  const { buyGovernanceTokenERC20DAO, getDaoDetails } = useAppContractMethods({
+  const { buyGovernanceTokenERC20DAO } = useAppContractMethods({
     daoAddress,
   });
   const { address: walletAddress } = useAccount();
@@ -201,40 +201,11 @@ const ERC20 = ({
   const fetchStationData = async () => {
     try {
       const data = await queryStationDataFromSubgraph(daoAddress, networkId);
-      const daoDetails = await getDaoDetails();
-      const depositTokenAddress = daoDetails.depositTokenAddress;
-
-      // Loop through the stations in data and add depositTokenAddress to each station
-      const updatedData = {
-        ...data,
-        stations: data?.stations?.map((station) => ({
-          ...station,
-          depositTokenAddress: depositTokenAddress,
-        })),
-      };
-      if (updatedData?.stations?.length > 0) {
+      if (data?.stations?.length > 0) {
         dispatch(
           addClubData({
-            gnosisAddress: updatedData.stations[0].gnosisAddress,
-            isGtTransferable: updatedData.stations[0].isGtTransferable,
-            name: updatedData.stations[0].name,
-            ownerAddress: updatedData.stations[0].ownerAddress,
-            symbol: updatedData.stations[0].symbol,
-            tokenType: updatedData.stations[0].tokenType,
-            membersCount: updatedData.stations[0].membersCount,
-            deployedTime: updatedData.stations[0].timeStamp,
-            imgUrl: updatedData.stations[0].imageUrl,
-            minDepositAmount: updatedData.stations[0].minDepositAmount,
-            maxDepositAmount: updatedData.stations[0].maxDepositAmount,
-            pricePerToken: updatedData.stations[0].pricePerToken,
-            isGovernanceActive: updatedData.stations[0].isGovernanceActive,
-            quorum: updatedData.stations[0].quorum,
-            threshold: updatedData.stations[0].threshold,
-            raiseAmount: updatedData.stations[0].raiseAmount,
-            totalAmountRaised: updatedData.stations[0].totalAmountRaised,
-            distributionAmount: updatedData.stations[0].distributionAmount,
-            maxTokensPerUser: updatedData.stations[0].maxTokensPerUser,
-            depositTokenAddress: updatedData.stations[0].depositTokenAddress,
+            ...clubData,
+            totalAmountRaised: data.stations[0].totalAmountRaised,
           }),
         );
       }

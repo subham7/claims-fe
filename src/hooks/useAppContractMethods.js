@@ -70,11 +70,7 @@ const useAppContractMethods = (params) => {
         functionName: "getDAOdetails",
         args: [stationAddress],
         account: walletAddress,
-        networkId: isCrossChain
-          ? networkId
-          : routeNetworkId
-          ? routeNetworkId
-          : networkId,
+        networkId: routeNetworkId ?? networkId,
       });
 
       return response
@@ -104,7 +100,7 @@ const useAppContractMethods = (params) => {
         functionName: "getERC20DAOdetails",
         args: [],
         account: walletAddress,
-        networkId: routeNetworkId ? routeNetworkId : networkId,
+        networkId: routeNetworkId ?? networkId,
       });
 
       return response
@@ -127,7 +123,7 @@ const useAppContractMethods = (params) => {
       functionName: "getERC721DAOdetails",
       args: [],
       account: walletAddress,
-      networkId,
+      networkId: routeNetworkId ?? networkId,
     });
 
     return response
@@ -147,7 +143,7 @@ const useAppContractMethods = (params) => {
       functionName: "getTokenGatingDetails",
       args: [daoAddress],
       account: walletAddress,
-      networkId,
+      networkId: routeNetworkId ?? networkId,
     });
 
     response = response?.map((item) => {
@@ -167,7 +163,7 @@ const useAppContractMethods = (params) => {
       functionName: "balanceOf",
       args: [walletAddress],
       account: walletAddress,
-      networkId,
+      networkId: routeNetworkId ?? networkId,
     });
 
     return Number(response ?? 0);
@@ -180,7 +176,7 @@ const useAppContractMethods = (params) => {
       functionName: "totalSupply",
       args: [],
       account: walletAddress,
-      networkId,
+      networkId: routeNetworkId ?? networkId,
     });
 
     return Number(response ?? 0);
@@ -194,7 +190,7 @@ const useAppContractMethods = (params) => {
         functionName: "_tokenIdTracker",
         args: [],
         account: walletAddress,
-        networkId,
+        networkId: routeNetworkId ?? networkId,
       });
       return Number(response ?? 0);
     } catch (error) {
