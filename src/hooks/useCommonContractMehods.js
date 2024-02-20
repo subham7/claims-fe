@@ -10,10 +10,10 @@ import { encodePacked } from "viem";
 import { CHAIN_CONFIG, ZERO_ADDRESS } from "utils/constants";
 import { getPublicClient } from "utils/viemConfig";
 
-const useCommonContractMethods = ({ routeNetworkId }) => {
+const useCommonContractMethods = (params) => {
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
-  const networkId = routeNetworkId ?? "0x" + chain?.id.toString(16);
+  const networkId = params?.routeNetworkId ?? "0x" + chain?.id.toString(16);
 
   const getTokenSymbol = async (contractAddress) => {
     try {

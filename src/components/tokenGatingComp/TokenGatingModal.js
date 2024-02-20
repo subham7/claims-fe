@@ -9,11 +9,13 @@ import BackdropLoader from "@components/common/BackdropLoader";
 import { setAlertData } from "redux/reducers/alert";
 import { useDispatch } from "react-redux";
 
-const TokenGatingModal = ({ closeModal, chooseTokens }) => {
+const TokenGatingModal = ({ closeModal, chooseTokens, routeNetworkId }) => {
   const classes = TokenGatingModalStyles();
   const dispatch = useDispatch();
 
-  const { getTokenSymbol, getDecimals } = useCommonContractMethods();
+  const { getTokenSymbol, getDecimals } = useCommonContractMethods({
+    routeNetworkId,
+  });
 
   const formik = useFormik({
     initialValues: {

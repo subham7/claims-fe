@@ -46,7 +46,7 @@ const DepositPreRequisites = ({
   };
 
   useEffect(() => {
-    if (daoAddress) {
+    if (daoAddress && walletAddress) {
       getDepositPreRequisites(daoAddress);
       if (depositConfig?.subscriptionDocId !== null) {
         userSigned(depositConfig?.subscriptionDocId, walletAddress);
@@ -57,7 +57,7 @@ const DepositPreRequisites = ({
       if (depositConfig?.uploadDocId !== null) {
         userSigned(
           depositConfig?.uploadDocId,
-          walletAddress.toLowerCase(),
+          walletAddress?.toLowerCase(),
           true,
         );
       } else {

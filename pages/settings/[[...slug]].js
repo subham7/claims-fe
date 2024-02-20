@@ -14,7 +14,7 @@ const SettingsPage = () => {
 
   return (
     <Layout daoAddress={daoAddress} networkId={networkId} page={5}>
-      <Settings daoAddress={daoAddress} />
+      <Settings daoAddress={daoAddress} routeNetworkId={networkId} />
     </Layout>
   );
 };

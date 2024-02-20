@@ -1,6 +1,16 @@
-import { Button, Skeleton, TextField, Typography } from "@mui/material";
-import React from "react";
+import {
+  Button,
+  CircularProgress,
+  Skeleton,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
+import React, { useState } from "react";
+import { CHAIN_CONFIG } from "utils/constants";
 import { convertToWeiGovernance } from "utils/globalFunctions";
+import { switchNetworkHandler } from "utils/helper";
+import { useAccount, useNetwork } from "wagmi";
 import classes from "../../claims/Claim.module.scss";
 
 const DepositInput = ({
@@ -9,6 +19,7 @@ const DepositInput = ({
   isDisabled,
   allowanceValue,
   approveERC20Handler,
+  routeNetworkId,
 }) => {
   const ClaimInputShimmer = () => {
     return (
@@ -17,6 +28,20 @@ const DepositInput = ({
         <Skeleton height={40} width={150} />
       </div>
     );
+  };
+
+  const { address: walletAddress } = useAccount();
+  const { open } = useWeb3Modal();
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
+  const [loading, setLoading] = useState(false);
+
+  const connectWalletHandler = async () => {
+    try {
+      await open();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const inputValue = convertToWeiGovernance(
@@ -31,6 +56,7 @@ const DepositInput = ({
         <div className={classes.inputContainer}>
           <div>
             <TextField
+              disabled={!walletAddress || networkId !== routeNetworkId}
               sx={{
                 "& fieldset": { border: "none" },
               }}
@@ -64,25 +90,58 @@ const DepositInput = ({
         </div>
       </div>
 
-      <Button
-        disabled={isDisabled}
-        onClick={
-          Number(inputValue) > allowanceValue &&
+      {walletAddress && networkId === routeNetworkId ? (
+        <Button
+          disabled={isDisabled}
+          onClick={
+            Number(inputValue) > allowanceValue &&
+            tokenDetails?.isNativeToken === false
+              ? approveERC20Handler
+              : formik.handleSubmit
+          }
+          variant="contained"
+          sx={{
+            width: "100%",
+            padding: "10px 0",
+            margin: "10px 0",
+            fontFamily: "inherit",
+          }}>
+          {Number(inputValue) > allowanceValue &&
           tokenDetails?.isNativeToken === false
-            ? approveERC20Handler
-            : formik.handleSubmit
-        }
-        variant="contained"
-        sx={{
-          width: "100%",
-          padding: "10px 0",
-          margin: "10px 0",
-        }}>
-        {Number(inputValue) > allowanceValue &&
-        tokenDetails?.isNativeToken === false
-          ? "Approve"
-          : "Deposit"}
-      </Button>
+            ? "Approve"
+            : "Deposit"}
+        </Button>
+      ) : walletAddress && networkId !== routeNetworkId ? (
+        <Button
+          onClick={() => {
+            switchNetworkHandler(routeNetworkId, setLoading);
+          }}
+          variant="contained"
+          sx={{
+            width: "100%",
+            padding: "10px 0",
+            margin: "10px 0",
+            fontFamily: "inherit",
+          }}>
+          {loading ? (
+            <CircularProgress size={25} />
+          ) : (
+            `Switch to ${CHAIN_CONFIG[routeNetworkId]?.shortName}`
+          )}
+        </Button>
+      ) : (
+        <Button
+          onClick={connectWalletHandler}
+          variant="contained"
+          sx={{
+            width: "100%",
+            padding: "10px 0",
+            margin: "10px 0",
+            fontFamily: "inherit",
+          }}>
+          Connect
+        </Button>
+      )}
     </>
   );
 };

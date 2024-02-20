@@ -37,11 +37,13 @@ const DepositInputComponents = ({
   depositPreRequisitesProps,
   approveERC20Handler,
   allowanceValue,
+  routeNetworkId,
 }) => {
   return (
     <>
       <DepositPreRequisites {...depositPreRequisitesProps} />
       <DepositInput
+        routeNetworkId={routeNetworkId}
         formik={formik}
         tokenDetails={tokenDetails}
         isDisabled={isDepositDisabled}
@@ -67,6 +69,7 @@ const ERC20 = ({
   allowanceValue,
   fetchCurrentAllowance,
   fetchErc20ContractDetails,
+  routeNetworkId,
 }) => {
   const [loading, setLoading] = useState(false);
   const [depositSuccessfull, setDepositSuccessfull] = useState(null);
@@ -90,7 +93,7 @@ const ERC20 = ({
   const router = useRouter();
   const dispatch = useDispatch();
   const { approveDeposit, getDecimals, getTokenSymbol, getBalance } =
-    useCommonContractMethods();
+    useCommonContractMethods({ routeNetworkId });
   const publicClient = getPublicClient(networkId);
 
   const { buyGovernanceTokenERC20DAO } = useAppContractMethods({
@@ -108,7 +111,7 @@ const ERC20 = ({
     try {
       const { users } = await queryLatestMembersFromSubgraph(
         daoAddress,
-        networkId,
+        routeNetworkId,
       );
       if (users) setMembers(users?.reverse());
     } catch (error) {
@@ -262,24 +265,30 @@ const ERC20 = ({
 
   const fetchTokenDetails = async () => {
     try {
+      debugger;
       const depositTokenAddress = clubData.depositTokenAddress;
-      const isNativeToken = isNative(clubData.depositTokenAddress, networkId);
+      const isNativeToken = isNative(
+        clubData.depositTokenAddress,
+        routeNetworkId,
+      );
 
       const decimals = await getDecimals(depositTokenAddress);
       const symbol = await getTokenSymbol(depositTokenAddress);
-      let userBalance;
+      let userBalance = 0;
 
-      if (isNativeToken) {
-        userBalance = formatEther(
-          await publicClient.getBalance({
-            address: walletAddress,
-          }),
-        );
-      } else {
-        userBalance = convertFromWeiGovernance(
-          await getBalance(depositTokenAddress),
-          decimals,
-        );
+      if (walletAddress) {
+        if (isNativeToken) {
+          userBalance = formatEther(
+            await publicClient.getBalance({
+              address: walletAddress,
+            }),
+          );
+        } else {
+          userBalance = convertFromWeiGovernance(
+            await getBalance(depositTokenAddress),
+            decimals,
+          );
+        }
       }
 
       setTokenDetails({
@@ -372,6 +381,7 @@ const ERC20 = ({
         }}
         inputComponents={
           <DepositInputComponents
+            routeNetworkId={routeNetworkId}
             clubData={clubData}
             formik={formik}
             approveERC20Handler={approveERC20Handler}

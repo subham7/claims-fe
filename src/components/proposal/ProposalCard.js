@@ -11,7 +11,7 @@ import { proposalData } from "utils/proposalData.js";
 import { isNative, shortAddress } from "utils/helper.js";
 import { useNetwork } from "wagmi";
 
-const ProposalCard = ({ proposal, daoAddress }) => {
+const ProposalCard = ({ proposal, daoAddress, routeNetworkId }) => {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
   const classes = ProposalCardStyles();
@@ -30,7 +30,9 @@ const ProposalCard = ({ proposal, daoAddress }) => {
   });
   const [proposalDetails, setProposalDetails] = useState({});
 
-  const { getDecimals, getTokenSymbol } = useCommonContractMethods();
+  const { getDecimals, getTokenSymbol } = useCommonContractMethods({
+    routeNetworkId,
+  });
 
   const fetchTokenDetails = useCallback(async () => {
     try {

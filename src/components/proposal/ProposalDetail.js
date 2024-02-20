@@ -54,7 +54,7 @@ import BackdropLoader from "@components/common/BackdropLoader";
 import { setAlertData } from "redux/reducers/alert";
 import { CHAIN_CONFIG } from "utils/constants";
 
-const ProposalDetail = ({ pid, daoAddress }) => {
+const ProposalDetail = ({ pid, daoAddress, routeNetworkId }) => {
   const classes = ProposalDetailStyles();
   const router = useRouter();
 
@@ -131,7 +131,9 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   const { getERC20TotalSupply, updateProposalAndExecution, getNftOwnersCount } =
     useAppContractMethods({ daoAddress });
 
-  const { getBalance, getDecimals } = useCommonContractMethods();
+  const { getBalance, getDecimals } = useCommonContractMethods({
+    routeNetworkId,
+  });
 
   const isOwner = useCallback(async () => {
     if (gnosisAddress) {

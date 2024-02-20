@@ -43,7 +43,9 @@ const Create = () => {
   const networkId = "0x" + chain?.id.toString(16);
 
   const { address: walletAddress } = useAccount();
-  const { getDecimals } = useCommonContractMethods();
+  const { getDecimals } = useCommonContractMethods({
+    routeNetworkId: networkId,
+  });
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const [open, setOpen] = useState(false);

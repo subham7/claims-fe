@@ -12,7 +12,7 @@ import BackdropLoader from "@components/common/BackdropLoader";
 import ERC721 from "@components/depositPageComps/ERC721/ERC721";
 import { CHAIN_CONFIG } from "utils/constants";
 
-const Join = ({ daoAddress }) => {
+const Join = ({ daoAddress, routeNetworkId }) => {
   const [daoDetails, setDaoDetails] = useState({
     depositDeadline: 0,
     minDeposit: 0,
@@ -24,8 +24,8 @@ const Join = ({ daoAddress }) => {
   const [isTokenGated, setIsTokenGated] = useState(false);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [remainingClaimAmount, setRemainingClaimAmount] = useState();
-  const [whitelistUserData, setWhitelistUserData] = useState();
+  const [remainingClaimAmount, setRemainingClaimAmount] = useState(0);
+  const [whitelistUserData, setWhitelistUserData] = useState("");
   const [depositConfig, setDepositConfig] = useState({});
   const [isSignable, setIsSignable] = useState(false);
   const [allowanceValue, setAllowanceValue] = useState(0);
@@ -55,7 +55,7 @@ const Join = ({ daoAddress }) => {
   });
 
   const { getDecimals, getBalance, getTokenSymbol, checkCurrentAllowance } =
-    useCommonContractMethods();
+    useCommonContractMethods({ routeNetworkId });
 
   const { getTokenGatingDetails, getNftOwnersCount } = useAppContractMethods({
     daoAddress,
@@ -219,7 +219,11 @@ const Join = ({ daoAddress }) => {
       setLoading(true);
       const fetchData = async () => {
         if (daoAddress && daoDetails) {
-          const data = await queryAllMembersFromSubgraph(daoAddress, networkId);
+          const data = await queryAllMembersFromSubgraph(
+            daoAddress,
+            routeNetworkId,
+          );
+
           const userDepositAmount = data?.users?.find(
             (user) => user.userAddress === walletAddress,
           )?.depositAmount;
@@ -244,7 +248,10 @@ const Join = ({ daoAddress }) => {
         if (info.status === 200) setClubInfo(info.data[0]);
       };
       clubInfo();
-      walletAddress && fetchData();
+
+      if (walletAddress) {
+        fetchData();
+      }
       setLoading(false);
     } catch (error) {
       console.error(error);
@@ -265,11 +272,16 @@ const Join = ({ daoAddress }) => {
         console.error(error);
       }
     };
-    fetchMerkleProof();
+
+    if (walletAddress) {
+      fetchMerkleProof();
+    }
   }, [daoAddress, walletAddress, networkId]);
 
   useEffect(() => {
-    fetchCurrentAllowance();
+    if (walletAddress) {
+      fetchCurrentAllowance();
+    }
   }, [
     CHAIN_CONFIG[networkId]?.usdcAddress,
     CHAIN_CONFIG[networkId]?.factoryContractAddress,
@@ -295,6 +307,7 @@ const Join = ({ daoAddress }) => {
           allowanceValue={allowanceValue}
           fetchCurrentAllowance={fetchCurrentAllowance}
           fetchErc20ContractDetails={fetchErc20ContractDetails}
+          routeNetworkId={routeNetworkId}
         />
       ) : TOKEN_TYPE === "erc721" ? (
         <ERC721
