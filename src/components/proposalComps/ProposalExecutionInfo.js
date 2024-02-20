@@ -20,12 +20,19 @@ const useStyles = makeStyles({
   },
 });
 
-const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
+const ProposalExecutionInfo = ({
+  proposalData,
+  fetched,
+  daoDetails,
+  routeNetworkId,
+}) => {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
   const classes = useStyles();
 
-  const { getDecimals, getTokenSymbol } = useCommonContractMethods();
+  const { getDecimals, getTokenSymbol } = useCommonContractMethods({
+    routeNetworkId,
+  });
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;

@@ -127,16 +127,16 @@
       }
 
       .token {
-        background: $background-primary;
+        background: $border-color;
         padding: 10px 20px;
         border-radius: 8px;
         font-weight: 500;
         width: fit-content;
         cursor: pointer;
 
-        &:hover {
-          background-color: $primary;
-        }
+        // &:hover {
+        //   background-color: $primary;
+        // }
       }
     }
 

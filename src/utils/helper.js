@@ -442,3 +442,36 @@ export const isNative = (depositTokenAddress, networkId) => {
     CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
   );
 };
+
+export const switchNetworkHandler = async (networkId, setLoading) => {
+  setLoading(true);
+  if (typeof window !== "undefined") {
+    if (window?.ethereum?.networkVersion !== networkId) {
+      try {
+        await requestEthereumChain("wallet_switchEthereumChain", [
+          { chainId: networkId },
+        ]);
+        setLoading(false);
+      } catch (err) {
+        if (err.code === 4902 && CHAIN_CONFIG[networkId]) {
+          const chainConfig = CHAIN_CONFIG[networkId];
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [
+              {
+                chainId: networkId,
+                chainName: chainConfig.chainName,
+                rpcUrls: chainConfig.rpcUrls,
+                nativeCurrency: chainConfig?.nativeCurrency,
+                blockExplorerUrls: [chainConfig?.blockExplorerUrl],
+              },
+            ],
+          });
+          setLoading(false);
+        } else {
+          setLoading(false);
+        }
+      }
+    }
+  }
+};

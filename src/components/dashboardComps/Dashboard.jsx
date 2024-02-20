@@ -27,7 +27,7 @@ import StatusModal from "@components/modals/StatusModal/StatusModal";
 import CreateClubModal from "@components/modals/CreateClubModal/CreateClubModal";
 import BackdropLoader from "@components/common/BackdropLoader";
 
-const Dashboard = ({ daoAddress, routeNeteworkId }) => {
+const Dashboard = ({ daoAddress, routeNetworkId }) => {
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
@@ -59,7 +59,7 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
   const [showCreateClubModal, setShowCreateClubModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { getBalance } = useCommonContractMethods();
+  const { getBalance } = useCommonContractMethods({ routeNetworkId });
   const { getERC20TotalSupply, getNftOwnersCount } = useAppContractMethods({
     daoAddress,
   });

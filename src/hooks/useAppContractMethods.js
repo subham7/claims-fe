@@ -69,7 +69,7 @@ const useAppContractMethods = (params) => {
         abi: factoryContractABI,
         functionName: "getDAOdetails",
         args: [stationAddress],
-        account: walletAddress,
+        // account: walletAddress,
         networkId: routeNetworkId ?? networkId,
       });
 
@@ -99,7 +99,7 @@ const useAppContractMethods = (params) => {
         abi: erc20DaoABI,
         functionName: "getERC20DAOdetails",
         args: [],
-        account: walletAddress,
+        // account: walletAddress,
         networkId: routeNetworkId ?? networkId,
       });
 
@@ -117,43 +117,51 @@ const useAppContractMethods = (params) => {
   };
 
   const getERC721DAOdetails = async () => {
-    const response = await readContractFunction({
-      address: daoAddress,
-      abi: erc721DaoABI,
-      functionName: "getERC721DAOdetails",
-      args: [],
-      account: walletAddress,
-      networkId: routeNetworkId ?? networkId,
-    });
+    try {
+      const response = await readContractFunction({
+        address: daoAddress,
+        abi: erc721DaoABI,
+        functionName: "getERC721DAOdetails",
+        args: [],
+        // account: walletAddress,
+        networkId: routeNetworkId ?? networkId,
+      });
 
-    return response
-      ? {
-          ...response,
-          quorum: Number(response?.quorum),
-          threshold: Number(response?.threshold),
-          maxTokensPerUser: Number(response?.maxTokensPerUser),
-        }
-      : {};
+      return response
+        ? {
+            ...response,
+            quorum: Number(response?.quorum),
+            threshold: Number(response?.threshold),
+            maxTokensPerUser: Number(response?.maxTokensPerUser),
+          }
+        : {};
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const getTokenGatingDetails = async () => {
-    let response = await readContractFunction({
-      address: CHAIN_CONFIG[networkId].factoryContractAddress,
-      abi: factoryContractABI,
-      functionName: "getTokenGatingDetails",
-      args: [daoAddress],
-      account: walletAddress,
-      networkId: routeNetworkId ?? networkId,
-    });
+    try {
+      let response = await readContractFunction({
+        address: CHAIN_CONFIG[networkId].factoryContractAddress,
+        abi: factoryContractABI,
+        functionName: "getTokenGatingDetails",
+        args: [daoAddress],
+        // account: walletAddress,
+        networkId: routeNetworkId ?? networkId,
+      });
 
-    response = response?.map((item) => {
-      return {
-        ...item,
-        value: item.value.map((val) => Number(val)),
-      };
-    });
+      response = response?.map((item) => {
+        return {
+          ...item,
+          value: item.value.map((val) => Number(val)),
+        };
+      });
 
-    return response ?? [];
+      return response ?? [];
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const getDaoBalance = async (is721) => {
@@ -162,7 +170,7 @@ const useAppContractMethods = (params) => {
       abi: is721 ? erc721DaoABI : erc20DaoABI,
       functionName: "balanceOf",
       args: [walletAddress],
-      account: walletAddress,
+      // account: walletAddress,
       networkId: routeNetworkId ?? networkId,
     });
 
@@ -170,16 +178,20 @@ const useAppContractMethods = (params) => {
   };
 
   const getERC20TotalSupply = async () => {
-    const response = await readContractFunction({
-      address: daoAddress,
-      abi: erc20DaoABI,
-      functionName: "totalSupply",
-      args: [],
-      account: walletAddress,
-      networkId: routeNetworkId ?? networkId,
-    });
+    try {
+      const response = await readContractFunction({
+        address: daoAddress,
+        abi: erc20DaoABI,
+        functionName: "totalSupply",
+        args: [],
+        // account: walletAddress,
+        networkId: routeNetworkId ?? networkId,
+      });
 
-    return Number(response ?? 0);
+      return Number(response ?? 0);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const getNftOwnersCount = async () => {
@@ -189,7 +201,7 @@ const useAppContractMethods = (params) => {
         abi: erc721DaoABI,
         functionName: "_tokenIdTracker",
         args: [],
-        account: walletAddress,
+        // account: walletAddress,
         networkId: routeNetworkId ?? networkId,
       });
       return Number(response ?? 0);
@@ -345,7 +357,7 @@ const useAppContractMethods = (params) => {
         abi: eigenContractABI,
         functionName: "getDeposits",
         args: [gnosisAddress],
-        account: walletAddress,
+        // account: walletAddress,
         networkId,
       });
       return res;

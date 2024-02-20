@@ -16,7 +16,7 @@ import { formatEther } from "viem";
 import { isNative } from "utils/helper";
 import WalletTracker from "@components/settingsComps/walletTracker/WalletTracker";
 
-const Settings = ({ daoAddress }) => {
+const Settings = ({ daoAddress, routeNetworkId }) => {
   const [daoDetails, setDaoDetails] = useState({
     daoName: "",
     daoSymbol: "",
@@ -88,7 +88,7 @@ const Settings = ({ daoAddress }) => {
   } = useAppContractMethods({ daoAddress });
 
   const { getDecimals, getBalance, getTokenName, getTokenSymbol } =
-    useCommonContractMethods();
+    useCommonContractMethods({ routeNetworkId });
 
   const fetchErc20ContractDetails = useCallback(async () => {
     try {
@@ -281,7 +281,7 @@ const Settings = ({ daoAddress }) => {
 
       <WalletTracker isAdminUser={isAdminUser} daoAddress={daoAddress} />
 
-      <TokenGating daoAddress={daoAddress} />
+      <TokenGating daoAddress={daoAddress} routeNetworkId={routeNetworkId} />
     </>
   );
 };

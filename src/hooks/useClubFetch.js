@@ -8,7 +8,7 @@ import {
 import { setAdminUser, setMemberUser } from "../redux/reducers/gnosis";
 
 import { convertToFullNumber, getSafeSdk } from "../utils/helper";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import { useRouter } from "next/router";
 import useAppContractMethods from "./useAppContractMethods";
 import { queryStationDataFromSubgraph } from "utils/stationsSubgraphHelper";
@@ -18,6 +18,8 @@ const useClubFetch = ({ daoAddress, routeNetworkId }) => {
 
   const router = useRouter();
   const { address: walletAddress } = useAccount();
+  const { chain } = useNetwork();
+  const networkId = "0x" + chain?.id.toString(16);
 
   const reduxClubData = useSelector((state) => {
     return state.club.clubData;
@@ -96,7 +98,7 @@ const useClubFetch = ({ daoAddress, routeNetworkId }) => {
         console.log(error);
       }
     };
-    if (daoAddress && routeNetworkId && walletAddress) fetchStationData();
+    if (daoAddress && routeNetworkId) fetchStationData();
   }, [daoAddress, routeNetworkId, networkId, walletAddress, reduxClubData]);
 
   const checkUserExists = async () => {

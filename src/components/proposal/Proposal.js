@@ -54,7 +54,7 @@ const useStyles = makeStyles({
   },
 });
 
-const Proposal = ({ daoAddress }) => {
+const Proposal = ({ daoAddress, routeNetworkId }) => {
   const router = useRouter();
   const { chain } = useNetwork();
   const { address: walletAddress } = useAccount();
@@ -262,6 +262,7 @@ const Proposal = ({ daoAddress }) => {
                           proposal={executionTransaction}
                           executionTransaction={true}
                           daoAddress={daoAddress}
+                          routeNetworkId={routeNetworkId}
                         />
                       </Grid>
                     </>
@@ -284,6 +285,7 @@ const Proposal = ({ daoAddress }) => {
                           proposal={proposal}
                           indexKey={key}
                           daoAddress={daoAddress}
+                          routeNetworkId={routeNetworkId}
                         />
                       </Grid>
                     );
