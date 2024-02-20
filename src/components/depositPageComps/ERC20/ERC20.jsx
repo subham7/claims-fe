@@ -105,6 +105,13 @@ const ERC20 = ({
       );
       if (users) setMembers(users?.reverse());
     } catch (error) {
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Unable to fetch latest Activity!",
+          severity: "error",
+        }),
+      );
       console.error(error);
     }
   };
@@ -258,6 +265,13 @@ const ERC20 = ({
         isNativeToken: isNativeToken,
       });
     } catch (error) {
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Unable to fetch token details!",
+          severity: "error",
+        }),
+      );
       console.error(error);
     }
   };
