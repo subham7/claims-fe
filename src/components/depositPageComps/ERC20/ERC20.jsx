@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { queryLatestMembersFromSubgraph } from "utils/stationsSubgraphHelper";
+import {
+  queryLatestMembersFromSubgraph,
+  queryStationDataFromSubgraph,
+} from "utils/stationsSubgraphHelper";
 import dayjs from "dayjs";
 import DepositInput from "./DepositInput";
 import { useFormik } from "formik";
@@ -24,6 +27,7 @@ import { setAlertData } from "redux/reducers/alert";
 import { getPublicClient } from "utils/viemConfig";
 import { formatEther } from "viem";
 import { isNative } from "utils/helper";
+import { addClubData } from "redux/reducers/club";
 
 const DepositInputComponents = ({
   formik,
@@ -62,6 +66,7 @@ const ERC20 = ({
   depositConfig,
   allowanceValue,
   fetchCurrentAllowance,
+  fetchErc20ContractDetails,
 }) => {
   const [loading, setLoading] = useState(false);
   const [depositSuccessfull, setDepositSuccessfull] = useState(null);
@@ -88,7 +93,9 @@ const ERC20 = ({
     useCommonContractMethods();
   const publicClient = getPublicClient(networkId);
 
-  const { buyGovernanceTokenERC20DAO } = useAppContractMethods({ daoAddress });
+  const { buyGovernanceTokenERC20DAO } = useAppContractMethods({
+    daoAddress,
+  });
   const { address: walletAddress } = useAccount();
 
   const day = Math.floor(new Date().getTime() / 1000.0);
@@ -198,6 +205,22 @@ const ERC20 = ({
     }
   };
 
+  const fetchStationData = async () => {
+    try {
+      const data = await queryStationDataFromSubgraph(daoAddress, networkId);
+      if (data?.stations?.length > 0) {
+        dispatch(
+          addClubData({
+            ...clubData,
+            totalAmountRaised: data.stations[0].totalAmountRaised,
+          }),
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const formik = useFormik({
     initialValues: {
       tokenInput: 0,
@@ -224,9 +247,17 @@ const ERC20 = ({
             : "0",
         );
 
+        await whitelistOnDeposit(walletAddress);
+
+        setTimeout(() => {
+          fetchTokenDetails();
+          fetchActivities();
+          fetchErc20ContractDetails();
+          fetchStationData();
+        }, 500);
+
         setLoading(false);
         setDepositSuccessfull(true);
-        await whitelistOnDeposit(walletAddress);
         formik.values.tokenInput = 0;
       } catch (error) {
         console.error(error);
@@ -325,7 +356,7 @@ const ERC20 = ({
 
   useEffect(() => {
     fetchTokenDetails();
-  }, [networkId]);
+  }, [networkId, walletAddress]);
 
   useEffect(() => {
     if (daoAddress) {

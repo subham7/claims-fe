@@ -266,17 +266,21 @@ export const readContractFunction = async ({
   account,
   networkId,
 }) => {
-  const publicClient = getPublicClient(networkId);
+  try {
+    const publicClient = getPublicClient(networkId);
 
-  const data = await publicClient.readContract({
-    address,
-    abi,
-    functionName,
-    args,
-    account,
-  });
+    const data = await publicClient.readContract({
+      address,
+      abi,
+      functionName,
+      args,
+      account,
+    });
 
-  return data;
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 export const csvToObjectForMintGT = (csvString) => {

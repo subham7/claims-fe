@@ -31,10 +31,6 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
     return state.club.clubData.tokenType;
   });
 
-  const factoryData = useSelector((state) => {
-    return state.club.factoryData;
-  });
-
   const clubData = useSelector((state) => {
     return state.club.clubData;
   });
@@ -168,7 +164,7 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
       data: proposalData?.commands[0],
       decimals: tokenDetails.decimals,
       symbol: tokenDetails.symbol,
-      factoryData,
+      clubData,
     });
     setProposalDetails(response);
   };

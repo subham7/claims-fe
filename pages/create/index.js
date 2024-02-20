@@ -32,7 +32,6 @@ import useSafe from "../../src/hooks/useSafe";
 import Layout from "../../src/components/layouts/layout";
 import { useAccount, useNetwork } from "wagmi";
 import { ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
-import useClubFetch from "hooks/useClubFetch";
 import { NFT_STORAGE_TOKEN } from "api/token";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 
@@ -44,7 +43,6 @@ const Create = () => {
   const networkId = "0x" + chain?.id.toString(16);
 
   const { address: walletAddress } = useAccount();
-  useClubFetch({ networkId: networkId });
   const { getDecimals } = useCommonContractMethods();
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
