@@ -44,6 +44,7 @@ import { rocketPoolABI } from "abis/rocketPool/rocketPoolContract";
 import { rETHTokenABI } from "abis/rocketPool/rETHTokenContract";
 import { mantlePoolABI } from "abis/mantlePool/manelPoolContract";
 import { LayerBankABI } from "abis/layerBankContract";
+import { ScrollAaveABI } from "abis/ScrollAaveABI";
 
 export const fetchProposals = async (daoAddress, type) => {
   let proposalData;
@@ -1251,6 +1252,40 @@ const swapWithUniswap = (
     .encodeABI();
 };
 
+const depositEthScrollMethodEncoded = (
+  poolAddress,
+  addressWhereAssetsStored,
+  referalCode,
+  web3Call,
+  networkId,
+) => {
+  const depositEthCall = new web3Call.eth.Contract(
+    ScrollAaveABI,
+    CHAIN_CONFIG[networkId].aavePoolAddress,
+  );
+
+  return depositEthCall.methods
+    .depositETH(poolAddress, addressWhereAssetsStored, referalCode)
+    .encodeABI();
+};
+
+const withdrawScrollEthMethodEncoded = (
+  poolAddress,
+  withdrawAmount,
+  addressWhereAssetsStored,
+  web3Call,
+  networkId,
+) => {
+  const withdrawEthCall = new web3Call.eth.Contract(
+    ScrollAaveABI,
+    CHAIN_CONFIG[networkId].aavePoolAddress,
+  );
+
+  return withdrawEthCall.methods
+    .withdrawETH(poolAddress, withdrawAmount, addressWhereAssetsStored)
+    .encodeABI();
+};
+
 const depositEthMethodEncoded = (
   poolAddress,
   addressWhereAssetsStored,
@@ -2219,6 +2254,50 @@ export const getTransaction = async ({
         value: "0",
       };
       return { transaction };
+    case 51:
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].aaveScrollPoolAddress,
+        ),
+        data: depositEthScrollMethodEncoded(
+          CHAIN_CONFIG[networkId]?.aavePoolAddress,
+          gnosisAddress,
+          0,
+          web3Call,
+          networkId,
+        ),
+        value: convertToWeiGovernance(depositAmount, 18).toString(),
+      };
+
+      return { transaction };
+    case 52:
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].aaveWrappedScrollEthAddress,
+        ),
+        data: approveDepositWithEncodeABI(
+          CHAIN_CONFIG[networkId].aaveWrappedScrollEthAddress,
+          CHAIN_CONFIG[networkId].aaveScrollPoolAddress,
+          depositAmount,
+          web3Call,
+        ),
+        value: "0",
+      };
+
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].aaveScrollPoolAddress,
+        ),
+        data: withdrawScrollEthMethodEncoded(
+          CHAIN_CONFIG[networkId].aavePoolAddress,
+          depositAmount,
+          gnosisAddress,
+          web3Call,
+          networkId,
+        ),
+        value: "0",
+      };
+      return { approvalTransaction, transaction };
   }
 };
 
@@ -2318,6 +2397,7 @@ export const getTokenTypeByExecutionId = (commands) => {
     case 43:
     case 47:
     case 45:
+    case 51:
       return commands[0]?.depositToken;
     case 25:
       return commands[0]?.withdrawToken;

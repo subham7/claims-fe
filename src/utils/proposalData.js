@@ -165,6 +165,7 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
     case 43:
     case 45:
     case 47:
+    case 51:
       return {
         "Deposit Amount :": `${depositAmount} ETH`,
       };
@@ -1832,6 +1833,16 @@ export const getProposalCommands = async ({
         depositToken: values.stakeTokenAddress,
         depositAmount: convertToWeiGovernance(values.stakeAmount, tokenDecimal),
       };
+    case 52:
+      tokenDecimal = tokenData?.find(
+        (token) =>
+          token.address.toLowerCase() ===
+          values.stakeTokenAddress.toLowerCase(),
+      ).decimals;
+      return {
+        depositToken: values.unstakeTokenAddress,
+        depositAmount: convertToWeiGovernance(values.stakeAmount, tokenDecimal),
+      };
 
     // case 25:
     //   tokenDecimal = tokenData?.find(
@@ -1854,6 +1865,7 @@ export const getProposalCommands = async ({
     case 43:
     case 45:
     case 47:
+    case 51:
       return {
         depositToken: values.stakeTokenAddress,
         depositAmount: values.stakeAmount,
@@ -2079,6 +2091,7 @@ export const proposalDetailsData = ({
     case 43:
     case 45:
     case 47:
+    case 51:
       responseData.data = {
         "Deposit Amount": `${depositAmount} ETH`,
       };

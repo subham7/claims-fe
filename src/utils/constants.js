@@ -360,6 +360,9 @@ export const CHAIN_CONFIG = {
     gnosisTxUrl: "https://transaction.safe.scroll.xyz",
     layerBankToken: "0x274C3795dadfEbf562932992bF241ae087e0a98C",
     layerBankPool: "0xEC53c830f4444a8A56455c6836b5D2aA794289Aa",
+    aaveScrollPoolAddress: "0xFF75A4B698E3Ec95E608ac0f22A03B8368E05F5D",
+    aavePoolAddress: "0x11fCfe756c05AD438e312a7fd934381537D3cFfe",
+    aaveWrappedScrollEthAddress: "0xf301805bE1Df81102C957f6d4Ce29d2B8c056B2a",
   },
   "0xa9": {
     chainName: "Manta",

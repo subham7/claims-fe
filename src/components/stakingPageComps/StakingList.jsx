@@ -25,6 +25,7 @@ const StakingList = ({ daoAddress }) => {
   const [unstakeRocketEigenToken, setUnstakeRocketEigenToken] = useState(0);
   const [unstakeMantleEigenToken, setUnstakeMantleEigenToken] = useState(0);
   const [unstakeLayerBankToken, setUnstakeLayerBankToken] = useState(0);
+  const [unstakeAaveScrollToken, setUnstakeAaveScrollToken] = useState(0);
 
   const { getBalance, getDecimals } = useCommonContractMethods();
   const { fetchEigenTokenBalance } = useAppContractMethods({ daoAddress });
@@ -112,7 +113,8 @@ const StakingList = ({ daoAddress }) => {
         swellRswETH = 0,
         restakeRstETH = 0,
         renzoEzEthBalance = 0,
-        layerBankEthBalance = 0;
+        layerBankEthBalance = 0,
+        aaveScrollEthBalance = 0;
 
       if (networkId === "0xe708") {
         [stargateBalance, clipFinanceBalance, layerBankEthBalance] =
@@ -141,6 +143,11 @@ const StakingList = ({ daoAddress }) => {
         restakeRstETH = await fetchTokenBalance(
           CHAIN_CONFIG[networkId].restakeRstETHAddress,
         );
+      } else if (networkId === "0x82750") {
+        aaveScrollEthBalance = await fetchTokenBalance(
+          CHAIN_CONFIG[networkId].aaveWrappedScrollEthAddress,
+        );
+        console.log("aaveScrollEthBalance", aaveScrollEthBalance);
       }
 
       setUnstakeTokenBalance(stargateBalance);
@@ -150,11 +157,12 @@ const StakingList = ({ daoAddress }) => {
       setUnstakeRenzoEzETHToken(renzoEzEthBalance);
       setUnstakeRestakeRstETHToken(restakeRstETH);
       setUnstakeLayerBankToken(layerBankEthBalance);
+      setUnstakeAaveScrollToken(aaveScrollEthBalance);
     };
 
     fetchBalances();
   }, [gnosisAddress, networkId]);
-
+  console.log("unstakeAaveScrollToken", unstakeAaveScrollToken);
   return (
     <div className={classes.container}>
       <Typography fontSize={24} fontWeight={600} variant="inherit">
@@ -175,6 +183,7 @@ const StakingList = ({ daoAddress }) => {
           rocketEigenStaked: Number(unstakeRocketEigenToken),
           mantleEigenStaked: Number(unstakeMantleEigenToken),
           layerBankStaked: Number(unstakeLayerBankToken),
+          aaveScrollStaked: Number(unstakeAaveScrollToken),
           networkId,
         })
           .filter((item) => item.availableOnNetworkIds.includes(networkId))
