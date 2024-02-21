@@ -783,7 +783,7 @@ export const DEFI_PROPOSALS = ({
     },
     {
       name: "Aave",
-      logo: "/assets/images/restake.png",
+      logo: "/assets/icons/aave.svg",
       APY: "3.4",
       staked: aaveScrollStaked,
       token: "ETH",
