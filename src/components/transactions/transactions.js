@@ -22,6 +22,7 @@ import {
 import { CHAIN_CONFIG } from "utils/constants";
 import ComponentHeader from "@components/common/ComponentHeader";
 import { getTransactionsByNetworkId } from "api/transactions";
+import { customToFixedAutoPrecision } from "utils/helper";
 
 dayjs.extend(relativeTime);
 
@@ -238,7 +239,9 @@ const Transactions = ({ networkId }) => {
                               <Typography variant="body">
                                 {txn.value == null
                                   ? "---"
-                                  : txn.value / 10 ** txn.tokenInfo?.decimals}
+                                  : customToFixedAutoPrecision(
+                                      txn.value / 10 ** txn.tokenInfo?.decimals,
+                                    )}
                               </Typography>
                             </TableCell>
                           </TableRow>

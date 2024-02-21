@@ -17,7 +17,12 @@ import { Typography, Button } from "@components/ui";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
-import { getAllEntities, isNative, shortAddress } from "utils/helper";
+import {
+  customToFixedAutoPrecision,
+  getAllEntities,
+  isNative,
+  shortAddress,
+} from "utils/helper";
 import { useFormik } from "formik";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
@@ -355,12 +360,14 @@ const Members = ({ daoAddress, routeNetworkId }) => {
                     <TableCell align="left">
                       <Typography
                         sx={{ fontSize: "14px !important", fontWeight: "400" }}>
-                        {Number(
-                          convertFromWeiGovernance(
-                            data.depositAmount,
-                            tokenDetails.tokenDecimal,
+                        {customToFixedAutoPrecision(
+                          Number(
+                            convertFromWeiGovernance(
+                              data.depositAmount,
+                              tokenDetails.tokenDecimal,
+                            ),
                           ),
-                        ).toFixed(5)}{" "}
+                        )}{" "}
                         {tokenDetails.tokenSymbol}
                       </Typography>
                     </TableCell>

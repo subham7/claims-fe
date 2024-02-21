@@ -476,12 +476,17 @@ export const switchNetworkHandler = async (networkId, setLoading) => {
   }
 };
 
-export function customToFixedAutoPrecision(number) {
-  let decimalPlaces = 2;
-  let tempNum = number;
-  while (tempNum < 1) {
-    tempNum *= 10;
-    decimalPlaces++;
+export function customToFixedAutoPrecision(num) {
+  try {
+    let decimalPlaces = 2;
+    let tempNum = num;
+    while (tempNum < 1 && tempNum > 0) {
+      tempNum *= 10;
+      decimalPlaces++;
+    }
+    return num.toFixed(decimalPlaces);
+  } catch (err) {
+    console.error(err);
+    return "0.00";
   }
-  return Number(number.toFixed(decimalPlaces));
 }
