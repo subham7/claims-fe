@@ -44,25 +44,28 @@ const Transactions = ({ networkId }) => {
   const [transactions, setTransactions] = useState([]);
   const [paginationSettings, setPaginationSettings] = useState({
     page: 0,
-    noOfRowsPerPage: 25,
+    limit: 10,
+    offset: 0,
   });
 
-  const { page, noOfRowsPerPage } = paginationSettings;
+  const { page, limit, offset } = paginationSettings;
 
   const fetchTransactions = async () => {
     setLoading(true);
 
-    const transfers = await getTransactionsByNetworkId(
+    const transactions = await getTransactionsByNetworkId(
       Web3.utils.toChecksumAddress(gnosisAddress),
       networkId,
+      limit,
+      offset,
     );
     setLoading(false);
-    setTransactions(transfers);
+    setTransactions(transactions);
   };
 
   useEffect(() => {
     if (gnosisAddress) fetchTransactions();
-  }, [gnosisAddress]);
+  }, [gnosisAddress, limit, offset, fetch]);
 
   const handleAddressClick = (event, address) => {
     event.preventDefault();
@@ -76,13 +79,17 @@ const Transactions = ({ networkId }) => {
   };
 
   const handleChangePage = (event, newPage) => {
-    setPaginationSettings({ ...paginationSettings, page: newPage });
+    setPaginationSettings({
+      ...paginationSettings,
+      page: newPage,
+      offset: newPage * limit,
+    });
   };
 
   const handleChangeRowsPerPage = (event) => {
     setPaginationSettings({
       page: 0,
-      noOfRowsPerPage: parseInt(event.target.value, 10),
+      limit: parseInt(event.target.value, 10),
     });
   };
 
@@ -99,7 +106,7 @@ const Transactions = ({ networkId }) => {
             <div className="tb-pad-2 f-d f-h-c f-v-c">
               <CircularProgress />
             </div>
-          ) : !loading && !transactions.length ? (
+          ) : !loading && !transactions?.transfers.length ? (
             <div className="tb-pad-2 f-d f-h-c f-v-c">
               <Typography variant="subheading">
                 No Transactions to show
@@ -116,138 +123,131 @@ const Transactions = ({ networkId }) => {
                   ))}
                 </TableHead>
                 <TableBody>
-                  {transactions
-                    ?.slice(
-                      page * noOfRowsPerPage,
-                      (page + 1) * noOfRowsPerPage,
-                    )
-                    .map((txn) => {
-                      return (
-                        <>
-                          <TableRow key={txn.transactionHash}>
-                            <TableCell align="left">
-                              <div className="f-d f-v-c f-gap-8">
-                                <img
-                                  style={{
-                                    width: "25px",
-                                    height: "25px",
-                                    marginBottom: "6px",
-                                  }}
-                                  src={txn.tokenInfo?.logoUri}
-                                  alt=""
-                                  onError={({ target }) => {
-                                    target.onerror = null;
-                                    target.src =
-                                      "/assets/images/fallbackUSDC.png";
-                                  }}
-                                />
-                                <Typography variant="info">
-                                  {txn.tokenInfo?.name}
-                                </Typography>
-                              </div>
-                            </TableCell>
-
-                            <TableCell align="left">
-                              <div className="f-d f-v-c f-gap-8">
-                                <Typography
-                                  variant="info"
-                                  className="text-blue">
-                                  <Tooltip title={txn.transactionHash}>
-                                    <div
-                                      className="f-d f-gap-8 f-v-c c-pointer"
-                                      onClick={(e) => {
-                                        handleHashClick(e, txn.transactionHash);
-                                      }}>
-                                      {txn.transactionHash?.substring(0, 10) +
-                                        "... "}
-                                      <OpenInNewIcon className="c-pointer" />
-                                    </div>
-                                  </Tooltip>
-                                </Typography>
-                              </div>
-                            </TableCell>
-
-                            <TableCell align="left">
-                              {txn.to === gnosisAddress && (
-                                <Chip
-                                  icon={
-                                    <ExpandCircleDownIcon
-                                      sx={{
-                                        color: "#0ABB92 !important",
-                                      }}
-                                    />
-                                  }
-                                  sx={{
-                                    width: "135px",
-                                  }}
-                                  className="f-d f-h-c f-ht-r text-primary"
-                                  variant="outlined"
-                                  color="success"
-                                  label="Received"
-                                />
-                              )}
-                              {txn.from === gnosisAddress && (
-                                <Chip
-                                  icon={
-                                    <ExpandCircleDownIcon
-                                      sx={{
-                                        transform: "rotate(180deg)",
-                                        color: "#D55438 !important",
-                                      }}
-                                    />
-                                  }
-                                  sx={{
-                                    width: "135px",
-                                  }}
-                                  className="f-d f-h-c f-ht-r text-primary"
-                                  variant="outlined"
-                                  color="error"
-                                  label="Withdrawal"
-                                />
-                              )}
-                            </TableCell>
-
-                            <TableCell align="left">
+                  {transactions?.transfers.map((txn) => {
+                    return (
+                      <>
+                        <TableRow key={txn.transactionHash}>
+                          <TableCell align="left">
+                            <div className="f-d f-v-c f-gap-8">
+                              <img
+                                style={{
+                                  width: "25px",
+                                  height: "25px",
+                                  marginBottom: "6px",
+                                }}
+                                src={txn.tokenInfo?.logoUri}
+                                alt=""
+                                onError={({ target }) => {
+                                  target.onerror = null;
+                                  target.src =
+                                    "/assets/images/fallbackUSDC.png";
+                                }}
+                              />
                               <Typography variant="info">
-                                {dayjs(txn?.executionDate).fromNow()}
+                                {txn.tokenInfo?.name}
                               </Typography>
-                            </TableCell>
+                            </div>
+                          </TableCell>
 
-                            <TableCell align="left">
+                          <TableCell align="left">
+                            <div className="f-d f-v-c f-gap-8">
                               <Typography variant="info" className="text-blue">
-                                <Tooltip title={txn?.from}>
-                                  <a
+                                <Tooltip title={txn.transactionHash}>
+                                  <div
+                                    className="f-d f-gap-8 f-v-c c-pointer"
                                     onClick={(e) => {
-                                      handleAddressClick(e, txn.from);
+                                      handleHashClick(e, txn.transactionHash);
                                     }}>
-                                    {txn.from?.substring(0, 10) + "... "}
-                                  </a>
-                                </Tooltip>
-                                /
-                                <Tooltip title={txn.to}>
-                                  <a
-                                    onClick={(e) => {
-                                      handleAddressClick(e, txn.to);
-                                    }}>
-                                    {txn.to?.substring(0, 10) + "..."}
-                                  </a>
+                                    {txn.transactionHash?.substring(0, 10) +
+                                      "... "}
+                                    <OpenInNewIcon className="c-pointer" />
+                                  </div>
                                 </Tooltip>
                               </Typography>
-                            </TableCell>
+                            </div>
+                          </TableCell>
 
-                            <TableCell align="left">
-                              <Typography variant="body">
-                                {txn.value == null
-                                  ? "---"
-                                  : customToFixedAutoPrecision(
-                                      txn.value / 10 ** txn.tokenInfo?.decimals,
-                                    )}
-                              </Typography>
-                            </TableCell>
-                          </TableRow>
-                        </>
-                      );
-                    })}
+                          <TableCell align="left">
+                            {txn.to === gnosisAddress && (
+                              <Chip
+                                icon={
+                                  <ExpandCircleDownIcon
+                                    sx={{
+                                      color: "#0ABB92 !important",
+                                    }}
+                                  />
+                                }
+                                sx={{
+                                  width: "135px",
+                                }}
+                                className="f-d f-h-c f-ht-r text-primary"
+                                variant="outlined"
+                                color="success"
+                                label="Received"
+                              />
+                            )}
+                            {txn.from === gnosisAddress && (
+                              <Chip
+                                icon={
+                                  <ExpandCircleDownIcon
+                                    sx={{
+                                      transform: "rotate(180deg)",
+                                      color: "#D55438 !important",
+                                    }}
+                                  />
+                                }
+                                sx={{
+                                  width: "135px",
+                                }}
+                                className="f-d f-h-c f-ht-r text-primary"
+                                variant="outlined"
+                                color="error"
+                                label="Withdrawal"
+                              />
+                            )}
+                          </TableCell>
+
+                          <TableCell align="left">
+                            <Typography variant="info">
+                              {dayjs(txn?.executionDate).fromNow()}
+                            </Typography>
+                          </TableCell>
+
+                          <TableCell align="left">
+                            <Typography variant="info" className="text-blue">
+                              <Tooltip title={txn?.from}>
+                                <a
+                                  onClick={(e) => {
+                                    handleAddressClick(e, txn.from);
+                                  }}>
+                                  {txn.from?.substring(0, 10) + "... "}
+                                </a>
+                              </Tooltip>
+                              /
+                              <Tooltip title={txn.to}>
+                                <a
+                                  onClick={(e) => {
+                                    handleAddressClick(e, txn.to);
+                                  }}>
+                                  {txn.to?.substring(0, 10) + "..."}
+                                </a>
+                              </Tooltip>
+                            </Typography>
+                          </TableCell>
+
+                          <TableCell align="left">
+                            <Typography variant="body">
+                              {txn.value == null
+                                ? "---"
+                                : customToFixedAutoPrecision(
+                                    txn.value / 10 ** txn.tokenInfo?.decimals,
+                                  )}
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                      </>
+                    );
+                  })}
                 </TableBody>
               </Table>
 
@@ -255,8 +255,8 @@ const Transactions = ({ networkId }) => {
                 align="right"
                 rowsPerPageOptions={[10, 25, 50]}
                 component="row"
-                count={transactions.length}
-                rowsPerPage={noOfRowsPerPage}
+                count={transactions?.count}
+                rowsPerPage={limit}
                 page={page}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}

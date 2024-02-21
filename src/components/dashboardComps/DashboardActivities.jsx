@@ -90,7 +90,7 @@ const DashboardActivities = ({ proposals, daoAddress, networkId }) => {
 
   const fetchTransactions = async () => {
     try {
-      const transfers = await getTransactionsByNetworkId(
+      const { transfers } = await getTransactionsByNetworkId(
         Web3.utils.toChecksumAddress(gnosisAddress),
         networkId,
       );
