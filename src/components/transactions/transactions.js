@@ -168,7 +168,7 @@ const Transactions = ({ networkId }) => {
                             </TableCell>
 
                             <TableCell align="left">
-                              {txn.to.toLowerCase() === gnosisAddress && (
+                              {txn.to === gnosisAddress && (
                                 <Chip
                                   icon={
                                     <ExpandCircleDownIcon
@@ -186,7 +186,7 @@ const Transactions = ({ networkId }) => {
                                   label="Received"
                                 />
                               )}
-                              {txn.from?.toLowerCase() === gnosisAddress && (
+                              {txn.from === gnosisAddress && (
                                 <Chip
                                   icon={
                                     <ExpandCircleDownIcon
