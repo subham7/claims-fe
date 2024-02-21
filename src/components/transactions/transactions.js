@@ -43,7 +43,7 @@ const Transactions = ({ networkId }) => {
   const [transactions, setTransactions] = useState([]);
   const [paginationSettings, setPaginationSettings] = useState({
     page: 0,
-    noOfRowsPerPage: 5,
+    noOfRowsPerPage: 25,
   });
 
   const { page, noOfRowsPerPage } = paginationSettings;
@@ -250,7 +250,7 @@ const Transactions = ({ networkId }) => {
 
               <TablePagination
                 align="right"
-                rowsPerPageOptions={[5, 10, 25]}
+                rowsPerPageOptions={[10, 25, 50]}
                 component="row"
                 count={transactions.length}
                 rowsPerPage={noOfRowsPerPage}
