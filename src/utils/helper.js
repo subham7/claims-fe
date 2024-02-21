@@ -439,10 +439,14 @@ export const getLinks = (daoAddress, networkId) => {
 };
 
 export const isNative = (depositTokenAddress, networkId) => {
-  return (
-    depositTokenAddress?.toLowerCase() ===
-    CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
-  );
+  if (depositTokenAddress === "0x0000000000000000000000000000000000001010") {
+    return true;
+  } else {
+    return (
+      depositTokenAddress?.toLowerCase() ===
+      CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
+    );
+  }
 };
 
 export const switchNetworkHandler = async (networkId, setLoading) => {
