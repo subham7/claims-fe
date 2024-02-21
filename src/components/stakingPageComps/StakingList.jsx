@@ -50,7 +50,6 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
   const fetchEigenToken = async () => {
     try {
       const data = await fetchEigenTokenBalance(gnosisAddress);
-
       const [addresses, amounts] = data;
 
       const formattedData = addresses?.map((address, index) => ({
@@ -117,10 +116,9 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
         restakeRstETH = 0,
         renzoEzEthBalance = 0,
         layerBankEthBalance = 0,
-        aaveScrollEthBalance = 0;
-      (mendiUSDCBalance = 0),
-        (mendiExchangeRate = 0),
-        (layerBankEthBalance = 0);
+        aaveScrollEthBalance = 0,
+        mendiUSDCBalance = 0;
+      // mendiExchangeRate = 0;
 
       if (networkId === "0xe708") {
         [
@@ -159,7 +157,6 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
         aaveScrollEthBalance = await fetchTokenBalance(
           CHAIN_CONFIG[networkId].aaveWrappedScrollEthAddress,
         );
-        console.log("aaveScrollEthBalance", aaveScrollEthBalance);
       }
 
       setUnstakeTokenBalance(stargateBalance);
@@ -175,7 +172,6 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
 
     fetchBalances();
   }, [gnosisAddress, networkId]);
-  console.log("unstakeAaveScrollToken", unstakeAaveScrollToken);
   return (
     <div className={classes.container}>
       <Typography fontSize={24} fontWeight={600} variant="inherit">

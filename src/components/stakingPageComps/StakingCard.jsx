@@ -112,7 +112,12 @@ const StakingCard = ({
 
           <div>
             <Typography fontWeight={600} variant="inherit">
-              {Number(staked).toFixed(4)} {token}
+              {Number(staked).toFixed(4)}{" "}
+              {executionIds.Stake === 49
+                ? "meUSDC"
+                : executionIds.Stake === 51
+                ? "aaveWETH"
+                : token}
             </Typography>
             <Typography
               className={classes.smallFont}

@@ -782,7 +782,7 @@ export const DEFI_PROPOSALS = ({
       tags: [],
     },
     {
-      name: " Aave",
+      name: "Aave",
       logo: "/assets/images/restake.png",
       APY: "3.4",
       staked: aaveScrollStaked,
@@ -799,16 +799,11 @@ export const DEFI_PROPOSALS = ({
       risk: "High",
       info: (
         <span>
-          This strategy swaps ETH for stETH and then restakes it to get rstETH
-          (LRT by restakefinance.com). You earn 3.4% native yield on holding the
-          LRT & ~10% APR from Eigen Rewards from Restake Finance.
-          <br />
-          <br />
-          This is a new protocol, deposit at your own risk. Reward points are
-          accrued on your Stations treasury address.
+          This strategy swaps ETH for aaveWETH. You earn 3.4% native yield on
+          holding aaveWETH by AAVE.
         </span>
       ),
-      tags: ["🏆 RSTK APR"],
+      tags: [],
     },
   ];
 };

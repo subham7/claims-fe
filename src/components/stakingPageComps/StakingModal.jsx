@@ -298,7 +298,12 @@ const StakingModal = ({
               variant="inherit">
               Total of{" "}
               <span>
-                {Number(staked).toFixed(4)} {token}
+                {Number(staked).toFixed(4)}{" "}
+                {executionId === 50
+                  ? "meUSDC"
+                  : executionId === 52
+                  ? "aaveWETH"
+                  : token}
               </span>{" "}
               is staked in this pool.
             </Typography>
