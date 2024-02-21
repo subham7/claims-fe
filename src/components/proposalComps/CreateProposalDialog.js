@@ -202,7 +202,7 @@ const CreateProposalDialog = ({ daoAddress, routeNetworkId }) => {
       getBalance,
       getDecimals,
       gnosisAddress,
-      clubData,
+      factoryData: clubData,
       walletAddress,
       daoAddress,
       getERC20TotalSupply,
