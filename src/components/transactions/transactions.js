@@ -44,7 +44,7 @@ const Transactions = ({ networkId }) => {
   const [transactions, setTransactions] = useState([]);
   const [paginationSettings, setPaginationSettings] = useState({
     page: 0,
-    limit: 10,
+    limit: 25,
     offset: 0,
   });
 
