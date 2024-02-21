@@ -401,6 +401,7 @@ const ERC20 = ({
           tokenDetails: tokenDetails,
           isDeposit: true,
           isActive: active,
+          networkId: routeNetworkId,
         }}
         inputComponents={
           <DepositInputComponents
