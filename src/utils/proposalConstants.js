@@ -439,6 +439,7 @@ export const DEFI_PROPOSALS = ({
   rocketEigenStaked,
   mantleEigenStaked,
   layerBankStaked,
+  aaveScrollStaked,
   mendiStaked,
 }) => {
   return [
@@ -779,6 +780,35 @@ export const DEFI_PROPOSALS = ({
         </span>
       ),
       tags: [],
+    },
+    {
+      name: " Aave",
+      logo: "/assets/images/restake.png",
+      APY: "3.4",
+      staked: aaveScrollStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 51,
+        Unstake: 52,
+      },
+      availableOnNetworkIds: ["0x82750"],
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.aaveWrappedScrollEthAddress
+        ? CHAIN_CONFIG[networkId].aaveWrappedScrollEthAddress
+        : "",
+      isUnstakeDisabled: false,
+      risk: "High",
+      info: (
+        <span>
+          This strategy swaps ETH for stETH and then restakes it to get rstETH
+          (LRT by restakefinance.com). You earn 3.4% native yield on holding the
+          LRT & ~10% APR from Eigen Rewards from Restake Finance.
+          <br />
+          <br />
+          This is a new protocol, deposit at your own risk. Reward points are
+          accrued on your Stations treasury address.
+        </span>
+      ),
+      tags: ["🏆 RSTK APR"],
     },
   ];
 };

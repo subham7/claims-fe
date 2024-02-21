@@ -25,6 +25,7 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
   const [unstakeRocketEigenToken, setUnstakeRocketEigenToken] = useState(0);
   const [unstakeMantleEigenToken, setUnstakeMantleEigenToken] = useState(0);
   const [unstakeLayerBankToken, setUnstakeLayerBankToken] = useState(0);
+  const [unstakeAaveScrollToken, setUnstakeAaveScrollToken] = useState(0);
   const [unstakeMendiUsdcToken, setUnstakeMendiUsdcToken] = useState(0);
 
   const { getBalance, getDecimals } = useCommonContractMethods({
@@ -115,9 +116,11 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
         swellRswETH = 0,
         restakeRstETH = 0,
         renzoEzEthBalance = 0,
-        mendiUSDCBalance = 0,
-        mendiExchangeRate = 0,
-        layerBankEthBalance = 0;
+        layerBankEthBalance = 0,
+        aaveScrollEthBalance = 0;
+      (mendiUSDCBalance = 0),
+        (mendiExchangeRate = 0),
+        (layerBankEthBalance = 0);
 
       if (networkId === "0xe708") {
         [
@@ -152,6 +155,11 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
         restakeRstETH = await fetchTokenBalance(
           CHAIN_CONFIG[networkId].restakeRstETHAddress,
         );
+      } else if (networkId === "0x82750") {
+        aaveScrollEthBalance = await fetchTokenBalance(
+          CHAIN_CONFIG[networkId].aaveWrappedScrollEthAddress,
+        );
+        console.log("aaveScrollEthBalance", aaveScrollEthBalance);
       }
 
       setUnstakeTokenBalance(stargateBalance);
@@ -161,12 +169,13 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
       setUnstakeRenzoEzETHToken(renzoEzEthBalance);
       setUnstakeRestakeRstETHToken(restakeRstETH);
       setUnstakeLayerBankToken(layerBankEthBalance);
+      setUnstakeAaveScrollToken(aaveScrollEthBalance);
       setUnstakeMendiUsdcToken(mendiUSDCBalance);
     };
 
     fetchBalances();
   }, [gnosisAddress, networkId]);
-
+  console.log("unstakeAaveScrollToken", unstakeAaveScrollToken);
   return (
     <div className={classes.container}>
       <Typography fontSize={24} fontWeight={600} variant="inherit">
@@ -187,6 +196,7 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
           rocketEigenStaked: Number(unstakeRocketEigenToken),
           mantleEigenStaked: Number(unstakeMantleEigenToken),
           layerBankStaked: Number(unstakeLayerBankToken),
+          aaveScrollStaked: Number(unstakeAaveScrollToken),
           mendiStaked: Number(unstakeMendiUsdcToken),
           networkId,
         })
