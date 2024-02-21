@@ -34,8 +34,10 @@ import BackdropLoader from "@components/common/BackdropLoader";
 import ComponentHeader from "@components/common/ComponentHeader";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 
-const Members = ({ daoAddress }) => {
-  const { getDecimals, getTokenSymbol } = useCommonContractMethods();
+const Members = ({ daoAddress, routeNetworkId }) => {
+  const { getDecimals, getTokenSymbol } = useCommonContractMethods({
+    routeNetworkId,
+  });
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
 
@@ -171,7 +173,6 @@ const Members = ({ daoAddress }) => {
       console.log(error);
     }
   };
-  console.log("token data", tokenDetails);
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(event.target.value);

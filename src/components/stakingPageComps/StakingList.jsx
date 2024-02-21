@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import useAppContractMethods from "hooks/useAppContractMethods";
 
-const StakingList = ({ daoAddress }) => {
+const StakingList = ({ daoAddress, routeNeworkId }) => {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
   const [unstakeTokenBalance, setUnstakeTokenBalance] = useState(0);
@@ -27,9 +27,10 @@ const StakingList = ({ daoAddress }) => {
   const [unstakeLayerBankToken, setUnstakeLayerBankToken] = useState(0);
   const [unstakeMendiUsdcToken, setUnstakeMendiUsdcToken] = useState(0);
 
-  const { getBalance, getDecimals } = useCommonContractMethods();
-  const { fetchEigenTokenBalance, fetchMendiUsdcExhcangeRate } =
-    useAppContractMethods({ daoAddress });
+  const { getBalance, getDecimals } = useCommonContractMethods({
+    routeNeworkId,
+  });
+  const { fetchEigenTokenBalance } = useAppContractMethods({ daoAddress });
 
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;

@@ -26,7 +26,7 @@ const JoinPage = () => {
         daoAddress={daoAddress}
         page={4}
         networkId={networkId}>
-        <Join daoAddress={daoAddress} />
+        <Join daoAddress={daoAddress} routeNetworkId={networkId} />
       </Layout>
     </>
   );

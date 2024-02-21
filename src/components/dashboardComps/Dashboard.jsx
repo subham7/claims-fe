@@ -11,7 +11,6 @@ import { convertToFullNumber, handleSignMessage } from "utils/helper";
 import { useAccount, useNetwork } from "wagmi";
 import AssetsTable from "./AssetsTable";
 import classes from "./Dashboard.module.scss";
-import { tableHeader } from "../../data/dashboard";
 import DashboardActivities from "./DashboardActivities";
 import NoTokens from "./NoTokens";
 import TreasuryItem from "./TreasuryItem";
@@ -28,7 +27,7 @@ import StatusModal from "@components/modals/StatusModal/StatusModal";
 import CreateClubModal from "@components/modals/CreateClubModal/CreateClubModal";
 import BackdropLoader from "@components/common/BackdropLoader";
 
-const Dashboard = ({ daoAddress, routeNeteworkId }) => {
+const Dashboard = ({ daoAddress, routeNetworkId }) => {
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
@@ -60,7 +59,7 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
   const [showCreateClubModal, setShowCreateClubModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { getBalance } = useCommonContractMethods();
+  const { getBalance } = useCommonContractMethods({ routeNetworkId });
   const { getERC20TotalSupply, getNftOwnersCount } = useAppContractMethods({
     daoAddress,
   });
@@ -332,10 +331,7 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
           {assetType === "erc20" ? (
             <>
               {tokenDetails?.tokenPriceList?.length ? (
-                <AssetsTable
-                  tableData={tokenDetails.tokenPriceList}
-                  tableHeader={tableHeader}
-                />
+                <AssetsTable tableData={tokenDetails.tokenPriceList} />
               ) : (
                 <NoTokens
                   title="No tokens in treasury"

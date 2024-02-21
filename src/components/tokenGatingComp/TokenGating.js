@@ -15,7 +15,7 @@ import useCommonContractMethods from "hooks/useCommonContractMehods";
 import BackdropLoader from "@components/common/BackdropLoader";
 import { setAlertData } from "redux/reducers/alert";
 
-const TokenGating = ({ daoAddress }) => {
+const TokenGating = ({ daoAddress, routeNetworkId }) => {
   const [showTokenGatingModal, setShowTokenGatingModal] = useState(false);
   const [checked, setChecked] = useState(false);
   const [fetchedDetails, setFetchedDetails] = useState({
@@ -48,7 +48,9 @@ const TokenGating = ({ daoAddress }) => {
       daoAddress,
     });
 
-  const { getTokenSymbol, getDecimals } = useCommonContractMethods();
+  const { getTokenSymbol, getDecimals } = useCommonContractMethods({
+    routeNetworkId,
+  });
 
   const addTokensHandler = () => {
     setShowTokenGatingModal(true);
@@ -315,6 +317,7 @@ const TokenGating = ({ daoAddress }) => {
             setShowTokenGatingModal(false);
           }}
           chooseTokens={chooseTokens}
+          routeNetworkId={routeNetworkId}
         />
       )}
 

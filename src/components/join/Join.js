@@ -12,7 +12,7 @@ import BackdropLoader from "@components/common/BackdropLoader";
 import ERC721 from "@components/depositPageComps/ERC721/ERC721";
 import { CHAIN_CONFIG } from "utils/constants";
 
-const Join = ({ daoAddress }) => {
+const Join = ({ daoAddress, routeNetworkId }) => {
   const [daoDetails, setDaoDetails] = useState({
     depositDeadline: 0,
     minDeposit: 0,
@@ -24,8 +24,8 @@ const Join = ({ daoAddress }) => {
   const [isTokenGated, setIsTokenGated] = useState(false);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [remainingClaimAmount, setRemainingClaimAmount] = useState();
-  const [whitelistUserData, setWhitelistUserData] = useState();
+  const [remainingClaimAmount, setRemainingClaimAmount] = useState(0);
+  const [whitelistUserData, setWhitelistUserData] = useState("");
   const [depositConfig, setDepositConfig] = useState({});
   const [isSignable, setIsSignable] = useState(false);
   const [allowanceValue, setAllowanceValue] = useState(0);
@@ -50,12 +50,12 @@ const Join = ({ daoAddress }) => {
     return state.club.clubData.tokenType;
   });
 
-  const factoryData = useSelector((state) => {
-    return state.club.factoryData;
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
   });
 
   const { getDecimals, getBalance, getTokenSymbol, checkCurrentAllowance } =
-    useCommonContractMethods();
+    useCommonContractMethods({ routeNetworkId });
 
   const { getTokenGatingDetails, getNftOwnersCount } = useAppContractMethods({
     daoAddress,
@@ -67,11 +67,11 @@ const Join = ({ daoAddress }) => {
   const fetchErc20ContractDetails = async () => {
     try {
       setLoading(true);
-      if (factoryData?.depositCloseTime)
+      if (clubData?.depositCloseTime)
         setDaoDetails({
-          depositDeadline: factoryData?.depositCloseTime,
-          minDeposit: factoryData?.minDepositPerUser,
-          maxDeposit: factoryData?.maxDepositPerUser,
+          depositDeadline: clubData?.depositCloseTime,
+          minDeposit: clubData?.minDepositPerUser,
+          maxDeposit: clubData?.maxDepositPerUser,
         });
 
       setLoading(false);
@@ -88,9 +88,9 @@ const Join = ({ daoAddress }) => {
     try {
       setLoading(true);
       const nftMinted = await getNftOwnersCount();
-      if (factoryData?.depositCloseTime && nftMinted >= 0) {
+      if (clubData?.depositCloseTime && nftMinted >= 0) {
         setDaoDetails({
-          depositDeadline: factoryData?.depositCloseTime,
+          depositDeadline: clubData?.depositCloseTime,
           nftMinted: nftMinted,
         });
       }
@@ -164,7 +164,7 @@ const Join = ({ daoAddress }) => {
         }
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setLoading(false);
     }
   };
@@ -178,7 +178,7 @@ const Join = ({ daoAddress }) => {
 
       setAllowanceValue(Number(currentAllowance));
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -196,30 +196,34 @@ const Join = ({ daoAddress }) => {
 
   useEffect(() => {
     if (daoAddress) getDepositPreRequisites(daoAddress);
-  }, [daoAddress, walletAddress]);
+  }, [daoAddress, walletAddress, networkId]);
 
   useEffect(() => {
     if (walletAddress && daoAddress) {
       fetchTokenGatingDetials();
     }
-  }, [walletAddress, daoAddress]);
+  }, [walletAddress, daoAddress, networkId]);
 
   useEffect(() => {
-    if (daoAddress) {
+    if (daoAddress && clubData) {
       if (TOKEN_TYPE === "erc20") {
         fetchErc20ContractDetails();
       } else if (TOKEN_TYPE === "erc721") {
         fetchErc721ContractDetails();
       }
     }
-  }, [TOKEN_TYPE, factoryData, daoAddress]);
+  }, [TOKEN_TYPE, clubData, daoAddress]);
 
   useEffect(() => {
     try {
       setLoading(true);
       const fetchData = async () => {
         if (daoAddress && daoDetails) {
-          const data = await queryAllMembersFromSubgraph(daoAddress, networkId);
+          const data = await queryAllMembersFromSubgraph(
+            daoAddress,
+            routeNetworkId,
+          );
+
           const userDepositAmount = data?.users?.find(
             (user) => user.userAddress === walletAddress,
           )?.depositAmount;
@@ -244,13 +248,16 @@ const Join = ({ daoAddress }) => {
         if (info.status === 200) setClubInfo(info.data[0]);
       };
       clubInfo();
-      walletAddress && fetchData();
+
+      if (walletAddress) {
+        fetchData();
+      }
       setLoading(false);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setLoading(false);
     }
-  }, [daoAddress, daoDetails, walletAddress]);
+  }, [daoAddress, daoDetails, networkId, walletAddress]);
 
   useEffect(() => {
     const fetchMerkleProof = async () => {
@@ -262,17 +269,24 @@ const Join = ({ daoAddress }) => {
 
         setWhitelistUserData(whitelistData);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     };
-    fetchMerkleProof();
-  }, [daoAddress, walletAddress]);
+
+    if (walletAddress) {
+      fetchMerkleProof();
+    }
+  }, [daoAddress, walletAddress, networkId]);
 
   useEffect(() => {
-    fetchCurrentAllowance();
+    if (walletAddress) {
+      fetchCurrentAllowance();
+    }
   }, [
     CHAIN_CONFIG[networkId]?.usdcAddress,
     CHAIN_CONFIG[networkId]?.factoryContractAddress,
+    networkId,
+    walletAddress,
   ]);
 
   return (
@@ -292,6 +306,8 @@ const Join = ({ daoAddress }) => {
           isSignable={isSignable}
           allowanceValue={allowanceValue}
           fetchCurrentAllowance={fetchCurrentAllowance}
+          fetchErc20ContractDetails={fetchErc20ContractDetails}
+          routeNetworkId={routeNetworkId}
         />
       ) : TOKEN_TYPE === "erc721" ? (
         <ERC721
@@ -307,6 +323,8 @@ const Join = ({ daoAddress }) => {
           isSignable={isSignable}
           allowanceValue={allowanceValue}
           fetchCurrentAllowance={fetchCurrentAllowance}
+          fetchErc721ContractDetails={fetchErc721ContractDetails}
+          routeNetworkId={routeNetworkId}
         />
       ) : null}
 

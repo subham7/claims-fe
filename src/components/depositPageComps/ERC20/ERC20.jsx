@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { queryLatestMembersFromSubgraph } from "utils/stationsSubgraphHelper";
+import {
+  queryLatestMembersFromSubgraph,
+  queryStationDataFromSubgraph,
+} from "utils/stationsSubgraphHelper";
 import dayjs from "dayjs";
 import DepositInput from "./DepositInput";
 import { useFormik } from "formik";
@@ -24,6 +27,7 @@ import { setAlertData } from "redux/reducers/alert";
 import { getPublicClient } from "utils/viemConfig";
 import { formatEther } from "viem";
 import { isNative } from "utils/helper";
+import { addClubData } from "redux/reducers/club";
 
 const DepositInputComponents = ({
   formik,
@@ -33,11 +37,13 @@ const DepositInputComponents = ({
   depositPreRequisitesProps,
   approveERC20Handler,
   allowanceValue,
+  routeNetworkId,
 }) => {
   return (
     <>
       <DepositPreRequisites {...depositPreRequisitesProps} />
       <DepositInput
+        routeNetworkId={routeNetworkId}
         formik={formik}
         tokenDetails={tokenDetails}
         isDisabled={isDepositDisabled}
@@ -62,6 +68,8 @@ const ERC20 = ({
   depositConfig,
   allowanceValue,
   fetchCurrentAllowance,
+  fetchErc20ContractDetails,
+  routeNetworkId,
 }) => {
   const [loading, setLoading] = useState(false);
   const [depositSuccessfull, setDepositSuccessfull] = useState(null);
@@ -85,10 +93,12 @@ const ERC20 = ({
   const router = useRouter();
   const dispatch = useDispatch();
   const { approveDeposit, getDecimals, getTokenSymbol, getBalance } =
-    useCommonContractMethods();
+    useCommonContractMethods({ routeNetworkId });
   const publicClient = getPublicClient(networkId);
 
-  const { buyGovernanceTokenERC20DAO } = useAppContractMethods({ daoAddress });
+  const { buyGovernanceTokenERC20DAO } = useAppContractMethods({
+    daoAddress,
+  });
   const { address: walletAddress } = useAccount();
 
   const day = Math.floor(new Date().getTime() / 1000.0);
@@ -101,11 +111,18 @@ const ERC20 = ({
     try {
       const { users } = await queryLatestMembersFromSubgraph(
         daoAddress,
-        networkId,
+        routeNetworkId,
       );
-      if (users) setMembers(users);
+      if (users) setMembers(users?.reverse());
     } catch (error) {
-      console.log(error);
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Unable to fetch latest Activity!",
+          severity: "error",
+        }),
+      );
+      console.error(error);
     }
   };
 
@@ -191,6 +208,25 @@ const ERC20 = ({
     }
   };
 
+  const fetchStationData = async () => {
+    try {
+      const data = await queryStationDataFromSubgraph(
+        daoAddress,
+        routeNetworkId,
+      );
+      if (data?.stations?.length > 0) {
+        dispatch(
+          addClubData({
+            ...clubData,
+            totalAmountRaised: data?.stations[0]?.totalAmountRaised,
+          }),
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const formik = useFormik({
     initialValues: {
       tokenInput: 0,
@@ -217,12 +253,20 @@ const ERC20 = ({
             : "0",
         );
 
+        await whitelistOnDeposit(walletAddress);
+
+        setTimeout(() => {
+          fetchTokenDetails();
+          fetchActivities();
+          fetchErc20ContractDetails();
+          fetchStationData();
+        }, 500);
+
         setLoading(false);
         setDepositSuccessfull(true);
-        await whitelistOnDeposit(walletAddress);
         formik.values.tokenInput = 0;
       } catch (error) {
-        console.log(error);
+        console.error(error);
         setFailed(true);
         setLoading(false);
       }
@@ -232,23 +276,28 @@ const ERC20 = ({
   const fetchTokenDetails = async () => {
     try {
       const depositTokenAddress = clubData.depositTokenAddress;
-      const isNativeToken = isNative(clubData.depositTokenAddress, networkId);
+      const isNativeToken = isNative(
+        clubData.depositTokenAddress,
+        routeNetworkId,
+      );
 
       const decimals = await getDecimals(depositTokenAddress);
       const symbol = await getTokenSymbol(depositTokenAddress);
-      let userBalance;
+      let userBalance = 0;
 
-      if (isNativeToken) {
-        userBalance = formatEther(
-          await publicClient.getBalance({
-            address: walletAddress,
-          }),
-        );
-      } else {
-        userBalance = convertFromWeiGovernance(
-          await getBalance(depositTokenAddress),
-          decimals,
-        );
+      if (walletAddress) {
+        if (isNativeToken) {
+          userBalance = formatEther(
+            await publicClient.getBalance({
+              address: walletAddress,
+            }),
+          );
+        } else {
+          userBalance = convertFromWeiGovernance(
+            await getBalance(depositTokenAddress),
+            decimals,
+          );
+        }
       }
 
       setTokenDetails({
@@ -258,7 +307,14 @@ const ERC20 = ({
         isNativeToken: isNativeToken,
       });
     } catch (error) {
-      console.log(error);
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Unable to fetch token details!",
+          severity: "error",
+        }),
+      );
+      console.error(error);
     }
   };
 
@@ -271,7 +327,14 @@ const ERC20 = ({
       );
       setUploadedDocInfo(document);
     } catch (error) {
-      console.log(error);
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Unable to fetch docs!",
+          severity: "error",
+        }),
+      );
+      console.error(error);
     }
   };
 
@@ -311,7 +374,7 @@ const ERC20 = ({
 
   useEffect(() => {
     fetchTokenDetails();
-  }, []);
+  }, [networkId, walletAddress]);
 
   useEffect(() => {
     if (daoAddress) {
@@ -341,6 +404,7 @@ const ERC20 = ({
         }}
         inputComponents={
           <DepositInputComponents
+            routeNetworkId={routeNetworkId}
             clubData={clubData}
             formik={formik}
             approveERC20Handler={approveERC20Handler}
@@ -358,6 +422,7 @@ const ERC20 = ({
         socialData={clubInfo}
         isDeposit={true}
         bio={clubInfo?.bio}
+        imgUrl={clubInfo?.bannerImage}
         eligibilityProps={{
           gatedTokenDetails: gatedTokenDetails,
           isDeposit: true,

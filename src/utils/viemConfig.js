@@ -38,12 +38,16 @@ const viemChains = {
 };
 
 export const getPublicClient = (networkId) => {
-  const client = createPublicClient({
-    chain: viemChains[networkId],
-    transport: http(CHAIN_CONFIG[networkId]?.appRpcUrl),
-  });
+  if (CHAIN_CONFIG[networkId]?.appRpcUrl || window?.ethereum) {
+    const client = createPublicClient({
+      chain: viemChains[networkId],
+      transport: http(CHAIN_CONFIG[networkId]?.appRpcUrl || window?.ethereum),
+    });
 
-  return client;
+    return client;
+  } else {
+    return {};
+  }
 };
 
 export const getWalletClient = (networkId) => {
