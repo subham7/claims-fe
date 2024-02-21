@@ -25,11 +25,15 @@ const useClubFetch = ({ daoAddress, routeNetworkId }) => {
     return state.club.clubData;
   });
 
-  const { getDaoDetails, getERC20DAOdetails, getERC721DAOdetails } =
-    useAppContractMethods({
-      daoAddress,
-      routeNetworkId,
-    });
+  const {
+    getDaoDetails,
+    getERC20DAOdetails,
+    getERC721DAOdetails,
+    getDaoBalance,
+  } = useAppContractMethods({
+    daoAddress,
+    routeNetworkId,
+  });
 
   const addClubDataToRedux = async (clubData) => {
     if (!reduxClubData.gnosisAddress && routeNetworkId) {
@@ -132,6 +136,8 @@ const useClubFetch = ({ daoAddress, routeNetworkId }) => {
         );
       }
 
+      const balance = await getDaoBalance(reduxClubData.tokenType === "erc721");
+
       const { safeSdk } = await getSafeSdk(
         reduxClubData.gnosisAddress,
         walletAddress,
@@ -145,6 +151,7 @@ const useClubFetch = ({ daoAddress, routeNetworkId }) => {
         dispatch(setAdminUser(true));
       } else {
         if (
+          balance == 0 &&
           !router.pathname.includes("join") &&
           !router.pathname.includes("documents")
         ) {

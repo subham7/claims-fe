@@ -6,8 +6,7 @@ import useCommonContractMethods from "hooks/useCommonContractMehods";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addNftsOwnedByDao } from "redux/reducers/club";
-import { convertFromWeiGovernance } from "utils/globalFunctions";
-import { convertToFullNumber, handleSignMessage } from "utils/helper";
+import { customToFixedAutoPrecision, handleSignMessage } from "utils/helper";
 import { useAccount, useNetwork } from "wagmi";
 import AssetsTable from "./AssetsTable";
 import classes from "./Dashboard.module.scss";
@@ -81,23 +80,14 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
       if (daoAddress && networkId) {
         if (clubData) {
           let totalSupply, totalNftMinted, percentageShare, balance, myBalance;
-
           if (tokenType === "erc20") {
             totalSupply = await getERC20TotalSupply();
             myBalance = await getBalance(daoAddress);
-            balance = convertFromWeiGovernance(
-              convertToFullNumber(myBalance + ""),
-              18,
-            );
-
-            percentageShare =
-              (balance / Number(convertFromWeiGovernance(totalSupply, 18))) *
-              100;
+            percentageShare = (myBalance / totalSupply) * 100;
           } else if (tokenType === "erc721") {
             totalNftMinted = await getNftOwnersCount();
             myBalance = await getBalance(daoAddress);
-            percentageShare =
-              (Number(myBalance) / Number(totalNftMinted)) * 100;
+            percentageShare = (myBalance / totalNftMinted) * 100;
           }
           setMyShare(percentageShare ? Number(percentageShare) : 0);
         }
@@ -223,14 +213,14 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
       iconSrc: "/assets/icons/stats_hovered.svg",
       altText: "Treasury Holdings",
       title: "Treasury Holdings",
-      value: `$${Number(treasuryAmount || 0).toFixed(3)}`,
+      value: `$${customToFixedAutoPrecision(treasuryAmount)}`,
     },
     {
       containerClass: classes.ownershipContainer,
       iconSrc: "/assets/icons/chart.svg",
       altText: "My Ownership",
       title: "My Ownership",
-      value: myShare.toFixed(2),
+      value: customToFixedAutoPrecision(myShare),
       tokenName: symbol,
       isOwnership: true,
     },

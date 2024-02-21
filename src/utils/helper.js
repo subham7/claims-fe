@@ -475,3 +475,13 @@ export const switchNetworkHandler = async (networkId, setLoading) => {
     }
   }
 };
+
+export function customToFixedAutoPrecision(number) {
+  let decimalPlaces = 2;
+  let tempNum = number;
+  while (tempNum < 1) {
+    tempNum *= 10;
+    decimalPlaces++;
+  }
+  return Number(number.toFixed(decimalPlaces));
+}
