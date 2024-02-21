@@ -25,7 +25,13 @@ import { getProposalTxHash } from "api/proposal";
 import { createSafeTransactionData } from "./proposal";
 import { CHAIN_CONFIG } from "./constants";
 
-export const proposalData = ({ data, decimals, factoryData, symbol }) => {
+export const proposalData = ({
+  data,
+  decimals,
+  factoryData,
+  symbol,
+  isNativeClub,
+}) => {
   const {
     executionId,
     airDropAmount,
@@ -60,9 +66,13 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
     case 1:
       return {
         "No of recipients :": mintGTAddresses?.length,
-        "Tokens to be minted: ":
-          mintGTAmounts?.reduce((partialSum, a) => partialSum + Number(a), 0) /
-          10 ** decimals,
+        "Tokens to be minted: ": isNativeClub
+          ? mintGTAmounts?.reduce((partialSum, a) => partialSum + Number(a), 0)
+          : mintGTAmounts?.reduce(
+              (partialSum, a) => partialSum + Number(a),
+              0,
+            ) /
+            10 ** decimals,
       };
     case 2:
       return {
@@ -1870,6 +1880,7 @@ export const proposalDetailsData = ({
   decimals,
   factoryData,
   symbol,
+  isNativeClub,
 }) => {
   const {
     executionId,
@@ -1915,9 +1926,13 @@ export const proposalDetailsData = ({
       return responseData;
     case 1:
       responseData.data = {
-        "Total Amount":
-          mintGTAmounts?.reduce((partialSum, a) => partialSum + Number(a), 0) /
-          10 ** 18,
+        "Total Amount": isNativeClub
+          ? mintGTAmounts?.reduce((partialSum, a) => partialSum + Number(a), 0)
+          : mintGTAmounts?.reduce(
+              (partialSum, a) => partialSum + Number(a),
+              0,
+            ) /
+            10 ** 18,
         Recipients: mintGTAddresses
           ?.map((address) => shortAddress(address))
           .join(", "),

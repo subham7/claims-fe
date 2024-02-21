@@ -119,14 +119,21 @@ const ProposalCard = ({ proposal, daoAddress, routeNetworkId }) => {
       data: proposal.commands[0],
       decimals: tokenDetails.decimals,
       symbol: tokenDetails.symbol,
-      clubData,
+      factoryData: clubData,
+      isNativeClub: isNative(clubData.depositTokenAddress, networkId),
     });
     setProposalDetails(response);
   };
 
   useEffect(() => {
     getProposalData();
-  }, [proposal, tokenDetails.decimals, tokenDetails.symbol]);
+  }, [
+    proposal,
+    tokenDetails.decimals,
+    tokenDetails.symbol,
+    clubData.depositTokenAddress,
+    networkId,
+  ]);
 
   const statusClassMap = {
     active: classes.cardFontActive,
