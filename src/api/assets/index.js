@@ -4,15 +4,18 @@ import { getJwtToken } from "../../utils/auth";
 
 export async function getAssetsByDaoAddress(daoAddress, networkId) {
   try {
-    return await axios.get(
-      MAIN_API_URL + `assets/dao/${daoAddress}?networkId=${networkId}`,
-      {
-        headers: {
-          Authorization: "Bearer " + getJwtToken(),
-          "Content-Type": "application/json",
+    if (daoAddress && networkId) {
+      return await axios.get(
+        MAIN_API_URL + `assets/dao/${daoAddress}?networkId=${networkId}`,
+        {
+          headers: {
+            Authorization: "Bearer " + getJwtToken(),
+            "Content-Type": "application/json",
+          },
         },
-      },
-    );
+      );
+    }
+    return {};
   } catch (error) {
     console.log(error);
   }
@@ -38,15 +41,18 @@ export async function fetchTokenMetaData(tokenAddress, networkId) {
 
 export async function getNFTsByDaoAddress(daoAddress, networkId) {
   try {
-    return await axios.get(
-      MAIN_API_URL + `assets/dao/${daoAddress}/nft?networkId=${networkId}`,
-      {
-        headers: {
-          Authorization: "Bearer " + getJwtToken(),
-          "Content-Type": "application/json",
+    if (daoAddress && networkId) {
+      return await axios.get(
+        MAIN_API_URL + `assets/dao/${daoAddress}/nft?networkId=${networkId}`,
+        {
+          headers: {
+            Authorization: "Bearer " + getJwtToken(),
+            "Content-Type": "application/json",
+          },
         },
-      },
-    );
+      );
+    }
+    return {};
   } catch (error) {
     console.log(error);
   }

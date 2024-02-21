@@ -427,13 +427,15 @@ export const formatCash = (n) => {
 };
 
 export const getLinks = (daoAddress, networkId) => {
-  return baseLinks.map((link, index) => ({
-    ...link,
-    icon: `/assets/icons/${link.icon}.svg`,
-    hoveredLink: `/assets/icons/${link.icon}_hovered.svg`,
-    route: `/${link.routeHeader}/${daoAddress}/${networkId}`,
-    id: String(index + 1),
-  }));
+  return baseLinks
+    .filter((link) => !link?.hideNetworks?.includes(networkId))
+    ?.map((link, index) => ({
+      ...link,
+      icon: `/assets/icons/${link.icon}.svg`,
+      hoveredLink: `/assets/icons/${link.icon}_hovered.svg`,
+      route: `/${link.routeHeader}/${daoAddress}/${networkId}`,
+      id: String(index + 1),
+    }));
 };
 
 export const isNative = (depositTokenAddress, networkId) => {
