@@ -54,7 +54,7 @@ import BackdropLoader from "@components/common/BackdropLoader";
 import { setAlertData } from "redux/reducers/alert";
 import { CHAIN_CONFIG } from "utils/constants";
 
-const ProposalDetail = ({ pid, daoAddress }) => {
+const ProposalDetail = ({ pid, daoAddress, routeNetworkId }) => {
   const classes = ProposalDetailStyles();
   const router = useRouter();
 
@@ -128,14 +128,12 @@ const ProposalDetail = ({ pid, daoAddress }) => {
   const [isCancelExecuted, setIsCancelExecuted] = useState(false);
   const [isRejectTxnSigned, setIsRejectTxnSigned] = useState(false);
 
-  const factoryData = useSelector((state) => {
-    return state.club.factoryData;
-  });
-
   const { getERC20TotalSupply, updateProposalAndExecution, getNftOwnersCount } =
     useAppContractMethods({ daoAddress });
 
-  const { getBalance, getDecimals } = useCommonContractMethods();
+  const { getBalance, getDecimals } = useCommonContractMethods({
+    routeNetworkId,
+  });
 
   const isOwner = useCallback(async () => {
     if (gnosisAddress) {
@@ -365,7 +363,7 @@ Cast your vote before ${new Date(
       proposalData,
       daoAddress,
       clubData,
-      factoryData,
+      clubData,
       contractABI: ABI,
       setMembers,
       getNftOwnersCount,
@@ -711,11 +709,12 @@ Cast your vote before ${new Date(
 
           {/* Proposal Info and Signators */}
           <Grid container spacing={2} mt={4} mb={3}>
-            {proposalData && factoryData && proposalData.type !== "survey" && (
+            {proposalData && clubData && proposalData.type !== "survey" && (
               <ProposalExecutionInfo
                 proposalData={proposalData}
                 fetched={fetched}
-                daoDetails={factoryData}
+                daoDetails={clubData}
+                routeNetworkId={routeNetworkId}
               />
             )}
 

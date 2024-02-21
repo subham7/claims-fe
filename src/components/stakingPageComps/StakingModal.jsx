@@ -128,7 +128,6 @@ const StakingModal = ({
     onSubmit: async (values) => {
       try {
         setLoading(true);
-
         let commands = await getProposalCommands({
           values,
           tokenData,
@@ -136,7 +135,6 @@ const StakingModal = ({
           daoAddress,
           networkId,
         });
-
         const blockNum = await fetchLatestBlockNumber();
 
         commands = {
@@ -168,7 +166,9 @@ const StakingModal = ({
 
         const request = await createProposal(isGovernanceActive, {
           ...payload,
-          description: values.note,
+          description: values.note
+            ? values.note
+            : `${type} $${values.stakeAmount} ${token}`,
           signature,
         });
         onClose();

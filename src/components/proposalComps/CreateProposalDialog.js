@@ -57,7 +57,7 @@ const useStyles = makeStyles({
   },
 });
 
-const CreateProposalDialog = ({ daoAddress }) => {
+const CreateProposalDialog = ({ daoAddress, routeNetworkId }) => {
   const classes = useStyles();
   const router = useRouter();
   const [nftData, setNftData] = useState([]);
@@ -84,10 +84,8 @@ const CreateProposalDialog = ({ daoAddress }) => {
 
   const [loaderOpen, setLoaderOpen] = useState(false);
 
-  const { getBalance, getDecimals } = useCommonContractMethods();
-
-  const factoryData = useSelector((state) => {
-    return state.club.factoryData;
+  const { getBalance, getDecimals } = useCommonContractMethods({
+    routeNetworkId,
   });
 
   const gnosisAddress = useSelector((state) => {
@@ -204,7 +202,7 @@ const CreateProposalDialog = ({ daoAddress }) => {
       getBalance,
       getDecimals,
       gnosisAddress,
-      factoryData,
+      clubData,
       walletAddress,
       daoAddress,
       getERC20TotalSupply,

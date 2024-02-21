@@ -57,7 +57,7 @@ export const CHAIN_CONFIG = {
     claimFactoryAddress: "0x47e6bFA71e490ADC8f0E33385aAdF85282E71002",
     factoryContractAddress: "0x726D3e4fBD321c4cD88769C16f5BAFfaC98D95Ad",
     stationSubgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/subham7/stnx-be-polygon",
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-polygon/prod/gn",
     claimsSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-polygon/prod/gn",
     covalentNetworkName: "matic-mainnet",
@@ -265,6 +265,7 @@ export const CHAIN_CONFIG = {
     logoUri: "/assets/networks/0xe708.png",
     layerBankToken: "0xc7D8489DaE3D2EbEF075b1dB2257E2c231C9D231",
     layerBankPool: "0x009a0b7C38B542208936F1179151CD08E2943833",
+    mendiTokenAddress: "0x333d8b480bdb25ea7be4dd87eeb359988ce1b30d",
   },
   "0x38": {
     chainName: "BNB Smart Chain",

@@ -440,6 +440,7 @@ export const DEFI_PROPOSALS = ({
   mantleEigenStaked,
   layerBankStaked,
   aaveScrollStaked,
+  mendiStaked,
 }) => {
   return [
     // {
@@ -726,7 +727,7 @@ export const DEFI_PROPOSALS = ({
       tags: ["🏆 RSTK APR"],
     },
     {
-      name: " LayerBank",
+      name: "LayerBank",
       logo: "/assets/images/restake.png",
       APY: "3.4",
       staked: layerBankStaked,
@@ -740,19 +741,45 @@ export const DEFI_PROPOSALS = ({
         ? CHAIN_CONFIG[networkId].layerBankToken
         : "",
       isUnstakeDisabled: false,
-      risk: "High",
+      risk: "Low",
       info: (
         <span>
-          This strategy swaps ETH for stETH and then restakes it to get rstETH
-          (LRT by restakefinance.com). You earn 3.4% native yield on holding the
-          LRT & ~10% APR from Eigen Rewards from Restake Finance.
+          This strategy swaps ETH for lETH. You earn 3.4% native yield on
+          holding the lETH from LayerBank Finance.
           <br />
           <br />
-          This is a new protocol, deposit at your own risk. Reward points are
-          accrued on your Stations treasury address.
+          This is a new protocol, deposit at your own risk.
         </span>
       ),
-      tags: ["🏆 RSTK APR"],
+      tags: [],
+    },
+
+    {
+      name: "Mendi Finance",
+      logo: "/assets/icons/mendi.jpeg",
+      APY: "8.7",
+      staked: mendiStaked,
+      token: "USDC",
+      executionIds: {
+        Stake: 49,
+        Unstake: 50,
+      },
+      availableOnNetworkIds: ["0xe708"],
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.mendiTokenAddress
+        ? CHAIN_CONFIG[networkId].mendiTokenAddress
+        : "",
+      isUnstakeDisabled: false,
+      risk: "Low",
+      info: (
+        <span>
+          This strategy swaps USDC for meUSDC. You earn 8.79% interest on
+          supplying the USDC from Mendi Finance.
+          <br />
+          <br />
+          This is a new protocol, deposit at your own risk.
+        </span>
+      ),
+      tags: [],
     },
     {
       name: " Aave",

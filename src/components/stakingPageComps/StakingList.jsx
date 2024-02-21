@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import useAppContractMethods from "hooks/useAppContractMethods";
 
-const StakingList = ({ daoAddress }) => {
+const StakingList = ({ daoAddress, routeNeworkId }) => {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
   const [unstakeTokenBalance, setUnstakeTokenBalance] = useState(0);
@@ -26,8 +26,11 @@ const StakingList = ({ daoAddress }) => {
   const [unstakeMantleEigenToken, setUnstakeMantleEigenToken] = useState(0);
   const [unstakeLayerBankToken, setUnstakeLayerBankToken] = useState(0);
   const [unstakeAaveScrollToken, setUnstakeAaveScrollToken] = useState(0);
+  const [unstakeMendiUsdcToken, setUnstakeMendiUsdcToken] = useState(0);
 
-  const { getBalance, getDecimals } = useCommonContractMethods();
+  const { getBalance, getDecimals } = useCommonContractMethods({
+    routeNeworkId,
+  });
   const { fetchEigenTokenBalance } = useAppContractMethods({ daoAddress });
 
   const gnosisAddress = useSelector((state) => {
@@ -115,18 +118,27 @@ const StakingList = ({ daoAddress }) => {
         renzoEzEthBalance = 0,
         layerBankEthBalance = 0,
         aaveScrollEthBalance = 0;
+      (mendiUSDCBalance = 0),
+        (mendiExchangeRate = 0),
+        (layerBankEthBalance = 0);
 
       if (networkId === "0xe708") {
-        [stargateBalance, clipFinanceBalance, layerBankEthBalance] =
-          await Promise.all([
-            fetchTokenBalance(
-              CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0],
-            ),
-            fetchTokenBalance(
-              CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
-            ),
-            fetchTokenBalance(CHAIN_CONFIG[networkId].layerBankToken),
-          ]);
+        [
+          stargateBalance,
+          clipFinanceBalance,
+          layerBankEthBalance,
+          mendiUSDCBalance,
+        ] = await Promise.all([
+          fetchTokenBalance(
+            CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0],
+          ),
+          fetchTokenBalance(
+            CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
+          ),
+          fetchTokenBalance(CHAIN_CONFIG[networkId].layerBankToken),
+
+          fetchTokenBalance(CHAIN_CONFIG[networkId].mendiTokenAddress),
+        ]);
       } else if (networkId === "0x1") {
         renzoEzEthBalance = await fetchTokenBalance(
           CHAIN_CONFIG[networkId].renzoEzETHAddress,
@@ -158,6 +170,7 @@ const StakingList = ({ daoAddress }) => {
       setUnstakeRestakeRstETHToken(restakeRstETH);
       setUnstakeLayerBankToken(layerBankEthBalance);
       setUnstakeAaveScrollToken(aaveScrollEthBalance);
+      setUnstakeMendiUsdcToken(mendiUSDCBalance);
     };
 
     fetchBalances();
@@ -184,6 +197,7 @@ const StakingList = ({ daoAddress }) => {
           mantleEigenStaked: Number(unstakeMantleEigenToken),
           layerBankStaked: Number(unstakeLayerBankToken),
           aaveScrollStaked: Number(unstakeAaveScrollToken),
+          mendiStaked: Number(unstakeMendiUsdcToken),
           networkId,
         })
           .filter((item) => item.availableOnNetworkIds.includes(networkId))

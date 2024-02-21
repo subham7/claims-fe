@@ -47,6 +47,7 @@ const ERC721 = ({
   allowanceValue,
   fetchCurrentAllowance,
   fetchErc721ContractDetails,
+  routeNetworkId,
 }) => {
   const [tokenDetails, setTokenDetails] = useState({
     tokenDecimal: 0,
@@ -73,7 +74,6 @@ const ERC721 = ({
   const day2 = dayjs.unix(daoDetails?.depositDeadline);
   const remainingDays = day2.diff(day1, "day");
   const remainingTimeInSecs = day2.diff(day1, "seconds");
-  const depositTokenAddress = CHAIN_CONFIG[networkId].usdcAddress;
 
   const { address: walletAddress } = useAccount();
   const router = useRouter();
@@ -85,7 +85,7 @@ const ERC721 = ({
     getTokenSymbol,
     getBalance,
     getTokenName,
-  } = useCommonContractMethods();
+  } = useCommonContractMethods({ routeNetworkId });
 
   const { buyGovernanceTokenERC721DAO, getDaoDetails } = useAppContractMethods({
     daoAddress,
@@ -99,10 +99,17 @@ const ERC721 = ({
     try {
       const { users } = await queryLatestMembersFromSubgraph(
         daoAddress,
-        networkId,
+        routeNetworkId,
       );
       if (users) setMembers(users);
     } catch (error) {
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Unable to fetch latest Activity!",
+          severity: "error",
+        }),
+      );
       console.log(error);
     }
   };
@@ -120,26 +127,30 @@ const ERC721 = ({
         }
 
         const depositTokenAddress = clubData.depositTokenAddress;
-
-        const isNativeToken = isNative(clubData.depositTokenAddress, networkId);
+        const isNativeToken = isNative(
+          clubData.depositTokenAddress,
+          routeNetworkId,
+        );
 
         const decimals = await getDecimals(depositTokenAddress);
         const symbol = await getTokenSymbol(depositTokenAddress);
         const name = await getTokenName(depositTokenAddress);
 
-        let userBalance;
+        let userBalance = 0;
 
-        if (isNativeToken) {
-          userBalance = formatEther(
-            await publicClient.getBalance({
-              address: walletAddress,
-            }),
-          );
-        } else {
-          userBalance = convertFromWeiGovernance(
-            await getBalance(depositTokenAddress),
-            decimals,
-          );
+        if (walletAddress) {
+          if (isNativeToken) {
+            userBalance = formatEther(
+              await publicClient.getBalance({
+                address: walletAddress,
+              }),
+            );
+          } else {
+            userBalance = convertFromWeiGovernance(
+              await getBalance(depositTokenAddress),
+              decimals,
+            );
+          }
         }
 
         setTokenDetails({
@@ -156,45 +167,26 @@ const ERC721 = ({
 
   const fetchStationData = async () => {
     try {
-      const data = await queryStationDataFromSubgraph(daoAddress, networkId);
-      const daoDetails = await getDaoDetails();
-      const depositTokenAddress = daoDetails.depositTokenAddress;
-
-      // Loop through the stations in data and add depositTokenAddress to each station
-      const updatedData = {
-        ...data,
-        stations: data?.stations?.map((station) => ({
-          ...station,
-          depositTokenAddress: depositTokenAddress,
-        })),
-      };
-      if (updatedData?.stations?.length > 0) {
+      const data = await queryStationDataFromSubgraph(
+        daoAddress,
+        routeNetworkId,
+      );
+      if (data?.stations?.length > 0) {
         dispatch(
           addClubData({
-            gnosisAddress: updatedData.stations[0].gnosisAddress,
-            isGtTransferable: updatedData.stations[0].isGtTransferable,
-            name: updatedData.stations[0].name,
-            ownerAddress: updatedData.stations[0].ownerAddress,
-            symbol: updatedData.stations[0].symbol,
-            tokenType: updatedData.stations[0].tokenType,
-            membersCount: updatedData.stations[0].membersCount,
-            deployedTime: updatedData.stations[0].timeStamp,
-            imgUrl: updatedData.stations[0].imageUrl,
-            minDepositAmount: updatedData.stations[0].minDepositAmount,
-            maxDepositAmount: updatedData.stations[0].maxDepositAmount,
-            pricePerToken: updatedData.stations[0].pricePerToken,
-            isGovernanceActive: updatedData.stations[0].isGovernanceActive,
-            quorum: updatedData.stations[0].quorum,
-            threshold: updatedData.stations[0].threshold,
-            raiseAmount: updatedData.stations[0].raiseAmount,
-            totalAmountRaised: updatedData.stations[0].totalAmountRaised,
-            distributionAmount: updatedData.stations[0].distributionAmount,
-            maxTokensPerUser: updatedData.stations[0].maxTokensPerUser,
-            depositTokenAddress: updatedData.stations[0].depositTokenAddress,
+            ...clubData,
+            totalAmountRaised: data?.stations[0]?.totalAmountRaised,
           }),
         );
       }
     } catch (error) {
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Unable to fetch Station Data!",
+          severity: "error",
+        }),
+      );
       console.log(error);
     }
   };
@@ -203,7 +195,7 @@ const ERC721 = ({
     setLoading(true);
     try {
       await approveDeposit(
-        depositTokenAddress,
+        clubData.depositTokenAddress,
         CHAIN_CONFIG[networkId].factoryContractAddress,
         Number(
           convertFromWeiGovernance(
@@ -284,6 +276,13 @@ const ERC721 = ({
       );
       setUploadedDocInfo(document);
     } catch (error) {
+      dispatch(
+        setAlertData({
+          open: true,
+          message: "Unable to fetch docs !",
+          severity: "error",
+        }),
+      );
       console.log(error);
     }
   };
@@ -307,6 +306,13 @@ const ERC721 = ({
           setImgUrl(imageUrl);
         }
       } catch (error) {
+        dispatch(
+          setAlertData({
+            open: true,
+            message: "Unable to fetch data from subgraph !",
+            severity: "error",
+          }),
+        );
         console.log(error);
       }
     };
@@ -370,6 +376,7 @@ const ERC721 = ({
               tokenDetails,
               networkId,
               userBalance: tokenDetails?.userBalance,
+              routeNetworkId,
             }}
           />
         }

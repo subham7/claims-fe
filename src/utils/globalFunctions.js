@@ -22,7 +22,9 @@ export const convertToWeiGovernance = (convertValue, decimal) => {
       return ethers
         .parseUnits(convertValue.toString(), Number(decimal))
         ?.toString();
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   }
 };
 

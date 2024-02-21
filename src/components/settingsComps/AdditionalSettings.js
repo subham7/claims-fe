@@ -26,7 +26,7 @@ import { editDepositConfig } from "api/deposit";
 import BackdropLoader from "@components/common/BackdropLoader";
 import { setAlertData } from "redux/reducers/alert";
 import { useDispatch } from "react-redux";
-import { addFactoryData } from "redux/reducers/club";
+import { addClubData } from "redux/reducers/club";
 import NotificationsModal from "./modals/NotificationsModal";
 
 const AdditionalSettings = ({
@@ -38,7 +38,8 @@ const AdditionalSettings = ({
   gnosisAddress,
   daoAddress,
   walletAddress,
-  factoryData,
+  routeNetworkId,
+  clubData,
 }) => {
   const classes = AdditionalSettingsStyles();
   const { chain } = useNetwork();
@@ -76,8 +77,8 @@ const AdditionalSettings = ({
         }),
       );
       dispatch(
-        addFactoryData({
-          ...factoryData,
+        addClubData({
+          ...clubData,
           ownerFeePerDepositPercent: ownerFee * 100,
         }),
       );
@@ -123,8 +124,8 @@ const AdditionalSettings = ({
         }),
       );
       dispatch(
-        addFactoryData({
-          ...factoryData,
+        addClubData({
+          ...clubData,
           depositCloseTime: +depositTime.toFixed(0).toString(),
         }),
       );

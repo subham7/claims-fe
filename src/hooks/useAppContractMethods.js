@@ -16,6 +16,7 @@ import {
   signAndConfirmTransaction,
 } from "utils/proposalData";
 import { eigenContractABI } from "abis/eigenContract";
+import { mendiTokenContract } from "abis/mendi/mendiToken";
 
 const useAppContractMethods = (params) => {
   const { daoAddress, routeNetworkId } = params ?? {};
@@ -26,91 +27,142 @@ const useAppContractMethods = (params) => {
   const networkId = "0x" + chain?.id.toString(16);
 
   const isAssetsStoredOnGnosis = useSelector((state) => {
-    return state.club.factoryData.assetsStoredOnGnosis;
+    return state.club.clubData.assetsStoredOnGnosis;
   });
 
-  const getDaoDetails = async (stationAddress = daoAddress) => {
-    const response = await readContractFunction({
-      address: CHAIN_CONFIG[networkId].factoryContractAddress,
-      abi: factoryContractABI,
-      functionName: "getDAOdetails",
-      args: [stationAddress],
-      account: walletAddress,
-      networkId: routeNetworkId ?? networkId,
-    });
+  const FACTORY_CONTRACT_ADDRESS =
+    CHAIN_CONFIG[routeNetworkId ? routeNetworkId : networkId]
+      ?.factoryContractAddress;
+  const FACTORY_CONTRACT_ADDRESS_CROSS_CHAIN =
+    CHAIN_CONFIG[networkId]?.factoryContractAddress;
 
-    return response
-      ? {
-          ...response,
-          depositCloseTime: Number(response?.depositCloseTime),
-          distributionAmount: Number(response?.distributionAmount),
-          maxDepositPerUser: Number(response?.maxDepositPerUser),
-          minDepositPerUser: Number(response?.minDepositPerUser),
-          ownerFeePerDepositPercent: Number(
-            response?.ownerFeePerDepositPercent,
-          ),
-          pricePerToken: Number(response?.pricePerToken),
-        }
-      : {};
+  const estimateFeesLayerZero = async (chainId, fnName, payload) => {
+    try {
+      const iface = new Interface(factoryContractABI);
+
+      const callData = iface.encodeFunctionData(fnName, [...payload]);
+
+      const fees = await readContractFunction({
+        address: CHAIN_CONFIG[networkId].layer0Endpoint,
+        abi: layerZeroEndpointAbi,
+        functionName: "estimateFees",
+        args: [
+          CHAIN_CONFIG[chainId].layer0ChainId,
+          CHAIN_CONFIG[networkId].factoryContractAddress,
+          callData,
+          false,
+          "0x",
+        ],
+        networkId,
+      });
+      return ((Number(fees[0]) * 4) / 10 ** 18).toFixed(1).toString();
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const getDaoDetails = async (stationAddress = daoAddress, isCrossChain) => {
+    try {
+      const response = await readContractFunction({
+        address: isCrossChain
+          ? FACTORY_CONTRACT_ADDRESS_CROSS_CHAIN
+          : FACTORY_CONTRACT_ADDRESS,
+        abi: factoryContractABI,
+        functionName: "getDAOdetails",
+        args: [stationAddress],
+        // account: walletAddress,
+        networkId: routeNetworkId ?? networkId,
+      });
+
+      return response
+        ? {
+            ...response,
+            depositCloseTime: Number(response?.depositCloseTime),
+            distributionAmount: Number(response?.distributionAmount),
+            maxDepositPerUser: Number(response?.maxDepositPerUser),
+            minDepositPerUser: Number(response?.minDepositPerUser),
+            ownerFeePerDepositPercent: Number(
+              response?.ownerFeePerDepositPercent,
+            ),
+            pricePerToken: Number(response?.pricePerToken),
+          }
+        : {};
+    } catch (error) {
+      console.error(error);
+      return {};
+    }
   };
 
   const getERC20DAOdetails = async () => {
-    const response = await readContractFunction({
-      address: daoAddress,
-      abi: erc20DaoABI,
-      functionName: "getERC20DAOdetails",
-      args: [],
-      account: walletAddress,
-      networkId,
-    });
+    try {
+      const response = await readContractFunction({
+        address: daoAddress,
+        abi: erc20DaoABI,
+        functionName: "getERC20DAOdetails",
+        args: [],
+        // account: walletAddress,
+        networkId: routeNetworkId ?? networkId,
+      });
 
-    return response
-      ? {
-          ...response,
-          quorum: Number(response?.quorum),
-          threshold: Number(response?.threshold),
-        }
-      : {};
+      return response
+        ? {
+            ...response,
+            quorum: Number(response?.quorum),
+            threshold: Number(response?.threshold),
+          }
+        : {};
+    } catch (error) {
+      console.error(error);
+      return {};
+    }
   };
 
   const getERC721DAOdetails = async () => {
-    const response = await readContractFunction({
-      address: daoAddress,
-      abi: erc721DaoABI,
-      functionName: "getERC721DAOdetails",
-      args: [],
-      account: walletAddress,
-      networkId,
-    });
+    try {
+      const response = await readContractFunction({
+        address: daoAddress,
+        abi: erc721DaoABI,
+        functionName: "getERC721DAOdetails",
+        args: [],
+        // account: walletAddress,
+        networkId: routeNetworkId ?? networkId,
+      });
 
-    return response
-      ? {
-          ...response,
-          quorum: Number(response?.quorum),
-          threshold: Number(response?.threshold),
-          maxTokensPerUser: Number(response?.maxTokensPerUser),
-        }
-      : {};
+      return response
+        ? {
+            ...response,
+            quorum: Number(response?.quorum),
+            threshold: Number(response?.threshold),
+            maxTokensPerUser: Number(response?.maxTokensPerUser),
+          }
+        : {};
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const getTokenGatingDetails = async () => {
-    let response = await readContractFunction({
-      address: CHAIN_CONFIG[networkId].factoryContractAddress,
-      abi: factoryContractABI,
-      functionName: "getTokenGatingDetails",
-      args: [daoAddress],
-      account: walletAddress,
-      networkId,
-    });
+    try {
+      let response = await readContractFunction({
+        address: CHAIN_CONFIG[networkId].factoryContractAddress,
+        abi: factoryContractABI,
+        functionName: "getTokenGatingDetails",
+        args: [daoAddress],
+        // account: walletAddress,
+        networkId: routeNetworkId ?? networkId,
+      });
 
-    response = response?.map((item) => {
-      return {
-        ...item,
-        value: item.value.map((val) => Number(val)),
-      };
-    });
+      response = response?.map((item) => {
+        return {
+          ...item,
+          value: item.value.map((val) => Number(val)),
+        };
+      });
 
-    return response ?? [];
+      return response ?? [];
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const getDaoBalance = async (is721) => {
@@ -119,24 +171,28 @@ const useAppContractMethods = (params) => {
       abi: is721 ? erc721DaoABI : erc20DaoABI,
       functionName: "balanceOf",
       args: [walletAddress],
-      account: walletAddress,
-      networkId,
+      // account: walletAddress,
+      networkId: routeNetworkId ?? networkId,
     });
 
     return Number(response ?? 0);
   };
 
   const getERC20TotalSupply = async () => {
-    const response = await readContractFunction({
-      address: daoAddress,
-      abi: erc20DaoABI,
-      functionName: "totalSupply",
-      args: [],
-      account: walletAddress,
-      networkId,
-    });
+    try {
+      const response = await readContractFunction({
+        address: daoAddress,
+        abi: erc20DaoABI,
+        functionName: "totalSupply",
+        args: [],
+        // account: walletAddress,
+        networkId: routeNetworkId ?? networkId,
+      });
 
-    return Number(response ?? 0);
+      return Number(response ?? 0);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const getNftOwnersCount = async () => {
@@ -146,8 +202,8 @@ const useAppContractMethods = (params) => {
         abi: erc721DaoABI,
         functionName: "_tokenIdTracker",
         args: [],
-        account: walletAddress,
-        networkId,
+        // account: walletAddress,
+        networkId: routeNetworkId ?? networkId,
       });
       return Number(response ?? 0);
     } catch (error) {
@@ -302,7 +358,7 @@ const useAppContractMethods = (params) => {
         abi: eigenContractABI,
         functionName: "getDeposits",
         args: [gnosisAddress],
-        account: walletAddress,
+        // account: walletAddress,
         networkId,
       });
       return res;
@@ -539,6 +595,22 @@ const useAppContractMethods = (params) => {
     }
   };
 
+  const fetchMendiUsdcExhcangeRate = async () => {
+    try {
+      const res = await readContractFunction({
+        address: CHAIN_CONFIG[networkId].mendiTokenAddress,
+        abi: mendiTokenContract,
+        functionName: "exchangeRateStored",
+        account: walletAddress,
+        networkId,
+      });
+      return res;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  };
+
   return {
     createERC20DAO,
     createERC721DAO,
@@ -558,6 +630,7 @@ const useAppContractMethods = (params) => {
     updateProposalAndExecution,
     toggleWhitelist,
     fetchEigenTokenBalance,
+    fetchMendiUsdcExhcangeRate,
   };
 };
 

@@ -14,7 +14,7 @@ const MembersPage = () => {
 
   return (
     <Layout daoAddress={daoAddress} page={3} networkId={networkId}>
-      <Members daoAddress={daoAddress} />
+      <Members daoAddress={daoAddress} routeNetworkId={networkId} />
     </Layout>
   );
 };

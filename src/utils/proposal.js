@@ -45,6 +45,7 @@ import { rETHTokenABI } from "abis/rocketPool/rETHTokenContract";
 import { mantlePoolABI } from "abis/mantlePool/manelPoolContract";
 import { LayerBankABI } from "abis/layerBankContract";
 import { ScrollAaveABI } from "abis/ScrollAaveABI";
+import { mendiTokenContract } from "abis/mendi/mendiToken";
 
 export const fetchProposals = async (daoAddress, type) => {
   let proposalData;
@@ -282,6 +283,7 @@ export const getEncodedData = async ({
         CHAIN_CONFIG[networkId]?.airdropContractAddress,
         airDropAmount,
       ]);
+
       if (airDropCarryFee !== 0) {
         const carryFeeAmount = (airDropAmount * airDropCarryFee) / 100;
         airDropAmountArray = await Promise.all(
@@ -891,6 +893,38 @@ const mantlePoolEigenStakeMethodEncoded = async ({
         convertToWeiGovernance(newMETH, 18),
       )
       .encodeABI();
+  }
+};
+
+const mendiUsdcStakeMethodEncoded = ({
+  depositAmount,
+  web3Call,
+  networkId,
+}) => {
+  if (depositAmount) {
+    const mendiPoolContract = new web3Call.eth.Contract(
+      mendiTokenContract,
+      CHAIN_CONFIG[networkId].mendiTokenAddress,
+    );
+
+    return mendiPoolContract.methods
+      .mint(convertToWeiGovernance(depositAmount, 6))
+      .encodeABI();
+  }
+};
+
+const mendiUsdcUnstakeMethodEncoded = async ({
+  unstakeAmount,
+  web3Call,
+  networkId,
+}) => {
+  if (unstakeAmount) {
+    const mendiPoolContract = new web3Call.eth.Contract(
+      mendiTokenContract,
+      CHAIN_CONFIG[networkId].mendiTokenAddress,
+    );
+
+    return mendiPoolContract.methods.redeem(unstakeAmount).encodeABI();
   }
 };
 
@@ -2254,6 +2288,56 @@ export const getTransaction = async ({
         value: "0",
       };
       return { transaction };
+    case 49:
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(CHAIN_CONFIG[networkId].usdcAddress),
+        data: approveDepositWithEncodeABI(
+          CHAIN_CONFIG[networkId].usdcAddress,
+          CHAIN_CONFIG[networkId].mendiTokenAddress,
+          convertToWeiGovernance(depositAmount, 6),
+          web3Call,
+        ),
+        value: "0",
+      };
+
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId]?.mendiTokenAddress,
+        ),
+        data: mendiUsdcStakeMethodEncoded({
+          depositAmount: depositAmount,
+          networkId,
+          web3Call,
+        }),
+        value: "0",
+      };
+
+      return { approvalTransaction, transaction };
+    case 50:
+      // approvalTransaction = {
+      //   to: Web3.utils.toChecksumAddress(
+      //     CHAIN_CONFIG[networkId].layerBankToken,
+      //   ),
+      //   data: approveDepositWithEncodeABI(
+      //     CHAIN_CONFIG[networkId].layerBankToken,
+      //     CHAIN_CONFIG[networkId].layerBankPool,
+      //     convertToWeiGovernance(unstakeAmount, 18).toString(),
+      //     web3Call,
+      //   ),
+      //   value: "0",
+      // };
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].mendiTokenAddress,
+        ),
+        data: await mendiUsdcUnstakeMethodEncoded({
+          unstakeAmount: unstakeAmount,
+          networkId,
+          web3Call,
+        }),
+        value: "0",
+      };
+      return { transaction, approvalTransaction };
     case 51:
       transaction = {
         to: Web3.utils.toChecksumAddress(
@@ -2381,6 +2465,7 @@ export const getTokenTypeByExecutionId = (commands) => {
       return commands[0]?.stakeToken;
     case 18:
     case 48:
+    case 50:
       return commands[0]?.unstakeToken;
     case 21:
     case 22:
@@ -2398,6 +2483,7 @@ export const getTokenTypeByExecutionId = (commands) => {
     case 47:
     case 45:
     case 51:
+    case 49:
       return commands[0]?.depositToken;
     case 25:
       return commands[0]?.withdrawToken;
