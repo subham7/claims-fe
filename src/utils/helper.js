@@ -266,17 +266,21 @@ export const readContractFunction = async ({
   account,
   networkId,
 }) => {
-  const publicClient = getPublicClient(networkId);
+  try {
+    const publicClient = getPublicClient(networkId);
 
-  const data = await publicClient.readContract({
-    address,
-    abi,
-    functionName,
-    args,
-    account,
-  });
+    const data = await publicClient.readContract({
+      address,
+      abi,
+      functionName,
+      args,
+      account,
+    });
 
-  return data;
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 export const csvToObjectForMintGT = (csvString) => {
@@ -423,13 +427,15 @@ export const formatCash = (n) => {
 };
 
 export const getLinks = (daoAddress, networkId) => {
-  return baseLinks.map((link, index) => ({
-    ...link,
-    icon: `/assets/icons/${link.icon}.svg`,
-    hoveredLink: `/assets/icons/${link.icon}_hovered.svg`,
-    route: `/${link.routeHeader}/${daoAddress}/${networkId}`,
-    id: String(index + 1),
-  }));
+  return baseLinks
+    .filter((link) => !link?.hideNetworks?.includes(networkId))
+    ?.map((link, index) => ({
+      ...link,
+      icon: `/assets/icons/${link.icon}.svg`,
+      hoveredLink: `/assets/icons/${link.icon}_hovered.svg`,
+      route: `/${link.routeHeader}/${daoAddress}/${networkId}`,
+      id: String(index + 1),
+    }));
 };
 
 export const isNative = (depositTokenAddress, networkId) => {
@@ -438,3 +444,51 @@ export const isNative = (depositTokenAddress, networkId) => {
     CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
   );
 };
+
+export const switchNetworkHandler = async (networkId, setLoading) => {
+  setLoading(true);
+  if (typeof window !== "undefined") {
+    if (window?.ethereum?.networkVersion !== networkId) {
+      try {
+        await requestEthereumChain("wallet_switchEthereumChain", [
+          { chainId: networkId },
+        ]);
+        setLoading(false);
+      } catch (err) {
+        if (err.code === 4902 && CHAIN_CONFIG[networkId]) {
+          const chainConfig = CHAIN_CONFIG[networkId];
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [
+              {
+                chainId: networkId,
+                chainName: chainConfig.chainName,
+                rpcUrls: chainConfig.rpcUrls,
+                nativeCurrency: chainConfig?.nativeCurrency,
+                blockExplorerUrls: [chainConfig?.blockExplorerUrl],
+              },
+            ],
+          });
+          setLoading(false);
+        } else {
+          setLoading(false);
+        }
+      }
+    }
+  }
+};
+
+export function customToFixedAutoPrecision(num) {
+  try {
+    let decimalPlaces = 2;
+    let tempNum = num;
+    while (tempNum < 1 && tempNum > 0) {
+      tempNum *= 10;
+      decimalPlaces++;
+    }
+    return num.toFixed(decimalPlaces);
+  } catch (err) {
+    console.error(err);
+    return "0.00";
+  }
+}

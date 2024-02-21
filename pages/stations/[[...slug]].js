@@ -14,7 +14,7 @@ import { useAccount, useNetwork } from "wagmi";
 import { makeStyles } from "@mui/styles";
 import { getReferralCode } from "api/invite/invite";
 import { OMIT_DAOS } from "utils/constants";
-import { shortAddress } from "utils/helper";
+import { convertToFullNumber, shortAddress } from "utils/helper";
 import { useRouter } from "next/router";
 import BackdropLoader from "@components/common/BackdropLoader";
 import useAppContractMethods from "hooks/useAppContractMethods";
@@ -140,7 +140,6 @@ const StationsPage = () => {
         networkId,
       );
       const daoDetails = await getDaoDetails(data.daoAddress);
-      const depositTokenAddress = daoDetails.depositTokenAddress;
 
       if (clubData?.stations?.length)
         dispatch(
@@ -162,9 +161,11 @@ const StationsPage = () => {
             threshold: clubData.stations[0].threshold,
             raiseAmount: clubData.stations[0].raiseAmount,
             totalAmountRaised: clubData.stations[0].totalAmountRaised,
-            distributionAmount: clubData.stations[0].distributionAmount,
             maxTokensPerUser: clubData.stations[0].maxTokensPerUser,
-            depositTokenAddress: depositTokenAddress,
+            ...daoDetails,
+            distributionAmount: convertToFullNumber(
+              daoDetails.distributionAmount.toString(),
+            ),
           }),
         );
       router.push(

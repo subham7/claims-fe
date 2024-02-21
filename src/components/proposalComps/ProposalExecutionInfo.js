@@ -20,19 +20,22 @@ const useStyles = makeStyles({
   },
 });
 
-const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
+const ProposalExecutionInfo = ({
+  proposalData,
+  fetched,
+  daoDetails,
+  routeNetworkId,
+}) => {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
   const classes = useStyles();
 
-  const { getDecimals, getTokenSymbol } = useCommonContractMethods();
+  const { getDecimals, getTokenSymbol } = useCommonContractMethods({
+    routeNetworkId,
+  });
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
-  });
-
-  const factoryData = useSelector((state) => {
-    return state.club.factoryData;
   });
 
   const clubData = useSelector((state) => {
@@ -168,7 +171,7 @@ const ProposalExecutionInfo = ({ proposalData, fetched, daoDetails }) => {
       data: proposalData?.commands[0],
       decimals: tokenDetails.decimals,
       symbol: tokenDetails.symbol,
-      factoryData,
+      clubData,
     });
     setProposalDetails(response);
   };

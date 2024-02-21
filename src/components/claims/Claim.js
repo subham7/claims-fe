@@ -480,6 +480,7 @@ const Claim = ({ claimAddress }) => {
           tokenDetails: tokenDetails,
           isActive: isClaimActive,
           hasStarted: hasDropStarted,
+          networkId: "",
         }}
         inputComponents={
           <ClaimInputComponent

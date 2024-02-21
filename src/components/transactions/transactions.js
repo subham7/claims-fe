@@ -22,6 +22,7 @@ import {
 import { CHAIN_CONFIG } from "utils/constants";
 import ComponentHeader from "@components/common/ComponentHeader";
 import { getTransactionsByNetworkId } from "api/transactions";
+import { customToFixedAutoPrecision } from "utils/helper";
 
 dayjs.extend(relativeTime);
 
@@ -43,7 +44,7 @@ const Transactions = ({ networkId }) => {
   const [transactions, setTransactions] = useState([]);
   const [paginationSettings, setPaginationSettings] = useState({
     page: 0,
-    noOfRowsPerPage: 5,
+    noOfRowsPerPage: 25,
   });
 
   const { page, noOfRowsPerPage } = paginationSettings;
@@ -167,7 +168,7 @@ const Transactions = ({ networkId }) => {
                             </TableCell>
 
                             <TableCell align="left">
-                              {txn.to.toLowerCase() === gnosisAddress && (
+                              {txn.to === gnosisAddress && (
                                 <Chip
                                   icon={
                                     <ExpandCircleDownIcon
@@ -185,7 +186,7 @@ const Transactions = ({ networkId }) => {
                                   label="Received"
                                 />
                               )}
-                              {txn.from?.toLowerCase() === gnosisAddress && (
+                              {txn.from === gnosisAddress && (
                                 <Chip
                                   icon={
                                     <ExpandCircleDownIcon
@@ -238,7 +239,9 @@ const Transactions = ({ networkId }) => {
                               <Typography variant="body">
                                 {txn.value == null
                                   ? "---"
-                                  : txn.value / 10 ** txn.tokenInfo?.decimals}
+                                  : customToFixedAutoPrecision(
+                                      txn.value / 10 ** txn.tokenInfo?.decimals,
+                                    )}
                               </Typography>
                             </TableCell>
                           </TableRow>
@@ -250,7 +253,7 @@ const Transactions = ({ networkId }) => {
 
               <TablePagination
                 align="right"
-                rowsPerPageOptions={[5, 10, 25]}
+                rowsPerPageOptions={[10, 25, 50]}
                 component="row"
                 count={transactions.length}
                 rowsPerPage={noOfRowsPerPage}

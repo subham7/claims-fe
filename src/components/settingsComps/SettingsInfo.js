@@ -488,12 +488,12 @@ const SettingsInfo = ({
                 </>
               ) : tokenType === "erc721" &&
                 daoDetails.isTotalSupplyUnlimited ? null : walletAddress &&
-                daoDetails.clubTokensMinted ? (
+                daoDetails?.clubTokensMinted ? (
                 <ProgressBar
                   value={
                     Number(
                       convertFromWeiGovernance(
-                        +daoDetails.clubTokensMinted,
+                        +daoDetails?.clubTokensMinted,
                         +daoDetails.decimals,
                       ) *
                         Number(
@@ -556,12 +556,12 @@ const SettingsInfo = ({
                       {walletAddress ? (
                         convertFromWeiGovernance(
                           convertToFullNumber(
-                            daoDetails.clubTokensMinted.toString(),
+                            daoDetails?.clubTokensMinted?.toString(),
                           ),
-                          daoDetails.decimals,
+                          daoDetails?.decimals,
                         ) *
                           convertFromWeiGovernance(
-                            daoDetails.pricePerToken,
+                            daoDetails?.pricePerToken,
                             erc20TokenDetails.tokenDecimal,
                           ) +
                         " $USDC"

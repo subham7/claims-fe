@@ -6,8 +6,7 @@ import useCommonContractMethods from "hooks/useCommonContractMehods";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addNftsOwnedByDao } from "redux/reducers/club";
-import { convertFromWeiGovernance } from "utils/globalFunctions";
-import { convertToFullNumber, handleSignMessage } from "utils/helper";
+import { customToFixedAutoPrecision, handleSignMessage } from "utils/helper";
 import { useAccount, useNetwork } from "wagmi";
 import AssetsTable from "./AssetsTable";
 import classes from "./Dashboard.module.scss";
@@ -27,7 +26,7 @@ import StatusModal from "@components/modals/StatusModal/StatusModal";
 import CreateClubModal from "@components/modals/CreateClubModal/CreateClubModal";
 import BackdropLoader from "@components/common/BackdropLoader";
 
-const Dashboard = ({ daoAddress, routeNeteworkId }) => {
+const Dashboard = ({ daoAddress, routeNetworkId }) => {
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
@@ -59,7 +58,7 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
   const [showCreateClubModal, setShowCreateClubModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { getBalance } = useCommonContractMethods();
+  const { getBalance } = useCommonContractMethods({ routeNetworkId });
   const { getERC20TotalSupply, getNftOwnersCount } = useAppContractMethods({
     daoAddress,
   });
@@ -81,23 +80,14 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
       if (daoAddress && networkId) {
         if (clubData) {
           let totalSupply, totalNftMinted, percentageShare, balance, myBalance;
-
           if (tokenType === "erc20") {
             totalSupply = await getERC20TotalSupply();
             myBalance = await getBalance(daoAddress);
-            balance = convertFromWeiGovernance(
-              convertToFullNumber(myBalance + ""),
-              18,
-            );
-
-            percentageShare =
-              (balance / Number(convertFromWeiGovernance(totalSupply, 18))) *
-              100;
+            percentageShare = (myBalance / totalSupply) * 100;
           } else if (tokenType === "erc721") {
             totalNftMinted = await getNftOwnersCount();
             myBalance = await getBalance(daoAddress);
-            percentageShare =
-              (Number(myBalance) / Number(totalNftMinted)) * 100;
+            percentageShare = (myBalance / totalNftMinted) * 100;
           }
           setMyShare(percentageShare ? Number(percentageShare) : 0);
         }
@@ -223,14 +213,14 @@ const Dashboard = ({ daoAddress, routeNeteworkId }) => {
       iconSrc: "/assets/icons/stats_hovered.svg",
       altText: "Treasury Holdings",
       title: "Treasury Holdings",
-      value: `$${Number(treasuryAmount || 0).toFixed(3)}`,
+      value: `$${customToFixedAutoPrecision(treasuryAmount)}`,
     },
     {
       containerClass: classes.ownershipContainer,
       iconSrc: "/assets/icons/chart.svg",
       altText: "My Ownership",
       title: "My Ownership",
-      value: myShare.toFixed(2),
+      value: customToFixedAutoPrecision(myShare),
       tokenName: symbol,
       isOwnership: true,
     },

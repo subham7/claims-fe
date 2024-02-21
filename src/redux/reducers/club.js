@@ -24,6 +24,18 @@ export const slice = createSlice({
       distributionAmount: null,
       maxTokensPerUser: null,
       depositTokenAddress: null,
+      assetsStoredOnGnosis: null,
+      depositCloseTime: null,
+      depositTokenAddress: null,
+      distributionAmount: null,
+      gnosisAddress: null,
+      isDeployedByFactory: null,
+      isTokenGatingApplied: null,
+      maxDepositPerUser: null,
+      merkleRoot: null,
+      minDepositPerUser: null,
+      ownerFeePerDepositPercent: null,
+      pricePerToken: null,
     },
     erc20ClubDetails: {
       quorum: null,
@@ -42,20 +54,6 @@ export const slice = createSlice({
       isNftTotalSupplyUnlimited: null,
       onlyAllowWhitelist: null,
       deployerAddress: null,
-    },
-    factoryData: {
-      assetsStoredOnGnosis: null,
-      depositCloseTime: null,
-      depositTokenAddress: null,
-      distributionAmount: null,
-      gnosisAddress: null,
-      isDeployedByFactory: null,
-      isTokenGatingApplied: null,
-      maxDepositPerUser: null,
-      merkleRoot: null,
-      minDepositPerUser: null,
-      ownerFeePerDepositPercent: null,
-      pricePerToken: null,
     },
     nftsOwnedByDao: null,
   },
@@ -81,6 +79,15 @@ export const slice = createSlice({
       state.clubData.quorum = action.payload.quorum;
       state.clubData.imgUrl = action.payload.imgUrl;
       state.clubData.depositTokenAddress = action.payload.depositTokenAddress;
+      state.clubData.assetsStoredOnGnosis = action.payload.assetsStoredOnGnosis;
+      state.clubData.depositCloseTime = action.payload.depositCloseTime;
+      state.clubData.isDeployedByFactory = action.payload.isDeployedByFactory;
+      state.clubData.isTokenGatingApplied = action.payload.isTokenGatingApplied;
+      state.clubData.maxDepositPerUser = action.payload.maxDepositPerUser;
+      state.clubData.minDepositPerUser = action.payload.minDepositPerUser;
+      state.clubData.ownerFeePerDepositPercent =
+        action.payload.ownerFeePerDepositPercent;
+      state.clubData.merkleRoot = action.payload.merkleRoot;
     },
     addErc20ClubDetails: (state, action) => {
       state.erc20ClubDetails.quorum = action.payload.quorum;
@@ -106,25 +113,6 @@ export const slice = createSlice({
         action.payload.onlyAllowWhitelist;
       state.erc721ClubDetails.deployerAddress = action.payload.deployerAddress;
     },
-    addFactoryData: (state, action) => {
-      state.factoryData.assetsStoredOnGnosis =
-        action.payload.assetsStoredOnGnosis;
-      state.factoryData.depositCloseTime = action.payload.depositCloseTime;
-      state.factoryData.depositTokenAddress =
-        action.payload.depositTokenAddress;
-      state.factoryData.distributionAmount = action.payload.distributionAmount;
-      state.factoryData.gnosisAddress = action.payload.gnosisAddress;
-      state.factoryData.isDeployedByFactory =
-        action.payload.isDeployedByFactory;
-      state.factoryData.isTokenGatingApplied =
-        action.payload.isTokenGatingApplied;
-      state.factoryData.maxDepositPerUser = action.payload.maxDepositPerUser;
-      state.factoryData.minDepositPerUser = action.payload.minDepositPerUser;
-      state.factoryData.merkleRoot = action.payload.merkleRoot;
-      state.factoryData.ownerFeePerDepositPercent =
-        action.payload.ownerFeePerDepositPercent;
-      state.factoryData.pricePerToken = action.payload.pricePerToken;
-    },
     addNftsOwnedByDao: (state, action) => {
       state.nftsOwnedByDao = action.payload;
     },
@@ -136,7 +124,6 @@ export const {
   addClubData,
   addErc20ClubDetails,
   addErc721ClubDetails,
-  addFactoryData,
   addNftsOwnedByDao,
 } = slice.actions;
 

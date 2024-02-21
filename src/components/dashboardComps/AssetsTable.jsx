@@ -12,6 +12,7 @@ import {
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import classes from "./Dashboard.module.scss";
 import { CHAIN_CONFIG } from "utils/constants";
+import { customToFixedAutoPrecision } from "utils/helper";
 
 export const tableHeader = ["Name", "Holding", "Network", "Value in USD"];
 
@@ -60,16 +61,24 @@ const AssetsTable = ({ tableData }) => {
                       </div>
                     </TableCell>
                     <TableCell className={classes.tableCell}>
-                      {Number(
-                        convertFromWeiGovernance(token.balance, token.decimals),
-                      ).toFixed(4)}{" "}
+                      {customToFixedAutoPrecision(
+                        Number(
+                          convertFromWeiGovernance(
+                            token.balance,
+                            token.decimals,
+                          ),
+                        ),
+                      )}{" "}
                       {token.symbol}
                     </TableCell>
                     <TableCell className={classes.tableCell}>
                       {CHAIN_CONFIG[token?.networkId]?.shortName ?? ""}
                     </TableCell>
                     <TableCell className={classes.tableCell}>
-                      ${Number(token?.usd?.usdValue ?? 0).toFixed(4)}
+                      $
+                      {customToFixedAutoPrecision(
+                        Number(token?.usd?.usdValue ?? 0),
+                      )}
                     </TableCell>
                   </TableRow>
                 )}

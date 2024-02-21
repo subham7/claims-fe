@@ -7,6 +7,7 @@ import Sidebar from "@components/ui/Sidebar/Sidebar";
 
 import CustomAlert from "@components/common/CustomAlert";
 import { showWrongNetworkModal } from "utils/helper";
+import { useRouter } from "next/router";
 
 const drawerWidth = 50;
 
@@ -25,6 +26,7 @@ export default function Layout(props) {
 
   const networkId = "0x" + chain?.id.toString(16);
   const classes = useStyles();
+  const router = useRouter();
 
   return (
     <>
@@ -38,7 +40,7 @@ export default function Layout(props) {
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
 
-        {!walletAddress || !networkId ? (
+        {!router.pathname.includes("join") && (!walletAddress || !networkId) ? (
           <Grid
             sx={{
               height: "75vh",
@@ -78,7 +80,8 @@ export default function Layout(props) {
                 {props.children}
               </div>
             </Box>
-            {showWrongNetworkModal(networkId, routeNetworkId)}
+            {!router.pathname.includes("join") &&
+              showWrongNetworkModal(networkId, routeNetworkId)}
           </>
         )}
         <CustomAlert />
