@@ -23,10 +23,6 @@ import { formatEther } from "viem";
 import { getPublicClient } from "utils/viemConfig";
 import { isNative } from "utils/helper";
 import { addClubData } from "redux/reducers/club";
-import classes from "@components/modals/StatusModal/StatusModal.module.scss";
-import Modal from "@components/common/Modal/Modal";
-import Typography from "@components/ui/Typography/Typography";
-import Image from "next/image";
 
 const DepositInputComponents = ({ depositPreRequisitesProps, mintProps }) => {
   return (
@@ -432,7 +428,7 @@ const ERC721 = ({
         />
       ) : null}
 
-      {!isMetamaskPresent ? (
+      {/* {!isMetamaskPresent ? (
         <Modal className={classes.warningModal}>
           <div className={classes.image}>
             <Image
@@ -451,7 +447,7 @@ const ERC721 = ({
             Chrome/Brave or inside a mobile wallets like Metamask.
           </Typography>
         </Modal>
-      ) : null}
+      ) : null} */}
     </>
   );
 };
