@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import Web3 from "web3";
 import { readContractFunction, writeContractFunction } from "utils/helper";
 import { createProposalTxHash } from "../api/proposal";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useNetwork, useWalletClient } from "wagmi";
 import { factoryContractABI } from "abis/factoryContract.js";
 import { getTransaction } from "utils/proposal";
 import { erc20DaoABI } from "abis/erc20Dao";
@@ -18,6 +18,7 @@ import {
 import { eigenContractABI } from "abis/eigenContract";
 
 const useAppContractMethods = (params) => {
+  const walletClient = useWalletClient();
   const { daoAddress, routeNetworkId } = params ?? {};
 
   const { address: walletAddress } = useAccount();
@@ -232,6 +233,7 @@ const useAppContractMethods = (params) => {
         account: walletAddress,
         value: value,
         networkId,
+        walletClient,
       });
       return res;
     } catch (error) {
@@ -245,15 +247,6 @@ const useAppContractMethods = (params) => {
     merkleProof,
     value,
   ) => {
-    console.log({
-      address: CHAIN_CONFIG[networkId].factoryContractAddress,
-      abi: factoryContractABI,
-      functionName: "buyGovernanceTokenERC20DAO",
-      args: [userAddress, daoAddress, numOfTokens, merkleProof],
-      account: walletAddress,
-      value: value,
-      networkId,
-    });
     try {
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
@@ -263,6 +256,7 @@ const useAppContractMethods = (params) => {
         account: walletAddress,
         value: value,
         networkId,
+        walletClient,
       });
       return res;
     } catch (error) {
@@ -280,6 +274,7 @@ const useAppContractMethods = (params) => {
         args: [ownerFeePerDeposit, daoAddress],
         account: walletAddress,
         networkId,
+        walletClient,
       });
       return res;
     } catch (error) {
@@ -296,6 +291,7 @@ const useAppContractMethods = (params) => {
         args: [depositTime, daoAddress],
         account: walletAddress,
         networkId,
+        walletClient,
       });
       return res;
     } catch (error) {
@@ -318,6 +314,7 @@ const useAppContractMethods = (params) => {
         args: [tokenA, tokenB, operator, comparator, value, daoAddress],
         account: walletAddress,
         networkId,
+        walletClient,
       });
       return res;
     } catch (error) {
@@ -334,6 +331,7 @@ const useAppContractMethods = (params) => {
         args: [daoAddress],
         account: walletAddress,
         networkId,
+        walletClient,
       });
       return res;
     } catch (error) {
@@ -418,6 +416,7 @@ const useAppContractMethods = (params) => {
         ],
         account: walletAddress,
         networkId,
+        walletClient,
       });
       return res;
     } catch (error) {
@@ -474,6 +473,7 @@ const useAppContractMethods = (params) => {
         ],
         account: walletAddress,
         networkId,
+        walletClient,
       });
       return res;
     } catch (error) {

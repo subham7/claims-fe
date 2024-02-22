@@ -1,4 +1,4 @@
-import { createPublicClient, createWalletClient, custom, http } from "viem";
+import { createPublicClient, http } from "viem";
 import {
   polygon,
   base,
@@ -48,16 +48,4 @@ export const getPublicClient = (networkId) => {
   } else {
     return {};
   }
-};
-
-export const getWalletClient = (networkId) => {
-  let walletClient;
-  if (typeof window !== "undefined") {
-    walletClient = createWalletClient({
-      chain: viemChains[networkId],
-      transport: custom(window.ethereum),
-    });
-  }
-
-  return walletClient;
 };
