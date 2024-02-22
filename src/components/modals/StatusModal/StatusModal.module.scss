@@ -37,5 +37,7 @@
 .warningModal {
   width: 450px;
 
-  
+  @media (max-width: 768px) {
+    width: 350px;
+  }
 }

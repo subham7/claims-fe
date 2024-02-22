@@ -10,7 +10,7 @@ import {
   contractNetworks,
   supportedChainsDrops,
 } from "./constants";
-import { getPublicClient, getWalletClient } from "utils/viemConfig";
+import { getPublicClient } from "utils/viemConfig";
 import { uploadToAWS } from "api/club";
 import { baseLinks } from "data/dashboard";
 import SafeApiKit from "@safe-global/api-kit";
@@ -231,10 +231,10 @@ export const writeContractFunction = async ({
   account,
   networkId,
   value,
+  walletClient,
 }) => {
   try {
     const publicClient = getPublicClient(networkId);
-    const walletClient = getWalletClient(networkId);
 
     const { request } = await publicClient.simulateContract({
       address,
@@ -245,7 +245,7 @@ export const writeContractFunction = async ({
       value,
     });
 
-    const txHash = await walletClient.writeContract(request);
+    const txHash = await walletClient?.data?.writeContract(request);
     const txReciept = await publicClient.waitForTransactionReceipt({
       hash: txHash,
       confirmations: BLOCK_CONFIRMATIONS,
