@@ -54,6 +54,7 @@ const ERC721 = ({
     tokenSymbol: "",
     userBalance: 0,
     tokenName: "",
+    isNativeToken: false,
   });
   const [active, setActive] = useState(false);
   const [members, setMembers] = useState([]);
@@ -158,6 +159,7 @@ const ERC721 = ({
           tokenName: name,
           tokenDecimal: decimals,
           userBalance: userBalance,
+          isNativeToken: isNativeToken,
         });
       }
     } catch (error) {
