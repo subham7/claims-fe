@@ -467,23 +467,23 @@ const ERC20 = ({
         />
       ) : null}
 
-      {!isMetamaskPresent ? (
+      {!isMetamaskPresent && walletAddress && routeNetworkId !== networkId ? (
         <Modal className={classes.warningModal}>
           <div className={classes.image}>
             <Image
               src={"/assets/images/astronaut3.png"}
               height={200}
               width={200}
-              alt="No wallet found"
+              alt={`Change network`}
             />
           </div>
           <Typography className={classes.heading} variant="inherit">
-            Uh oh, we currently do not support this browser!
+            Switch to {CHAIN_CONFIG[routeNetworkId]?.shortName}!
           </Typography>
 
           <Typography className={classes.subheading} variant="inherit">
-            Please open this link on a supported browser like Google
-            Chrome/Brave or inside a mobile wallets like Metamask.
+            Please switch to {CHAIN_CONFIG[routeNetworkId]?.shortName} from your
+            phone&apos;s wallet to access deposit.
           </Typography>
         </Modal>
       ) : null}

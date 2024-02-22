@@ -1,6 +1,6 @@
 import { erc20TokenABI } from "abis/usdcTokenContract.js";
 import { convertToWeiGovernance } from "utils/globalFunctions";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useNetwork, useWalletClient } from "wagmi";
 import {
   isNative,
   readContractFunction,
@@ -11,6 +11,7 @@ import { CHAIN_CONFIG, ZERO_ADDRESS } from "utils/constants";
 import { getPublicClient } from "utils/viemConfig";
 
 const useCommonContractMethods = (params) => {
+  const walletClient = useWalletClient();
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
   const networkId = params?.routeNetworkId ?? "0x" + chain?.id.toString(16);
@@ -202,6 +203,7 @@ const useCommonContractMethods = (params) => {
             args: [approvalContract, value],
             account: walletAddress,
             networkId,
+            walletClient,
           });
           return res;
         } catch (error) {
