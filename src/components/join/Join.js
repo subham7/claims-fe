@@ -29,6 +29,7 @@ const Join = ({ daoAddress, routeNetworkId }) => {
   const [depositConfig, setDepositConfig] = useState({});
   const [isSignable, setIsSignable] = useState(false);
   const [allowanceValue, setAllowanceValue] = useState(0);
+  const [isMetamaskPresent, setIsMetamaskPresent] = useState(true);
 
   const [gatedTokenDetails, setGatedTokenDetails] = useState({
     tokenASymbol: "",
@@ -289,6 +290,14 @@ const Join = ({ daoAddress, routeNetworkId }) => {
     walletAddress,
   ]);
 
+  useEffect(() => {
+    if (!window?.ethereum) {
+      setIsMetamaskPresent(false);
+    } else {
+      setIsMetamaskPresent(true);
+    }
+  }, [window?.ethereum]);
+
   return (
     <>
       {TOKEN_TYPE === "erc20" ? (
@@ -308,6 +317,7 @@ const Join = ({ daoAddress, routeNetworkId }) => {
           fetchCurrentAllowance={fetchCurrentAllowance}
           fetchErc20ContractDetails={fetchErc20ContractDetails}
           routeNetworkId={routeNetworkId}
+          isMetamaskPresent={isMetamaskPresent}
         />
       ) : TOKEN_TYPE === "erc721" ? (
         <ERC721
@@ -325,6 +335,7 @@ const Join = ({ daoAddress, routeNetworkId }) => {
           fetchCurrentAllowance={fetchCurrentAllowance}
           fetchErc721ContractDetails={fetchErc721ContractDetails}
           routeNetworkId={routeNetworkId}
+          isMetamaskPresent={isMetamaskPresent}
         />
       ) : null}
 

@@ -28,6 +28,10 @@ import { getPublicClient } from "utils/viemConfig";
 import { formatEther } from "viem";
 import { isNative } from "utils/helper";
 import { addClubData } from "redux/reducers/club";
+import Modal from "@components/common/Modal/Modal";
+import Image from "next/image";
+import { Typography } from "@mui/material";
+import classes from "@components/modals/StatusModal/StatusModal.module.scss";
 
 const DepositInputComponents = ({
   formik,
@@ -70,6 +74,7 @@ const ERC20 = ({
   fetchCurrentAllowance,
   fetchErc20ContractDetails,
   routeNetworkId,
+  isMetamaskPresent,
 }) => {
   const [loading, setLoading] = useState(false);
   const [depositSuccessfull, setDepositSuccessfull] = useState(null);
@@ -460,6 +465,27 @@ const ERC20 = ({
             setFailed(false);
           }}
         />
+      ) : null}
+
+      {!isMetamaskPresent ? (
+        <Modal className={classes.warningModal}>
+          <div className={classes.image}>
+            <Image
+              src={"/assets/images/astronaut3.png"}
+              height={200}
+              width={200}
+              alt="No wallet found"
+            />
+          </div>
+          <Typography className={classes.heading} variant="inherit">
+            Uh oh, we currently do not support this browser!
+          </Typography>
+
+          <Typography className={classes.subheading} variant="inherit">
+            Please open this link on a supported browser like Google
+            Chrome/Brave or inside a mobile wallets like Metamask.
+          </Typography>
+        </Modal>
       ) : null}
     </>
   );
