@@ -68,7 +68,7 @@ const Header = ({
           </Typography>
         ) : null}
       </div>
-      {networkId === "0x89" && (
+      {networkId === "0x89" && !tokenDetails?.isNativeToken && (
         <div className={classes.infoContainer}>
           <AiFillInfoCircle size={20} />
           This club accepts USDC.e as deposits

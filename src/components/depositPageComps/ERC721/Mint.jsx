@@ -113,9 +113,9 @@ const Mint = ({
         {walletAddress && networkId === routeNetworkId ? (
           <Button
             onClick={
-              Number(inputValue) <= allowanceValue &&
-              clubData.depositTokenAddress !==
-                CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
+              tokenDetails.isNativeToken === true
+                ? claimNFTHandler
+                : Number(inputValue) <= allowanceValue
                 ? claimNFTHandler
                 : approveERC721Handler
             }
@@ -129,9 +129,9 @@ const Mint = ({
             variant="contained">
             {hasClaimed
               ? "Minted"
-              : Number(inputValue) <= allowanceValue &&
-                clubData.depositTokenAddress !==
-                  CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
+              : tokenDetails.isNativeToken === true
+              ? "Mint"
+              : Number(inputValue) <= allowanceValue
               ? "Mint"
               : "Approve"}
           </Button>
