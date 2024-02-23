@@ -419,7 +419,7 @@ export const CHAIN_CONFIG = {
       symbol: "ETH",
     },
     rpcUrls: ["https://artio.rpc.berachain.com"],
-    appRpcUrl: `https://empty-restless-asphalt.bera-artio.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_BERA_API_KEY}/`,
+    appRpcUrl: `https://artio.rpc.berachain.com`,
     stationSubgraphUrl: "",
     covalentNetworkName: "",
     factoryContractAddress: "",
