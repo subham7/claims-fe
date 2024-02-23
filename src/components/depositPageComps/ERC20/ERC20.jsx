@@ -193,7 +193,6 @@ const ERC20 = ({
       );
 
       fetchCurrentAllowance();
-      setLoading(false);
       dispatch(
         setAlertData({
           open: true,
