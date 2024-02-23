@@ -776,10 +776,11 @@ export const dropsNetworksChaindId = [
     chainId: 1,
     networkId: "0x1",
   },
-  {
-    chainId: 80085,
-    networkId: "0x138d5",
-  },
+  //bera
+  // {
+  //   chainId: 80085,
+  //   networkId: "0x138d5",
+  // },
   {
     chainId: 168587773,
     networkId: "0xa0c71fd",
