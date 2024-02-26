@@ -49,6 +49,31 @@ const DepositInput = ({
     tokenDetails?.tokenDecimal,
   );
 
+  const onDepositClick = async () => {
+    if (tokenDetails?.isNativeToken === false) {
+      if (Number(inputValue) <= allowanceValue) {
+        await formik.handleSubmit();
+      } else {
+        await approveERC20Handler();
+        await formik.handleSubmit();
+      }
+    } else {
+      await formik.handleSubmit();
+    }
+  };
+
+  const depositBtnTxt = () => {
+    if (tokenDetails?.isNativeToken === false) {
+      if (Number(inputValue <= allowanceValue)) {
+        return "Deposit";
+      } else {
+        return "Approve & Deposit";
+      }
+    } else {
+      return "Deposit";
+    }
+  };
+
   return (
     <>
       <div className={classes.claimInputContainer}>
@@ -93,12 +118,7 @@ const DepositInput = ({
       {walletAddress && networkId === routeNetworkId ? (
         <Button
           disabled={isDisabled}
-          onClick={
-            Number(inputValue) > allowanceValue &&
-            tokenDetails?.isNativeToken === false
-              ? approveERC20Handler
-              : formik.handleSubmit
-          }
+          onClick={onDepositClick}
           variant="contained"
           sx={{
             width: "100%",
@@ -106,10 +126,7 @@ const DepositInput = ({
             margin: "10px 0",
             fontFamily: "inherit",
           }}>
-          {Number(inputValue) > allowanceValue &&
-          tokenDetails?.isNativeToken === false
-            ? "Approve"
-            : "Deposit"}
+          {depositBtnTxt()}
         </Button>
       ) : walletAddress && networkId !== routeNetworkId ? (
         <Button

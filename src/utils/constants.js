@@ -419,7 +419,7 @@ export const CHAIN_CONFIG = {
       symbol: "ETH",
     },
     rpcUrls: ["https://artio.rpc.berachain.com"],
-    appRpcUrl: `https://empty-restless-asphalt.bera-artio.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_BERA_API_KEY}/`,
+    appRpcUrl: `https://artio.rpc.berachain.com`,
     stationSubgraphUrl: "",
     covalentNetworkName: "",
     factoryContractAddress: "",
@@ -776,10 +776,11 @@ export const dropsNetworksChaindId = [
     chainId: 1,
     networkId: "0x1",
   },
-  {
-    chainId: 80085,
-    networkId: "0x138d5",
-  },
+  //bera
+  // {
+  //   chainId: 80085,
+  //   networkId: "0x138d5",
+  // },
   {
     chainId: 168587773,
     networkId: "0xa0c71fd",

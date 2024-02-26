@@ -21,6 +21,7 @@ import {
   lineaMainnetWalletConnect,
   scrollMainnet,
   mantaMainnet,
+  beraMainnetWalletConnect,
 } from "utils/constants";
 import "../styles/globals.scss";
 import Script from "next/script";
@@ -54,6 +55,7 @@ const chains = [
   gnosis,
   taikoJolnir,
   scrollMainnet,
+  beraMainnetWalletConnect,
   mantaMainnet,
   goerli,
 ];
