@@ -165,7 +165,6 @@ const ProposalExecutionInfo = ({
   useEffect(() => {
     fetchAirDropContractDetails();
   }, [fetchAirDropContractDetails]);
-
   const getProposalDetailsData = () => {
     const response = proposalDetailsData({
       data: proposalData?.commands[0],

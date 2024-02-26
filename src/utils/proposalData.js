@@ -1920,7 +1920,6 @@ export const proposalDetailsData = ({
     sendTokenAmounts,
     sendTokenAddresses,
   } = data ?? {};
-
   let responseData = {
     title: proposalActionCommands[executionId],
   };
@@ -2036,6 +2035,17 @@ export const proposalDetailsData = ({
 
     case 18:
     case 48:
+      responseData.data = {
+        "Unstake token": symbol,
+        "Unstake amount": convertFromWeiGovernance(unstakeAmount, decimals),
+      };
+      return responseData;
+    case 52:
+      responseData.data = {
+        "Unstake token": symbol,
+        "Unstake amount": convertFromWeiGovernance(depositAmount, decimals),
+      };
+      return responseData;
     case 50:
       responseData.data = {
         "Unstake token": symbol,

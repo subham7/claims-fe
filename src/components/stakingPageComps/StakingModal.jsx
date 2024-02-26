@@ -166,9 +166,10 @@ const StakingModal = ({
 
         const request = await createProposal(isGovernanceActive, {
           ...payload,
+          //default note for proposal
           description: values.note
             ? values.note
-            : `${type} $${values.stakeAmount} ${token}`,
+            : `${type} ${values.stakeAmount} ${token}`,
           signature,
         });
         onClose();

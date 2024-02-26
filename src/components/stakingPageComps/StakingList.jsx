@@ -154,9 +154,12 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
           CHAIN_CONFIG[networkId].restakeRstETHAddress,
         );
       } else if (networkId === "0x82750") {
-        aaveScrollEthBalance = await fetchTokenBalance(
-          CHAIN_CONFIG[networkId].aaveWrappedScrollEthAddress,
-        );
+        [aaveScrollEthBalance, layerBankEthBalance] = await Promise.all([
+          fetchTokenBalance(
+            CHAIN_CONFIG[networkId].aaveWrappedScrollEthAddress,
+          ),
+          fetchTokenBalance(CHAIN_CONFIG[networkId].layerBankToken),
+        ]);
       }
 
       setUnstakeTokenBalance(stargateBalance);
