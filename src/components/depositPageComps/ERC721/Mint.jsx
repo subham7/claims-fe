@@ -76,11 +76,33 @@ const Mint = ({
     return false;
   };
 
+  const getBtnText = () => {
+    if (hasClaimed) {
+      return "Minted";
+    } else if (tokenDetails.isNativeToken === true) {
+      return "Mint";
+    } else if (Number(inputValue) <= allowanceValue) {
+      return "Mint";
+    } else if (Number(inputValue) >= allowanceValue) {
+      return "Approve & Mint";
+    }
+  };
+
+  const onMintClick = async () => {
+    if (tokenDetails.isNativeToken === true) {
+      await claimNFTHandler();
+    } else if (Number(inputValue) <= allowanceValue) {
+      await claimNFTHandler();
+    } else if (Number(inputValue) >= allowanceValue) {
+      await approveERC721Handler();
+      await claimNFTHandler();
+    }
+  };
+
   return (
     <div className={classes.mintContainer}>
       <Typography variant="inherit">Price per piece</Typography>
       <h2>
-        {" "}
         {convertFromWeiGovernance(
           clubData?.pricePerToken,
           tokenDetails.tokenDecimal,
@@ -112,13 +134,7 @@ const Mint = ({
 
         {walletAddress && networkId === routeNetworkId ? (
           <Button
-            onClick={
-              tokenDetails.isNativeToken === true
-                ? claimNFTHandler
-                : Number(inputValue) <= allowanceValue
-                ? claimNFTHandler
-                : approveERC721Handler
-            }
+            onClick={onMintClick}
             sx={{
               width: "100%",
               padding: "10px 20px",
@@ -127,13 +143,7 @@ const Mint = ({
             }}
             disabled={isButtonDisabled()}
             variant="contained">
-            {hasClaimed
-              ? "Minted"
-              : tokenDetails.isNativeToken === true
-              ? "Mint"
-              : Number(inputValue) <= allowanceValue
-              ? "Mint"
-              : "Approve"}
+            {getBtnText()}
           </Button>
         ) : walletAddress && networkId !== routeNetworkId ? (
           <Button
