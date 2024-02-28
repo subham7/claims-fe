@@ -161,9 +161,9 @@ const ProposalDetail = ({ pid, daoAddress, routeNetworkId }) => {
 
       const proposalData = await getProposalDetail(pid);
 
-      if (proposalData.data[0].cancelProposalId) {
+      if (proposalData.data[0]?.cancelProposalId) {
         const proposalTxHash = getProposalTxHash(
-          proposalData.data[0].cancelProposalId,
+          proposalData.data[0]?.cancelProposalId,
         );
         proposalTxHash.then(async (result) => {
           if (
@@ -362,7 +362,6 @@ Cast your vote before ${new Date(
       getDecimals,
       proposalData,
       daoAddress,
-      clubData,
       clubData,
       contractABI: ABI,
       setMembers,
