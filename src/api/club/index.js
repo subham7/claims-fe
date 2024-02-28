@@ -3,6 +3,15 @@ import { MAIN_API_URL } from "../index";
 import { getJwtToken } from "../../utils/auth";
 import { AWS_API_URL } from "utils/constants";
 
+export async function getClubListForWallet(wallet) {
+  return await axios.get(MAIN_API_URL + `user/${wallet}/clubs`, {
+    headers: {
+      Authorization: "Bearer " + getJwtToken(),
+      "Content-Type": "application/json",
+    },
+  });
+}
+
 export async function getClubInfo(daoAddress) {
   // fetch club details using clubId
   return await axios.get(MAIN_API_URL + `club/social/${daoAddress}`, {

@@ -10,6 +10,7 @@ import {
 } from "utils/constants";
 import { useAccount, useNetwork } from "wagmi";
 import { Typography } from "@mui/material";
+import { Person2Outlined } from "@mui/icons-material";
 
 const Navbar = () => {
   const [showModal, setShowModal] = useState(false);
@@ -33,15 +34,23 @@ const Navbar = () => {
   return (
     <>
       <nav className={classes.nav}>
-        <Image
-          src="/assets/images/monogram.png"
-          height="40"
-          width="40"
-          alt="monogram"
-          onClick={() => {
-            router.push("/");
-          }}
-        />
+        <div className={classes["wallet-div"]}>
+          <Image
+            src="/assets/images/monogram.png"
+            height="40"
+            width="40"
+            alt="monogram"
+            onClick={() => {
+              router.push("/");
+            }}
+          />
+          <div
+            onClick={() => router.push("/profile")}
+            className={classes.proifleDiv}>
+            <Person2Outlined /> My Profile
+          </div>
+        </div>
+
         <div className={classes["wallet-div"]}>
           {address && (
             <div onClick={showNetworkModalHandler} className={classes.switch}>
