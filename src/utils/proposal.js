@@ -225,14 +225,12 @@ export const getEncodedData = async ({
   proposalData,
   daoAddress,
   clubData,
-  factoryData,
   contractABI,
   setMembers,
   getBalance,
   getERC20TotalSupply,
   getNftOwnersCount,
   networkId,
-  gnosisAddress,
   getDecimals,
 }) => {
   let membersArray = [];
