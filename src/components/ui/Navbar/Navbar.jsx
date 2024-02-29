@@ -44,14 +44,10 @@ const Navbar = () => {
               router.push("/");
             }}
           />
-          <div
-            onClick={() => router.push("/profile")}
-            className={classes.proifleDiv}>
-            <Person2Outlined /> My Profile
-          </div>
         </div>
 
         <div className={classes["wallet-div"]}>
+          <Person2Outlined onClick={() => router.push("/profile")} />
           {address && (
             <div onClick={showNetworkModalHandler} className={classes.switch}>
               <Image

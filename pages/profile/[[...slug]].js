@@ -7,6 +7,7 @@ import SocialButtons from "@components/common/SocialButtons";
 import EditIcon from "@mui/icons-material/Edit";
 import { useAccount } from "wagmi";
 import { getClubListForWallet } from "api/club";
+import EditProfileDetails from "@components/settingsComps/modals/EditProfileDetails";
 
 const StationCard = ({ club }) => {
   const { name, totalAmountRaised, membersCount, depositDeadline } = club;
@@ -40,6 +41,7 @@ const StationCard = ({ club }) => {
 
 const ProfilePage = () => {
   const router = useRouter();
+  const [openEditModal, setOpenEditModal] = useState(false);
 
   const [wallet] = router?.query?.slug ?? [];
   const { address } = useAccount();
@@ -81,7 +83,11 @@ const ProfilePage = () => {
         </div>
         <div>
           <div>
-            <EditIcon className={classes.editIcon} size={20} />
+            <EditIcon
+              onClick={() => setOpenEditModal(true)}
+              className={classes.editIcon}
+              size={20}
+            />
           </div>
           <SocialButtons
             data={{
@@ -97,6 +103,11 @@ const ProfilePage = () => {
           <StationCard club={club} key={index} />
         ))}
       </div>
+      <EditProfileDetails
+        isClaims={false}
+        open={openEditModal}
+        onClose={() => setOpenEditModal(false)}
+      />
     </Layout>
   );
 };
