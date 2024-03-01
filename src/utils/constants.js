@@ -472,9 +472,9 @@ export const CHAIN_CONFIG = {
     stationSubgraphUrl: "",
     covalentNetworkName: "",
     factoryContractAddress: "",
-    claimFactoryAddress: "0x50702Fd9086BAbDB0A3A576bFe22D4dD47b09937",
+    claimFactoryAddress: "0xA3A575cb516C3C888a9926fce7FA1de96aba868c",
     claimsSubgraphUrl:
-      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-blast-mainnet/0.0.1/gn",
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-blast-mainnet/0.0.2/gn",
     nativeToken: "",
     usdcAddress: "",
     airdropContractAddress: "",

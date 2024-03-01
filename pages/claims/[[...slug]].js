@@ -23,7 +23,7 @@ const ClaimsPage = () => {
       ) : networkId === "disburse" ? (
         <CreateDisburse />
       ) : (
-        <ClaimInsight claimAddress={claimAddress} />
+        <ClaimInsight routeNetworkId={networkId} claimAddress={claimAddress} />
       )}
     </Layout>
   );
