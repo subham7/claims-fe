@@ -22,6 +22,7 @@ import {
   scrollMainnet,
   mantaMainnet,
   beraMainnetWalletConnect,
+  blastMainnetWalletConnect,
 } from "utils/constants";
 import "../styles/globals.scss";
 import Script from "next/script";
@@ -58,6 +59,7 @@ const chains = [
   beraMainnetWalletConnect,
   mantaMainnet,
   goerli,
+  blastMainnetWalletConnect,
 ];
 
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });

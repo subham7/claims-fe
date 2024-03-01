@@ -17,6 +17,7 @@ import {
   getTokensList,
   getTokensListBeraChain,
   getTokensListBlast,
+  getTokensListBlastMainnet,
   getTokensListOfManta,
 } from "api/token";
 import { getUserTokenData } from "utils/helper";
@@ -77,6 +78,11 @@ const CreateClaim = () => {
 
       if (networkId === "0xa0c71fd") {
         const tokenList = await getTokensListBlast(walletAddress);
+        return tokenList?.data?.result;
+      }
+
+      if (networkId === "0x13e31") {
+        const tokenList = await getTokensListBlastMainnet(walletAddress);
         return tokenList?.data?.result;
       }
 

@@ -22,7 +22,7 @@ import { useTheme } from "@mui/styles";
 import { useDispatch } from "react-redux";
 import { setAlertData } from "redux/reducers/alert";
 
-const ClaimInsight = ({ claimAddress }) => {
+const ClaimInsight = ({ claimAddress, routeNetworkId }) => {
   const [claimsData, setClaimsData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [airdropTokenDetails, setAirdropTokenDetails] = useState({
@@ -242,7 +242,7 @@ const ClaimInsight = ({ claimAddress }) => {
               startTime={claimsData[0]?.startTime}
               claimAddress={claimAddress}
               isActive={claimsData[0]?.isActive}
-              claimsNetwork={claimsData[0]?.networkId}
+              claimsNetwork={routeNetworkId}
             />
             <div className={classes.infoBottomContainer}>
               <TotalClaimedInfo
