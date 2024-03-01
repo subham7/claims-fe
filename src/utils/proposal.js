@@ -225,14 +225,12 @@ export const getEncodedData = async ({
   proposalData,
   daoAddress,
   clubData,
-  factoryData,
   contractABI,
   setMembers,
   getBalance,
   getERC20TotalSupply,
   getNftOwnersCount,
   networkId,
-  gnosisAddress,
   getDecimals,
 }) => {
   let membersArray = [];
@@ -376,7 +374,6 @@ export const getEncodedData = async ({
       return { data };
 
     case 3:
-      debugger;
       data = iface.encodeFunctionData("updateTotalRaiseAmount", [
         convertToWeiGovernance(
           convertToWeiGovernance(totalDeposits, tokenDecimals) /
