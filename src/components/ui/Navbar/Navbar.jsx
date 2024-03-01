@@ -30,8 +30,6 @@ const Navbar = () => {
     }
   };
 
-  console.log("xxx", networkId);
-
   return (
     <>
       <nav className={classes.nav}>
