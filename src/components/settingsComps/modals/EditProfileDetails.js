@@ -9,13 +9,13 @@ import { TextField } from "@components/ui";
 import Button from "@components/ui/button/Button";
 import { makeStyles, useTheme } from "@mui/styles";
 import { useFormik } from "formik";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 
 import "react-quill/dist/quill.snow.css";
 import UploadIcon from "@mui/icons-material/Upload";
 import { FIVE_MB } from "utils/constants";
 import Image from "next/image";
-import { createOrUpdateUser, getUserData } from "api/club";
+import { createOrUpdateUser } from "api/club";
 import { handleSignMessage, uploadFileToAWS } from "utils/helper";
 import { setAlertData } from "redux/reducers/alert";
 import { useDispatch } from "react-redux";
@@ -59,8 +59,8 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "8px",
     marginBottom: "12px",
     objectFit: "cover",
-    width: "100%",
-    height: "100%",
+    width: "200px",
+    height: "200px",
   },
   subtext: {
     color: "#707070",
@@ -76,7 +76,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const EditProfileDetails = ({ open, onClose, wallet, initialValue }) => {
+const EditProfileDetails = ({
+  open,
+  onClose,
+  wallet,
+  userData,
+  getUserProfileData,
+}) => {
+  console.log({ userData });
   const theme = useTheme();
   const classes = useStyles(theme);
   const dispatch = useDispatch();
@@ -85,7 +92,6 @@ const EditProfileDetails = ({ open, onClose, wallet, initialValue }) => {
   const uploadInputRef = useRef(null);
 
   const [selectedFile, setSelectedFile] = useState("");
-  const [userData, setUserData] = useState({});
 
   const selectFile = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -114,19 +120,7 @@ const EditProfileDetails = ({ open, onClose, wallet, initialValue }) => {
     }
   };
 
-  const getUserProfileData = async () => {
-    try {
-      const response = await getUserData(wallet ?? address);
-      if (response?.data) {
-        setUserData(response.data);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const updateUIAfterSuccess = async () => {
-    setLoaderOpen(false);
     dispatch(
       setAlertData({
         open: true,
@@ -134,6 +128,9 @@ const EditProfileDetails = ({ open, onClose, wallet, initialValue }) => {
         severity: "success",
       }),
     );
+    await getUserProfileData();
+    setLoaderOpen(false);
+    onClose();
   };
 
   const updateUIAfterFailure = () => {
@@ -149,15 +146,13 @@ const EditProfileDetails = ({ open, onClose, wallet, initialValue }) => {
 
   const formik = useFormik({
     initialValues: {
-      userName: "",
-      bio: "",
-      imgUrl: "",
-      socialLinks: {
-        twitter: "",
-        telegram: "",
-        warpcast: "",
-        website: "",
-      },
+      userName: userData?.userName,
+      bio: userData?.bio,
+      imgUrl: userData?.imgUrl,
+      twitter: userData?.socialLinks?.twitter,
+      telegram: userData?.socialLinks?.telegram,
+      warpcast: userData?.socialLinks?.warpcast,
+      website: userData?.socialLinks?.website,
     },
     onSubmit: async (values) => {
       setLoaderOpen(true);
@@ -165,8 +160,15 @@ const EditProfileDetails = ({ open, onClose, wallet, initialValue }) => {
         let fileLink = "";
         fileLink = await readFileAsync();
         const res = await sendRequest({
-          ...values,
-          imgUrl: fileLink ? fileLink : userData?.imgUrl ?? "",
+          userName: values?.userName,
+          bio: values?.bio,
+          imgUrl: fileLink ? fileLink : values?.imgUrl ?? "",
+          socialLinks: {
+            twitter: values?.twitter,
+            telegram: values?.telegram,
+            warpcast: values?.warpcast,
+            website: values?.website,
+          },
         });
         updateUIAfterSuccess();
       } catch (error) {
@@ -174,26 +176,6 @@ const EditProfileDetails = ({ open, onClose, wallet, initialValue }) => {
       }
     },
   });
-  useEffect(() => {
-    getUserProfileData();
-  }, [wallet]);
-  useEffect(() => {
-    setFormValuesFromUserData(userData, formik);
-  }, [userData]);
-
-  const setFormValuesFromUserData = (userData, formik) => {
-    formik.setValues({
-      userName: userData.userName ?? "",
-      bio: userData.bio ?? "",
-      imgUrl: userData.imgUrl ?? "",
-      socialLinks: {
-        twitter: userData?.socialLinks?.twitter ?? "",
-        telegram: userData?.socialLinks?.telegram ?? "",
-        warpcast: userData?.socialLinks?.warpcast ?? "",
-        website: userData?.socialLinks?.website ?? "",
-      },
-    });
-  };
 
   return (
     <Dialog
@@ -215,14 +197,13 @@ const EditProfileDetails = ({ open, onClose, wallet, initialValue }) => {
               Upload Banner{" "}
             </Typography>
             <span className={classes.smallText}>
-              (recommended dimension - 16:8)
+              (recommended dimension - 1:1)
             </span>
             <p className={classes.error}>
               {selectedFile?.size > FIVE_MB
                 ? "Image exceeds max size, please add image below 5 mb"
                 : null}
             </p>
-
             {formik.values.imgUrl || selectedFile ? (
               <div className={classes.bannerContainer}>
                 <Image
@@ -232,7 +213,8 @@ const EditProfileDetails = ({ open, onClose, wallet, initialValue }) => {
                       ? URL.createObjectURL(selectedFile)
                       : formik.values.imgUrl
                   }
-                  fill
+                  height={200}
+                  width={200}
                   alt="Banner Image"
                 />
               </div>
@@ -280,7 +262,7 @@ const EditProfileDetails = ({ open, onClose, wallet, initialValue }) => {
             <TextField
               name="userName"
               id="userName"
-              placeholder="UserName"
+              placeholder="Name"
               variant="outlined"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -297,11 +279,11 @@ const EditProfileDetails = ({ open, onClose, wallet, initialValue }) => {
             <TextField
               name="website"
               id="website"
-              placeholder="Link"
+              placeholder="Website link"
               variant="outlined"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              value={formik.values.socialLinks.website}
+              value={formik.values.website}
               error={formik.touched.website && Boolean(formik.errors.website)}
               helperText={formik.touched.website && formik.errors.website}
             />
@@ -318,7 +300,7 @@ const EditProfileDetails = ({ open, onClose, wallet, initialValue }) => {
               variant="outlined"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              value={formik.values.socialLinks.twitter}
+              value={formik.values.twitter}
               error={formik.touched.twitter && Boolean(formik.errors.twitter)}
               helperText={formik.touched.twitter && formik.errors.twitter}
             />
@@ -335,7 +317,7 @@ const EditProfileDetails = ({ open, onClose, wallet, initialValue }) => {
               variant="outlined"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              value={formik.values.socialLinks.warpcast}
+              value={formik.values.warpcast}
               error={formik.touched.warpcast && Boolean(formik.errors.warpcast)}
               helperText={formik.touched.warpcast && formik.errors.warpcast}
             />
@@ -352,7 +334,7 @@ const EditProfileDetails = ({ open, onClose, wallet, initialValue }) => {
               variant="outlined"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              value={formik.values.socialLinks.telegram}
+              value={formik.values.telegram}
               error={formik.touched.telegram && Boolean(formik.errors.telegram)}
               helperText={formik.touched.telegram && formik.errors.telegram}
             />
@@ -370,8 +352,7 @@ const EditProfileDetails = ({ open, onClose, wallet, initialValue }) => {
               <Button
                 onClick={() => {
                   formik.resetForm();
-                  setLoaderOpen(false);
-                  onClose(event, "cancel");
+                  onClose();
                 }}>
                 Cancel
               </Button>
@@ -379,7 +360,9 @@ const EditProfileDetails = ({ open, onClose, wallet, initialValue }) => {
             <Grid item>
               <Button
                 disabled={selectedFile && selectedFile?.size > FIVE_MB}
-                onClick={() => formik.handleSubmit()}>
+                onClick={() => {
+                  formik.handleSubmit();
+                }}>
                 {loaderOpen ? <CircularProgress size={25} /> : "Save Changes"}
               </Button>
             </Grid>

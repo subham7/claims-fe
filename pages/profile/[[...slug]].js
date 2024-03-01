@@ -26,9 +26,9 @@ const StationCard = ({ club }) => {
       <div>
         <div className={classes.stnInfo}>
           <Typography variant="body">{name}</Typography>
-          <div>
+          <div className="flex items-center">
             <div>Total Raised</div>
-            <div>{totalAmountRaised} USDC</div>
+            <div className="text-sm">{totalAmountRaised} USDC</div>
           </div>
           <div>
             <div>Last Date</div>
@@ -62,17 +62,18 @@ const ProfilePage = () => {
       const response = await getClubListForWallet(wallet ?? address, chain);
       if (response?.data?.clubs) {
         setClubsData(response.data.clubs);
-        setLoading(false);
       }
     } catch (err) {
-      setLoading(false);
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
   const getUserProfileData = async () => {
     try {
       const response = await getUserData(wallet ?? address);
+      console.log(response.data);
       if (response?.data) {
         setUserData(response.data);
       }
@@ -109,7 +110,13 @@ const ProfilePage = () => {
             <Typography variant="subheading">{userData?.userName}</Typography>
             <Typography variant="body">{userData?.bio}</Typography>
             <Typography variant="body">
-              {userData?.socialLinks?.website}
+              <div
+                onClick={() =>
+                  window.open(userData?.socialLinks?.website, "_blank")
+                }
+                className="text-blue-500 h-8 w-96 cursor-pointer truncate hover:underline">
+                {userData?.socialLinks?.website}
+              </div>
             </Typography>
           </div>
         </div>
@@ -121,7 +128,7 @@ const ProfilePage = () => {
               size={20}
             />
           </div>
-          <SocialButtons data={userData?.socialLinks} />
+          <SocialButtons data={userData} />
         </div>
       </div>
 
@@ -155,11 +162,15 @@ const ProfilePage = () => {
         </div>
       )}
 
-      <EditProfileDetails
-        open={openEditModal}
-        wallet={wallet ?? address}
-        onClose={() => setOpenEditModal(false)}
-      />
+      {openEditModal ? (
+        <EditProfileDetails
+          open={openEditModal}
+          wallet={wallet ?? address}
+          onClose={() => setOpenEditModal(false)}
+          userData={userData}
+          getUserProfileData={getUserProfileData}
+        />
+      ) : null}
     </Layout>
   );
 };

@@ -41,6 +41,24 @@
   width: calc(25% - 18px);
 }
 
+@media (max-width: 1024px) {
+  .stationCard {
+    width: calc(33% - 18px);
+  }
+}
+
+@media (max-width: 768px) {
+  .stationCard {
+    width: calc(50% - 18px);
+  }
+}
+
+@media (max-width: 512px) {
+  .stationCard {
+    width: calc(100%);
+  }
+}
+
 .img {
   border-radius: 12px;
   height: 100px;
