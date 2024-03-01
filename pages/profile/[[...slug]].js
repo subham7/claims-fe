@@ -8,13 +8,19 @@ import EditIcon from "@mui/icons-material/Edit";
 import { useAccount } from "wagmi";
 import { getClubListForWallet } from "api/club";
 import EditProfileDetails from "@components/settingsComps/modals/EditProfileDetails";
+import { CircularProgress, MenuItem, Select } from "@mui/material";
 
 const StationCard = ({ club }) => {
-  const { name, totalAmountRaised, membersCount, depositDeadline } = club;
+  const { name, totalAmountRaised, membersCount, depositDeadline, imageUrl } =
+    club;
   return (
     <div className={classes.stationCard}>
       <div
-        style={{ backgroundImage: `url(/assets/images/astronaut3.png)` }}
+        style={{
+          backgroundImage: imageUrl
+            ? imageUrl
+            : `url(/assets/images/astronaut3.png)`,
+        }}
         className={classes.stnImg}
       />
       <div>
@@ -26,7 +32,7 @@ const StationCard = ({ club }) => {
           </div>
           <div>
             <div>Last Date</div>
-            <div>{""}</div>
+            <div>{depositDeadline}</div>
           </div>
           <div>
             <div>Members</div>
@@ -46,15 +52,19 @@ const ProfilePage = () => {
   const [wallet] = router?.query?.slug ?? [];
   const { address } = useAccount();
   const [clubsData, setClubsData] = useState([]);
+  const [chain, setSelectedChain] = useState("0x89");
+  const [loading, setLoading] = useState(false);
 
   const getClubsData = async () => {
-    debugger;
     try {
-      const response = await getClubListForWallet(wallet ?? address);
-      if (response?.data?.clubs?.length > 0) {
+      setLoading(true);
+      const response = await getClubListForWallet(wallet ?? address, chain);
+      if (response?.data?.clubs) {
         setClubsData(response.data.clubs);
+        setLoading(false);
       }
     } catch (err) {
+      setLoading(false);
       console.error(err);
     }
   };
@@ -63,7 +73,7 @@ const ProfilePage = () => {
     if (wallet || address) {
       getClubsData();
     }
-  }, [wallet, address]);
+  }, [wallet, address, chain]);
 
   return (
     <Layout showSidebar={false}>
@@ -98,11 +108,37 @@ const ProfilePage = () => {
           />
         </div>
       </div>
-      <div className={classes.stnList}>
-        {clubsData?.map((club, index) => (
-          <StationCard club={club} key={index} />
-        ))}
+
+      <div className={classes.selectMenu}>
+        <Select
+          value={chain}
+          label="network"
+          onChange={(e) => setSelectedChain(e.target.value)}>
+          <MenuItem value={"0x89"}>Polygon</MenuItem>
+          <MenuItem value={"0x2105"}>Base</MenuItem>
+          <MenuItem value={"0x82750"}>Scroll</MenuItem>
+          <MenuItem value={"0x1"}>Ethereum</MenuItem>
+          <MenuItem value={"0x5"}>Goerli</MenuItem>
+        </Select>
       </div>
+      {loading ? (
+        <div className={classes.loaderContainer}>
+          <CircularProgress />
+        </div>
+      ) : (
+        <div className={classes.stnList}>
+          {clubsData?.map((club, index) => (
+            <StationCard club={club} key={index} />
+          ))}
+        </div>
+      )}
+
+      {clubsData.length == 0 && !loading && (
+        <div className={classes.loaderContainer}>
+          <p>No clubs to show</p>
+        </div>
+      )}
+
       <EditProfileDetails
         isClaims={false}
         open={openEditModal}
