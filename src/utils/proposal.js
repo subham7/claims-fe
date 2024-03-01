@@ -374,7 +374,6 @@ export const getEncodedData = async ({
       return { data };
 
     case 3:
-      debugger;
       data = iface.encodeFunctionData("updateTotalRaiseAmount", [
         convertToWeiGovernance(
           convertToWeiGovernance(totalDeposits, tokenDecimals) /
