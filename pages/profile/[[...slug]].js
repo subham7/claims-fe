@@ -100,7 +100,7 @@ const ProfilePage = () => {
           <div
             style={{
               backgroundImage: userData.imgUrl
-                ? userData.imgUrl
+                ? `url(${userData.imgUrl})`
                 : `url(/assets/images/astronaut3.png)`,
             }}
             className={classes.img}

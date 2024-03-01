@@ -11,13 +11,12 @@ import { makeStyles, useTheme } from "@mui/styles";
 import { useFormik } from "formik";
 import React, { useRef, useState, useEffect } from "react";
 
-import QuillEditor from "../../quillEditor";
 import "react-quill/dist/quill.snow.css";
 import UploadIcon from "@mui/icons-material/Upload";
 import { FIVE_MB } from "utils/constants";
 import Image from "next/image";
 import { createOrUpdateUser, getUserData } from "api/club";
-import { uploadFileToAWS } from "utils/helper";
+import { handleSignMessage, uploadFileToAWS } from "utils/helper";
 import { setAlertData } from "redux/reducers/alert";
 import { useDispatch } from "react-redux";
 
@@ -101,7 +100,12 @@ const EditProfileDetails = ({ open, onClose, wallet, initialValue }) => {
 
   const sendRequest = async (data) => {
     try {
-      const response = await createOrUpdateUser(data);
+      const { signature } = await handleSignMessage(
+        wallet,
+        JSON.stringify(data),
+      );
+
+      const response = await createOrUpdateUser({ ...data, signature });
       if (response?.data) {
         setUserData(response.data);
       }
@@ -256,15 +260,14 @@ const EditProfileDetails = ({ open, onClose, wallet, initialValue }) => {
             <Typography variant="inherit" className={classes.wrapTextIcon}>
               Add Bio
             </Typography>
-            <QuillEditor
-              multiline
-              rows={10}
-              placeholder="Add your bio"
-              className={classes.editor}
+            <TextField
               name="bio"
               id="bio"
+              placeholder="bio"
+              variant="outlined"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               value={formik.values.bio}
-              onChange={(value) => formik.setFieldValue("bio", value)}
               error={formik.touched.bio && Boolean(formik.errors.bio)}
               helperText={formik.touched.bio && formik.errors.bio}
             />
