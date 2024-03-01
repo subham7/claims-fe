@@ -56,7 +56,7 @@ export const getTokensListBlast = async (walletAddress) => {
 export const getTokensListBlastMainnet = async (walletAddress) => {
   try {
     return await axios.get(
-      `https://api.routescan.io/v2/network/mainnet/evm/81457/api?module=account&action=addresstokenbalance&address=${walletAddress}`,
+      `https://api.routescan.io/v2/network/mainnet/evm/81457/etherscan/api?module=account&action=addresstokenbalance&address=${walletAddress}`,
     );
   } catch (error) {
     console.log(error);
