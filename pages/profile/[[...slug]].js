@@ -28,7 +28,7 @@ const StationCard = ({ club }) => {
           <Typography variant="body">{name}</Typography>
           <div className="flex items-center">
             <div>Total Raised</div>
-            <div className="text-sm">{totalAmountRaised} USDC</div>
+            <div>{Number(totalAmountRaised).toFixed(4)} USDC</div>
           </div>
           <div>
             <div>Last Date</div>
