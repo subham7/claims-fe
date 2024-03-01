@@ -40,6 +40,7 @@ export const supportedChainsDrops = [
   "0x138d5",
   "0x5",
   "0xa0c71fd",
+  "0x13e31",
 ];
 
 export const CHAIN_CONFIG = {
@@ -457,6 +458,30 @@ export const CHAIN_CONFIG = {
     disburseContractAddress: "",
     logoUri: "/assets/networks/0xa0c71fd.png",
   },
+  "0x13e31": {
+    chainName: "Blast Mainnet",
+    shortName: "Blast",
+    chainId: 81457,
+    nativeCurrency: {
+      name: "ETH",
+      decimals: 18,
+      symbol: "ETH",
+    },
+    rpcUrls: ["https://rpc.blast.io"],
+    appRpcUrl: `https://rpc.blast.io`,
+    stationSubgraphUrl: "",
+    covalentNetworkName: "",
+    factoryContractAddress: "",
+    // claimFactoryAddress: "0x50702Fd9086BAbDB0A3A576bFe22D4dD47b09937",
+    // claimsSubgraphUrl:
+    // "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-blast/prod/gn",,
+    nativeToken: "",
+    usdcAddress: "",
+    airdropContractAddress: "",
+    blockExplorerUrl: "https://blastscan.io/",
+    disburseContractAddress: "",
+    logoUri: "/assets/networks/0x13e31.png",
+  },
 };
 
 export const lineaMainnetWalletConnect = {
@@ -508,7 +533,7 @@ export const beraMainnetWalletConnect = {
   },
 };
 
-export const blastMainnetWalletConnect = {
+export const blastTestnetWalletConnect = {
   id: 168587773,
   name: "Blast Sepolia",
   network: "blast",
@@ -529,6 +554,37 @@ export const blastMainnetWalletConnect = {
     default: {
       name: "BlastSepoliaExplorer",
       url: "https://testnet.blastscan.io/",
+    },
+  },
+  contracts: {
+    multicall3: {
+      address: "",
+      blockCreated: "",
+    },
+  },
+};
+
+export const blastMainnetWalletConnect = {
+  id: 81457,
+  name: "Blast Mainnet",
+  network: "Blast",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ether",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    public: { http: ["https://rpc.blast.io"] },
+    default: { http: ["https://rpc.blast.io"] },
+  },
+  blockExplorers: {
+    etherscan: {
+      name: "Blast Scan",
+      url: "https://blastscan.io/",
+    },
+    default: {
+      name: "Blast Scan",
+      url: "https://blastscan.io/",
     },
   },
   contracts: {
@@ -781,9 +837,13 @@ export const dropsNetworksChaindId = [
   //   chainId: 80085,
   //   networkId: "0x138d5",
   // },
+  // {
+  //   chainId: 168587773,
+  //   networkId: "0xa0c71fd",
+  // },
   {
-    chainId: 168587773,
-    networkId: "0xa0c71fd",
+    chainId: 81457,
+    networkId: "0x13e31",
   },
 ];
 
