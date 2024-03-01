@@ -9,16 +9,14 @@ import { TextField } from "@components/ui";
 import Button from "@components/ui/button/Button";
 import { makeStyles, useTheme } from "@mui/styles";
 import { useFormik } from "formik";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 
 import QuillEditor from "../../quillEditor";
-import ReactHtmlParser from "react-html-parser";
 import "react-quill/dist/quill.snow.css";
 import UploadIcon from "@mui/icons-material/Upload";
-import { createClaimDetails } from "api/claims";
 import { FIVE_MB } from "utils/constants";
 import Image from "next/image";
-import { editInfo, getClubInfo } from "api/club";
+import { createOrUpdateUser, getUserData } from "api/club";
 import { uploadFileToAWS } from "utils/helper";
 import { setAlertData } from "redux/reducers/alert";
 import { useDispatch } from "react-redux";
@@ -79,7 +77,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const EditProfileDetails = ({ open, onClose }) => {
+const EditProfileDetails = ({ open, onClose, wallet, initialValue }) => {
   const theme = useTheme();
   const classes = useStyles(theme);
   const dispatch = useDispatch();
@@ -88,7 +86,7 @@ const EditProfileDetails = ({ open, onClose }) => {
   const uploadInputRef = useRef(null);
 
   const [selectedFile, setSelectedFile] = useState("");
-  const [bannerData, setBannerData] = useState();
+  const [userData, setUserData] = useState({});
 
   const selectFile = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -101,32 +99,25 @@ const EditProfileDetails = ({ open, onClose }) => {
     return null;
   };
 
-  const sendRequest = async (values, fileLink = "") => {
-    if (isClaims) {
-      return await createClaimDetails({
-        claimAddress,
-        description: values.description,
-        imageLinks: {
-          banner: fileLink ? fileLink : bannerData?.imageLinks?.banner ?? "",
-        },
-        networkId,
-        socialLinks: {
-          twitter: values.twitter,
-          discord: values.discord,
-          telegram: values.telegram,
-          website: values.website,
-        },
-        tweetText: values.tweetText,
-      });
-    } else {
-      return await editInfo({
-        daoAddress: daoAddress,
-        bio: values.description,
-        twitter: values.twitter,
-        discord: values.discord,
-        telegram: values.telegram,
-        bannerImage: fileLink ? fileLink : bannerData?.bannerImage,
-      });
+  const sendRequest = async (data) => {
+    try {
+      const response = await createOrUpdateUser(data);
+      if (response?.data) {
+        setUserData(response.data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const getUserProfileData = async () => {
+    try {
+      const response = await getUserData(wallet ?? address);
+      if (response?.data) {
+        setUserData(response.data);
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -139,10 +130,6 @@ const EditProfileDetails = ({ open, onClose }) => {
         severity: "success",
       }),
     );
-    if (isClaims) {
-      await getClubInfo();
-    }
-    onClose(event, "cancel");
   };
 
   const updateUIAfterFailure = () => {
@@ -158,37 +145,49 @@ const EditProfileDetails = ({ open, onClose }) => {
 
   const formik = useFormik({
     initialValues: {
-      description: "",
-      twitter: "",
-      discord: "",
-      telegram: "",
-      website: "",
-      tweetText: "",
+      userName: "",
+      bio: "",
+      imgUrl: "",
+      socialLinks: {
+        twitter: "",
+        telegram: "",
+        warpcast: "",
+        website: "",
+      },
     },
     onSubmit: async (values) => {
       setLoaderOpen(true);
       try {
         let fileLink = "";
         fileLink = await readFileAsync();
-        const res = await sendRequest(values, fileLink);
+        const res = await sendRequest({
+          ...values,
+          imgUrl: fileLink ? fileLink : userData?.imgUrl ?? "",
+        });
         updateUIAfterSuccess();
       } catch (error) {
         updateUIAfterFailure();
       }
     },
   });
+  useEffect(() => {
+    getUserProfileData();
+  }, [wallet]);
+  useEffect(() => {
+    setFormValuesFromUserData(userData, formik);
+  }, [userData]);
 
-  const setFormValuesFromBannerData = (bannerData, formik) => {
-    const descriptionField = bannerData?.bio;
-    const parsedDescription = ReactHtmlParser(descriptionField ?? "");
-    const descriptionValue =
-      descriptionField && parsedDescription ? parsedDescription[0] : "";
-
+  const setFormValuesFromUserData = (userData, formik) => {
     formik.setValues({
-      description: descriptionValue,
-      twitter: bannerData?.twitter ?? "",
-      discord: bannerData?.discord ?? "",
-      telegram: bannerData?.telegram ?? "",
+      userName: userData.userName ?? "",
+      bio: userData.bio ?? "",
+      imgUrl: userData.imgUrl ?? "",
+      socialLinks: {
+        twitter: userData?.socialLinks?.twitter ?? "",
+        telegram: userData?.socialLinks?.telegram ?? "",
+        warpcast: userData?.socialLinks?.warpcast ?? "",
+        website: userData?.socialLinks?.website ?? "",
+      },
     });
   };
 
@@ -220,14 +219,14 @@ const EditProfileDetails = ({ open, onClose }) => {
                 : null}
             </p>
 
-            {bannerData?.imageLinks?.banner || selectedFile ? (
+            {formik.values.imgUrl || selectedFile ? (
               <div className={classes.bannerContainer}>
                 <Image
                   className={classes.bannerImage}
                   src={
                     selectedFile
                       ? URL.createObjectURL(selectedFile)
-                      : bannerData?.imageLinks?.banner
+                      : formik.values.imgUrl
                   }
                   fill
                   alt="Banner Image"
@@ -260,18 +259,48 @@ const EditProfileDetails = ({ open, onClose }) => {
             <QuillEditor
               multiline
               rows={10}
-              placeholder="Add description of your station"
+              placeholder="Add your bio"
               className={classes.editor}
-              name="description"
-              id="description"
-              value={formik.values.description}
-              onChange={(value) => formik.setFieldValue("description", value)}
-              error={
-                formik.touched.description && Boolean(formik.errors.description)
-              }
-              helperText={
-                formik.touched.description && formik.errors.description
-              }
+              name="bio"
+              id="bio"
+              value={formik.values.bio}
+              onChange={(value) => formik.setFieldValue("bio", value)}
+              error={formik.touched.bio && Boolean(formik.errors.bio)}
+              helperText={formik.touched.bio && formik.errors.bio}
+            />
+          </Grid>
+
+          <Grid item md={6} mb={2}>
+            <Typography variant="inherit" className={classes.wrapTextIcon}>
+              Name
+            </Typography>
+            <TextField
+              name="userName"
+              id="userName"
+              placeholder="UserName"
+              variant="outlined"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.userName}
+              error={formik.touched.userName && Boolean(formik.errors.userName)}
+              helperText={formik.touched.userName && formik.errors.userName}
+            />
+          </Grid>
+
+          <Grid item md={6} mb={2}>
+            <Typography variant="inherit" className={classes.wrapTextIcon}>
+              Website
+            </Typography>
+            <TextField
+              name="website"
+              id="website"
+              placeholder="Link"
+              variant="outlined"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.socialLinks.website}
+              error={formik.touched.website && Boolean(formik.errors.website)}
+              helperText={formik.touched.website && formik.errors.website}
             />
           </Grid>
 
@@ -286,7 +315,7 @@ const EditProfileDetails = ({ open, onClose }) => {
               variant="outlined"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              value={formik.values.twitter}
+              value={formik.values.socialLinks.twitter}
               error={formik.touched.twitter && Boolean(formik.errors.twitter)}
               helperText={formik.touched.twitter && formik.errors.twitter}
             />
@@ -294,18 +323,18 @@ const EditProfileDetails = ({ open, onClose }) => {
 
           <Grid item md={6} mb={2}>
             <Typography variant="inherit" className={classes.wrapTextIcon}>
-              Discord
+              Warpcast
             </Typography>
             <TextField
-              name="discord"
-              id="discord"
+              name="warpcast"
+              id="warpcast"
               placeholder="Link"
               variant="outlined"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              value={formik.values.discord}
-              error={formik.touched.discord && Boolean(formik.errors.discord)}
-              helperText={formik.touched.discord && formik.errors.discord}
+              value={formik.values.socialLinks.warpcast}
+              error={formik.touched.warpcast && Boolean(formik.errors.warpcast)}
+              helperText={formik.touched.warpcast && formik.errors.warpcast}
             />
           </Grid>
 
@@ -320,7 +349,7 @@ const EditProfileDetails = ({ open, onClose }) => {
               variant="outlined"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              value={formik.values.telegram}
+              value={formik.values.socialLinks.telegram}
               error={formik.touched.telegram && Boolean(formik.errors.telegram)}
               helperText={formik.touched.telegram && formik.errors.telegram}
             />

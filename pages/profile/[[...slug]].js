@@ -6,7 +6,7 @@ import Typography from "@components/ui/Typography/Typography";
 import SocialButtons from "@components/common/SocialButtons";
 import EditIcon from "@mui/icons-material/Edit";
 import { useAccount } from "wagmi";
-import { getClubListForWallet } from "api/club";
+import { getClubListForWallet, getUserData } from "api/club";
 import EditProfileDetails from "@components/settingsComps/modals/EditProfileDetails";
 import { CircularProgress, MenuItem, Select } from "@mui/material";
 
@@ -28,7 +28,7 @@ const StationCard = ({ club }) => {
           <Typography variant="body">{name}</Typography>
           <div>
             <div>Total Raised</div>
-            <div>{totalAmountRaised}</div>
+            <div>{totalAmountRaised} USDC</div>
           </div>
           <div>
             <div>Last Date</div>
@@ -52,6 +52,7 @@ const ProfilePage = () => {
   const [wallet] = router?.query?.slug ?? [];
   const { address } = useAccount();
   const [clubsData, setClubsData] = useState([]);
+  const [userData, setUserData] = useState({});
   const [chain, setSelectedChain] = useState("0x89");
   const [loading, setLoading] = useState(false);
 
@@ -69,6 +70,23 @@ const ProfilePage = () => {
     }
   };
 
+  const getUserProfileData = async () => {
+    try {
+      const response = await getUserData(wallet ?? address);
+      if (response?.data) {
+        setUserData(response.data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    if (wallet || address) {
+      getUserProfileData();
+    }
+  }, [wallet, address]);
+
   useEffect(() => {
     if (wallet || address) {
       getClubsData();
@@ -80,15 +98,19 @@ const ProfilePage = () => {
       <div className={classes.profileDiv}>
         <div>
           <div
-            style={{ backgroundImage: `url(/assets/images/astronaut3.png)` }}
+            style={{
+              backgroundImage: userData.imgUrl
+                ? userData.imgUrl
+                : `url(/assets/images/astronaut3.png)`,
+            }}
             className={classes.img}
           />
           <div>
-            <Typography variant="subheading">Bhavya Mehta</Typography>
+            <Typography variant="subheading">{userData?.userName}</Typography>
+            <Typography variant="body">{userData?.bio}</Typography>
             <Typography variant="body">
-              Investor | Developer | Creator
+              {userData?.socialLinks?.website}
             </Typography>
-            <Typography variant="body">abcd.com</Typography>
           </div>
         </div>
         <div>
@@ -99,13 +121,7 @@ const ProfilePage = () => {
               size={20}
             />
           </div>
-          <SocialButtons
-            data={{
-              twitter: "abcd.in",
-              discord: "abcd.in",
-              telegram: "abcd.in",
-            }}
-          />
+          <SocialButtons data={userData?.socialLinks} />
         </div>
       </div>
 
@@ -140,8 +156,8 @@ const ProfilePage = () => {
       )}
 
       <EditProfileDetails
-        isClaims={false}
         open={openEditModal}
+        wallet={wallet ?? address}
         onClose={() => setOpenEditModal(false)}
       />
     </Layout>
