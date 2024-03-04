@@ -94,7 +94,7 @@ const ProfilePage = () => {
   const getClubsData = async () => {
     try {
       setLoading(true);
-      const response = await getClubListForWallet(wallet ?? address, chain);
+      const response = await getClubListForWallet(wallet, chain);
       if (response?.data?.clubs) {
         const clubData = [];
         const promises = await response.data.clubs.map(async (club) => {
@@ -130,7 +130,7 @@ const ProfilePage = () => {
 
   const getUserProfileData = async () => {
     try {
-      const response = await getUserData(wallet ?? address);
+      const response = await getUserData(wallet);
       if (response?.data) {
         setUserData(response.data);
       }
@@ -140,18 +140,18 @@ const ProfilePage = () => {
   };
 
   useEffect(() => {
-    if (wallet || address) {
+    if (wallet) {
       getUserProfileData();
     }
-  }, [wallet, address]);
+  }, [wallet]);
 
   useEffect(() => {
-    if (wallet || address) {
+    if (wallet) {
       getClubsData();
     }
-  }, [wallet, address, chain]);
+  }, [wallet, chain]);
 
-  if (!wallet && !address) {
+  if (!wallet) {
     return;
   }
 
@@ -171,7 +171,9 @@ const ProfilePage = () => {
             <Typography variant="subheading">{userData?.userName}</Typography>
             <Typography variant="body">{userData?.bio}</Typography>
             <Typography className={"flex items-center gap-2"} variant="body">
-              <RiLinkM className="text-gray-500" />
+              {userData?.socialLinks?.website && (
+                <RiLinkM className="text-gray-500" />
+              )}
               <div
                 onClick={() =>
                   window.open(userData?.socialLinks?.website, "_blank")
@@ -196,7 +198,6 @@ const ProfilePage = () => {
           />
         </div>
       </div>
-
       <Select value={chain} onChange={(e) => setSelectedChain(e.target.value)}>
         <MenuItem value={"0x89"}>Polygon</MenuItem>
         <MenuItem value={"0x2105"}>Base</MenuItem>
@@ -225,7 +226,7 @@ const ProfilePage = () => {
       {openEditModal ? (
         <EditProfileDetails
           open={openEditModal}
-          wallet={wallet ?? address}
+          wallet={address}
           onClose={() => setOpenEditModal(false)}
           userData={userData}
           getUserProfileData={getUserProfileData}

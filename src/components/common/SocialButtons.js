@@ -11,7 +11,8 @@ const SocialButtons = ({ data, shareLink }) => {
   const discordLink = data?.socialLinks?.discord ?? data?.discord;
 
   const copyHandler = () => {
-    navigator.clipboard.writeText(`${window.location.origin}/${shareLink}`);
+    navigator.clipboard.writeText(`${window.location.origin}${shareLink}`);
+    alert("Copied to clipboard!");
   };
 
   return (
