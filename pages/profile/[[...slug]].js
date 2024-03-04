@@ -47,7 +47,9 @@ const StationCard = ({ club }) => {
       </div>
       <div>
         <div className={classes.stnInfo}>
-          <Typography variant="body">{name}</Typography>
+          <Typography className={"truncate h-6 w-full"} variant="body">
+            {name}
+          </Typography>
           <div className="flex items-center">
             <div>Total Raised</div>
             <div>{Number(totalAmountRaised).toFixed(4)} USDC</div>
@@ -119,7 +121,7 @@ const ProfilePage = () => {
         //   return promise;
         // });
         // await Promise.all(promises);
-        setClubsData(esponse?.data?.clubs);
+        setClubsData(response?.data?.clubs);
       }
     } catch (err) {
       console.error(err);
