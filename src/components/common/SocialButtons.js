@@ -3,7 +3,7 @@ import { BiLogoTelegram } from "react-icons/bi";
 import { BsTwitter } from "react-icons/bs";
 import { IoLogoDiscord } from "react-icons/io5";
 import { IoShareOutline } from "react-icons/io5";
-import { TbLetterWSmall } from "react-icons/tb";
+import { TbLetterW } from "react-icons/tb";
 import classes from "../claims/Claim.module.scss";
 
 const SocialButtons = ({ data, shareLink }) => {
@@ -29,7 +29,7 @@ const SocialButtons = ({ data, shareLink }) => {
         )}
 
         {warpcast && (
-          <TbLetterWSmall
+          <TbLetterW
             onClick={() => {
               window.open(warpcast, "_blank");
             }}

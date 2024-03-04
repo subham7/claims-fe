@@ -11,8 +11,8 @@ import EditProfileDetails from "@components/settingsComps/modals/EditProfileDeta
 import { CircularProgress, MenuItem, Select } from "@mui/material";
 import { CHAIN_CONFIG } from "utils/constants";
 import { RiLinkM } from "react-icons/ri";
-import { getUploadedNFT } from "api/assets";
-import { getImageURL } from "utils/globalFunctions";
+// import { getUploadedNFT } from "api/assets";
+// import { getImageURL } from "utils/globalFunctions";
 
 const StationCard = ({ club }) => {
   const {
@@ -96,30 +96,30 @@ const ProfilePage = () => {
       setLoading(true);
       const response = await getClubListForWallet(wallet, chain);
       if (response?.data?.clubs) {
-        const clubData = [];
-        const promises = await response.data.clubs.map(async (club) => {
-          const promise = new Promise(async (resolve) => {
-            try {
-              const imageUrl = await getUploadedNFT(
-                club.daoAddress?.toLowerCase(),
-              );
-              if (imageUrl?.data.length) {
-                club.imageUrl = imageUrl?.data[0]?.imageUrl ?? "";
-              } else {
-                const imageUrl = await getImageURL(club?.imageUrl);
-                club.imageUrl = imageUrl ?? "";
-              }
-            } catch (error) {
-              console.error(error);
-            } finally {
-              clubData.push(club);
-              resolve(true);
-            }
-          });
-          return promise;
-        });
-        await Promise.all(promises);
-        setClubsData(clubData);
+        // const clubData = [];
+        // const promises = await response.data.clubs.map(async (club) => {
+        //   const promise = new Promise(async (resolve) => {
+        //     try {
+        //       const imageUrl = await getUploadedNFT(
+        //         club.daoAddress?.toLowerCase(),
+        //       );
+        //       if (imageUrl?.data.length) {
+        //         club.imageUrl = imageUrl?.data[0]?.imageUrl ?? "";
+        //       } else {
+        //         const imageUrl = await getImageURL(club?.imageUrl);
+        //         club.imageUrl = imageUrl ?? "";
+        //       }
+        //     } catch (error) {
+        //       console.error(error);
+        //     } finally {
+        //       clubData.push(club);
+        //       resolve(true);
+        //     }
+        //   });
+        //   return promise;
+        // });
+        // await Promise.all(promises);
+        setClubsData(esponse?.data?.clubs);
       }
     } catch (err) {
       console.error(err);
