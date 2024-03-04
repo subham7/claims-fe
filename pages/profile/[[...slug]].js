@@ -11,6 +11,7 @@ import EditProfileDetails from "@components/settingsComps/modals/EditProfileDeta
 import { CircularProgress, MenuItem, Select } from "@mui/material";
 import { CHAIN_CONFIG } from "utils/constants";
 import { RiLinkM } from "react-icons/ri";
+import Image from "next/image";
 // import { getUploadedNFT } from "api/assets";
 // import { getImageURL } from "utils/globalFunctions";
 
@@ -30,13 +31,20 @@ const StationCard = ({ club }) => {
   return (
     <div className={classes.stationCard}>
       <div className="flex justify-between items-center">
-        <div
+        {/* <div
           style={{
             backgroundImage: imageUrl
               ? `url(${imageUrl})`
-              : `url(/assets/images/astronaut3.png)`,
+              : `/assets/images/fallbackDao.png`,
           }}
           className={classes.stnImg}
+        /> */}
+        <Image
+          src={"/assets/images/fallbackDao.png"}
+          height={60}
+          width={60}
+          alt="Fallback Image"
+          className="rounded-full"
         />
         <div
           className={`${
