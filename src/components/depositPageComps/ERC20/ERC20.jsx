@@ -118,7 +118,7 @@ const ERC20 = ({
         daoAddress,
         routeNetworkId,
       );
-      if (users) setMembers(users?.reverse());
+      if (users) setMembers(users);
     } catch (error) {
       dispatch(
         setAlertData({
