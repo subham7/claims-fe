@@ -19,6 +19,7 @@ export const QUERY_LATEST_MEMBERS = (daoAddress) => {
           where: {daoAddress: "${daoAddress}"}
           first: 5
           orderBy: timeStamp
+          orderDirection:desc
         ) {
           userAddress
           timeStamp
