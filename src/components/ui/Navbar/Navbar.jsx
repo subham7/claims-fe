@@ -23,7 +23,6 @@ const Navbar = () => {
 
   const showNetworkModalHandler = () => {
     setShowModal(!showModal);
-
     if (router.pathname.includes("claim")) {
       setNetworkSupported(dropsNetworksChaindId);
     } else {
@@ -47,20 +46,24 @@ const Navbar = () => {
         </div>
 
         <div className={classes["wallet-div"]}>
-          <Person2Outlined onClick={() => router.push("/profile")} />
           {address && (
-            <div onClick={showNetworkModalHandler} className={classes.switch}>
-              <Image
-                src={CHAIN_CONFIG[networkId]?.logoUri}
-                height={20}
-                width={20}
-                alt={CHAIN_CONFIG[networkId]?.shortName}
-                className={classes.networkImg}
+            <>
+              <Person2Outlined
+                onClick={() => router.push(`/profile/${address}`)}
               />
-              <Typography variant="inherit">
-                {CHAIN_CONFIG[networkId]?.shortName}
-              </Typography>
-            </div>
+              <div onClick={showNetworkModalHandler} className={classes.switch}>
+                <Image
+                  src={CHAIN_CONFIG[networkId]?.logoUri}
+                  height={20}
+                  width={20}
+                  alt={CHAIN_CONFIG[networkId]?.shortName}
+                  className={classes.networkImg}
+                />
+                <Typography variant="inherit">
+                  {CHAIN_CONFIG[networkId]?.shortName}
+                </Typography>
+              </div>
+            </>
           )}
           <w3m-account-button balance="hide" />
         </div>

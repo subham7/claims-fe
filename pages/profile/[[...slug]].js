@@ -11,6 +11,8 @@ import EditProfileDetails from "@components/settingsComps/modals/EditProfileDeta
 import { CircularProgress, MenuItem, Select } from "@mui/material";
 import { CHAIN_CONFIG } from "utils/constants";
 import { RiLinkM } from "react-icons/ri";
+import { getUploadedNFT } from "api/assets";
+import { getImageURL } from "utils/globalFunctions";
 
 const StationCard = ({ club }) => {
   const {
@@ -24,13 +26,14 @@ const StationCard = ({ club }) => {
     networkId,
     daoAddress,
   } = club;
+
   return (
     <div className={classes.stationCard}>
       <div className="flex justify-between items-center">
         <div
           style={{
             backgroundImage: imageUrl
-              ? imageUrl
+              ? `url(${imageUrl})`
               : `url(/assets/images/astronaut3.png)`,
           }}
           className={classes.stnImg}
@@ -92,10 +95,31 @@ const ProfilePage = () => {
     try {
       setLoading(true);
       const response = await getClubListForWallet(wallet ?? address, chain);
-
       if (response?.data?.clubs) {
-        console.log(response.data.clubs);
-        setClubsData(response.data.clubs);
+        const clubData = [];
+        const promises = await response.data.clubs.map(async (club) => {
+          const promise = new Promise(async (resolve) => {
+            try {
+              const imageUrl = await getUploadedNFT(
+                club.daoAddress?.toLowerCase(),
+              );
+              if (imageUrl?.data.length) {
+                club.imageUrl = imageUrl?.data[0]?.imageUrl ?? "";
+              } else {
+                const imageUrl = await getImageURL(club?.imageUrl);
+                club.imageUrl = imageUrl ?? "";
+              }
+            } catch (error) {
+              console.error(error);
+            } finally {
+              clubData.push(club);
+              resolve(true);
+            }
+          });
+          return promise;
+        });
+        await Promise.all(promises);
+        setClubsData(clubData);
       }
     } catch (err) {
       console.error(err);
@@ -127,13 +151,17 @@ const ProfilePage = () => {
     }
   }, [wallet, address, chain]);
 
+  if (!wallet && !address) {
+    return;
+  }
+
   return (
     <Layout showSidebar={false}>
       <div className={classes.profileDiv}>
         <div>
           <div
             style={{
-              backgroundImage: userData.imgUrl
+              backgroundImage: userData?.imgUrl
                 ? `url(${userData.imgUrl})`
                 : `url(/assets/images/astronaut3.png)`,
             }}

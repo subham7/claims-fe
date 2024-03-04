@@ -10,6 +10,10 @@ const SocialButtons = ({ data, shareLink }) => {
   const telegramLink = data?.socialLinks?.telegram ?? data?.telegram;
   const discordLink = data?.socialLinks?.discord ?? data?.discord;
 
+  const copyHandler = () => {
+    navigator.clipboard.writeText(`${window.location.origin}/${shareLink}`);
+  };
+
   return (
     <div>
       <div className={classes.socials}>
@@ -37,13 +41,7 @@ const SocialButtons = ({ data, shareLink }) => {
           />
         )}
 
-        {shareLink && (
-          <IoShareOutline
-            onClick={() => {
-              window.open(shareLink, "_blank");
-            }}
-          />
-        )}
+        {shareLink && <IoShareOutline onClick={copyHandler} />}
       </div>
     </div>
   );
