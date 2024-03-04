@@ -19,31 +19,16 @@ const ActionModal = () => {
         </Typography>
       </div>
 
-      {/* <div className={classes.recipientContainer}>
-        <Typography fontSize={16} fontWeight={500} variant="inherit">
-          Recipient
-        </Typography>
-        <TextField
-          name="note"
-          id="note"
-          placeholder="Insert address or ENS"
-          //   value={formik.values.note}
-          //   onChange={formik.handleChange}
-          //   error={formik.touched.note && Boolean(formik.errors.note)}
-          //   helperText={formik.touched.note && formik.errors.note}
-          sx={{
-            "& fieldset": { border: "none" },
-            "& .MuiInputBase-root": {
-              backgroundColor: "transparent",
-              fontFamily: "inherit",
-            },
-          }}
-          className={classes.note}
-        />
-      </div> */}
-
       <div>
-        <FormControl sx={{ minWidth: 150 }}>
+        <FormControl
+          sx={{
+            width: "100%",
+            background: "#282828",
+            borderRadius: "8px",
+            marginBottom: "12px",
+            marginTop: "16px",
+            paddingY: "4px",
+          }}>
           <Select
             sx={{
               "& .MuiOutlinedInput-notchedOutline": {
@@ -52,6 +37,7 @@ const ActionModal = () => {
               fontFamily: "inherit",
               backgroundColor: "inherit",
             }}
+            placeholder="Choose asset"
             // value={currentEOAWallet}
             // onChange={currentEOAWalletChangeHandler}
             // renderValue={(selected) =>
@@ -60,28 +46,9 @@ const ActionModal = () => {
             //     : shortAddress(selected.walletAddress)
             // }
             displayEmpty>
-            {allEOAWallets?.map((wallet) => (
-              <MenuItem
-                key={`${wallet.walletAddress}${wallet.networkId}`}
-                sx={{
-                  fontFamily: "inherit",
-                }}
-                value={wallet}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "12px",
-                    padding: "4px",
-                  }}>
-                  <Typography variant="inherit" fontSize={14}>
-                    {wallet.walletName
-                      ? wallet.walletName
-                      : shortAddress(wallet.walletAddress)}
-                  </Typography>
-                </div>
-              </MenuItem>
-            ))}
+            <MenuItem>Hello</MenuItem>
+            <MenuItem>Hello</MenuItem>
+            <MenuItem>Hello</MenuItem>
           </Select>
         </FormControl>
       </div>
@@ -182,6 +149,11 @@ const ActionModal = () => {
           rows={2}
           className={classes.note}
         />
+      </div>
+
+      <div className={classes.buttonContainer}>
+        <button className={classes.cancel}>Cancel</button>
+        <button className={classes.stake}>Done</button>
       </div>
     </Modal>
   );

@@ -25,6 +25,7 @@ import { useRouter } from "next/router";
 import StatusModal from "@components/modals/StatusModal/StatusModal";
 import CreateClubModal from "@components/modals/CreateClubModal/CreateClubModal";
 import BackdropLoader from "@components/common/BackdropLoader";
+import DashboardActionContainer from "./dashboardActions/DashboardActionContainer";
 
 const Dashboard = ({ daoAddress, routeNetworkId }) => {
   const gnosisAddress = useSelector((state) => {
@@ -282,6 +283,8 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
             />
           ))}
         </div>
+
+        <DashboardActionContainer />
 
         <div className={classes.assetsContainer}>
           <WalletsTabs
