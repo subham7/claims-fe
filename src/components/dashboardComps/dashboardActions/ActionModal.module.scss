@@ -17,6 +17,13 @@
     }
   }
 
+  .flexContainer {
+    margin-top: 16px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
   .recipientContainer {
     margin: 16px 0;
   }

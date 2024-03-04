@@ -1,12 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import classes from "../Dashboard.module.scss";
 import { FaArrowDownShortWide, FaArrowUp } from "react-icons/fa6";
 import ActionModal from "./ActionModal";
 
-const DashboardActionContainer = ({
-  sendModalHandler,
-  distributeModalHandler,
-}) => {
+const DashboardActionContainer = ({ daoAddress, networkId, gnosisAddress }) => {
+  const [showSendAssetsModal, setShowSendAssetsModal] = useState(false);
+  const [showDistributeModal, setShowDistributeModal] = useState(false);
+
+  const sendModalHandler = () => {
+    setShowSendAssetsModal(true);
+  };
+  const distributeModalHandler = () => {
+    setShowDistributeModal(true);
+  };
+
   return (
     <>
       <div className={classes.actionsContainer}>
@@ -22,7 +29,24 @@ const DashboardActionContainer = ({
         </button>
       </div>
 
-      <ActionModal />
+      {showSendAssetsModal && (
+        <ActionModal
+          daoAddress={daoAddress}
+          gnosisAddress={gnosisAddress}
+          networkId={networkId}
+          onClose={() => setShowSendAssetsModal(false)}
+          type={"send"}
+        />
+      )}
+      {showDistributeModal && (
+        <ActionModal
+          daoAddress={daoAddress}
+          gnosisAddress={gnosisAddress}
+          networkId={networkId}
+          onClose={() => setShowDistributeModal(false)}
+          type={"distribute"}
+        />
+      )}
     </>
   );
 };

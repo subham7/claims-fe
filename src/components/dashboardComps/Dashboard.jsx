@@ -284,7 +284,11 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
           ))}
         </div>
 
-        <DashboardActionContainer />
+        <DashboardActionContainer
+          daoAddress={daoAddress}
+          gnosisAddress={gnosisAddress}
+          networkId={networkId}
+        />
 
         <div className={classes.assetsContainer}>
           <WalletsTabs

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import classes from "./ActionModal.module.scss";
 import Modal from "@components/common/Modal/Modal";
 import {
@@ -7,16 +7,55 @@ import {
   FormControl,
   Select,
   MenuItem,
+  InputAdornment,
+  // InputLabel,
 } from "@mui/material";
 // import Image from "next/image";
+import { CHAIN_CONFIG } from "utils/constants";
+import { getTokensList } from "api/token";
+import { getUserTokenData } from "utils/helper";
 
-const ActionModal = () => {
+const ActionModal = ({
+  type,
+  onClose,
+  daoAddress,
+  gnosisAddress,
+  networkId,
+}) => {
+  const [tokenData, setTokenData] = useState([]);
+
+  const fetchTokens = useCallback(async () => {
+    if (daoAddress && gnosisAddress && networkId) {
+      const tokensList = await getTokensList(
+        CHAIN_CONFIG[networkId].covalentNetworkName,
+        gnosisAddress,
+      );
+      const data = await getUserTokenData(
+        tokensList?.data?.items,
+        networkId,
+        true,
+      );
+
+      setTokenData(data?.filter((token) => token.symbol !== null));
+    }
+  }, [daoAddress, networkId, gnosisAddress]);
+
+  useEffect(() => {
+    fetchTokens();
+  }, [fetchTokens]);
+
   return (
-    <Modal className={classes.modal}>
+    <Modal onClose={onClose} className={classes.modal}>
       <div className={classes.nameContainer}>
-        <Typography fontSize={20} fontWeight={500} variant="inherit">
-          Send <span>to another wallet</span>
-        </Typography>
+        {type === "send" ? (
+          <Typography fontSize={20} fontWeight={500} variant="inherit">
+            Send <span>to another wallet</span>
+          </Typography>
+        ) : (
+          <Typography fontSize={20} fontWeight={500} variant="inherit">
+            Distribute <span>to members</span>
+          </Typography>
+        )}
       </div>
 
       <div>
@@ -37,7 +76,6 @@ const ActionModal = () => {
               fontFamily: "inherit",
               backgroundColor: "inherit",
             }}
-            placeholder="Choose asset"
             // value={currentEOAWallet}
             // onChange={currentEOAWalletChangeHandler}
             // renderValue={(selected) =>
@@ -46,9 +84,13 @@ const ActionModal = () => {
             //     : shortAddress(selected.walletAddress)
             // }
             displayEmpty>
-            <MenuItem>Hello</MenuItem>
-            <MenuItem>Hello</MenuItem>
-            <MenuItem>Hello</MenuItem>
+            <MenuItem disabled>Choose asset to send</MenuItem>
+
+            {tokenData.map((token) => (
+              <MenuItem value={token} key={token.symbol}>
+                <Typography variant="inherit">{token.symbol}</Typography>
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
       </div>
@@ -92,39 +134,94 @@ const ActionModal = () => {
         </div>
       </div>
 
-      <div className={classes.recipientContainer}>
-        <Typography fontSize={16} fontWeight={500} variant="inherit">
-          Recipient
-        </Typography>
-        <div className={classes.inputContainer}>
-          <TextField
-            className={classes.input}
-            placeholder="Insert address or ENS"
-            type={"text"}
-            name="stakeAmount"
-            id="stakeAmount"
-            // value={formik.values.stakeAmount}
-            // onChange={formik.handleChange}
-            // error={
-            //   formik.touched.stakeAmount && Boolean(formik.errors.stakeAmount)
-            // }
-            // helperText={formik.touched.stakeAmount && formik.errors.stakeAmount}
-            sx={{
-              "& fieldset": { border: "none" },
-              "& .MuiInputBase-root": {
-                backgroundColor: "transparent",
-                fontSize: "16px",
-                fontFamily: "inherit",
-              },
-              "& ::placeholder": {
-                color: "#707070",
-                opacity: 1,
-                fontSize: "16px",
-              },
-            }}
-          />
+      {type === "send" && (
+        <div className={classes.recipientContainer}>
+          <Typography fontSize={16} fontWeight={500} variant="inherit">
+            Recipient
+          </Typography>
+          <div className={classes.inputContainer}>
+            <TextField
+              className={classes.input}
+              placeholder="Insert address or ENS"
+              type={"text"}
+              name="stakeAmount"
+              id="stakeAmount"
+              // value={formik.values.stakeAmount}
+              // onChange={formik.handleChange}
+              // error={
+              //   formik.touched.stakeAmount && Boolean(formik.errors.stakeAmount)
+              // }
+              // helperText={formik.touched.stakeAmount && formik.errors.stakeAmount}
+              sx={{
+                "& fieldset": { border: "none" },
+                "& .MuiInputBase-root": {
+                  backgroundColor: "transparent",
+                  fontSize: "16px",
+                  fontFamily: "inherit",
+                },
+                "& ::placeholder": {
+                  color: "#707070",
+                  opacity: 1,
+                  fontSize: "16px",
+                },
+              }}
+            />
+          </div>
         </div>
-      </div>
+      )}
+
+      {type === "distribute" && (
+        <>
+          <div className={classes.flexContainer}>
+            <input type="checkbox" />
+            <Typography variant="inherit">
+              Deduct fee(s) before distributing
+            </Typography>
+          </div>
+
+          <div className={classes.recipientContainer}>
+            <Typography fontSize={16} fontWeight={500} variant="inherit">
+              Fees amount
+            </Typography>
+            <div className={classes.inputContainer}>
+              <TextField
+                className={classes.input}
+                placeholder="0.01"
+                type={"number"}
+                name="stakeAmount"
+                id="stakeAmount"
+                onWheel={(e) => e.target.blur()}
+                // value={formik.values.stakeAmount}
+                // onChange={formik.handleChange}
+                // error={
+                //   formik.touched.stakeAmount && Boolean(formik.errors.stakeAmount)
+                // }
+                // helperText={formik.touched.stakeAmount && formik.errors.stakeAmount}
+                sx={{
+                  "& fieldset": { border: "none" },
+                  "& .MuiInputBase-root": {
+                    backgroundColor: "transparent",
+                    fontSize: "16px",
+                    fontFamily: "inherit",
+                  },
+                  "& ::placeholder": {
+                    color: "#707070",
+                    opacity: 1,
+                    fontSize: "16px",
+                  },
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end" sx={{ color: "#dcdcdc" }}>
+                      <Typography variant="inherit">USDC</Typography>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </div>
+          </div>
+        </>
+      )}
 
       <div>
         <Typography fontSize={16} fontWeight={500} variant="inherit">
@@ -152,7 +249,9 @@ const ActionModal = () => {
       </div>
 
       <div className={classes.buttonContainer}>
-        <button className={classes.cancel}>Cancel</button>
+        <button onClick={onClose} className={classes.cancel}>
+          Cancel
+        </button>
         <button className={classes.stake}>Done</button>
       </div>
     </Modal>
