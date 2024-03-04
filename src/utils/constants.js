@@ -54,7 +54,7 @@ export const CHAIN_CONFIG = {
       symbol: "MATIC",
     },
     rpcUrls: ["https://polygon-rpc.com/"],
-    appRpcUrl: `https://polygon-mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
+    appRpcUrl: `https://frosty-fittest-sponge.matic.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_API_KEY}`,
     claimFactoryAddress: "0x47e6bFA71e490ADC8f0E33385aAdF85282E71002",
     factoryContractAddress: "0x726D3e4fBD321c4cD88769C16f5BAFfaC98D95Ad",
     stationSubgraphUrl:
