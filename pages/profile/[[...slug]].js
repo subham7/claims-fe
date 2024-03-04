@@ -9,20 +9,39 @@ import { useAccount } from "wagmi";
 import { getClubListForWallet, getUserData } from "api/club";
 import EditProfileDetails from "@components/settingsComps/modals/EditProfileDetails";
 import { CircularProgress, MenuItem, Select } from "@mui/material";
+import { CHAIN_CONFIG } from "utils/constants";
+import { RiLinkM } from "react-icons/ri";
 
 const StationCard = ({ club }) => {
-  const { name, totalAmountRaised, membersCount, depositDeadline, imageUrl } =
-    club;
+  const {
+    name,
+    totalAmountRaised,
+    membersCount,
+    depositDeadline,
+    imageUrl,
+    isNative,
+    isActive,
+    networkId,
+    daoAddress,
+  } = club;
   return (
     <div className={classes.stationCard}>
-      <div
-        style={{
-          backgroundImage: imageUrl
-            ? imageUrl
-            : `url(/assets/images/astronaut3.png)`,
-        }}
-        className={classes.stnImg}
-      />
+      <div className="flex justify-between items-center">
+        <div
+          style={{
+            backgroundImage: imageUrl
+              ? imageUrl
+              : `url(/assets/images/astronaut3.png)`,
+          }}
+          className={classes.stnImg}
+        />
+        <div
+          className={`${
+            isActive ? "bg-green-600" : "bg-red-600"
+          } rounded-lg text-xs text-white px-2 py-1`}>
+          {isActive ? "Active" : "Inactive"}
+        </div>
+      </div>
       <div>
         <div className={classes.stnInfo}>
           <Typography variant="body">{name}</Typography>
@@ -38,7 +57,20 @@ const StationCard = ({ club }) => {
             <div>Members</div>
             <div>{membersCount}</div>
           </div>
-          <button>Join</button>
+          <div className="flex items-center gap-2">
+            <div>Deposit token</div>
+            <div>
+              {isNative
+                ? "USDC"
+                : CHAIN_CONFIG[networkId]?.nativeCurrency?.symbol}
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              window.open(`/join/${daoAddress}/${networkId}`, "_blank");
+            }}>
+            Join
+          </button>
         </div>
       </div>
     </div>
@@ -60,7 +92,9 @@ const ProfilePage = () => {
     try {
       setLoading(true);
       const response = await getClubListForWallet(wallet ?? address, chain);
+
       if (response?.data?.clubs) {
+        console.log(response.data.clubs);
         setClubsData(response.data.clubs);
       }
     } catch (err) {
@@ -73,7 +107,6 @@ const ProfilePage = () => {
   const getUserProfileData = async () => {
     try {
       const response = await getUserData(wallet ?? address);
-      console.log(response.data);
       if (response?.data) {
         setUserData(response.data);
       }
@@ -109,12 +142,13 @@ const ProfilePage = () => {
           <div>
             <Typography variant="subheading">{userData?.userName}</Typography>
             <Typography variant="body">{userData?.bio}</Typography>
-            <Typography variant="body">
+            <Typography className={"flex items-center gap-2"} variant="body">
+              <RiLinkM className="text-gray-500" />
               <div
                 onClick={() =>
                   window.open(userData?.socialLinks?.website, "_blank")
                 }
-                className="text-blue-500 h-8 w-96 cursor-pointer truncate hover:underline">
+                className="text-blue-500 h-6 w-72 cursor-pointer truncate hover:underline">
                 {userData?.socialLinks?.website}
               </div>
             </Typography>
@@ -128,22 +162,20 @@ const ProfilePage = () => {
               size={20}
             />
           </div>
-          <SocialButtons data={userData} />
+          <SocialButtons
+            data={userData}
+            shareLink={address ? `/profile/${address}` : ""}
+          />
         </div>
       </div>
 
-      <div className={classes.selectMenu}>
-        <Select
-          value={chain}
-          label="network"
-          onChange={(e) => setSelectedChain(e.target.value)}>
-          <MenuItem value={"0x89"}>Polygon</MenuItem>
-          <MenuItem value={"0x2105"}>Base</MenuItem>
-          <MenuItem value={"0x82750"}>Scroll</MenuItem>
-          <MenuItem value={"0x1"}>Ethereum</MenuItem>
-          <MenuItem value={"0x5"}>Goerli</MenuItem>
-        </Select>
-      </div>
+      <Select value={chain} onChange={(e) => setSelectedChain(e.target.value)}>
+        <MenuItem value={"0x89"}>Polygon</MenuItem>
+        <MenuItem value={"0x2105"}>Base</MenuItem>
+        <MenuItem value={"0x82750"}>Scroll</MenuItem>
+        <MenuItem value={"0x1"}>Ethereum</MenuItem>
+        <MenuItem value={"0x5"}>Goerli</MenuItem>
+      </Select>
       {loading ? (
         <div className={classes.loaderContainer}>
           <CircularProgress />
