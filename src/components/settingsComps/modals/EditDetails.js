@@ -96,12 +96,18 @@ const EditDetails = ({
 
   const [loaderOpen, setLoaderOpen] = useState(false);
   const uploadInputRef = useRef(null);
+  const uploadInputRefLogo = useRef(null);
 
   const [selectedFile, setSelectedFile] = useState("");
+  const [selectedLogoFile, setSelectedLogoFile] = useState("");
   const [bannerData, setBannerData] = useState();
 
-  const selectFile = (event) => {
-    setSelectedFile(event.target.files[0]);
+  const selectFile = (event, type) => {
+    if (type === "logo") {
+      setSelectedLogoFile(event.target.files[0]);
+    } else {
+      setSelectedFile(event.target.files[0]);
+    }
   };
 
   const fetchBannerDetails = async () => {
@@ -123,10 +129,16 @@ const EditDetails = ({
   };
 
   const readFileAsync = async () => {
+    const uploadedFiles = [];
     if (selectedFile) {
-      return await uploadFileToAWS(selectedFile);
+      const response = await uploadFileToAWS(selectedFile);
+      uploadedFiles.push(response);
     }
-    return null;
+    if (selectedLogoFile) {
+      const response = await uploadFileToAWS(selectedLogoFile);
+      uploadedFiles.push(response);
+    }
+    return uploadedFiles;
   };
 
   const sendRequest = async (values, fileLink = "") => {
@@ -153,7 +165,10 @@ const EditDetails = ({
         twitter: values.twitter,
         discord: values.discord,
         telegram: values.telegram,
-        bannerImage: fileLink ? fileLink : bannerData?.bannerImage,
+        bannerImage:
+          fileLink.length > 0 ? fileLink[0] : bannerData?.bannerImage ?? "",
+        logoImage:
+          fileLink.length > 1 ? fileLink[1] : bannerData?.bannerImage ?? "",
       });
     }
   };
@@ -196,9 +211,9 @@ const EditDetails = ({
     onSubmit: async (values) => {
       setLoaderOpen(true);
       try {
-        let fileLink = "";
-        fileLink = await readFileAsync();
-        const res = await sendRequest(values, fileLink);
+        let fileLinks = [];
+        fileLinks = await readFileAsync();
+        const res = await sendRequest(values, fileLinks);
         updateUIAfterSuccess();
       } catch (error) {
         updateUIAfterFailure();
@@ -267,6 +282,53 @@ const EditDetails = ({
           padding: "3rem",
         }}>
         <form className={classes.form}>
+          <Grid item md={6} mb={2}>
+            <Typography variant="inherit" className={classes.wrapTextIcon}>
+              Upload Logo{" "}
+            </Typography>
+            <span className={classes.smallText}>
+              (recommended dimension - 1:1)
+            </span>
+            <p className={classes.error}>
+              {selectedLogoFile?.size > FIVE_MB
+                ? "Image exceeds max size, please add image below 5 mb"
+                : null}
+            </p>
+
+            {bannerData?.imageLinks?.logo || selectedLogoFile ? (
+              <div className={classes.bannerContainer}>
+                <Image
+                  src={
+                    selectedLogoFile
+                      ? URL.createObjectURL(selectedLogoFile)
+                      : bannerData?.imageLinks?.logo
+                  }
+                  alt="Logo Image"
+                  width={160}
+                  height={160}
+                />
+              </div>
+            ) : null}
+            <Button
+              mb={2}
+              variant="normal"
+              onClick={(e) => {
+                uploadInputRefLogo.current.click();
+              }}>
+              <UploadIcon fontSize="8px" />
+              Upload
+            </Button>
+            <input
+              name="logo"
+              accept="image/*"
+              type="file"
+              id="select-logo-image"
+              style={{ display: "none" }}
+              ref={uploadInputRefLogo}
+              onChange={(e) => selectFile(e, "logo")}
+            />
+          </Grid>
+
           <Grid item md={6} mb={2}>
             <Typography variant="inherit" className={classes.wrapTextIcon}>
               Upload Banner{" "}
