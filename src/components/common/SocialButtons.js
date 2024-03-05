@@ -3,6 +3,7 @@ import { BiLogoTelegram } from "react-icons/bi";
 import { BsTwitter } from "react-icons/bs";
 import { IoLogoDiscord } from "react-icons/io5";
 import classes from "../claims/Claim.module.scss";
+import { withHttps } from "utils/helper";
 
 const SocialButtons = ({ data }) => {
   const twitterLink = data?.socialLinks?.twitter ?? data?.twitter;
@@ -15,7 +16,7 @@ const SocialButtons = ({ data }) => {
         {twitterLink && (
           <BsTwitter
             onClick={() => {
-              window.open(twitterLink, "_blank");
+              window.open(withHttps(twitterLink), "_blank");
             }}
           />
         )}
@@ -23,7 +24,7 @@ const SocialButtons = ({ data }) => {
         {discordLink && (
           <IoLogoDiscord
             onClick={() => {
-              window.open(discordLink, "_blank");
+              window.open(withHttps(discordLink), "_blank");
             }}
           />
         )}
@@ -31,7 +32,7 @@ const SocialButtons = ({ data }) => {
         {telegramLink && (
           <BiLogoTelegram
             onClick={() => {
-              window.open(telegramLink, "_blank");
+              window.open(withHttps(telegramLink), "_blank");
             }}
           />
         )}

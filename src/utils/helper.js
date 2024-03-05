@@ -496,3 +496,6 @@ export function customToFixedAutoPrecision(num) {
     return "0.00";
   }
 }
+
+export const withHttps = (url) =>
+  !!url && !/^https?:\/\//i.test(url) ? `https://${url}` : url;
