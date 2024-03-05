@@ -240,7 +240,7 @@ const ERC721 = ({
 
       await buyGovernanceTokenERC721DAO(
         walletAddress,
-        clubData?.imageUrl,
+        clubData?.imgUrl,
         count,
         whitelistUserData?.proof ? whitelistUserData.proof : [],
         clubData.depositTokenAddress.toLowerCase() ===

@@ -159,7 +159,7 @@ const ListClaims = () => {
               claimContract={item?.claimAddress}
               createdBy={item?.creatorAddress}
               isActive={item?.isActive}
-              claimsNetwork={item?.networkId}
+              claimsNetwork={networkId}
             />
           ))}
         </div>
