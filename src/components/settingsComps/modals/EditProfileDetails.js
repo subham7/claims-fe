@@ -194,7 +194,7 @@ const EditProfileDetails = ({
         <form className={classes.form}>
           <Grid item md={6} mb={2}>
             <Typography variant="inherit" className={classes.wrapTextIcon}>
-              Upload Banner{" "}
+              Upload profile image
             </Typography>
             <span className={classes.smallText}>
               (recommended dimension - 1:1)
