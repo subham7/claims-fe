@@ -195,13 +195,15 @@ const ProfilePage = () => {
           </div>
         </div>
         <div>
-          <div>
-            <EditIcon
-              onClick={() => setOpenEditModal(true)}
-              className={classes.editIcon}
-              size={20}
-            />
-          </div>
+          {wallet === address ? (
+            <div>
+              <EditIcon
+                onClick={() => setOpenEditModal(true)}
+                className={classes.editIcon}
+                size={20}
+              />
+            </div>
+          ) : null}
           <SocialButtons
             data={userData}
             shareLink={address ? `/profile/${address}` : ""}
