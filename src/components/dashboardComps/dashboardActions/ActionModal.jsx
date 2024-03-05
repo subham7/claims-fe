@@ -13,11 +13,20 @@ import {
 // import Image from "next/image";
 import { CHAIN_CONFIG } from "utils/constants";
 import { getTokensList } from "api/token";
-import { getUserTokenData } from "utils/helper";
+import { getUserTokenData, handleSignMessage } from "utils/helper";
 import { useFormik } from "formik";
 // import { getProposalCommands } from "utils/proposalData";
 import { useSelector } from "react-redux";
-import { convertToWeiGovernance } from "utils/globalFunctions";
+import {
+  convertFromWeiGovernance,
+  convertToWeiGovernance,
+} from "utils/globalFunctions";
+import dayjs from "dayjs";
+import { getPublicClient } from "utils/viemConfig";
+import { createProposal } from "api/proposal";
+import { useAccount } from "wagmi";
+import BackdropLoader from "@components/common/BackdropLoader";
+import { actionModalValidation } from "@components/createClubComps/ValidationSchemas";
 
 const ActionModal = ({
   type,
@@ -25,69 +34,127 @@ const ActionModal = ({
   daoAddress,
   gnosisAddress,
   networkId,
+  onActionComplete,
 }) => {
   const [tokenData, setTokenData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [validationSchema, setValidationSchema] = useState();
+  const [showFeesAmount, setShowFeesAmount] = useState(false);
 
-  const clubData = useSelector((state) => {
-    return state.club.clubData;
+  const { address: walletAddress } = useAccount();
+
+  const tokenType = useSelector((state) => {
+    return state.club.clubData.tokenType;
   });
+
+  const isGovernanceERC20 = useSelector((state) => {
+    return state.club.erc20ClubDetails.isGovernanceActive;
+  });
+
+  const isGovernanceERC721 = useSelector((state) => {
+    return state.club.erc721ClubDetails.isGovernanceActive;
+  });
+
+  const isGovernanceActive =
+    tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
+
+  const fetchLatestBlockNumber = async () => {
+    const publicClient = getPublicClient(networkId);
+    const block = Number(await publicClient.getBlockNumber());
+
+    return block;
+  };
+
+  function createValidationSchema(values) {
+    return actionModalValidation({
+      actionType: type,
+      selectedToken: values.airdropToken,
+    });
+  }
 
   const formik = useFormik({
     initialValues: {
-      airdropToken: "",
+      airdropToken: {
+        symbol: "Choose asset to send",
+      },
       recipient: "",
       airDropAmount: 0,
       feesAmount: 0,
       note: "",
     },
-
+    validationSchema: validationSchema,
     onSubmit: async (values) => {
       try {
+        setLoading(true);
+
+        let commands = {
+          usdcTokenSymbol: "USDC",
+          usdcTokenDecimal: 6,
+          usdcGovernanceTokenDecimal: 18,
+        };
         if (type === "send") {
-          let commands = {
-            airdropToken: values.airdropToken.address,
-            airdropAmount: convertToWeiGovernance(
+          commands = {
+            customToken: values.airdropToken.address,
+            customTokenAmounts: [
+              convertToWeiGovernance(
+                values.airDropAmount,
+                values.airdropToken.decimals,
+              ).toString(),
+            ],
+            customTokenAddresses: [values.recipient],
+            executionId: 4,
+            ...commands,
+          };
+        } else if (type === "distribute") {
+          commands = {
+            airDropToken: values.airdropToken.address,
+            airDropAmount: convertToWeiGovernance(
               values.airDropAmount,
               values.airdropToken.decimals,
-            ),
-            usdcTokenSymbol: "USDC",
-            usdcTokenDecimal: 6,
-            usdcGovernanceTokenDecimal: 18,
+            ).toString(),
+            airDropCarryFee: values.feesAmount,
             executionId: 0,
+            ...commands,
           };
-
-          // const payload = {
-          //   clubId: daoAddress,
-          //   name: `${name} - ${type}`,
-          //   createdBy: walletAddress,
-          //   votingDuration: dayjs().add(100, "year").unix(),
-          //   votingOptions: [
-          //     { text: "Yes" },
-          //     { text: "No" },
-          //     { text: "Abstain" },
-          //   ],
-          //   commands: [commands],
-          //   type: "action",
-          //   tokenType,
-          //   daoAddress: daoAddress,
-          //   block: blockNum,
-          //   networkId: networkId,
-          // };
-
-          const { signature } = await handleSignMessage(
-            walletAddress,
-            JSON.stringify(payload),
-          );
-
-          const request = await createProposal(isGovernanceActive, {
-            ...payload,
-            description: values.note,
-            signature,
-          });
-        } else if (type === "distribute") {
         }
+
+        const blockNum = await fetchLatestBlockNumber();
+
+        const payload = {
+          clubId: daoAddress,
+          name: `${type} ${values.airDropAmount} $${values.airdropToken?.symbol}`,
+          createdBy: walletAddress,
+          votingDuration: dayjs().add(100, "year").unix(),
+          votingOptions: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
+          commands: [commands],
+          type: "action",
+          tokenType,
+          daoAddress: daoAddress,
+          block: blockNum,
+          networkId: networkId,
+        };
+
+        const { signature } = await handleSignMessage(
+          walletAddress,
+          JSON.stringify(payload),
+        );
+
+        const request = await createProposal(isGovernanceActive, {
+          ...payload,
+          description: values.note
+            ? values.note
+            : `${type} ${values.airDropAmount} ${
+                values.airdropToken?.symbol
+              } to ${type === "distribute" ? "members" : values.recipient}`,
+          signature,
+        });
+
+        onClose();
+        setLoading(false);
+        onActionComplete("success", request.data?.proposalId);
       } catch (error) {
-        console.log("xxx", error);
+        setLoading(false);
+        onActionComplete("failure");
       }
     },
   });
@@ -104,18 +171,37 @@ const ActionModal = ({
         true,
       );
 
-      setTokenData(data?.filter((token) => token.symbol !== null));
+      setTokenData(
+        data?.filter(
+          (token) => token.symbol !== null && Number(token.balance) > 0,
+        ),
+      );
     }
   }, [daoAddress, networkId, gnosisAddress]);
+
+  const maxHandler = () => {
+    formik.setFieldValue(
+      "airDropAmount",
+      Number(
+        convertFromWeiGovernance(
+          formik.values.airdropToken.balance,
+          formik.values.airdropToken.decimals,
+        ),
+      ),
+    );
+  };
 
   useEffect(() => {
     fetchTokens();
   }, [fetchTokens]);
 
-  console.log("xxx", tokenData);
+  useEffect(() => {
+    const schema = createValidationSchema(formik.values);
+    setValidationSchema(schema);
+  }, [formik.values]);
 
   return (
-    <Modal onClose={onClose} className={classes.modal}>
+    <Modal className={classes.modal}>
       <div className={classes.nameContainer}>
         {type === "send" ? (
           <Typography fontSize={20} fontWeight={500} variant="inherit">
@@ -156,12 +242,45 @@ const ActionModal = ({
             helperText={
               formik.touched.airdropToken && formik.errors.airdropToken
             }
-            renderValue={(selected) => selected.symbol}
+            renderValue={(selected) => (
+              <>
+                {selected.balance > 0 ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      width: "100%",
+                      fontFamily: "Avenir",
+                    }}>
+                    <Typography variant="inherit">{selected.symbol}</Typography>
+                    <Typography variant="inherit">
+                      Bal :{" "}
+                      {Number(
+                        convertFromWeiGovernance(
+                          selected.balance,
+                          selected.decimals,
+                        ),
+                      ).toFixed(3)}
+                    </Typography>
+                  </div>
+                ) : (
+                  <Typography variant="inherit">{selected.symbol}</Typography>
+                )}
+              </>
+            )}
             displayEmpty>
-            <MenuItem disabled>Choose asset to send</MenuItem>
+            {/* <MenuItem disabled>Choose asset to send</MenuItem> */}
             {tokenData.map((token) => (
               <MenuItem value={token} key={token.symbol}>
-                <Typography variant="inherit">{token.symbol}</Typography>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    width: "100%",
+                    fontFamily: "Avenir",
+                  }}>
+                  <Typography variant="inherit">{token.symbol}</Typography>
+                </div>
               </MenuItem>
             ))}
           </Select>
@@ -200,7 +319,7 @@ const ActionModal = ({
             }}
           />
           <Typography
-            // onClick={maxHandler}
+            onClick={maxHandler}
             className={classes.max}
             fontSize={16}
             fontWeight={500}
@@ -249,55 +368,65 @@ const ActionModal = ({
       {type === "distribute" && (
         <>
           <div className={classes.flexContainer}>
-            <input type="checkbox" />
+            <input
+              checked={showFeesAmount}
+              // value={showFeesAmount}
+              onChange={(e) => {
+                setShowFeesAmount(e.target.checked);
+              }}
+              type="checkbox"
+            />
             <Typography variant="inherit">
               Deduct fee(s) before distributing
             </Typography>
           </div>
 
-          <div className={classes.recipientContainer}>
-            <Typography fontSize={16} fontWeight={500} variant="inherit">
-              Fees amount
-            </Typography>
-            <div className={classes.inputContainer}>
-              <TextField
-                className={classes.input}
-                placeholder="0.01"
-                type={"number"}
-                name="feesAmount"
-                id="feesAmount"
-                onWheel={(e) => e.target.blur()}
-                value={formik.values.feesAmount}
-                onChange={formik.handleChange}
-                error={
-                  formik.touched.feesAmount && Boolean(formik.errors.feesAmount)
-                }
-                helperText={
-                  formik.touched.feesAmount && formik.errors.feesAmount
-                }
-                sx={{
-                  "& fieldset": { border: "none" },
-                  "& .MuiInputBase-root": {
-                    backgroundColor: "transparent",
-                    fontSize: "16px",
-                    fontFamily: "inherit",
-                  },
-                  "& ::placeholder": {
-                    color: "#707070",
-                    opacity: 1,
-                    fontSize: "16px",
-                  },
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end" sx={{ color: "#dcdcdc" }}>
-                      <Typography variant="inherit">USDC</Typography>
-                    </InputAdornment>
-                  ),
-                }}
-              />
+          {showFeesAmount && (
+            <div className={classes.recipientContainer}>
+              <Typography fontSize={16} fontWeight={500} variant="inherit">
+                Fee(s) percentage
+              </Typography>
+              <div className={classes.inputContainer}>
+                <TextField
+                  className={classes.input}
+                  placeholder="0.01"
+                  type={"number"}
+                  name="feesAmount"
+                  id="feesAmount"
+                  onWheel={(e) => e.target.blur()}
+                  value={formik.values.feesAmount}
+                  onChange={formik.handleChange}
+                  error={
+                    formik.touched.feesAmount &&
+                    Boolean(formik.errors.feesAmount)
+                  }
+                  helperText={
+                    formik.touched.feesAmount && formik.errors.feesAmount
+                  }
+                  sx={{
+                    "& fieldset": { border: "none" },
+                    "& .MuiInputBase-root": {
+                      backgroundColor: "transparent",
+                      fontSize: "16px",
+                      fontFamily: "inherit",
+                    },
+                    "& ::placeholder": {
+                      color: "#707070",
+                      opacity: 1,
+                      fontSize: "16px",
+                    },
+                  }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end" sx={{ color: "#dcdcdc" }}>
+                        <Typography variant="inherit">%</Typography>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </div>
             </div>
-          </div>
+          )}
         </>
       )}
 
@@ -334,6 +463,8 @@ const ActionModal = ({
           Done
         </button>
       </div>
+
+      <BackdropLoader isOpen={loading} />
     </Modal>
   );
 };

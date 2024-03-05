@@ -76,6 +76,10 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
     return state.club.clubData.symbol;
   });
 
+  const isAdmin = useSelector((state) => {
+    return state.gnosis.adminUser;
+  });
+
   const fetchClubDetails = async () => {
     try {
       if (daoAddress && networkId) {
@@ -284,11 +288,13 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
           ))}
         </div>
 
-        <DashboardActionContainer
-          daoAddress={daoAddress}
-          gnosisAddress={gnosisAddress}
-          networkId={networkId}
-        />
+        {isAdmin && (
+          <DashboardActionContainer
+            daoAddress={daoAddress}
+            gnosisAddress={gnosisAddress}
+            networkId={networkId}
+          />
+        )}
 
         <div className={classes.assetsContainer}>
           <WalletsTabs

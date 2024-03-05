@@ -788,3 +788,23 @@ export const stakingValidation = ({ amount, isRocketPool, isMantlePool }) => {
       .max(amount, "You don't have enough ETH."),
   });
 };
+
+export const actionModalValidation = ({ actionType, selectedToken }) => {
+  const balance = Number(
+    convertFromWeiGovernance(selectedToken.balance, selectedToken.decimals),
+  );
+
+  return yup.object({
+    recipient:
+      actionType === "send"
+        ? yup
+            .string("Enter recipient address")
+            .required("Recipient address is required")
+        : yup.string().notRequired(),
+    airDropAmount: yup
+      .number()
+      .required("Amount is required")
+      .max(balance, "Amount should be less than or equal to balance")
+      .moreThan(0, "Amount should be greater than 0"),
+  });
+};
