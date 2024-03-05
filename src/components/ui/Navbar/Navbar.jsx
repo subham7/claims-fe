@@ -10,8 +10,11 @@ import {
 } from "utils/constants";
 import { useAccount, useNetwork } from "wagmi";
 import { Typography } from "@mui/material";
+import EditDetails from "@components/settingsComps/modals/EditDetails";
+import { useSelector } from "react-redux";
 
-const Navbar = () => {
+const Navbar = ({ daoAddress, routeNetworkId }) => {
+  const [showEditDetails, setShowEditDetails] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [networksSupported, setNetworkSupported] = useState();
 
@@ -19,6 +22,10 @@ const Navbar = () => {
   const { address } = useAccount();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
+
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
+  });
 
   const showNetworkModalHandler = () => {
     setShowModal(!showModal);
@@ -29,6 +36,8 @@ const Navbar = () => {
       setNetworkSupported(stationNetworksChainId);
     }
   };
+
+  console.log(clubData);
 
   return (
     <>
@@ -43,6 +52,10 @@ const Navbar = () => {
           }}
         />
         <div className={classes["wallet-div"]}>
+          {router.pathname.includes("join") &&
+          clubData?.ownerAddress.toLowerCase() === address.toLowerCase() ? (
+            <button onClick={() => setShowEditDetails(true)}>Edit Page</button>
+          ) : null}
           {address && (
             <div onClick={showNetworkModalHandler} className={classes.switch}>
               <Image
@@ -69,6 +82,15 @@ const Navbar = () => {
           supportedNetworks={networksSupported}
         />
       )}
+
+      <EditDetails
+        networkId={routeNetworkId}
+        isClaims={false}
+        open={showEditDetails}
+        setOpen={setShowEditDetails}
+        onClose={() => setShowEditDetails(false)}
+        daoAddress={daoAddress}
+      />
     </>
   );
 };

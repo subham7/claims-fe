@@ -83,7 +83,6 @@ const useStyles = makeStyles((theme) => ({
 
 const EditDetails = ({
   open,
-  setOpen,
   onClose,
   claimAddress = "",
   networkId,
