@@ -128,25 +128,27 @@ const EditDetails = ({
   };
 
   const readFileAsync = async () => {
-    const uploadedFiles = [];
+    const uploadedFiles = {};
     if (selectedFile) {
       const response = await uploadFileToAWS(selectedFile);
-      uploadedFiles.push(response);
+      uploadedFiles.banner = response;
     }
     if (selectedLogoFile) {
       const response = await uploadFileToAWS(selectedLogoFile);
-      uploadedFiles.push(response);
+      uploadedFiles.logo = response;
     }
     return uploadedFiles;
   };
 
-  const sendRequest = async (values, fileLink = "") => {
+  const sendRequest = async (values, fileLink = {}) => {
     if (isClaims) {
       return await createClaimDetails({
         claimAddress,
         description: values.description,
         imageLinks: {
-          banner: fileLink ? fileLink : bannerData?.imageLinks?.banner ?? "",
+          banner: fileLink?.banner
+            ? fileLink?.banner
+            : bannerData?.imageLinks?.banner ?? "",
         },
         networkId,
         socialLinks: {
@@ -154,6 +156,7 @@ const EditDetails = ({
           discord: values.discord,
           telegram: values.telegram,
           website: values.website,
+          warpcast: values.warpcast,
         },
         tweetText: values.tweetText,
       });
@@ -164,10 +167,13 @@ const EditDetails = ({
         twitter: values.twitter,
         discord: values.discord,
         telegram: values.telegram,
-        bannerImage:
-          fileLink.length > 0 ? fileLink[0] : bannerData?.bannerImage ?? "",
-        logoImage:
-          fileLink.length > 1 ? fileLink[1] : bannerData?.bannerImage ?? "",
+        warpcast: values.warpcast,
+        bannerImage: fileLink?.banner
+          ? fileLink?.banner
+          : bannerData?.bannerImage ?? "",
+        logoUrl: fileLink?.logo
+          ? fileLink?.logo
+          : bannerData?.bannerImage ?? "",
       });
     }
   };
@@ -243,6 +249,7 @@ const EditDetails = ({
         discord: bannerData?.socialLinks?.discord ?? "",
         telegram: bannerData?.socialLinks?.telegram ?? "",
         tweetText: bannerData?.tweetText ?? "",
+        warpcast: bannerData?.warpcast ?? "",
       });
     } else {
       formik.setValues({
@@ -250,6 +257,7 @@ const EditDetails = ({
         twitter: bannerData?.twitter ?? "",
         discord: bannerData?.discord ?? "",
         telegram: bannerData?.telegram ?? "",
+        warpcast: bannerData?.warpcast ?? "",
       });
     }
   };
@@ -444,6 +452,23 @@ const EditDetails = ({
               value={formik.values.telegram}
               error={formik.touched.telegram && Boolean(formik.errors.telegram)}
               helperText={formik.touched.telegram && formik.errors.telegram}
+            />
+          </Grid>
+
+          <Grid item md={6} mb={2}>
+            <Typography variant="inherit" className={classes.wrapTextIcon}>
+              Warpcast
+            </Typography>
+            <TextField
+              name="warpcast"
+              id="warpcast"
+              placeholder="Link"
+              variant="outlined"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.warpcast}
+              error={formik.touched.warpcast && Boolean(formik.errors.warpcast)}
+              helperText={formik.touched.warpcast && formik.errors.warpcast}
             />
           </Grid>
 

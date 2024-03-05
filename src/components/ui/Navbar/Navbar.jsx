@@ -53,8 +53,14 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
         />
         <div className={classes["wallet-div"]}>
           {router.pathname.includes("join") &&
-          clubData?.ownerAddress.toLowerCase() === address.toLowerCase() ? (
-            <button onClick={() => setShowEditDetails(true)}>Edit Page</button>
+          clubData?.ownerAddress?.toLowerCase() === address?.toLowerCase() ? (
+            <div className={classes.switch}>
+              <Typography
+                onClick={() => setShowEditDetails(true)}
+                variant="inherit">
+                Edit Page
+              </Typography>
+            </div>
           ) : null}
           {address && (
             <div onClick={showNetworkModalHandler} className={classes.switch}>
