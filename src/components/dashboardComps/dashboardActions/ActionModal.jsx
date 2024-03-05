@@ -14,6 +14,10 @@ import {
 import { CHAIN_CONFIG } from "utils/constants";
 import { getTokensList } from "api/token";
 import { getUserTokenData } from "utils/helper";
+import { useFormik } from "formik";
+// import { getProposalCommands } from "utils/proposalData";
+import { useSelector } from "react-redux";
+import { convertToWeiGovernance } from "utils/globalFunctions";
 
 const ActionModal = ({
   type,
@@ -23,6 +27,70 @@ const ActionModal = ({
   networkId,
 }) => {
   const [tokenData, setTokenData] = useState([]);
+
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      airdropToken: "",
+      recipient: "",
+      airDropAmount: 0,
+      feesAmount: 0,
+      note: "",
+    },
+
+    onSubmit: async (values) => {
+      try {
+        if (type === "send") {
+          let commands = {
+            airdropToken: values.airdropToken.address,
+            airdropAmount: convertToWeiGovernance(
+              values.airDropAmount,
+              values.airdropToken.decimals,
+            ),
+            usdcTokenSymbol: "USDC",
+            usdcTokenDecimal: 6,
+            usdcGovernanceTokenDecimal: 18,
+            executionId: 0,
+          };
+
+          // const payload = {
+          //   clubId: daoAddress,
+          //   name: `${name} - ${type}`,
+          //   createdBy: walletAddress,
+          //   votingDuration: dayjs().add(100, "year").unix(),
+          //   votingOptions: [
+          //     { text: "Yes" },
+          //     { text: "No" },
+          //     { text: "Abstain" },
+          //   ],
+          //   commands: [commands],
+          //   type: "action",
+          //   tokenType,
+          //   daoAddress: daoAddress,
+          //   block: blockNum,
+          //   networkId: networkId,
+          // };
+
+          const { signature } = await handleSignMessage(
+            walletAddress,
+            JSON.stringify(payload),
+          );
+
+          const request = await createProposal(isGovernanceActive, {
+            ...payload,
+            description: values.note,
+            signature,
+          });
+        } else if (type === "distribute") {
+        }
+      } catch (error) {
+        console.log("xxx", error);
+      }
+    },
+  });
 
   const fetchTokens = useCallback(async () => {
     if (daoAddress && gnosisAddress && networkId) {
@@ -43,6 +111,8 @@ const ActionModal = ({
   useEffect(() => {
     fetchTokens();
   }, [fetchTokens]);
+
+  console.log("xxx", tokenData);
 
   return (
     <Modal onClose={onClose} className={classes.modal}>
@@ -76,16 +146,19 @@ const ActionModal = ({
               fontFamily: "inherit",
               backgroundColor: "inherit",
             }}
-            // value={currentEOAWallet}
-            // onChange={currentEOAWalletChangeHandler}
-            // renderValue={(selected) =>
-            //   selected.walletName
-            //     ? selected.walletName
-            //     : shortAddress(selected.walletAddress)
-            // }
+            name="airdropToken"
+            id="airdropToken"
+            value={formik.values.airdropToken}
+            onChange={formik.handleChange}
+            error={
+              formik.touched.airdropToken && Boolean(formik.errors.airdropToken)
+            }
+            helperText={
+              formik.touched.airdropToken && formik.errors.airdropToken
+            }
+            renderValue={(selected) => selected.symbol}
             displayEmpty>
             <MenuItem disabled>Choose asset to send</MenuItem>
-
             {tokenData.map((token) => (
               <MenuItem value={token} key={token.symbol}>
                 <Typography variant="inherit">{token.symbol}</Typography>
@@ -101,15 +174,18 @@ const ActionModal = ({
             className={classes.input}
             placeholder="0"
             type={"number"}
-            name="stakeAmount"
-            id="stakeAmount"
+            name="airDropAmount"
+            id="airDropAmount"
             onWheel={(e) => e.target.blur()}
-            // value={formik.values.stakeAmount}
-            // onChange={formik.handleChange}
-            // error={
-            //   formik.touched.stakeAmount && Boolean(formik.errors.stakeAmount)
-            // }
-            // helperText={formik.touched.stakeAmount && formik.errors.stakeAmount}
+            value={formik.values.airDropAmount}
+            onChange={formik.handleChange}
+            error={
+              formik.touched.airDropAmount &&
+              Boolean(formik.errors.airDropAmount)
+            }
+            helperText={
+              formik.touched.airDropAmount && formik.errors.airDropAmount
+            }
             sx={{
               "& fieldset": { border: "none" },
               "& .MuiInputBase-root": {
@@ -144,14 +220,14 @@ const ActionModal = ({
               className={classes.input}
               placeholder="Insert address or ENS"
               type={"text"}
-              name="stakeAmount"
-              id="stakeAmount"
-              // value={formik.values.stakeAmount}
-              // onChange={formik.handleChange}
-              // error={
-              //   formik.touched.stakeAmount && Boolean(formik.errors.stakeAmount)
-              // }
-              // helperText={formik.touched.stakeAmount && formik.errors.stakeAmount}
+              name="recipient"
+              id="recipient"
+              value={formik.values.recipient}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.recipient && Boolean(formik.errors.recipient)
+              }
+              helperText={formik.touched.recipient && formik.errors.recipient}
               sx={{
                 "& fieldset": { border: "none" },
                 "& .MuiInputBase-root": {
@@ -188,15 +264,17 @@ const ActionModal = ({
                 className={classes.input}
                 placeholder="0.01"
                 type={"number"}
-                name="stakeAmount"
-                id="stakeAmount"
+                name="feesAmount"
+                id="feesAmount"
                 onWheel={(e) => e.target.blur()}
-                // value={formik.values.stakeAmount}
-                // onChange={formik.handleChange}
-                // error={
-                //   formik.touched.stakeAmount && Boolean(formik.errors.stakeAmount)
-                // }
-                // helperText={formik.touched.stakeAmount && formik.errors.stakeAmount}
+                value={formik.values.feesAmount}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.feesAmount && Boolean(formik.errors.feesAmount)
+                }
+                helperText={
+                  formik.touched.feesAmount && formik.errors.feesAmount
+                }
                 sx={{
                   "& fieldset": { border: "none" },
                   "& .MuiInputBase-root": {
@@ -230,10 +308,10 @@ const ActionModal = ({
         <TextField
           name="note"
           id="note"
-          //   value={formik.values.note}
-          //   onChange={formik.handleChange}
-          //   error={formik.touched.note && Boolean(formik.errors.note)}
-          //   helperText={formik.touched.note && formik.errors.note}
+          value={formik.values.note}
+          onChange={formik.handleChange}
+          error={formik.touched.note && Boolean(formik.errors.note)}
+          helperText={formik.touched.note && formik.errors.note}
           sx={{
             "& fieldset": { border: "none" },
             "& .MuiInputBase-root": {
@@ -252,7 +330,9 @@ const ActionModal = ({
         <button onClick={onClose} className={classes.cancel}>
           Cancel
         </button>
-        <button className={classes.stake}>Done</button>
+        <button onClick={formik.handleSubmit} className={classes.stake}>
+          Done
+        </button>
       </div>
     </Modal>
   );
