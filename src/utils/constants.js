@@ -138,7 +138,7 @@ export const CHAIN_CONFIG = {
       symbol: "ETH",
     },
     rpcUrls: ["https://eth-rpc.gateway.pokt.network"],
-    appRpcUrl: `https://mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}/`,
+    appRpcUrl: `https://mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
     factoryContractAddress: "0x3b0496DdFdC063E880630252Cabff2eEa6e8AA9e",
     stationSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-eth/prod/gn",
@@ -474,7 +474,7 @@ export const CHAIN_CONFIG = {
     factoryContractAddress: "",
     claimFactoryAddress: "0xA3A575cb516C3C888a9926fce7FA1de96aba868c",
     claimsSubgraphUrl:
-      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-blast-mainnet/0.0.2/gn",
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-blast-mainnet/prod/gn",
     nativeToken: "",
     usdcAddress: "",
     airdropContractAddress: "",
