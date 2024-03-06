@@ -83,7 +83,6 @@ const useStyles = makeStyles((theme) => ({
 
 const EditDetails = ({
   open,
-  setOpen,
   onClose,
   claimAddress = "",
   networkId,
@@ -96,12 +95,18 @@ const EditDetails = ({
 
   const [loaderOpen, setLoaderOpen] = useState(false);
   const uploadInputRef = useRef(null);
+  const uploadInputRefLogo = useRef(null);
 
   const [selectedFile, setSelectedFile] = useState("");
+  const [selectedLogoFile, setSelectedLogoFile] = useState("");
   const [bannerData, setBannerData] = useState();
 
-  const selectFile = (event) => {
-    setSelectedFile(event.target.files[0]);
+  const selectFile = (event, type) => {
+    if (type === "logo") {
+      setSelectedLogoFile(event.target.files[0]);
+    } else {
+      setSelectedFile(event.target.files[0]);
+    }
   };
 
   const fetchBannerDetails = async () => {
@@ -123,19 +128,27 @@ const EditDetails = ({
   };
 
   const readFileAsync = async () => {
+    const uploadedFiles = {};
     if (selectedFile) {
-      return await uploadFileToAWS(selectedFile);
+      const response = await uploadFileToAWS(selectedFile);
+      uploadedFiles.banner = response;
     }
-    return null;
+    if (selectedLogoFile) {
+      const response = await uploadFileToAWS(selectedLogoFile);
+      uploadedFiles.logo = response;
+    }
+    return uploadedFiles;
   };
 
-  const sendRequest = async (values, fileLink = "") => {
+  const sendRequest = async (values, fileLink = {}) => {
     if (isClaims) {
       return await createClaimDetails({
         claimAddress,
         description: values.description,
         imageLinks: {
-          banner: fileLink ? fileLink : bannerData?.imageLinks?.banner ?? "",
+          banner: fileLink?.banner
+            ? fileLink?.banner
+            : bannerData?.imageLinks?.banner ?? "",
         },
         networkId,
         socialLinks: {
@@ -143,6 +156,7 @@ const EditDetails = ({
           discord: values.discord,
           telegram: values.telegram,
           website: values.website,
+          warpcast: values.warpcast,
         },
         tweetText: values.tweetText,
       });
@@ -153,7 +167,13 @@ const EditDetails = ({
         twitter: values.twitter,
         discord: values.discord,
         telegram: values.telegram,
-        bannerImage: fileLink ? fileLink : bannerData?.bannerImage,
+        warpcast: values.warpcast,
+        bannerImage: fileLink?.banner
+          ? fileLink?.banner
+          : bannerData?.bannerImage ?? "",
+        logoUrl: fileLink?.logo
+          ? fileLink?.logo
+          : bannerData?.bannerImage ?? "",
       });
     }
   };
@@ -196,9 +216,9 @@ const EditDetails = ({
     onSubmit: async (values) => {
       setLoaderOpen(true);
       try {
-        let fileLink = "";
-        fileLink = await readFileAsync();
-        const res = await sendRequest(values, fileLink);
+        let fileLinks = [];
+        fileLinks = await readFileAsync();
+        const res = await sendRequest(values, fileLinks);
         updateUIAfterSuccess();
       } catch (error) {
         updateUIAfterFailure();
@@ -229,6 +249,7 @@ const EditDetails = ({
         discord: bannerData?.socialLinks?.discord ?? "",
         telegram: bannerData?.socialLinks?.telegram ?? "",
         tweetText: bannerData?.tweetText ?? "",
+        warpcast: bannerData?.warpcast ?? "",
       });
     } else {
       formik.setValues({
@@ -236,6 +257,7 @@ const EditDetails = ({
         twitter: bannerData?.twitter ?? "",
         discord: bannerData?.discord ?? "",
         telegram: bannerData?.telegram ?? "",
+        warpcast: bannerData?.warpcast ?? "",
       });
     }
   };
@@ -267,6 +289,53 @@ const EditDetails = ({
           padding: "3rem",
         }}>
         <form className={classes.form}>
+          <Grid item md={6} mb={2}>
+            <Typography variant="inherit" className={classes.wrapTextIcon}>
+              Upload Logo{" "}
+            </Typography>
+            <span className={classes.smallText}>
+              (recommended dimension - 1:1)
+            </span>
+            <p className={classes.error}>
+              {selectedLogoFile?.size > FIVE_MB
+                ? "Image exceeds max size, please add image below 5 mb"
+                : null}
+            </p>
+
+            {bannerData?.imageLinks?.logo || selectedLogoFile ? (
+              <div className={classes.bannerContainer}>
+                <Image
+                  src={
+                    selectedLogoFile
+                      ? URL.createObjectURL(selectedLogoFile)
+                      : bannerData?.imageLinks?.logo
+                  }
+                  alt="Logo Image"
+                  width={160}
+                  height={160}
+                />
+              </div>
+            ) : null}
+            <Button
+              mb={2}
+              variant="normal"
+              onClick={(e) => {
+                uploadInputRefLogo.current.click();
+              }}>
+              <UploadIcon fontSize="8px" />
+              Upload
+            </Button>
+            <input
+              name="logo"
+              accept="image/*"
+              type="file"
+              id="select-logo-image"
+              style={{ display: "none" }}
+              ref={uploadInputRefLogo}
+              onChange={(e) => selectFile(e, "logo")}
+            />
+          </Grid>
+
           <Grid item md={6} mb={2}>
             <Typography variant="inherit" className={classes.wrapTextIcon}>
               Upload Banner{" "}
@@ -383,6 +452,23 @@ const EditDetails = ({
               value={formik.values.telegram}
               error={formik.touched.telegram && Boolean(formik.errors.telegram)}
               helperText={formik.touched.telegram && formik.errors.telegram}
+            />
+          </Grid>
+
+          <Grid item md={6} mb={2}>
+            <Typography variant="inherit" className={classes.wrapTextIcon}>
+              Warpcast
+            </Typography>
+            <TextField
+              name="warpcast"
+              id="warpcast"
+              placeholder="Link"
+              variant="outlined"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.warpcast}
+              error={formik.touched.warpcast && Boolean(formik.errors.warpcast)}
+              helperText={formik.touched.warpcast && formik.errors.warpcast}
             />
           </Grid>
 
