@@ -3,6 +3,7 @@ import { Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React from "react";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
+import { formatNumbers } from "utils/helper";
 
 const useStyles = makeStyles({
   layout: {
@@ -35,7 +36,9 @@ const DepositProgress = ({ clubData, tokenDetails, nftMinted = 0 }) => {
           <Typography variant="inherit">{nftMinted} minted</Typography>
         ) : (
           <Typography variant="inherit" className="tb-mar-1">
-            {convertFromWeiGovernance(totalAmountRaised, tokenDecimal)}{" "}
+            {formatNumbers(
+              Number(convertFromWeiGovernance(totalAmountRaised, tokenDecimal)),
+            )}{" "}
             {tokenSymbol} raised
           </Typography>
         )}
@@ -44,7 +47,14 @@ const DepositProgress = ({ clubData, tokenDetails, nftMinted = 0 }) => {
           <Typography variant="inherit">{distributionAmount} total</Typography>
         ) : (
           <Typography variant="inherit">
-            {convertFromWeiGovernance(raiseAmount, tokenDetails?.tokenDecimal)}{" "}
+            {formatNumbers(
+              Number(
+                convertFromWeiGovernance(
+                  raiseAmount,
+                  tokenDetails?.tokenDecimal,
+                ),
+              ),
+            )}{" "}
             {tokenSymbol} total
           </Typography>
         )}

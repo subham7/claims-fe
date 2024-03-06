@@ -496,3 +496,7 @@ export function customToFixedAutoPrecision(num) {
     return "0.00";
   }
 }
+
+export const formatNumbers = (number) => {
+  return number?.toLocaleString("en-US");
+};
