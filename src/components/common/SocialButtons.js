@@ -39,7 +39,7 @@ const SocialButtons = ({ data }) => {
           />
         )}
 
-        {warpcast && (
+        {warpcastLink && (
           <TbSquareLetterW
             onClick={() => {
               window.open(withHttps(warpcastLink), "_blank");
