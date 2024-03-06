@@ -22,6 +22,7 @@ import { editInfo, getClubInfo } from "api/club";
 import { uploadFileToAWS } from "utils/helper";
 import { setAlertData } from "redux/reducers/alert";
 import { useDispatch } from "react-redux";
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles((theme) => ({
   modalStyle: {
@@ -88,7 +89,9 @@ const EditDetails = ({
   networkId,
   daoAddress = "",
   isClaims = false,
+  isErc721 = false,
 }) => {
+  const router = useRouter();
   const theme = useTheme();
   const classes = useStyles(theme);
   const dispatch = useDispatch();
@@ -121,6 +124,7 @@ const EditDetails = ({
   const getClubInfoFn = async () => {
     try {
       const info = await getClubInfo(daoAddress);
+      console.log({ info });
       if (info.status === 200) setBannerData(info.data[0]);
     } catch (error) {
       console.log(error);
@@ -171,9 +175,7 @@ const EditDetails = ({
         bannerImage: fileLink?.banner
           ? fileLink?.banner
           : bannerData?.bannerImage ?? "",
-        logoUrl: fileLink?.logo
-          ? fileLink?.logo
-          : bannerData?.bannerImage ?? "",
+        logoUrl: fileLink?.logo ? fileLink?.logo : bannerData?.logoUrl ?? "",
       });
     }
   };
@@ -189,6 +191,8 @@ const EditDetails = ({
     );
     if (isClaims) {
       await getClubInfo();
+    } else if (router.asPath.includes("/join")) {
+      router.reload();
     }
     onClose(event, "cancel");
   };
@@ -302,13 +306,15 @@ const EditDetails = ({
                 : null}
             </p>
 
-            {bannerData?.imageLinks?.logo || selectedLogoFile ? (
+            {bannerData?.imageLinks?.logo ||
+            bannerData?.logoUrl ||
+            selectedLogoFile ? (
               <div className={classes.bannerContainer}>
                 <Image
                   src={
                     selectedLogoFile
                       ? URL.createObjectURL(selectedLogoFile)
-                      : bannerData?.imageLinks?.logo
+                      : bannerData?.imageLinks?.logo || bannerData?.logoUrl
                   }
                   alt="Logo Image"
                   width={160}
@@ -336,51 +342,56 @@ const EditDetails = ({
             />
           </Grid>
 
-          <Grid item md={6} mb={2}>
-            <Typography variant="inherit" className={classes.wrapTextIcon}>
-              Upload Banner{" "}
-            </Typography>
-            <span className={classes.smallText}>
-              (recommended dimension - 16:8)
-            </span>
-            <p className={classes.error}>
-              {selectedFile?.size > FIVE_MB
-                ? "Image exceeds max size, please add image below 5 mb"
-                : null}
-            </p>
+          {!isErc721 ? (
+            <Grid item md={6} mb={2}>
+              <Typography variant="inherit" className={classes.wrapTextIcon}>
+                Upload Banner{" "}
+              </Typography>
+              <span className={classes.smallText}>
+                (recommended dimension - 16:8)
+              </span>
+              <p className={classes.error}>
+                {selectedFile?.size > FIVE_MB
+                  ? "Image exceeds max size, please add image below 5 mb"
+                  : null}
+              </p>
 
-            {bannerData?.imageLinks?.banner || selectedFile ? (
-              <div className={classes.bannerContainer}>
-                <Image
-                  className={classes.bannerImage}
-                  src={
-                    selectedFile
-                      ? URL.createObjectURL(selectedFile)
-                      : bannerData?.imageLinks?.banner
-                  }
-                  fill
-                  alt="Banner Image"
-                />
-              </div>
-            ) : null}
-            <Button
-              variant="normal"
-              onClick={(e) => {
-                uploadInputRef.current.click();
-              }}>
-              <UploadIcon fontSize="8px" />
-              Upload
-            </Button>
-            <input
-              name="banner"
-              accept="image/*"
-              type="file"
-              id="select-image"
-              style={{ display: "none" }}
-              ref={uploadInputRef}
-              onChange={selectFile}
-            />
-          </Grid>
+              {bannerData?.imageLinks?.banner ||
+              bannerData?.bannerImage ||
+              selectedFile ? (
+                <div className={classes.bannerContainer}>
+                  <Image
+                    className={classes.bannerImage}
+                    src={
+                      selectedFile
+                        ? URL.createObjectURL(selectedFile)
+                        : bannerData?.imageLinks?.banner ||
+                          bannerData?.bannerImage
+                    }
+                    fill
+                    alt="Banner Image"
+                  />
+                </div>
+              ) : null}
+              <Button
+                variant="normal"
+                onClick={(e) => {
+                  uploadInputRef.current.click();
+                }}>
+                <UploadIcon fontSize="8px" />
+                Upload
+              </Button>
+              <input
+                name="banner"
+                accept="image/*"
+                type="file"
+                id="select-image"
+                style={{ display: "none" }}
+                ref={uploadInputRef}
+                onChange={selectFile}
+              />
+            </Grid>
+          ) : null}
 
           <Grid item md={6} mb={2}>
             <Typography variant="inherit" className={classes.wrapTextIcon}>

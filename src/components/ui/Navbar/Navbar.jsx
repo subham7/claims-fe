@@ -53,11 +53,6 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
         </div>
 
         <div className={classes["wallet-div"]}>
-          {address && (
-            <Person2Outlined
-              onClick={() => router.push(`/profile/${address}`)}
-            />
-          )}
           {router.pathname.includes("join") &&
           clubData?.ownerAddress?.toLowerCase() === address?.toLowerCase() ? (
             <div className={classes.switch}>
@@ -83,6 +78,11 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
             </div>
           )}
           <w3m-account-button balance="hide" />
+          {address && (
+            <Person2Outlined
+              onClick={() => router.push(`/profile/${address}`)}
+            />
+          )}
         </div>
       </nav>
 
@@ -102,6 +102,7 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
         setOpen={setShowEditDetails}
         onClose={() => setShowEditDetails(false)}
         daoAddress={daoAddress}
+        isErc721={clubData?.tokenType === "erc721"}
       />
     </>
   );
