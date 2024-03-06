@@ -30,7 +30,7 @@ const StationCard = ({ club }) => {
 
   return (
     <div className={classes.stationCard}>
-      <div className="flex justify-between items-center">
+      <div className={classes.stnHeader}>
         {/* <div
           style={{
             backgroundImage: imageUrl
@@ -44,21 +44,17 @@ const StationCard = ({ club }) => {
           height={60}
           width={60}
           alt="Fallback Image"
-          className="rounded-full"
         />
-        <div
-          className={`${
-            isActive ? "bg-green-600" : "bg-red-600"
-          } rounded-lg text-xs text-white px-2 py-1`}>
+        <div className={isActive ? classes.active : classes.inactive}>
           {isActive ? "Active" : "Inactive"}
         </div>
       </div>
       <div>
         <div className={classes.stnInfo}>
-          <Typography className={"truncate h-6 w-full"} variant="body">
+          <Typography className={classes.truncate} variant="body">
             {name}
           </Typography>
-          <div className="flex items-center">
+          <div>
             <div>Total Raised</div>
             <div>{Number(totalAmountRaised).toFixed(4)} USDC</div>
           </div>
@@ -70,7 +66,7 @@ const StationCard = ({ club }) => {
             <div>Members</div>
             <div>{membersCount}</div>
           </div>
-          <div className="flex items-center gap-2">
+          <div>
             <div>Deposit token</div>
             <div>
               {isNative
@@ -106,29 +102,6 @@ const ProfilePage = () => {
       setLoading(true);
       const response = await getClubListForWallet(wallet, chain);
       if (response?.data?.clubs) {
-        // const clubData = [];
-        // const promises = await response.data.clubs.map(async (club) => {
-        //   const promise = new Promise(async (resolve) => {
-        //     try {
-        //       const imageUrl = await getUploadedNFT(
-        //         club.daoAddress?.toLowerCase(),
-        //       );
-        //       if (imageUrl?.data.length) {
-        //         club.imageUrl = imageUrl?.data[0]?.imageUrl ?? "";
-        //       } else {
-        //         const imageUrl = await getImageURL(club?.imageUrl);
-        //         club.imageUrl = imageUrl ?? "";
-        //       }
-        //     } catch (error) {
-        //       console.error(error);
-        //     } finally {
-        //       clubData.push(club);
-        //       resolve(true);
-        //     }
-        //   });
-        //   return promise;
-        // });
-        // await Promise.all(promises);
         setClubsData(response?.data?.clubs);
       }
     } catch (err) {
@@ -173,22 +146,20 @@ const ProfilePage = () => {
             style={{
               backgroundImage: userData?.imgUrl
                 ? `url(${userData.imgUrl})`
-                : `url(/assets/images/astronaut3.png)`,
+                : `url(/assets/images/fallbackDao.png)`,
             }}
             className={classes.img}
           />
           <div>
             <Typography variant="subheading">{userData?.userName}</Typography>
             <Typography variant="body">{userData?.bio}</Typography>
-            <Typography className={"flex items-center gap-2"} variant="body">
-              {userData?.socialLinks?.website && (
-                <RiLinkM className="text-gray-500" />
-              )}
+            <Typography className={classes.linkDiv} variant="body">
+              {userData?.socialLinks?.website && <RiLinkM />}
               <div
                 onClick={() =>
                   window.open(userData?.socialLinks?.website, "_blank")
                 }
-                className="text-blue-500 h-6 w-72 cursor-pointer truncate hover:underline">
+                className={classes.link}>
                 {userData?.socialLinks?.website}
               </div>
             </Typography>
