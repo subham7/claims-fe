@@ -3,14 +3,22 @@ import { BiLogoTelegram } from "react-icons/bi";
 import { BsTwitter } from "react-icons/bs";
 import { TbSquareLetterW } from "react-icons/tb";
 import { IoLogoDiscord } from "react-icons/io5";
+import { IoShareOutline } from "react-icons/io5";
+import { TbSquareLetterW } from "react-icons/tb";
 import classes from "../claims/Claim.module.scss";
 import { withHttps } from "utils/helper";
 
-const SocialButtons = ({ data }) => {
+const SocialButtons = ({ data, shareLink }) => {
+  const warpcast = data?.socialLinks?.warpcast ?? data?.warpcast;
   const twitterLink = data?.socialLinks?.twitter ?? data?.twitter;
   const telegramLink = data?.socialLinks?.telegram ?? data?.telegram;
   const discordLink = data?.socialLinks?.discord ?? data?.discord;
   const warpcastLink = data?.socialLinks?.warpcast ?? data?.warpcast;
+
+  const copyHandler = () => {
+    navigator.clipboard.writeText(`${window.location.origin}${shareLink}`);
+    alert("Copied to clipboard!");
+  };
 
   return (
     <div>
@@ -19,6 +27,14 @@ const SocialButtons = ({ data }) => {
           <BsTwitter
             onClick={() => {
               window.open(withHttps(twitterLink), "_blank");
+            }}
+          />
+        )}
+
+        {warpcast && (
+          <TbSquareLetterW
+            onClick={() => {
+              window.open(warpcast, "_blank");
             }}
           />
         )}
@@ -46,6 +62,8 @@ const SocialButtons = ({ data }) => {
             }}
           />
         )}
+
+        {shareLink && <IoShareOutline onClick={copyHandler} />}
       </div>
     </div>
   );

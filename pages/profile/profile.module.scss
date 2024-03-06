@@ -1,0 +1,117 @@
+@import "../../styles/variables.scss";
+
+.profileDiv {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  background-color: #181818;
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+
+  > div {
+    display: flex;
+    gap: 8px;
+  }
+
+  .editIcon {
+    display: flex;
+    gap: 10px;
+    font-size: 24px;
+    color: $gray;
+
+    &:hover {
+      color: $typography-primary;
+      cursor: pointer;
+    }
+  }
+}
+
+.stnList {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: 24px;
+}
+
+.stationCard {
+  background-color: #181818;
+  border-radius: 12px;
+  padding: 24px;
+  width: calc(25% - 18px);
+}
+
+@media (max-width: 1024px) {
+  .stationCard {
+    width: calc(33% - 18px);
+  }
+}
+
+@media (max-width: 768px) {
+  .stationCard {
+    width: calc(50% - 18px);
+  }
+}
+
+@media (max-width: 512px) {
+  .stationCard {
+    width: calc(100%);
+  }
+}
+
+.img {
+  border-radius: 12px;
+  height: 100px;
+  width: 100px;
+  background-size: cover;
+  border: 1px solid $gray;
+}
+
+.stnImg {
+  border-radius: 12px;
+  height: 60px;
+  width: 60px;
+  background-size: cover;
+  border: 1px solid $gray;
+}
+
+.stnInfo {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  > div {
+    display: flex;
+    justify-content: space-between;
+
+    :nth-child(1) {
+      color: $gray;
+    }
+  }
+
+  button {
+    background-color: #282828;
+    border: none;
+    outline: none;
+    padding: 12px 0;
+    width: 100%;
+    font-family: inherit;
+    border-radius: 12px;
+    font-weight: 500;
+    color: white;
+    cursor: pointer;
+
+    &:hover {
+      background: white;
+      color: #151515;
+    }
+  }
+}
+
+.loaderContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

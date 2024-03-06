@@ -163,21 +163,6 @@
     }
   }
 
-  .socials {
-    display: flex;
-    gap: 10px;
-    font-size: 24px;
-    color: $gray;
-    margin-top: 20px;
-
-    svg {
-      &:hover {
-        color: $typography-primary;
-        cursor: pointer;
-      }
-    }
-  }
-
   @media (min-width: 768px) {
     .secondaryInputComponents {
       display: none;
@@ -303,6 +288,7 @@
     text-align: center;
   }
 }
+
 .flexContainer {
   display: flex;
   gap: 12px;
@@ -323,5 +309,19 @@
     height: 400px;
     border-radius: 8px;
     margin-top: -80px;
+  }
+}
+
+.socials {
+  display: flex;
+  gap: 10px;
+  font-size: 24px;
+  color: $gray;
+
+  svg {
+    &:hover {
+      color: $typography-primary;
+      cursor: pointer;
+    }
   }
 }

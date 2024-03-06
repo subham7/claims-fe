@@ -12,6 +12,7 @@ import { useAccount, useNetwork } from "wagmi";
 import { Typography } from "@mui/material";
 import EditDetails from "@components/settingsComps/modals/EditDetails";
 import { useSelector } from "react-redux";
+import { Person2Outlined } from "@mui/icons-material";
 
 const Navbar = ({ daoAddress, routeNetworkId }) => {
   const [showEditDetails, setShowEditDetails] = useState(false);
@@ -29,7 +30,6 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
 
   const showNetworkModalHandler = () => {
     setShowModal(!showModal);
-
     if (router.pathname.includes("claim")) {
       setNetworkSupported(dropsNetworksChaindId);
     } else {
@@ -37,20 +37,21 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
     }
   };
 
-  console.log(clubData);
-
   return (
     <>
       <nav className={classes.nav}>
-        <Image
-          src="/assets/images/monogram.png"
-          height="40"
-          width="40"
-          alt="monogram"
-          onClick={() => {
-            router.push("/");
-          }}
-        />
+        <div className={classes["wallet-div"]}>
+          <Image
+            src="/assets/images/monogram.png"
+            height="40"
+            width="40"
+            alt="monogram"
+            onClick={() => {
+              router.push("/");
+            }}
+          />
+        </div>
+
         <div className={classes["wallet-div"]}>
           {router.pathname.includes("join") &&
           clubData?.ownerAddress?.toLowerCase() === address?.toLowerCase() ? (
@@ -63,18 +64,23 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
             </div>
           ) : null}
           {address && (
-            <div onClick={showNetworkModalHandler} className={classes.switch}>
-              <Image
-                src={CHAIN_CONFIG[networkId]?.logoUri}
-                height={20}
-                width={20}
-                alt={CHAIN_CONFIG[networkId]?.shortName}
-                className={classes.networkImg}
+            <>
+              <Person2Outlined
+                onClick={() => router.push(`/profile/${address}`)}
               />
-              <Typography variant="inherit">
-                {CHAIN_CONFIG[networkId]?.shortName}
-              </Typography>
-            </div>
+              <div onClick={showNetworkModalHandler} className={classes.switch}>
+                <Image
+                  src={CHAIN_CONFIG[networkId]?.logoUri}
+                  height={20}
+                  width={20}
+                  alt={CHAIN_CONFIG[networkId]?.shortName}
+                  className={classes.networkImg}
+                />
+                <Typography variant="inherit">
+                  {CHAIN_CONFIG[networkId]?.shortName}
+                </Typography>
+              </div>
+            </>
           )}
           <w3m-account-button balance="hide" />
         </div>
