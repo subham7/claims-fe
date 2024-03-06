@@ -5,20 +5,19 @@
   justify-content: space-between;
   align-items: start;
   background-color: #181818;
-  padding: 24px;
+  padding: 16px;
   border-radius: 12px;
   margin-bottom: 24px;
 
   > div {
     display: flex;
-    gap: 8px;
   }
 
   .editIcon {
     display: flex;
-    gap: 10px;
     font-size: 24px;
     color: $gray;
+    margin-right: 12px;
 
     &:hover {
       color: $typography-primary;
@@ -66,6 +65,7 @@
   width: 100px;
   background-size: cover;
   border: 1px solid $gray;
+  margin-right: 24px;
 }
 
 .stnImg {

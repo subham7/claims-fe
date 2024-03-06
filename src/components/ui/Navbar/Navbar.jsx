@@ -53,6 +53,11 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
         </div>
 
         <div className={classes["wallet-div"]}>
+          {address && (
+            <Person2Outlined
+              onClick={() => router.push(`/profile/${address}`)}
+            />
+          )}
           {router.pathname.includes("join") &&
           clubData?.ownerAddress?.toLowerCase() === address?.toLowerCase() ? (
             <div className={classes.switch}>
@@ -64,23 +69,18 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
             </div>
           ) : null}
           {address && (
-            <>
-              <Person2Outlined
-                onClick={() => router.push(`/profile/${address}`)}
+            <div onClick={showNetworkModalHandler} className={classes.switch}>
+              <Image
+                src={CHAIN_CONFIG[networkId]?.logoUri}
+                height={20}
+                width={20}
+                alt={CHAIN_CONFIG[networkId]?.shortName}
+                className={classes.networkImg}
               />
-              <div onClick={showNetworkModalHandler} className={classes.switch}>
-                <Image
-                  src={CHAIN_CONFIG[networkId]?.logoUri}
-                  height={20}
-                  width={20}
-                  alt={CHAIN_CONFIG[networkId]?.shortName}
-                  className={classes.networkImg}
-                />
-                <Typography variant="inherit">
-                  {CHAIN_CONFIG[networkId]?.shortName}
-                </Typography>
-              </div>
-            </>
+              <Typography variant="inherit">
+                {CHAIN_CONFIG[networkId]?.shortName}
+              </Typography>
+            </div>
           )}
           <w3m-account-button balance="hide" />
         </div>

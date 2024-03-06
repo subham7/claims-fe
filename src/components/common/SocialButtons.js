@@ -4,7 +4,6 @@ import { BsTwitter } from "react-icons/bs";
 import { TbSquareLetterW } from "react-icons/tb";
 import { IoLogoDiscord } from "react-icons/io5";
 import { IoShareOutline } from "react-icons/io5";
-import { TbSquareLetterW } from "react-icons/tb";
 import classes from "../claims/Claim.module.scss";
 import { withHttps } from "utils/helper";
 
@@ -17,7 +16,7 @@ const SocialButtons = ({ data, shareLink }) => {
 
   const copyHandler = () => {
     navigator.clipboard.writeText(`${window.location.origin}${shareLink}`);
-    alert("Copied to clipboard!");
+    alert("Profile link copied to clipboard!");
   };
 
   return (
@@ -51,14 +50,6 @@ const SocialButtons = ({ data, shareLink }) => {
           <BiLogoTelegram
             onClick={() => {
               window.open(withHttps(telegramLink), "_blank");
-            }}
-          />
-        )}
-
-        {warpcastLink && (
-          <TbSquareLetterW
-            onClick={() => {
-              window.open(withHttps(warpcastLink), "_blank");
             }}
           />
         )}

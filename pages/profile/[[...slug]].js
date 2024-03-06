@@ -196,13 +196,11 @@ const ProfilePage = () => {
         </div>
         <div>
           {wallet === address ? (
-            <div>
-              <EditIcon
-                onClick={() => setOpenEditModal(true)}
-                className={classes.editIcon}
-                size={20}
-              />
-            </div>
+            <EditIcon
+              onClick={() => setOpenEditModal(true)}
+              className={classes.editIcon}
+              size={20}
+            />
           ) : null}
           <SocialButtons
             data={userData}
