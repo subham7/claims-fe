@@ -217,7 +217,7 @@ export const proposalFormData = ({
               onChange={(e) => {
                 formik.setFieldValue(
                   "airdropToken",
-                  tokenData?.find((token) => token.symbol === e.target.value)
+                  tokenData?.find((token) => token.address === e.target.value)
                     .address,
                 );
               }}
@@ -225,7 +225,8 @@ export const proposalFormData = ({
                 if (selected.length === 0) {
                   return "Select a command";
                 }
-                return selected;
+                return tokenData?.find((token) => token.address === selected)
+                  .symbol;
               }}
               inputProps={{ "aria-label": "Without label" }}
               name="airdropToken"
@@ -233,7 +234,7 @@ export const proposalFormData = ({
               {tokenData
                 ?.filter((token) => token.address !== [networkId].nativeToken)
                 .map((token) => (
-                  <MenuItem key={token.symbol} value={token.symbol}>
+                  <MenuItem key={token.address} value={token.address}>
                     {token.symbol}
                   </MenuItem>
                 ))}
