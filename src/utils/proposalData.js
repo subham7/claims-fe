@@ -1923,6 +1923,7 @@ export const proposalDetailsData = ({
         Amount: convertFromWeiGovernance(airDropAmount, decimals),
         " Carry fee": airDropCarryFee,
       };
+
       return responseData;
     case 1:
       responseData.data = {

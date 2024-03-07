@@ -13,6 +13,28 @@
       border-bottom: 0.5px solid $divider-color;
     }
 
+    .actionsContainer {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+
+      .actionButton {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        background: white;
+        padding: 12px 20px;
+        border: none;
+        outline: none;
+        font-family: inherit;
+        font-weight: 700;
+        color: black;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+    }
+
     .flexContainer {
       display: flex;
       gap: 20px;
