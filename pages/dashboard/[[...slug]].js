@@ -14,7 +14,7 @@ const DashboardPage = () => {
 
   return (
     <Layout daoAddress={daoAddress} networkId={networkId} page={1}>
-      <Dashboard daoAddress={daoAddress} routeNeteworkId={networkId} />
+      <Dashboard daoAddress={daoAddress} routeNetworkId={networkId} />
     </Layout>
   );
 };
