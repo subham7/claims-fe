@@ -406,6 +406,7 @@ const ERC20 = ({
           isDeposit: true,
           isActive: active,
           networkId: routeNetworkId,
+          logoUrl: clubInfo?.logoUrl,
         }}
         inputComponents={
           <DepositInputComponents

@@ -1,6 +1,7 @@
-import { Button, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import React from "react";
 import classes from "./Common.module.scss";
+import { Button } from "@components/ui";
 
 const ComponentHeader = ({
   title,

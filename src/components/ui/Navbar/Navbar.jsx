@@ -10,8 +10,12 @@ import {
 } from "utils/constants";
 import { useAccount, useNetwork } from "wagmi";
 import { Typography } from "@mui/material";
+import EditDetails from "@components/settingsComps/modals/EditDetails";
+import { useSelector } from "react-redux";
+import { Person2Outlined } from "@mui/icons-material";
 
-const Navbar = () => {
+const Navbar = ({ daoAddress, routeNetworkId }) => {
+  const [showEditDetails, setShowEditDetails] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [networksSupported, setNetworkSupported] = useState();
 
@@ -20,9 +24,12 @@ const Navbar = () => {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
 
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
+  });
+
   const showNetworkModalHandler = () => {
     setShowModal(!showModal);
-
     if (router.pathname.includes("claim")) {
       setNetworkSupported(dropsNetworksChaindId);
     } else {
@@ -33,16 +40,29 @@ const Navbar = () => {
   return (
     <>
       <nav className={classes.nav}>
-        <Image
-          src="/assets/images/monogram.png"
-          height="40"
-          width="40"
-          alt="monogram"
-          onClick={() => {
-            router.push("/");
-          }}
-        />
         <div className={classes["wallet-div"]}>
+          <Image
+            src="/assets/images/monogram.png"
+            height="40"
+            width="40"
+            alt="monogram"
+            onClick={() => {
+              router.push("/");
+            }}
+          />
+        </div>
+
+        <div className={classes["wallet-div"]}>
+          {router.pathname.includes("join") &&
+          clubData?.ownerAddress?.toLowerCase() === address?.toLowerCase() ? (
+            <div className={classes.switch}>
+              <Typography
+                onClick={() => setShowEditDetails(true)}
+                variant="inherit">
+                Edit Page
+              </Typography>
+            </div>
+          ) : null}
           {address && (
             <div onClick={showNetworkModalHandler} className={classes.switch}>
               <Image
@@ -58,6 +78,11 @@ const Navbar = () => {
             </div>
           )}
           <w3m-account-button balance="hide" />
+          {address && (
+            <Person2Outlined
+              onClick={() => router.push(`/profile/${address}`)}
+            />
+          )}
         </div>
       </nav>
 
@@ -69,6 +94,16 @@ const Navbar = () => {
           supportedNetworks={networksSupported}
         />
       )}
+
+      <EditDetails
+        networkId={routeNetworkId}
+        isClaims={false}
+        open={showEditDetails}
+        setOpen={setShowEditDetails}
+        onClose={() => setShowEditDetails(false)}
+        daoAddress={daoAddress}
+        isErc721={clubData?.tokenType === "erc721"}
+      />
     </>
   );
 };

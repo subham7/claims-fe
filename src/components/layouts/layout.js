@@ -31,7 +31,7 @@ export default function Layout(props) {
   return (
     <>
       <div>
-        <Navbar />
+        <Navbar daoAddress={daoAddress} routeNetworkId={routeNetworkId} />
         {showSidebar && (
           <Sidebar daoAddress={daoAddress} networkId={networkId} />
         )}
@@ -40,7 +40,9 @@ export default function Layout(props) {
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
 
-        {!router.pathname.includes("join") && (!walletAddress || !networkId) ? (
+        {!router.pathname.includes("join") &&
+        !router.pathname.includes("profile") &&
+        (!walletAddress || !networkId) ? (
           <Grid
             sx={{
               height: "75vh",
@@ -81,6 +83,7 @@ export default function Layout(props) {
               </div>
             </Box>
             {!router.pathname.includes("join") &&
+              !router.pathname.includes("profile") &&
               showWrongNetworkModal(networkId, routeNetworkId)}
           </>
         )}

@@ -497,6 +497,10 @@ export function customToFixedAutoPrecision(num) {
   }
 }
 
+export const withHttps = (url) =>
+  !!url && !/^https?:\/\//i.test(url) ? `https://${url}` : url;
+
 export const formatNumbers = (number) => {
   return number?.toLocaleString("en-US");
 };
+

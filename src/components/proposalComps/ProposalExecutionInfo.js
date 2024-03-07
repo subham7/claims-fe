@@ -119,6 +119,7 @@ const ProposalExecutionInfo = ({
             ? swapToken
             : sendToken,
         );
+
         const symbol = await getTokenSymbol(
           airDropToken
             ? airDropToken
