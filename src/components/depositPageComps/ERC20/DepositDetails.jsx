@@ -3,6 +3,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import classes from "../../claims/Claim.module.scss";
+import { formatNumbers } from "utils/helper";
 
 const Detail = ({
   title,
@@ -42,13 +43,17 @@ const DepositDetails = ({ contractData = {}, tokenDetails = {} }) => {
       <div className={classes.detailContainer}>
         <Detail
           title="Min"
-          value={convertFromWeiGovernance(minDepositAmount, tokenDecimal)}
+          value={formatNumbers(
+            Number(convertFromWeiGovernance(minDepositAmount, tokenDecimal)),
+          )}
           isAmount
           tokenName={tokenSymbol}
         />
         <Detail
           title="Max"
-          value={convertFromWeiGovernance(maxDepositAmount, tokenDecimal)}
+          value={formatNumbers(
+            Number(convertFromWeiGovernance(maxDepositAmount, tokenDecimal)),
+          )}
           isAmount
           tokenName={tokenSymbol}
         />
