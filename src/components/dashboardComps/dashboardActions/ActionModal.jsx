@@ -65,12 +65,13 @@ const ActionModal = ({
     return block;
   };
 
-  function createValidationSchema(values) {
+  const createValidationSchema = (values) => {
     return actionModalValidation({
       actionType: type,
       selectedToken: values.airdropToken,
+      showFeesAmount,
     });
-  }
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -122,7 +123,9 @@ const ActionModal = ({
 
         const payload = {
           clubId: daoAddress,
-          name: `${type} ${values.airDropAmount} $${values.airdropToken?.symbol}`,
+          name: `${type?.charAt(0)?.toUpperCase() + type?.slice(1)} ${
+            values.airDropAmount
+          } $${values.airdropToken?.symbol}`,
           createdBy: walletAddress,
           votingDuration: dayjs().add(100, "year").unix(),
           votingOptions: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
@@ -143,9 +146,11 @@ const ActionModal = ({
           ...payload,
           description: values.note
             ? values.note
-            : `${type} ${values.airDropAmount} ${
-                values.airdropToken?.symbol
-              } to ${type === "distribute" ? "members" : values.recipient}`,
+            : `${type?.charAt(0)?.toUpperCase() + type?.slice(1)} ${
+                values.airDropAmount
+              } ${values.airdropToken?.symbol} to ${
+                type === "distribute" ? "members" : values.recipient
+              }`,
           signature,
         });
 
@@ -198,7 +203,7 @@ const ActionModal = ({
   useEffect(() => {
     const schema = createValidationSchema(formik.values);
     setValidationSchema(schema);
-  }, [formik.values]);
+  }, [formik.values, showFeesAmount]);
 
   return (
     <Modal className={classes.modal}>

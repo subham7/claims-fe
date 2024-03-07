@@ -357,15 +357,12 @@ Cast your vote before ${new Date(
       membersArray,
       airDropAmountArray,
     } = await getEncodedData({
-      getERC20TotalSupply,
-      getBalance,
       getDecimals,
       proposalData,
       daoAddress,
       clubData,
       contractABI: ABI,
       setMembers,
-      getNftOwnersCount,
       networkId,
       gnosisAddress,
     });

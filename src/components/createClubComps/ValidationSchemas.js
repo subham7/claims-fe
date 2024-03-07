@@ -789,7 +789,11 @@ export const stakingValidation = ({ amount, isRocketPool, isMantlePool }) => {
   });
 };
 
-export const actionModalValidation = ({ actionType, selectedToken }) => {
+export const actionModalValidation = ({
+  actionType,
+  selectedToken,
+  showFeesAmount,
+}) => {
   const balance = Number(
     convertFromWeiGovernance(selectedToken.balance, selectedToken.decimals),
   );
@@ -806,5 +810,13 @@ export const actionModalValidation = ({ actionType, selectedToken }) => {
       .required("Amount is required")
       .max(balance, "Amount should be less than or equal to balance")
       .moreThan(0, "Amount should be greater than 0"),
+    feesAmount:
+      actionType === "distribute" && showFeesAmount
+        ? yup
+            .number()
+            .required("Fee(s) percentage is required")
+            .moreThan(0, "Fee(s) percentage should be greater than 0")
+            .max(100, "Fee(s) percentage should be less than or equal to 100")
+        : yup.string().notRequired(),
   });
 };
