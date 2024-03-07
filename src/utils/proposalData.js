@@ -215,7 +215,6 @@ export const proposalFormData = ({
               sx={{ marginTop: "0.5rem" }}
               value={formik.values.airdropToken}
               onChange={(e) => {
-                debugger;
                 formik.setFieldValue(
                   "airdropToken",
                   tokenData?.find((token) => token.address === e.target.value)
