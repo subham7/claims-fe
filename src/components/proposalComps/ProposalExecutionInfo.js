@@ -189,7 +189,7 @@ const ProposalExecutionInfo = ({
 
   return (
     <Grid item md={9}>
-      {proposalData?.commands.length && executionId ? (
+      {proposalData?.commands.length && !isNaN(Number(executionId)) ? (
         <Card>
           <>
             {proposalDetails.data && (
