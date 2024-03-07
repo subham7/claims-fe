@@ -10,6 +10,8 @@
   height: 10vh;
   align-items: center;
   background-color: $background-color-dark;
+  display: flex;
+  align-items: center;
 
   .wallet-div {
     display: flex;

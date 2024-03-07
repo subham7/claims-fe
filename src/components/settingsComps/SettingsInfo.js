@@ -646,6 +646,7 @@ const SettingsInfo = ({
         setOpen={setOpen}
         onClose={handleClose}
         daoAddress={daoAddress}
+        isErc721={clubData?.tokenType === "erc721"}
       />
     </>
   );

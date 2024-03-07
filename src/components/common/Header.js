@@ -3,6 +3,7 @@ import React from "react";
 import classes from "../claims/Claim.module.scss";
 import { formatEpochTime } from "utils/helper";
 import { AiFillInfoCircle } from "react-icons/ai";
+import Image from "next/image";
 
 const HeaderShimmer = () => {
   return (
@@ -22,6 +23,7 @@ const Header = ({
   isDeposit = false,
   deadline,
   networkId,
+  logoUrl,
 }) => {
   const getStatusText = () => {
     if (isDeposit) {
@@ -49,6 +51,15 @@ const Header = ({
 
   return (
     <>
+      {logoUrl ? (
+        <Image
+          className={classes.logoImg}
+          src={logoUrl}
+          height={80}
+          width={80}
+          alt="Logo Image"
+        />
+      ) : null}
       <h1>
         {isDeposit ? contractData?.name : `$${tokenDetails?.tokenSymbol}`}
       </h1>
