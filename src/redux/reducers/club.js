@@ -35,7 +35,13 @@ export const slice = createSlice({
       merkleRoot: null,
       minDepositPerUser: null,
       ownerFeePerDepositPercent: null,
-      pricePerToken: null,
+      depositTokenDecimal: null,
+      pricePerTokenFormatted: {
+        displayValue: null,
+        formattedValue: null,
+        actualValue: null,
+        bigNumberValue: null,
+      },
     },
     erc20ClubDetails: {
       quorum: null,
@@ -88,6 +94,9 @@ export const slice = createSlice({
       state.clubData.ownerFeePerDepositPercent =
         action.payload.ownerFeePerDepositPercent;
       state.clubData.merkleRoot = action.payload.merkleRoot;
+      state.clubData.pricePerTokenFormatted =
+        action.payload.pricePerTokenFormatted;
+      state.clubData.depositTokenDecimal = action.payload.depositTokenDecimal;
     },
     addErc20ClubDetails: (state, action) => {
       state.erc20ClubDetails.quorum = action.payload.quorum;

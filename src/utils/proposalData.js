@@ -88,7 +88,7 @@ export const proposalData = ({
             18,
           ) /
             10 ** 18) *
-          convertFromWeiGovernance(factoryData?.pricePerToken, decimals),
+          factoryData?.pricePerTokenFormatted?.formattedValue,
       };
     case 4:
       return {
@@ -1953,7 +1953,8 @@ export const proposalDetailsData = ({
             18,
           ) /
             10 ** 18) *
-          convertFromWeiGovernance(factoryData?.pricePerToken, decimals),
+          // convertFromWeiGovernance(factoryData?.pricePerToken, decimals),
+          factoryData?.pricePerTokenFormatted?.formattedValue,
       };
       return responseData;
 

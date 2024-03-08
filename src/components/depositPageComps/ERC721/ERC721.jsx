@@ -204,12 +204,7 @@ const ERC721 = ({
       await approveDeposit(
         clubData.depositTokenAddress,
         CHAIN_CONFIG[networkId].factoryContractAddress,
-        Number(
-          convertFromWeiGovernance(
-            clubData?.pricePerToken,
-            tokenDetails.tokenDecimal,
-          ),
-        ) * count,
+        Number(clubData.pricePerTokenFormatted.formattedValue) * count,
         tokenDetails.tokenDecimal,
       );
 
@@ -245,7 +240,10 @@ const ERC721 = ({
         whitelistUserData?.proof ? whitelistUserData.proof : [],
         clubData.depositTokenAddress.toLowerCase() ===
           CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
-          ? (clubData?.pricePerToken * count).toString()
+          ? clubData?.pricePerTokenFormatted.bigNumberValue
+              .times(count)
+              .integerValue()
+              .toFixed()
           : "0",
       );
       await whitelistOnDeposit(walletAddress);

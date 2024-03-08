@@ -38,6 +38,10 @@ const DepositDetails = ({ contractData = {}, tokenDetails = {} }) => {
     return state.club.erc20ClubDetails.isGovernanceActive;
   });
 
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
+  });
+
   return (
     <div>
       <div className={classes.detailContainer}>
@@ -59,7 +63,9 @@ const DepositDetails = ({ contractData = {}, tokenDetails = {} }) => {
         />
         <Detail
           title={symbol}
-          value={convertFromWeiGovernance(pricePerToken, tokenDecimal)}
+          value={formatNumbers(
+            Number(clubData?.pricePerTokenFormatted?.formattedValue),
+          )}
           tokenName={tokenSymbol}
           isPricePerToken
         />

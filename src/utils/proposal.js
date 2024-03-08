@@ -333,7 +333,7 @@ export const getEncodedData = async ({
             clubData?.pricePerToken,
           18,
         ),
-        clubData?.pricePerToken,
+        clubData?.pricePerTokenFormatted?.actualValue,
         daoAddress,
       ]);
       return { data };
@@ -460,7 +460,7 @@ export const getEncodedData = async ({
     case 20:
       data = iface.encodeFunctionData("updateTotalRaiseAmount", [
         nftSupply,
-        convertToWeiGovernance(clubData?.pricePerToken, tokenDecimals),
+        clubData?.pricePerTokenFormatted?.formattedValue,
         daoAddress,
       ]);
       return { data };

@@ -6,12 +6,17 @@ import {
   addErc721ClubDetails,
 } from "../redux/reducers/club";
 import { setAdminUser, setMemberUser } from "../redux/reducers/gnosis";
-
-import { convertToFullNumber, getSafeSdk } from "../utils/helper";
+import {
+  convertToFullNumber,
+  getSafeSdk,
+} from "../utils/helper";
 import { useAccount, useNetwork } from "wagmi";
 import { useRouter } from "next/router";
 import useAppContractMethods from "./useAppContractMethods";
 import { queryStationDataFromSubgraph } from "utils/stationsSubgraphHelper";
+import { BigNumber } from "bignumber.js";
+import { convertFromWeiGovernance } from "utils/globalFunctions";
+import useCommonContractMethods from "./useCommonContractMehods";
 
 const useClubFetch = ({ daoAddress, routeNetworkId }) => {
   const dispatch = useDispatch();
@@ -32,6 +37,10 @@ const useClubFetch = ({ daoAddress, routeNetworkId }) => {
     getDaoBalance,
   } = useAppContractMethods({
     daoAddress,
+    routeNetworkId,
+  });
+
+  const { getDecimals } = useCommonContractMethods({
     routeNetworkId,
   });
 
@@ -60,6 +69,8 @@ const useClubFetch = ({ daoAddress, routeNetworkId }) => {
             distributionAmount: clubData.distributionAmount,
             maxTokensPerUser: clubData.maxTokensPerUser,
             depositTokenAddress: clubData.depositTokenAddress,
+            depositTokenSymbol: clubData.depositTokenSymbol,
+            depositTokenDecimal: clubData.depositTokenDecimal,
             assetsStoredOnGnosis: clubData.assetsStoredOnGnosis,
             depositCloseTime: clubData.depositCloseTime,
             isDeployedByFactory: clubData.isDeployedByFactory,
@@ -68,7 +79,15 @@ const useClubFetch = ({ daoAddress, routeNetworkId }) => {
             merkleRoot: clubData.merkleRoot,
             minDepositPerUser: clubData.minDepositPerUser,
             ownerFeePerDepositPercent: clubData.ownerFeePerDepositPercent,
-            pricePerToken: clubData.pricePerToken,
+            pricePerTokenFormatted: {
+              // displayValue: clubData.pricePerToken,
+              formattedValue: convertFromWeiGovernance(
+                clubData?.pricePerToken,
+                clubData?.depositTokenDecimal,
+              ),
+              actualValue: clubData?.pricePerToken,
+              bigNumberValue: BigNumber(clubData?.pricePerToken),
+            },
           }),
         );
       }
@@ -83,6 +102,9 @@ const useClubFetch = ({ daoAddress, routeNetworkId }) => {
           routeNetworkId,
         );
         const daoDetails = await getDaoDetails();
+        const depositTokenDecimal = await getDecimals(
+          daoDetails.depositTokenAddress,
+        );
 
         // Loop through the stations in data and add depositTokenAddress to each station
         const updatedData = {
@@ -93,6 +115,7 @@ const useClubFetch = ({ daoAddress, routeNetworkId }) => {
             distributionAmount: convertToFullNumber(
               daoDetails.distributionAmount.toString(),
             ),
+            depositTokenDecimal: depositTokenDecimal,
           })),
         };
         if (data) {
