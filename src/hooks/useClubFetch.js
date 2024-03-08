@@ -6,10 +6,7 @@ import {
   addErc721ClubDetails,
 } from "../redux/reducers/club";
 import { setAdminUser, setMemberUser } from "../redux/reducers/gnosis";
-import {
-  convertToFullNumber,
-  getSafeSdk,
-} from "../utils/helper";
+import { convertToFullNumber, getSafeSdk } from "../utils/helper";
 import { useAccount, useNetwork } from "wagmi";
 import { useRouter } from "next/router";
 import useAppContractMethods from "./useAppContractMethods";
@@ -79,8 +76,26 @@ const useClubFetch = ({ daoAddress, routeNetworkId }) => {
             merkleRoot: clubData.merkleRoot,
             minDepositPerUser: clubData.minDepositPerUser,
             ownerFeePerDepositPercent: clubData.ownerFeePerDepositPercent,
+
+            minDepositAmountFormatted: {
+              formattedValue: convertFromWeiGovernance(
+                clubData?.minDepositAmount,
+                clubData?.depositTokenDecimal,
+              ),
+              actualValue: clubData?.minDepositAmount,
+              bigNumberValue: BigNumber(clubData?.minDepositAmount),
+            },
+
+            maxDepositAmountFormatted: {
+              formattedValue: convertFromWeiGovernance(
+                clubData?.maxDepositAmount,
+                clubData?.depositTokenDecimal,
+              ),
+              actualValue: clubData?.maxDepositAmount,
+              bigNumberValue: BigNumber(clubData?.maxDepositAmount),
+            },
+
             pricePerTokenFormatted: {
-              // displayValue: clubData.pricePerToken,
               formattedValue: convertFromWeiGovernance(
                 clubData?.pricePerToken,
                 clubData?.depositTokenDecimal,
