@@ -37,19 +37,31 @@ export const slice = createSlice({
       ownerFeePerDepositPercent: null,
       depositTokenDecimal: null,
       pricePerTokenFormatted: {
-        displayValue: null,
         formattedValue: null,
         actualValue: null,
         bigNumberValue: null,
       },
       minDepositAmountFomatted: {
-        displayValue: null,
         formattedValue: null,
         actualValue: null,
         bigNumberValue: null,
       },
       maxDepositAmountFormatted: {
-        displayValue: null,
+        formattedValue: null,
+        actualValue: null,
+        bigNumberValue: null,
+      },
+      raiseAmountFormatted: {
+        formattedValue: null,
+        actualValue: null,
+        bigNumberValue: null,
+      },
+      totalAmountRaisedFormatted: {
+        formattedValue: null,
+        actualValue: null,
+        bigNumberValue: null,
+      },
+      distributionAmountFormatted: {
         formattedValue: null,
         actualValue: null,
         bigNumberValue: null,
@@ -112,6 +124,12 @@ export const slice = createSlice({
         action.payload.minDepositAmountFomatted;
       state.clubData.maxDepositAmountFormatted =
         action.payload.maxDepositAmountFormatted;
+      state.clubData.raiseAmountFormatted = action.payload.raiseAmountFormatted;
+      state.clubData.totalAmountRaisedFormatted =
+        action.payload.totalAmountRaisedFormatted;
+      state.clubData.distributionAmountFormatted =
+        action.payload.distributionAmountFormatted;
+
       state.clubData.depositTokenDecimal = action.payload.depositTokenDecimal;
     },
     addErc20ClubDetails: (state, action) => {

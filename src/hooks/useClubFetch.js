@@ -77,6 +77,33 @@ const useClubFetch = ({ daoAddress, routeNetworkId }) => {
             minDepositPerUser: clubData.minDepositPerUser,
             ownerFeePerDepositPercent: clubData.ownerFeePerDepositPercent,
 
+            raiseAmountFormatted: {
+              formattedValue: convertFromWeiGovernance(
+                clubData.raiseAmount,
+                clubData.depositTokenDecimal,
+              ),
+              actualValue: clubData.raiseAmount,
+              bigNumberValue: BigNumber(clubData.raiseAmount),
+            },
+
+            totalAmountRaisedFormatted: {
+              formattedValue: convertFromWeiGovernance(
+                clubData.totalAmountRaised,
+                clubData.depositTokenDecimal,
+              ),
+              actualValue: clubData.totalAmountRaised,
+              bigNumberValue: BigNumber(clubData.totalAmountRaised),
+            },
+
+            distributionAmountFormatted: {
+              formattedValue: convertFromWeiGovernance(
+                clubData.distributionAmount,
+                18,
+              ),
+              actualValue: clubData.distributionAmount,
+              bigNumberValue: BigNumber(clubData.distributionAmount),
+            },
+
             minDepositAmountFormatted: {
               formattedValue: convertFromWeiGovernance(
                 clubData?.minDepositAmount,
