@@ -19,7 +19,7 @@ export const QUERY_LATEST_MEMBERS = (daoAddress) => {
           where: {daoAddress: "${daoAddress}"}
           first: 5
           orderBy: timeStamp
-          orderDirection:desc
+          orderDirection: desc
         ) {
           userAddress
           timeStamp
@@ -50,7 +50,10 @@ export const QUERY_PAGINATED_MEMBERS = (daoAddress, first, skip) => {
 
 export const QUERY_STATIONS_LIST = (userAddress) => {
   return `query{
-          users(  orderBy: timeStamp where: {userAddress: "${userAddress}"}){
+          users(  
+            orderBy: timeStamp           
+            orderDirection: desc 
+            where: {userAddress: "${userAddress}"}){
               id
               daoAddress
               daoName

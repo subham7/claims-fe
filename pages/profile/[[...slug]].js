@@ -56,7 +56,7 @@ const StationCard = ({ club }) => {
           </Typography>
           <div>
             <div>Total Raised</div>
-            <div>{Number(totalAmountRaised).toFixed(4)} USDC</div>
+            <div>{Number(totalAmountRaised ?? 0).toFixed(4)} USDC</div>
           </div>
           <div>
             <div>Last Date</div>
