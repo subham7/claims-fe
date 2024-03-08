@@ -151,8 +151,12 @@ const ProfilePage = () => {
             className={classes.img}
           />
           <div>
-            <Typography variant="subheading">{userData?.userName}</Typography>
-            <Typography variant="body">{userData?.bio}</Typography>
+            <Typography className={classes.truncateInfo} variant="subheading">
+              {userData?.userName}
+            </Typography>
+            <Typography className={classes.truncateInfo} variant="body">
+              {userData?.bio}
+            </Typography>
             <Typography className={classes.linkDiv} variant="body">
               {userData?.socialLinks?.website && <RiLinkM />}
               <div
