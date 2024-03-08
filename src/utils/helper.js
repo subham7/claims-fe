@@ -1,6 +1,6 @@
 import Web3 from "web3";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
-import WrongNetworkModal from "../components/modals/WrongNetworkModal";
+
 import { QUERY_ALL_MEMBERS } from "api/graphql/stationQueries";
 import { subgraphQuery } from "./subgraphs";
 import {
@@ -133,7 +133,9 @@ export const showWrongNetworkModal = (networkId, routeNetworkId) => {
       routeNetworkId !== "disburse") ||
     !supportedChainsDrops.includes(networkId)
   ) {
-    return <WrongNetworkModal chainId={routeNetworkId} />;
+    return true;
+  } else {
+    return false;
   }
 };
 
@@ -439,13 +441,18 @@ export const getLinks = (daoAddress, networkId) => {
 };
 
 export const isNative = (depositTokenAddress, networkId) => {
-  if (depositTokenAddress === "0x0000000000000000000000000000000000001010") {
-    return true;
-  } else {
-    return (
-      depositTokenAddress?.toLowerCase() ===
-      CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
-    );
+  try {
+    if (depositTokenAddress === "0x0000000000000000000000000000000000001010") {
+      return true;
+    } else {
+      return (
+        depositTokenAddress?.toLowerCase() ===
+        CHAIN_CONFIG[networkId]?.nativeToken?.toLowerCase()
+      );
+    }
+  } catch (err) {
+    console.log(err);
+    return false;
   }
 };
 
@@ -503,4 +510,3 @@ export const withHttps = (url) =>
 export const formatNumbers = (number) => {
   return number?.toLocaleString("en-US");
 };
-
