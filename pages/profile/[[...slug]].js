@@ -26,6 +26,7 @@ const StationCard = ({ club }) => {
     isActive,
     networkId,
     daoAddress,
+    clubSocials,
   } = club;
 
   return (
@@ -40,7 +41,7 @@ const StationCard = ({ club }) => {
           className={classes.stnImg}
         /> */}
         <Image
-          src={"/assets/images/fallbackDao.png"}
+          src={clubSocials?.logoUrl ?? "/assets/images/fallbackDao.png"}
           height={60}
           width={60}
           alt="Fallback Image"
