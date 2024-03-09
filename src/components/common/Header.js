@@ -51,11 +51,11 @@ const Header = ({
 
   return (
     <>
-      <div className={classes.infoContainer}>
+      {/* <div className={classes.infoContainer}>
         GM Astronaut! StationX is currently undergoing maintenance.
         <br />
         {`We'll be back shortly!`}
-      </div>
+      </div> */}
       {logoUrl ? (
         <Image
           className={classes.logoImg}
