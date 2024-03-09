@@ -212,7 +212,6 @@ const useAppContractMethods = (params) => {
   };
 
   const buyGovernanceTokenERC721DAO = async (
-    userAddress,
     tokenUriOfNFT,
     numOfTokens,
     merkleProof,
@@ -223,13 +222,7 @@ const useAppContractMethods = (params) => {
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
         abi: factoryContractABI,
         functionName: "buyGovernanceTokenERC721DAO",
-        args: [
-          userAddress,
-          daoAddress,
-          tokenUriOfNFT,
-          numOfTokens,
-          merkleProof,
-        ],
+        args: [daoAddress, tokenUriOfNFT, numOfTokens, merkleProof],
         account: walletAddress,
         value: value,
         networkId,
@@ -242,7 +235,6 @@ const useAppContractMethods = (params) => {
   };
 
   const buyGovernanceTokenERC20DAO = async (
-    userAddress,
     numOfTokens,
     merkleProof,
     value,
@@ -252,7 +244,7 @@ const useAppContractMethods = (params) => {
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
         abi: factoryContractABI,
         functionName: "buyGovernanceTokenERC20DAO",
-        args: [userAddress, daoAddress, numOfTokens, merkleProof],
+        args: [daoAddress, numOfTokens, merkleProof],
         account: walletAddress,
         value: value,
         networkId,
@@ -402,7 +394,7 @@ const useAppContractMethods = (params) => {
           threshold,
           safeThreshold,
           depositTokenAddress,
-          treasuryAddress,
+          // treasuryAddress,
           addressList,
           maxTokensPerUser,
           distributeAmount,
@@ -463,7 +455,7 @@ const useAppContractMethods = (params) => {
           threshold,
           safeThreshold,
           depositToken,
-          treasuryAddress,
+          // treasuryAddress,
           addressList,
           isGovernanceActive,
           isGtTransferable,

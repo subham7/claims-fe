@@ -245,7 +245,6 @@ const ERC20 = ({
           tokenDetails?.tokenDecimal,
         );
         await buyGovernanceTokenERC20DAO(
-          walletAddress,
           convertToWeiGovernance(
             (inputValue / +clubData?.pricePerToken).toString(),
             18,
