@@ -355,6 +355,7 @@ const ERC721 = ({
           isActive: active,
           networkId: routeNetworkId,
           logoUrl: clubInfo?.logoUrl,
+          routeNetworkId,
         }}
         inputComponents={
           <DepositInputComponents

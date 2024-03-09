@@ -24,6 +24,7 @@ const Header = ({
   deadline,
   networkId,
   logoUrl,
+  routeNetworkId = "0x89",
 }) => {
   const getStatusText = () => {
     if (isDeposit) {
@@ -51,11 +52,13 @@ const Header = ({
 
   return (
     <>
-      {/* <div className={classes.infoContainer}>
-        GM Astronaut! StationX is currently undergoing maintenance.
-        <br />
-        {`We'll be back shortly!`}
-      </div> */}
+      {routeNetworkId === "0x1" && (
+        <div className={classes.infoContainer}>
+          GM Astronaut! StationX is currently undergoing maintenance.
+          <br />
+          {`We'll be back shortly!`}
+        </div>
+      )}
       {logoUrl ? (
         <Image
           className={classes.logoImg}

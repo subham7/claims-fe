@@ -124,7 +124,6 @@ const EditDetails = ({
   const getClubInfoFn = async () => {
     try {
       const info = await getClubInfo(daoAddress);
-      console.log({ info });
       if (info.status === 200) setBannerData(info.data[0]);
     } catch (error) {
       console.log(error);
