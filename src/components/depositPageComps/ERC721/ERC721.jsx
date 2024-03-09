@@ -239,7 +239,6 @@ const ERC721 = ({
       setLoading(true);
 
       await buyGovernanceTokenERC721DAO(
-        walletAddress,
         clubData?.imgUrl,
         count,
         whitelistUserData?.proof ? whitelistUserData.proof : [],
@@ -356,6 +355,7 @@ const ERC721 = ({
           isActive: active,
           networkId: routeNetworkId,
           logoUrl: clubInfo?.logoUrl,
+          routeNetworkId,
         }}
         inputComponents={
           <DepositInputComponents

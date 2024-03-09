@@ -141,8 +141,8 @@ const Mint = ({
               margin: "10px 0",
               fontFamily: "inherit",
             }}
-            // disabled={isButtonDisabled()}
-            disabled={true}
+            disabled={routeNetworkId === "0x1" ? true : isButtonDisabled()}
+            // disabled={true}
             variant="contained">
             {getBtnText()}
           </Button>
