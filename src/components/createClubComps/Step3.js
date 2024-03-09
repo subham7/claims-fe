@@ -121,6 +121,10 @@ export default function Step3(props) {
           Create a new multisig wallet
         </ToggleButton>
         <ToggleButton
+          sx={{
+            cursor: "not-allowed",
+          }}
+          disabled
           className={classes.leftContainer}
           name="deploySafe"
           id="deploySafe"
