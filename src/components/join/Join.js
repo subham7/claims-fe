@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
+// import Image from "next/image";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { useSelector } from "react-redux";
 import { fetchClubByDaoAddress, getClubInfo } from "api/club";
@@ -12,9 +12,9 @@ import ERC20 from "@components/depositPageComps/ERC20/ERC20";
 import BackdropLoader from "@components/common/BackdropLoader";
 import ERC721 from "@components/depositPageComps/ERC721/ERC721";
 import { CHAIN_CONFIG } from "utils/constants";
-import Modal from "@components/common/Modal/Modal";
-import classes from "../modals/StatusModal/StatusModal.module.scss";
-import { Typography } from "@mui/material";
+// import Modal from "@components/common/Modal/Modal";
+// import classes from "../modals/StatusModal/StatusModal.module.scss";
+// import { Typography } from "@mui/material";
 
 const Join = ({ daoAddress, routeNetworkId }) => {
   const [daoDetails, setDaoDetails] = useState({
@@ -304,7 +304,7 @@ const Join = ({ daoAddress, routeNetworkId }) => {
 
   return (
     <>
-      {routeNetworkId === "0x1" && (
+      {/* {routeNetworkId === "0x1" && (
         <div>
           <Modal className={classes.statusModal}>
             <div className={classes.image}>
@@ -323,7 +323,7 @@ const Join = ({ daoAddress, routeNetworkId }) => {
             </Typography>
           </Modal>
         </div>
-      )}
+      )} */}
       <>
         {TOKEN_TYPE === "erc20" ? (
           <ERC20
