@@ -57,7 +57,7 @@ const StationCard = ({ club }) => {
           </Typography>
           <div>
             <div>Total Raised</div>
-            <div>{Number(totalAmountRaised).toFixed(4)} USDC</div>
+            <div>{Number(totalAmountRaised ?? 0).toFixed(4)} USDC</div>
           </div>
           <div>
             <div>Last Date</div>
@@ -152,8 +152,12 @@ const ProfilePage = () => {
             className={classes.img}
           />
           <div>
-            <Typography variant="subheading">{userData?.userName}</Typography>
-            <Typography variant="body">{userData?.bio}</Typography>
+            <Typography className={classes.truncateInfo} variant="subheading">
+              {userData?.userName}
+            </Typography>
+            <Typography className={classes.truncateInfo} variant="body">
+              {userData?.bio}
+            </Typography>
             <Typography className={classes.linkDiv} variant="body">
               {userData?.socialLinks?.website && <RiLinkM />}
               <div

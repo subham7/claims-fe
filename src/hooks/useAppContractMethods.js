@@ -497,7 +497,7 @@ const useAppContractMethods = (params) => {
     const { safeSdk, safeService } = await getSafeTransaction(
       gnosisAddress,
       walletAddress,
-      CHAIN_CONFIG[networkId].gnosisTxUrl,
+      CHAIN_CONFIG[networkId]?.gnosisTxUrl,
     );
 
     const { transaction, approvalTransaction, stakeETHTransaction } =
