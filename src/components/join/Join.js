@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { useSelector } from "react-redux";
 import { fetchClubByDaoAddress, getClubInfo } from "api/club";
@@ -11,6 +12,9 @@ import ERC20 from "@components/depositPageComps/ERC20/ERC20";
 import BackdropLoader from "@components/common/BackdropLoader";
 import ERC721 from "@components/depositPageComps/ERC721/ERC721";
 import { CHAIN_CONFIG } from "utils/constants";
+import Modal from "@components/common/Modal/Modal";
+import classes from "../modals/StatusModal/StatusModal.module.scss";
+import { Typography } from "@mui/material";
 
 const Join = ({ daoAddress, routeNetworkId }) => {
   const [daoDetails, setDaoDetails] = useState({
@@ -300,46 +304,68 @@ const Join = ({ daoAddress, routeNetworkId }) => {
 
   return (
     <>
-      {TOKEN_TYPE === "erc20" ? (
-        <ERC20
-          clubInfo={clubInfo}
-          daoAddress={daoAddress}
-          remainingClaimAmount={remainingClaimAmount}
-          isTokenGated={isTokenGated}
-          daoDetails={daoDetails}
-          isEligibleForTokenGating={isEligibleForTokenGating}
-          whitelistUserData={whitelistUserData}
-          networkId={networkId}
-          gatedTokenDetails={gatedTokenDetails}
-          depositConfig={depositConfig}
-          isSignable={isSignable}
-          allowanceValue={allowanceValue}
-          fetchCurrentAllowance={fetchCurrentAllowance}
-          fetchErc20ContractDetails={fetchErc20ContractDetails}
-          routeNetworkId={routeNetworkId}
-          isMetamaskPresent={isMetamaskPresent}
-        />
-      ) : TOKEN_TYPE === "erc721" ? (
-        <ERC721
-          daoAddress={daoAddress}
-          clubInfo={clubInfo}
-          isTokenGated={isTokenGated}
-          daoDetails={daoDetails}
-          isEligibleForTokenGating={isEligibleForTokenGating}
-          whitelistUserData={whitelistUserData}
-          networkId={networkId}
-          gatedTokenDetails={gatedTokenDetails}
-          depositConfig={depositConfig}
-          isSignable={isSignable}
-          allowanceValue={allowanceValue}
-          fetchCurrentAllowance={fetchCurrentAllowance}
-          fetchErc721ContractDetails={fetchErc721ContractDetails}
-          routeNetworkId={routeNetworkId}
-          isMetamaskPresent={isMetamaskPresent}
-        />
-      ) : null}
+      {routeNetworkId === "0x1" && (
+        <div>
+          <Modal className={classes.statusModal}>
+            <div className={classes.image}>
+              <Image
+                src={"/assets/images/astronaut3.png"}
+                height={220}
+                width={220}
+                alt="Create club"
+              />
+            </div>
+            <Typography className={classes.heading} variant="inherit">
+              GM, we&apos;re upgrading StationX
+            </Typography>
+            <Typography className={classes.subheading} variant="inherit">
+              We&apos;ll be back soon!
+            </Typography>
+          </Modal>
+        </div>
+      )}
+      <>
+        {TOKEN_TYPE === "erc20" ? (
+          <ERC20
+            clubInfo={clubInfo}
+            daoAddress={daoAddress}
+            remainingClaimAmount={remainingClaimAmount}
+            isTokenGated={isTokenGated}
+            daoDetails={daoDetails}
+            isEligibleForTokenGating={isEligibleForTokenGating}
+            whitelistUserData={whitelistUserData}
+            networkId={networkId}
+            gatedTokenDetails={gatedTokenDetails}
+            depositConfig={depositConfig}
+            isSignable={isSignable}
+            allowanceValue={allowanceValue}
+            fetchCurrentAllowance={fetchCurrentAllowance}
+            fetchErc20ContractDetails={fetchErc20ContractDetails}
+            routeNetworkId={routeNetworkId}
+            isMetamaskPresent={isMetamaskPresent}
+          />
+        ) : TOKEN_TYPE === "erc721" ? (
+          <ERC721
+            daoAddress={daoAddress}
+            clubInfo={clubInfo}
+            isTokenGated={isTokenGated}
+            daoDetails={daoDetails}
+            isEligibleForTokenGating={isEligibleForTokenGating}
+            whitelistUserData={whitelistUserData}
+            networkId={networkId}
+            gatedTokenDetails={gatedTokenDetails}
+            depositConfig={depositConfig}
+            isSignable={isSignable}
+            allowanceValue={allowanceValue}
+            fetchCurrentAllowance={fetchCurrentAllowance}
+            fetchErc721ContractDetails={fetchErc721ContractDetails}
+            routeNetworkId={routeNetworkId}
+            isMetamaskPresent={isMetamaskPresent}
+          />
+        ) : null}
 
-      <BackdropLoader isOpen={loading} />
+        <BackdropLoader isOpen={loading} />
+      </>
     </>
   );
 };

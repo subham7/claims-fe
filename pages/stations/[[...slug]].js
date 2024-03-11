@@ -253,7 +253,6 @@ const StationsPage = () => {
                 <div style={{ overflowY: "scroll", maxHeight: "60vh" }}>
                   {walletAddress && clubListData.length ? (
                     clubListData
-                      .reverse()
                       .filter((club) => !OMIT_DAOS.includes(club.daoAddress))
                       .map((club, key) => {
                         return (

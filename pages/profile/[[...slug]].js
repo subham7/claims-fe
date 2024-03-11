@@ -26,6 +26,7 @@ const StationCard = ({ club }) => {
     isActive,
     networkId,
     daoAddress,
+    clubSocials,
   } = club;
 
   return (
@@ -40,7 +41,7 @@ const StationCard = ({ club }) => {
           className={classes.stnImg}
         /> */}
         <Image
-          src={"/assets/images/fallbackDao.png"}
+          src={clubSocials?.logoUrl ?? "/assets/images/fallbackDao.png"}
           height={60}
           width={60}
           alt="Fallback Image"
@@ -56,7 +57,7 @@ const StationCard = ({ club }) => {
           </Typography>
           <div>
             <div>Total Raised</div>
-            <div>{Number(totalAmountRaised).toFixed(4)} USDC</div>
+            <div>{Number(totalAmountRaised ?? 0).toFixed(4)} USDC</div>
           </div>
           <div>
             <div>Last Date</div>
@@ -151,8 +152,12 @@ const ProfilePage = () => {
             className={classes.img}
           />
           <div>
-            <Typography variant="subheading">{userData?.userName}</Typography>
-            <Typography variant="body">{userData?.bio}</Typography>
+            <Typography className={classes.truncateInfo} variant="subheading">
+              {userData?.userName}
+            </Typography>
+            <Typography className={classes.truncateInfo} variant="body">
+              {userData?.bio}
+            </Typography>
             <Typography className={classes.linkDiv} variant="body">
               {userData?.socialLinks?.website && <RiLinkM />}
               <div

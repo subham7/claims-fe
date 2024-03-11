@@ -174,12 +174,20 @@ export const factoryContractABI = [
     type: "error",
   },
   {
-    inputs: [
+    inputs: [],
+    name: "_isPaused",
+    outputs: [
       {
-        internalType: "address",
-        name: "_user",
-        type: "address",
+        internalType: "bool",
+        name: "",
+        type: "bool",
       },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
       {
         internalType: "address payable",
         name: "_daoAddress",
@@ -203,11 +211,6 @@ export const factoryContractABI = [
   },
   {
     inputs: [
-      {
-        internalType: "address",
-        name: "_user",
-        type: "address",
-      },
       {
         internalType: "address payable",
         name: "_daoAddress",
@@ -328,11 +331,6 @@ export const factoryContractABI = [
         type: "address",
       },
       {
-        internalType: "address",
-        name: "_gnosisAddress",
-        type: "address",
-      },
-      {
         internalType: "address[]",
         name: "_admins",
         type: "address[]",
@@ -413,11 +411,6 @@ export const factoryContractABI = [
       {
         internalType: "address",
         name: "_depositTokenAddress",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "_gnosisAddress",
         type: "address",
       },
       {
@@ -660,6 +653,19 @@ export const factoryContractABI = [
     inputs: [
       {
         internalType: "address",
+        name: "tokenAddr",
+        type: "address",
+      },
+    ],
+    name: "rescueFunds",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
         name: "_tokenA",
         type: "address",
       },
@@ -692,6 +698,13 @@ export const factoryContractABI = [
     name: "setupTokenGating",
     outputs: [],
     stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "togglePause",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {

@@ -83,7 +83,6 @@ const EditProfileDetails = ({
   userData,
   getUserProfileData,
 }) => {
-  console.log({ userData });
   const theme = useTheme();
   const classes = useStyles(theme);
   const dispatch = useDispatch();
