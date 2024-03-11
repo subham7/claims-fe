@@ -117,8 +117,7 @@ const DepositInput = ({
 
       {walletAddress && networkId === routeNetworkId ? (
         <Button
-          disabled={routeNetworkId === "0x1" ? true : isDisabled}
-          // disabled={true}
+          disabled={isDisabled}
           onClick={onDepositClick}
           variant="contained"
           sx={{
