@@ -13,6 +13,15 @@ import { switchNetworkHandler } from "utils/helper";
 import { useAccount, useNetwork } from "wagmi";
 import classes from "../../claims/Claim.module.scss";
 
+const ClaimInputShimmer = () => {
+  return (
+    <div>
+      <Skeleton width={120} height={60} />
+      <Skeleton height={40} width={150} />
+    </div>
+  );
+};
+
 const DepositInput = ({
   formik,
   tokenDetails,
@@ -21,15 +30,6 @@ const DepositInput = ({
   approveERC20Handler,
   routeNetworkId,
 }) => {
-  const ClaimInputShimmer = () => {
-    return (
-      <div>
-        <Skeleton width={120} height={60} />
-        <Skeleton height={40} width={150} />
-      </div>
-    );
-  };
-
   const { address: walletAddress } = useAccount();
   const { open } = useWeb3Modal();
   const { chain } = useNetwork();
