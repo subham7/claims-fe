@@ -54,7 +54,7 @@ const StatusModal = ({
       {isErc20 ? (
         <Button
           onClick={() =>
-            addTokenToWallet(params[2], clubData.symbol, clubData.imgUrl)
+            addTokenToWallet(params[2], clubData?.symbol, clubData?.imgUrl)
           }
           variant="contained"
           sx={{
@@ -64,7 +64,7 @@ const StatusModal = ({
             fontFamily: "inherit",
             fontSize: "12px",
           }}>
-          Add Governance Token To Your Wallet
+          Add ${clubData?.symbol} Your Wallet
         </Button>
       ) : null}
     </Modal>

@@ -38,7 +38,7 @@ const TreasuryItem = ({
                 src={"/assets/icons/metamask.png"}
                 height={24}
                 width={24}
-                title="Add governance token to your wallet"
+                title={`Add $${clubData?.symbol} token to your wallet`}
               />
             ) : (
               ""
