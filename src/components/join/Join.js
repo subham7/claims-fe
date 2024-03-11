@@ -316,10 +316,10 @@ const Join = ({ daoAddress, routeNetworkId }) => {
               />
             </div>
             <Typography className={classes.heading} variant="inherit">
-              StationX is currently down!!
+              GM, we&apos;re upgrading StationX
             </Typography>
             <Typography className={classes.subheading} variant="inherit">
-              We are under maintainance, please check again later
+              We&apos;ll be back soon!
             </Typography>
           </Modal>
         </div>
