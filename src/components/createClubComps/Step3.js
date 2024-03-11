@@ -133,6 +133,8 @@ export default function Step3(props) {
             id="deploySafe"
             value="oldSafe">
             I already have a multisig wallet
+            <br />
+            Coming soon
           </ToggleButton>
         </Tooltip>
       </ToggleButtonGroup>
