@@ -26,6 +26,7 @@ import StatusModal from "@components/modals/StatusModal/StatusModal";
 import CreateClubModal from "@components/modals/CreateClubModal/CreateClubModal";
 import BackdropLoader from "@components/common/BackdropLoader";
 import DashboardActionContainer from "./dashboardActions/DashboardActionContainer";
+import { BigNumber } from "bignumber.js";
 
 const Dashboard = ({ daoAddress, routeNetworkId }) => {
   const gnosisAddress = useSelector((state) => {
@@ -84,15 +85,24 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
     try {
       if (daoAddress && networkId) {
         if (clubData) {
-          let totalSupply, totalNftMinted, percentageShare, balance, myBalance;
+          let percentageShare;
+
+          const myBalance = await getBalance(daoAddress);
+
           if (tokenType === "erc20") {
-            totalSupply = await getERC20TotalSupply();
-            myBalance = await getBalance(daoAddress);
-            percentageShare = (myBalance / totalSupply) * 100;
+            const totalSupply = await getERC20TotalSupply();
+            percentageShare = BigNumber(myBalance)
+              .dividedBy(totalSupply?.bigNumberValue)
+              .times(100)
+              .integerValue()
+              .toFixed();
           } else if (tokenType === "erc721") {
-            totalNftMinted = await getNftOwnersCount();
-            myBalance = await getBalance(daoAddress);
-            percentageShare = (myBalance / totalNftMinted) * 100;
+            const totalNftMinted = await getNftOwnersCount();
+            percentageShare = BigNumber(myBalance)
+              .dividedBy(totalNftMinted?.bigNumberValue)
+              .times(100)
+              .integerValue()
+              .toFixed();
           }
           setMyShare(percentageShare ? Number(percentageShare) : 0);
         }

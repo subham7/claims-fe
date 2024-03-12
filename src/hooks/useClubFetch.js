@@ -37,7 +37,7 @@ const useClubFetch = ({ daoAddress, routeNetworkId }) => {
     routeNetworkId,
   });
 
-  const { getDecimals } = useCommonContractMethods({
+  const { getDecimals, getTokenSymbol } = useCommonContractMethods({
     routeNetworkId,
   });
 
@@ -147,6 +147,9 @@ const useClubFetch = ({ daoAddress, routeNetworkId }) => {
         const depositTokenDecimal = await getDecimals(
           daoDetails.depositTokenAddress,
         );
+        const depositTokenSymbol = await getTokenSymbol(
+          daoDetails.depositTokenAddress,
+        );
 
         // Loop through the stations in data and add depositTokenAddress to each station
         const updatedData = {
@@ -157,7 +160,8 @@ const useClubFetch = ({ daoAddress, routeNetworkId }) => {
             distributionAmount: convertToFullNumber(
               daoDetails.distributionAmount.toString(),
             ),
-            depositTokenDecimal: depositTokenDecimal,
+            depositTokenDecimal,
+            depositTokenSymbol,
           })),
         };
         if (data) {

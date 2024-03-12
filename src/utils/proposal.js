@@ -1,7 +1,7 @@
 import { getProposalByDaoAddress } from "../api/proposal";
 import { createCancelProposal, getProposalTxHash } from "api/proposal";
 import Web3 from "web3";
-import { convertToFullNumber, getIncreaseGasPrice, getSafeSdk } from "./helper";
+import { getIncreaseGasPrice, getSafeSdk } from "./helper";
 import { factoryContractABI } from "abis/factoryContract.js";
 import { erc721DaoABI } from "abis/erc721Dao";
 import { erc20DaoABI } from "abis/erc20Dao";
@@ -44,6 +44,7 @@ import { rocketPoolABI } from "abis/rocketPool/rocketPoolContract";
 import { rETHTokenABI } from "abis/rocketPool/rETHTokenContract";
 import { mantlePoolABI } from "abis/mantlePool/manelPoolContract";
 import { LayerBankABI } from "abis/layerBankContract";
+import { BigNumber } from "bignumber.js";
 
 export const fetchProposals = async (daoAddress, type) => {
   let proposalData;
@@ -327,12 +328,15 @@ export const getEncodedData = async ({
       return { data };
 
     case 3:
+      const value = BigNumber(
+        convertToWeiGovernance(totalDeposits, tokenDecimals),
+      )
+        .dividedBy(clubData?.pricePerTokenFormatted?.bigNumberValue)
+        .integerValue()
+        .toString();
+
       data = iface.encodeFunctionData("updateTotalRaiseAmount", [
-        convertToWeiGovernance(
-          convertToWeiGovernance(totalDeposits, tokenDecimals) /
-            clubData?.pricePerToken,
-          18,
-        ),
+        convertToWeiGovernance(value, 18),
         clubData?.pricePerTokenFormatted?.actualValue,
         daoAddress,
       ]);
@@ -452,8 +456,10 @@ export const getEncodedData = async ({
       return { data, approvalData };
     case 13:
       data = iface.encodeFunctionData("updateTotalRaiseAmount", [
-        convertToFullNumber(clubData?.distributionAmount + ""),
-        convertToWeiGovernance(pricePerToken, tokenDecimals),
+        clubData?.distributionAmountFormatted?.bigNumberValue
+          ?.integerValue()
+          .toFixed(),
+        convertToWeiGovernance(pricePerToken, clubData?.depositTokenDecimal),
         daoAddress,
       ]);
       return { data };
@@ -472,13 +478,13 @@ export const getEncodedData = async ({
         return {};
       } else {
         const totalAmount = sendTokenAmounts.reduce(
-          (partialSum, a) => partialSum + Number(a),
+          (partialSum, a) => BigNumber(partialSum).plus(BigNumber(a)),
           0,
         );
 
         approvalData = iface.encodeFunctionData("approve", [
           CHAIN_CONFIG[networkId]?.airdropContractAddress,
-          (totalAmount * 2).toString(),
+          BigNumber(totalAmount).times(2).integerValue().toString(),
         ]);
 
         data = iface.encodeFunctionData("airDropToken", [

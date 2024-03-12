@@ -96,7 +96,7 @@ const Join = ({ daoAddress, routeNetworkId }) => {
       if (clubData?.depositCloseTime && nftMinted >= 0) {
         setDaoDetails({
           depositDeadline: clubData?.depositCloseTime,
-          nftMinted: nftMinted,
+          nftMinted: nftMinted.actualValue,
         });
       }
       setLoading(false);

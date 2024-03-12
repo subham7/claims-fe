@@ -81,18 +81,11 @@ export const proposalData = ({
       };
     case 3:
       return {
-        "Raise Amount :":
-          (convertToWeiGovernance(
-            convertToWeiGovernance(totalDeposits, decimals) /
-              factoryData?.pricePerToken,
-            18,
-          ) /
-            10 ** 18) *
-          factoryData?.pricePerTokenFormatted?.formattedValue,
+        "Raise Amount :": totalDeposits,
       };
     case 4:
       return {
-        Amount: customTokenAmounts[0] / 10 ** decimals,
+        Amount: convertFromWeiGovernance(customTokenAmounts[0], decimals),
         Recipient: shortAddress(customTokenAddresses[0]),
       };
     case 5:
@@ -1946,21 +1939,13 @@ export const proposalDetailsData = ({
 
     case 3:
       responseData.data = {
-        "Raise Amount :":
-          (convertToWeiGovernance(
-            convertToWeiGovernance(totalDeposits, decimals) /
-              factoryData?.pricePerToken,
-            18,
-          ) /
-            10 ** 18) *
-          // convertFromWeiGovernance(factoryData?.pricePerToken, decimals),
-          factoryData?.pricePerTokenFormatted?.formattedValue,
+        "Raise Amount :": totalDeposits,
       };
       return responseData;
 
     case 4:
       responseData.data = {
-        Amount: customTokenAmounts[0] / 10 ** decimals,
+        Amount: convertFromWeiGovernance(customTokenAmounts[0], decimals),
         Recipient: shortAddress(customTokenAddresses[0]),
       };
       return responseData;
@@ -2113,6 +2098,7 @@ export const getSafeTransaction = async (
   walletAddress,
   gnosisTxUrl,
 ) => {
+  debugger;
   return await getSafeSdk(gnosisAddress, walletAddress, gnosisTxUrl);
 };
 

@@ -32,6 +32,7 @@ import Modal from "@components/common/Modal/Modal";
 import Image from "next/image";
 import { Typography } from "@mui/material";
 import classes from "@components/modals/StatusModal/StatusModal.module.scss";
+import { BigNumber } from "bignumber.js";
 
 const DepositInputComponents = ({
   formik,
@@ -242,11 +243,15 @@ const ERC20 = ({
         setLoading(true);
         const inputValue = convertToWeiGovernance(
           values.tokenInput,
-          tokenDetails?.tokenDecimal,
+          clubData?.depositTokenDecimal,
         );
+
         await buyGovernanceTokenERC20DAO(
           convertToWeiGovernance(
-            (inputValue / +clubData?.pricePerToken).toString(),
+            BigNumber(inputValue)
+              .dividedBy(clubData?.pricePerTokenFormatted?.bigNumberValue)
+              .integerValue()
+              .toString(),
             18,
           ),
           whitelistUserData?.proof ? whitelistUserData.proof : [],

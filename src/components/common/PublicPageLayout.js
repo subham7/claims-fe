@@ -85,7 +85,9 @@ const PublicPageLayout = ({
 
         {isDeposit ? (
           clubData?.tokenType === "erc721" &&
-          Number(clubData?.distributionAmount) === 0 ? null : (
+          clubData?.distributionAmountFormatted?.bigNumberValue.isEqualTo(
+            0,
+          ) ? null : (
             <DepositProgress
               clubData={clubData}
               tokenDetails={tokenDetails}

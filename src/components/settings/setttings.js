@@ -103,7 +103,7 @@ const Settings = ({ daoAddress, routeNetworkId }) => {
           threshold: erc20Data.threshold,
           isGovernance: erc20Data.isGovernanceActive,
           decimals: erc20DaoDecimal,
-          clubTokensMinted: clubTokensMinted,
+          clubTokensMinted: clubTokensMinted.actualValue,
           isTokenGated: clubData.isTokenGatingApplied,
           minDeposit: clubData.minDepositPerUser,
           maxDeposit: clubData.maxDepositPerUser,

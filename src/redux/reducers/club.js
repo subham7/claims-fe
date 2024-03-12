@@ -21,9 +21,7 @@ export const slice = createSlice({
       threshold: null,
       raiseAmount: null,
       totalAmountRaised: null,
-      distributionAmount: null,
       maxTokensPerUser: null,
-      depositTokenAddress: null,
       assetsStoredOnGnosis: null,
       depositCloseTime: null,
       depositTokenAddress: null,
@@ -36,6 +34,7 @@ export const slice = createSlice({
       minDepositPerUser: null,
       ownerFeePerDepositPercent: null,
       depositTokenDecimal: null,
+      depositTokenSymbol: null,
       pricePerTokenFormatted: {
         formattedValue: null,
         actualValue: null,
@@ -131,6 +130,7 @@ export const slice = createSlice({
         action.payload.distributionAmountFormatted;
 
       state.clubData.depositTokenDecimal = action.payload.depositTokenDecimal;
+      state.clubData.depositTokenSymbol = action.payload.depositTokenSymbol;
     },
     addErc20ClubDetails: (state, action) => {
       state.erc20ClubDetails.quorum = action.payload.quorum;

@@ -16,6 +16,8 @@ import {
   signAndConfirmTransaction,
 } from "utils/proposalData";
 import { eigenContractABI } from "abis/eigenContract";
+import { BigNumber } from "bignumber.js";
+import { convertFromWeiGovernance } from "utils/globalFunctions";
 
 const useAppContractMethods = (params) => {
   const walletClient = useWalletClient();
@@ -189,7 +191,11 @@ const useAppContractMethods = (params) => {
         networkId: routeNetworkId ?? networkId,
       });
 
-      return Number(response ?? 0);
+      return {
+        actualValue: response ?? 0,
+        bigNumberValue: BigNumber(response ?? 0),
+        formattedValue: convertFromWeiGovernance(response ?? 0, 18),
+      };
     } catch (error) {
       console.log(error);
     }
@@ -205,7 +211,10 @@ const useAppContractMethods = (params) => {
         // account: walletAddress,
         networkId: routeNetworkId ?? networkId,
       });
-      return Number(response ?? 0);
+      return {
+        actualValue: response ?? 0,
+        bigNumberValue: BigNumber(response ?? 0),
+      };
     } catch (error) {
       console.error(error);
     }
