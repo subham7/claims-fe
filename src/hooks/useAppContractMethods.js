@@ -192,7 +192,7 @@ const useAppContractMethods = (params) => {
       });
 
       return {
-        actualValue: response ?? 0,
+        actualValue: Number(response ?? 0),
         bigNumberValue: BigNumber(response ?? 0),
         formattedValue: convertFromWeiGovernance(response ?? 0, 18),
       };

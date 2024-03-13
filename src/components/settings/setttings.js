@@ -46,7 +46,6 @@ const Settings = ({ daoAddress, routeNetworkId }) => {
   const [erc20TokenDetails, setErc20TokenDetails] = useState({
     tokenSymbol: "",
     tokenBalance: 0,
-    tokenName: "",
     tokenDecimal: 0,
   });
   const [members, setMembers] = useState(0);
@@ -87,14 +86,13 @@ const Settings = ({ daoAddress, routeNetworkId }) => {
     getNftOwnersCount,
   } = useAppContractMethods({ daoAddress });
 
-  const { getDecimals, getBalance, getTokenName, getTokenSymbol } =
-    useCommonContractMethods({ routeNetworkId });
+  const { getBalance } = useCommonContractMethods({ routeNetworkId });
 
   const fetchErc20ContractDetails = useCallback(async () => {
     try {
       const erc20Data = await getERC20DAOdetails();
-      const erc20DaoDecimal = await getDecimals(daoAddress);
       const clubTokensMinted = await getERC20TotalSupply();
+
       if (erc20Data && clubData) {
         setDaoDetails({
           daoName: erc20Data.DaoName,
@@ -102,8 +100,8 @@ const Settings = ({ daoAddress, routeNetworkId }) => {
           quorum: erc20Data.quorum,
           threshold: erc20Data.threshold,
           isGovernance: erc20Data.isGovernanceActive,
-          decimals: erc20DaoDecimal,
-          clubTokensMinted: clubTokensMinted.actualValue,
+          decimals: 18, // dao Decimals
+          clubTokensMinted: clubTokensMinted?.actualValue,
           isTokenGated: clubData.isTokenGatingApplied,
           minDeposit: clubData.minDepositPerUser,
           maxDeposit: clubData.maxDepositPerUser,
@@ -138,9 +136,8 @@ const Settings = ({ daoAddress, routeNetworkId }) => {
         balanceOfToken = await getBalance(clubData.depositTokenAddress);
       }
 
-      const decimals = await getDecimals(clubData.depositTokenAddress);
-      const symbol = await getTokenSymbol(clubData.depositTokenAddress);
-      const name = await getTokenName(clubData.depositTokenAddress);
+      const decimals = clubData?.depositTokenDecimal;
+      const symbol = clubData?.depositTokenSymbol;
 
       const balanceConverted = convertFromWeiGovernance(
         balanceOfToken,
@@ -149,7 +146,6 @@ const Settings = ({ daoAddress, routeNetworkId }) => {
       setErc20TokenDetails({
         tokenBalance: +balanceConverted,
         tokenSymbol: symbol,
-        tokenName: name,
         tokenDecimal: decimals,
       });
     } catch (error) {
@@ -172,7 +168,7 @@ const Settings = ({ daoAddress, routeNetworkId }) => {
           isGovernance: erc721Data.isGovernanceActive,
           maxTokensPerUser: erc721Data.maxTokensPerUser,
           isTotalSupplyUnlimited: erc721Data.isNftTotalSupplyUnlimited,
-          nftMinted: nftMinted,
+          nftMinted: nftMinted?.actualValue,
           isTransferable: erc721Data.isTransferable,
           createdBy: erc721Data.ownerAddress,
           isTokenGated: clubData.isTokenGatingApplied,

@@ -40,7 +40,7 @@ export const slice = createSlice({
         actualValue: null,
         bigNumberValue: null,
       },
-      minDepositAmountFomatted: {
+      minDepositAmountFormatted: {
         formattedValue: null,
         actualValue: null,
         bigNumberValue: null,
@@ -119,8 +119,8 @@ export const slice = createSlice({
       state.clubData.merkleRoot = action.payload.merkleRoot;
       state.clubData.pricePerTokenFormatted =
         action.payload.pricePerTokenFormatted;
-      state.clubData.minDepositAmountFomatted =
-        action.payload.minDepositAmountFomatted;
+      state.clubData.minDepositAmountFormatted =
+        action.payload.minDepositAmountFormatted;
       state.clubData.maxDepositAmountFormatted =
         action.payload.maxDepositAmountFormatted;
       state.clubData.raiseAmountFormatted = action.payload.raiseAmountFormatted;

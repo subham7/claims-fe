@@ -229,7 +229,6 @@ export const getEncodedData = async ({
   contractABI,
   setMembers,
   networkId,
-  getDecimals,
 }) => {
   let membersArray = [];
   let airDropAmountArray = [];
@@ -262,7 +261,7 @@ export const getEncodedData = async ({
 
   let iface;
   if (contractABI) iface = new Interface(contractABI);
-  const tokenDecimals = await getDecimals(clubData?.depositTokenAddress);
+  const tokenDecimals = clubData?.depositTokenDecimal;
 
   switch (executionId) {
     case 0:

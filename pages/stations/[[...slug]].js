@@ -18,6 +18,8 @@ import { convertToFullNumber, shortAddress } from "utils/helper";
 import { useRouter } from "next/router";
 import BackdropLoader from "@components/common/BackdropLoader";
 import useAppContractMethods from "hooks/useAppContractMethods";
+import { convertFromWeiGovernance } from "utils/globalFunctions";
+import { BigNumber } from "bignumber.js";
 
 const useStyles = makeStyles({
   container: {
@@ -163,6 +165,61 @@ const StationsPage = () => {
             totalAmountRaised: clubData.stations[0].totalAmountRaised,
             maxTokensPerUser: clubData.stations[0].maxTokensPerUser,
             ...daoDetails,
+
+            raiseAmountFormatted: {
+              formattedValue: convertFromWeiGovernance(
+                clubData.raiseAmount,
+                clubData.depositTokenDecimal,
+              ),
+              actualValue: clubData.raiseAmount,
+              bigNumberValue: BigNumber(clubData.raiseAmount),
+            },
+
+            totalAmountRaisedFormatted: {
+              formattedValue: convertFromWeiGovernance(
+                clubData.totalAmountRaised,
+                clubData.depositTokenDecimal,
+              ),
+              actualValue: clubData.totalAmountRaised,
+              bigNumberValue: BigNumber(clubData.totalAmountRaised),
+            },
+
+            distributionAmountFormatted: {
+              formattedValue: convertFromWeiGovernance(
+                clubData.distributionAmount,
+                18,
+              ),
+              actualValue: clubData.distributionAmount,
+              bigNumberValue: BigNumber(clubData.distributionAmount),
+            },
+
+            minDepositAmountFormatted: {
+              formattedValue: convertFromWeiGovernance(
+                clubData?.minDepositAmount,
+                clubData?.depositTokenDecimal,
+              ),
+              actualValue: clubData?.minDepositAmount,
+              bigNumberValue: BigNumber(clubData?.minDepositAmount),
+            },
+
+            maxDepositAmountFormatted: {
+              formattedValue: convertFromWeiGovernance(
+                clubData?.maxDepositAmount,
+                clubData?.depositTokenDecimal,
+              ),
+              actualValue: clubData?.maxDepositAmount,
+              bigNumberValue: BigNumber(clubData?.maxDepositAmount),
+            },
+
+            pricePerTokenFormatted: {
+              formattedValue: convertFromWeiGovernance(
+                clubData?.pricePerToken,
+                clubData?.depositTokenDecimal,
+              ),
+              actualValue: clubData?.pricePerToken,
+              bigNumberValue: BigNumber(clubData?.pricePerToken),
+            },
+
             distributionAmount: convertToFullNumber(
               daoDetails.distributionAmount.toString(),
             ),

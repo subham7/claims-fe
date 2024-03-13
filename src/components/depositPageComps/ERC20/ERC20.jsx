@@ -98,8 +98,9 @@ const ERC20 = ({
 
   const router = useRouter();
   const dispatch = useDispatch();
-  const { approveDeposit, getDecimals, getTokenSymbol, getBalance } =
-    useCommonContractMethods({ routeNetworkId });
+  const { approveDeposit, getBalance } = useCommonContractMethods({
+    routeNetworkId,
+  });
   const publicClient = getPublicClient(networkId);
 
   const { buyGovernanceTokenERC20DAO } = useAppContractMethods({
@@ -140,17 +141,14 @@ const ERC20 = ({
     setIsW8BenSigned(newValue);
   };
 
+  console.log(clubData);
+
   const minValidation = yup.object().shape({
     tokenInput: yup
       .number()
       .required("Input is required")
       .min(
-        Number(
-          convertFromWeiGovernance(
-            clubData?.minDepositAmount,
-            tokenDetails?.tokenDecimal,
-          ),
-        ),
+        Number(clubData?.minDepositAmountFormatted?.formattedValue),
         "Amount should be greater than min deposit",
       )
       .lessThan(
@@ -158,12 +156,7 @@ const ERC20 = ({
         "Amount can't be greater than wallet balance",
       )
       .max(
-        Number(
-          convertFromWeiGovernance(
-            clubData?.maxDepositAmount,
-            tokenDetails?.tokenDecimal,
-          ),
-        ),
+        Number(clubData?.maxDepositAmountFormatted?.formattedValue),
         "Amount should be less than max deposit",
       ),
   });
@@ -289,8 +282,8 @@ const ERC20 = ({
         routeNetworkId,
       );
 
-      const decimals = await getDecimals(depositTokenAddress);
-      const symbol = await getTokenSymbol(depositTokenAddress);
+      const decimals = clubData.depositTokenDecimal;
+      const symbol = clubData.depositTokenSymbol;
       let userBalance = 0;
 
       if (walletAddress) {
@@ -357,6 +350,16 @@ const ERC20 = ({
 
     const isRemainingTimeInvalid =
       remainingDays < 0 || remainingTimeInSecs <= 0;
+
+    console.log(
+      "xxx",
+      isRemainingTimeInvalid,
+      +clubData?.raiseAmount <= +clubData?.totalAmountRaised,
+      +remainingClaimAmount <= 0,
+      formik.values.tokenInput === 0,
+      Number(tokenDetails.userBalance) < formik.values.tokenInput,
+      formik.errors.tokenInput,
+    );
 
     if (isRemainingTimeInvalid) return true;
     else if (isTokenGated && !isEligibleForTokenGating) return true;
