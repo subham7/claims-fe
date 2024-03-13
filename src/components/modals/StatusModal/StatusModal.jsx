@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import React from "react";
 import classes from "./StatusModal.module.scss";
+import { addTokenToWallet } from "utils/walletHelper";
+import { useSelector } from "react-redux";
 
 const StatusModal = ({
   heading,
@@ -12,8 +14,14 @@ const StatusModal = ({
   onClose,
   buttonText,
   onButtonClick,
+  isErc20,
 }) => {
   const router = useRouter();
+  const params = router.asPath.split("/");
+
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
+  });
 
   return (
     <Modal onClose={onClose} className={classes.statusModal}>
@@ -43,6 +51,22 @@ const StatusModal = ({
         className={classes.button}>
         {buttonText}
       </Button>
+      {isErc20 ? (
+        <Button
+          onClick={() =>
+            addTokenToWallet(params[2], clubData?.symbol, clubData?.imgUrl)
+          }
+          variant="contained"
+          sx={{
+            width: "100%",
+            padding: "12px 0",
+            margin: "12px 0",
+            fontFamily: "inherit",
+            fontSize: "12px",
+          }}>
+          Add ${clubData?.symbol} Your Wallet
+        </Button>
+      ) : null}
     </Modal>
   );
 };

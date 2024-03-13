@@ -52,13 +52,13 @@ const Header = ({
 
   return (
     <>
-      {routeNetworkId === "0x1" && (
+      {/* {routeNetworkId === "0x1" && (
         <div className={classes.infoContainer}>
           GM Astronaut! StationX is currently undergoing maintenance.
           <br />
           {`We'll be back shortly!`}
         </div>
-      )}
+      )} */}
       {logoUrl ? (
         <Image
           className={classes.logoImg}

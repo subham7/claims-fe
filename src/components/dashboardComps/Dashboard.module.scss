@@ -60,6 +60,13 @@
           .title {
             font-weight: 500;
             font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            > img {
+              cursor: pointer;
+            }
           }
 
           .value {

@@ -860,16 +860,16 @@ export const stationNetworksChainId = [
   //   chainId: 100,
   //   networkId: "0x64",
   // },
-  {
-    chainId: 59144,
-    networkId: "0xe708",
-  },
-  { chainId: 534352, networkId: "0x82750" },
+  // {
+  //   chainId: 59144,
+  //   networkId: "0xe708",
+  // },
+  // { chainId: 534352, networkId: "0x82750" },
 ];
 
 export const ALLOWED_NETWORKS_FOR_STATION = [
   "0x89",
   "0x1",
-  "0xe708",
-  "0x82750",
+  // "0xe708",
+  // "0x82750",
 ];

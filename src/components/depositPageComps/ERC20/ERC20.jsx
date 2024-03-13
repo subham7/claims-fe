@@ -459,6 +459,7 @@ const ERC20 = ({
           onButtonClick={() => {
             router.push(`/dashboard/${daoAddress}/${networkId}?join=true`);
           }}
+          isErc20={true}
         />
       ) : failed ? (
         <StatusModal
