@@ -213,10 +213,13 @@ export const CHAIN_CONFIG = {
     },
     rpcUrls: ["https://arb1.arbitrum.io/rpc"],
     appRpcUrl: `https://arbitrum-mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
-    factoryContractAddress: "",
+    factoryContractAddress: "0x7213172eAad75D3d94Bc09ff4E0008f7FF66b041",
     claimFactoryAddress: "0x28F06a3415A741367303Db36a6646C354cCE1340",
     claimsSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-arbitrum/prod/gn",
+    stationSubgraphUrl:
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-arbitrum/prod/gn",
+    usdcAddress: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
     covalentNetworkName: "arbitrum-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     blockExplorerUrl: "https://arbiscan.io",
@@ -856,6 +859,10 @@ export const stationNetworksChainId = [
     chainId: 1,
     networkId: "0x1",
   },
+  {
+    chainId: 42161,
+    networkId: "0xa4b1",
+  },
   // {
   //   chainId: 100,
   //   networkId: "0x64",
@@ -870,6 +877,7 @@ export const stationNetworksChainId = [
 export const ALLOWED_NETWORKS_FOR_STATION = [
   "0x89",
   "0x1",
+  "0xa4b1",
   // "0xe708",
   // "0x82750",
 ];
