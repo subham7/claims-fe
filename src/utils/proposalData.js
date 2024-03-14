@@ -25,7 +25,13 @@ import { getProposalTxHash } from "api/proposal";
 import { createSafeTransactionData } from "./proposal";
 import { CHAIN_CONFIG } from "./constants";
 
-export const proposalData = ({ data, decimals, factoryData, symbol }) => {
+export const proposalData = ({
+  data,
+  decimals,
+  factoryData,
+  symbol,
+  isNativeClub,
+}) => {
   const {
     executionId,
     airDropAmount,
@@ -60,9 +66,13 @@ export const proposalData = ({ data, decimals, factoryData, symbol }) => {
     case 1:
       return {
         "No of recipients :": mintGTAddresses?.length,
-        "Tokens to be minted: ":
-          mintGTAmounts?.reduce((partialSum, a) => partialSum + Number(a), 0) /
-          10 ** decimals,
+        "Tokens to be minted: ": isNativeClub
+          ? mintGTAmounts?.reduce((partialSum, a) => partialSum + Number(a), 0)
+          : mintGTAmounts?.reduce(
+              (partialSum, a) => partialSum + Number(a),
+              0,
+            ) /
+            10 ** decimals,
       };
     case 2:
       return {
@@ -213,7 +223,7 @@ export const proposalFormData = ({
               onChange={(e) => {
                 formik.setFieldValue(
                   "airdropToken",
-                  tokenData?.find((token) => token.symbol === e.target.value)
+                  tokenData?.find((token) => token.address === e.target.value)
                     .address,
                 );
               }}
@@ -221,7 +231,8 @@ export const proposalFormData = ({
                 if (selected.length === 0) {
                   return "Select a command";
                 }
-                return selected;
+                return tokenData?.find((token) => token.address === selected)
+                  .symbol;
               }}
               inputProps={{ "aria-label": "Without label" }}
               name="airdropToken"
@@ -229,7 +240,7 @@ export const proposalFormData = ({
               {tokenData
                 ?.filter((token) => token.address !== [networkId].nativeToken)
                 .map((token) => (
-                  <MenuItem key={token.symbol} value={token.symbol}>
+                  <MenuItem key={token.address} value={token.address}>
                     {token.symbol}
                   </MenuItem>
                 ))}
@@ -1889,6 +1900,7 @@ export const proposalDetailsData = ({
   decimals,
   factoryData,
   symbol,
+  isNativeClub,
 }) => {
   const {
     executionId,
@@ -1930,12 +1942,17 @@ export const proposalDetailsData = ({
         Amount: convertFromWeiGovernance(airDropAmount, decimals),
         " Carry fee": airDropCarryFee,
       };
+
       return responseData;
     case 1:
       responseData.data = {
-        "Total Amount":
-          mintGTAmounts?.reduce((partialSum, a) => partialSum + Number(a), 0) /
-          10 ** 18,
+        "Total Amount": isNativeClub
+          ? mintGTAmounts?.reduce((partialSum, a) => partialSum + Number(a), 0)
+          : mintGTAmounts?.reduce(
+              (partialSum, a) => partialSum + Number(a),
+              0,
+            ) /
+            10 ** 18,
         Recipients: mintGTAddresses
           ?.map((address) => shortAddress(address))
           .join(", "),

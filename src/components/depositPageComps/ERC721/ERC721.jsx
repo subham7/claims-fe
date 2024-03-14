@@ -23,6 +23,10 @@ import { formatEther } from "viem";
 import { getPublicClient } from "utils/viemConfig";
 import { isNative } from "utils/helper";
 import { addClubData } from "redux/reducers/club";
+import Image from "next/image";
+import Modal from "@components/common/Modal/Modal";
+import { Typography } from "@mui/material";
+import classes from "@components/modals/StatusModal/StatusModal.module.scss";
 
 const DepositInputComponents = ({ depositPreRequisitesProps, mintProps }) => {
   return (
@@ -48,12 +52,14 @@ const ERC721 = ({
   fetchCurrentAllowance,
   fetchErc721ContractDetails,
   routeNetworkId,
+  isMetamaskPresent,
 }) => {
   const [tokenDetails, setTokenDetails] = useState({
     tokenDecimal: 0,
     tokenSymbol: "",
     userBalance: 0,
     tokenName: "",
+    isNativeToken: false,
   });
   const [active, setActive] = useState(false);
   const [members, setMembers] = useState([]);
@@ -158,6 +164,7 @@ const ERC721 = ({
           tokenName: name,
           tokenDecimal: decimals,
           userBalance: userBalance,
+          isNativeToken: isNativeToken,
         });
       }
     } catch (error) {
@@ -232,8 +239,7 @@ const ERC721 = ({
       setLoading(true);
 
       await buyGovernanceTokenERC721DAO(
-        walletAddress,
-        clubData?.imageUrl,
+        clubData?.imgUrl,
         count,
         whitelistUserData?.proof ? whitelistUserData.proof : [],
         clubData.depositTokenAddress.toLowerCase() ===
@@ -347,6 +353,9 @@ const ERC721 = ({
           tokenDetails: tokenDetails,
           isDeposit: true,
           isActive: active,
+          networkId: routeNetworkId,
+          logoUrl: clubInfo?.logoUrl,
+          routeNetworkId,
         }}
         inputComponents={
           <DepositInputComponents
@@ -422,6 +431,27 @@ const ERC721 = ({
             setFailed(false);
           }}
         />
+      ) : null}
+
+      {!isMetamaskPresent && walletAddress && routeNetworkId !== networkId ? (
+        <Modal className={classes.warningModal}>
+          <div className={classes.image}>
+            <Image
+              src={"/assets/images/astronaut3.png"}
+              height={200}
+              width={200}
+              alt="Change network"
+            />
+          </div>
+          <Typography className={classes.heading} variant="inherit">
+            Switch to {CHAIN_CONFIG[routeNetworkId]?.shortName}!
+          </Typography>
+
+          <Typography className={classes.subheading} variant="inherit">
+            Please switch to {CHAIN_CONFIG[routeNetworkId]?.shortName} from your
+            phone&apos;s wallet to access deposit.
+          </Typography>
+        </Modal>
       ) : null}
     </>
   );

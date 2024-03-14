@@ -1,6 +1,7 @@
 @import "../../../../styles/variables.scss";
 
-.statusModal {
+.statusModal,
+.warningModal {
   width: 400px;
   background-color: #151515;
   border-radius: 8px;
@@ -30,5 +31,13 @@
     padding: 10px;
     margin-top: 20px;
     font-family: "Avenir";
+  }
+}
+
+.warningModal {
+  width: 450px;
+
+  @media (max-width: 768px) {
+    width: 350px;
   }
 }

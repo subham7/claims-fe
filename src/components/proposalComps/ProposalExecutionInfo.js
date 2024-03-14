@@ -119,6 +119,7 @@ const ProposalExecutionInfo = ({
             ? swapToken
             : sendToken,
         );
+
         const symbol = await getTokenSymbol(
           airDropToken
             ? airDropToken
@@ -170,18 +171,25 @@ const ProposalExecutionInfo = ({
       data: proposalData?.commands[0],
       decimals: tokenDetails.decimals,
       symbol: tokenDetails.symbol,
-      clubData,
+      factoryData: clubData,
+      isNativeClub: isNative(clubData.depositTokenAddress, networkId),
     });
     setProposalDetails(response);
   };
 
   useEffect(() => {
     getProposalDetailsData();
-  }, [proposalData, tokenDetails.decimals, tokenDetails.symbol]);
+  }, [
+    proposalData,
+    tokenDetails.decimals,
+    tokenDetails.symbol,
+    clubData.depositTokenAddress,
+    networkId,
+  ]);
 
   return (
     <Grid item md={9}>
-      {proposalData?.commands.length && executionId ? (
+      {proposalData?.commands.length && !isNaN(Number(executionId)) ? (
         <Card>
           <>
             {proposalDetails.data && (

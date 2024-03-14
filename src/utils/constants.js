@@ -40,6 +40,7 @@ export const supportedChainsDrops = [
   "0x138d5",
   "0x5",
   "0xa0c71fd",
+  "0x13e31",
 ];
 
 export const CHAIN_CONFIG = {
@@ -53,7 +54,7 @@ export const CHAIN_CONFIG = {
       symbol: "MATIC",
     },
     rpcUrls: ["https://polygon-rpc.com/"],
-    appRpcUrl: `https://polygon-mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
+    appRpcUrl: `https://frosty-fittest-sponge.matic.quiknode.pro/2f493453b075c784ad12eb9094333497029cbe95/`,
     claimFactoryAddress: "0x47e6bFA71e490ADC8f0E33385aAdF85282E71002",
     factoryContractAddress: "0x726D3e4fBD321c4cD88769C16f5BAFfaC98D95Ad",
     stationSubgraphUrl:
@@ -212,10 +213,13 @@ export const CHAIN_CONFIG = {
     },
     rpcUrls: ["https://arb1.arbitrum.io/rpc"],
     appRpcUrl: `https://arbitrum-mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
-    factoryContractAddress: "",
+    factoryContractAddress: "0x7213172eAad75D3d94Bc09ff4E0008f7FF66b041",
     claimFactoryAddress: "0x28F06a3415A741367303Db36a6646C354cCE1340",
     claimsSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-arbitrum/prod/gn",
+    stationSubgraphUrl:
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-arbitrum/prod/gn",
+    usdcAddress: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
     covalentNetworkName: "arbitrum-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     blockExplorerUrl: "https://arbiscan.io",
@@ -233,7 +237,7 @@ export const CHAIN_CONFIG = {
       symbol: "ETH",
     },
     rpcUrls: ["https://rpc.linea.build"],
-    appRpcUrl: `https://linea-mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
+    appRpcUrl: `https://linea-mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}/`,
     factoryContractAddress: "0xd3AfdA70B888388a1d5e8737Ba8b533fFE352e92",
     claimFactoryAddress: "0x50702Fd9086BAbDB0A3A576bFe22D4dD47b09937",
     claimsSubgraphUrl:
@@ -461,6 +465,30 @@ export const CHAIN_CONFIG = {
     disburseContractAddress: "",
     logoUri: "/assets/networks/0xa0c71fd.png",
   },
+  "0x13e31": {
+    chainName: "Blast Mainnet",
+    shortName: "Blast",
+    chainId: 81457,
+    nativeCurrency: {
+      name: "ETH",
+      decimals: 18,
+      symbol: "ETH",
+    },
+    rpcUrls: ["https://rpc.blast.io"],
+    appRpcUrl: `https://rpc.blast.io`,
+    stationSubgraphUrl: "",
+    covalentNetworkName: "",
+    factoryContractAddress: "",
+    claimFactoryAddress: "0xA3A575cb516C3C888a9926fce7FA1de96aba868c",
+    claimsSubgraphUrl:
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-blast-mainnet/prod/gn",
+    nativeToken: "",
+    usdcAddress: "",
+    airdropContractAddress: "",
+    blockExplorerUrl: "https://blastscan.io/",
+    disburseContractAddress: "",
+    logoUri: "/assets/networks/0x13e31.png",
+  },
 };
 
 export const lineaMainnetWalletConnect = {
@@ -512,7 +540,7 @@ export const beraMainnetWalletConnect = {
   },
 };
 
-export const blastMainnetWalletConnect = {
+export const blastTestnetWalletConnect = {
   id: 168587773,
   name: "Blast Sepolia",
   network: "blast",
@@ -533,6 +561,37 @@ export const blastMainnetWalletConnect = {
     default: {
       name: "BlastSepoliaExplorer",
       url: "https://testnet.blastscan.io/",
+    },
+  },
+  contracts: {
+    multicall3: {
+      address: "",
+      blockCreated: "",
+    },
+  },
+};
+
+export const blastMainnetWalletConnect = {
+  id: 81457,
+  name: "Blast Mainnet",
+  network: "Blast",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ether",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    public: { http: ["https://rpc.blast.io"] },
+    default: { http: ["https://rpc.blast.io"] },
+  },
+  blockExplorers: {
+    etherscan: {
+      name: "Blast Scan",
+      url: "https://blastscan.io/",
+    },
+    default: {
+      name: "Blast Scan",
+      url: "https://blastscan.io/",
     },
   },
   contracts: {
@@ -780,13 +839,18 @@ export const dropsNetworksChaindId = [
     chainId: 1,
     networkId: "0x1",
   },
+  //bera
+  // {
+  //   chainId: 80085,
+  //   networkId: "0x138d5",
+  // },
+  // {
+  //   chainId: 168587773,
+  //   networkId: "0xa0c71fd",
+  // },
   {
-    chainId: 80085,
-    networkId: "0x138d5",
-  },
-  {
-    chainId: 168587773,
-    networkId: "0xa0c71fd",
+    chainId: 81457,
+    networkId: "0x13e31",
   },
 ];
 
@@ -799,20 +863,25 @@ export const stationNetworksChainId = [
     chainId: 1,
     networkId: "0x1",
   },
+  {
+    chainId: 42161,
+    networkId: "0xa4b1",
+  },
   // {
   //   chainId: 100,
   //   networkId: "0x64",
   // },
-  {
-    chainId: 59144,
-    networkId: "0xe708",
-  },
-  { chainId: 534352, networkId: "0x82750" },
+  // {
+  //   chainId: 59144,
+  //   networkId: "0xe708",
+  // },
+  // { chainId: 534352, networkId: "0x82750" },
 ];
 
 export const ALLOWED_NETWORKS_FOR_STATION = [
   "0x89",
   "0x1",
-  "0xe708",
-  "0x82750",
+  "0xa4b1",
+  // "0xe708",
+  // "0x82750",
 ];

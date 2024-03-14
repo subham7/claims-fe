@@ -1,11 +1,12 @@
 import { readContractFunction, writeContractFunction } from "utils/helper";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useNetwork, useWalletClient } from "wagmi";
 import { claimContractABI } from "abis/claimContract.js";
 import { claimFactoryABI } from "abis/claimFactory.js";
 import { CHAIN_CONFIG } from "utils/constants";
 import { disburseContractABI } from "abis/disburseContract";
 
 const useDropsContractMethods = () => {
+  const walletClient = useWalletClient();
   const { address: walletAddress } = useAccount();
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
@@ -21,6 +22,7 @@ const useDropsContractMethods = () => {
         args: [noOfTokens, merkleRoot],
         account: walletAddress,
         networkId,
+        walletClient,
       });
       return res;
     } catch (error) {
@@ -42,6 +44,7 @@ const useDropsContractMethods = () => {
         args: [claimSettings, totalNoOfWallets, blockNumber, whitelistNetwork],
         account: walletAddress,
         networkId,
+        walletClient,
       });
       return res;
     } catch (error) {
@@ -117,6 +120,7 @@ const useDropsContractMethods = () => {
         account: walletAddress,
         args: [],
         networkId,
+        walletClient,
       });
       return res;
     } catch (error) {
@@ -133,6 +137,7 @@ const useDropsContractMethods = () => {
         args: [amount, rollbackAddress],
         account: walletAddress,
         networkId,
+        walletClient,
       });
       return res;
     } catch (error) {
@@ -149,6 +154,7 @@ const useDropsContractMethods = () => {
         args: [startTime, endTime],
         account: walletAddress,
         networkId,
+        walletClient,
       });
       return res;
     } catch (error) {
@@ -171,6 +177,7 @@ const useDropsContractMethods = () => {
         args: [amount, reciever, merkleProof, encodedData],
         account: walletAddress,
         networkId,
+        walletClient,
       });
       return res;
     } catch (error) {
@@ -187,6 +194,7 @@ const useDropsContractMethods = () => {
         args: [tokenAddress, walletList, amountList],
         account: walletAddress,
         networkId,
+        walletClient,
       });
       return res;
     } catch (error) {

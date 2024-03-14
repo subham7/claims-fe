@@ -7,6 +7,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Typography,
+  Tooltip,
 } from "@mui/material";
 import { TextField } from "@components/ui";
 
@@ -120,13 +121,22 @@ export default function Step3(props) {
           id="deploySafe">
           Create a new multisig wallet
         </ToggleButton>
-        <ToggleButton
-          className={classes.leftContainer}
-          name="deploySafe"
-          id="deploySafe"
-          value="oldSafe">
-          I already have a multisig wallet
-        </ToggleButton>
+
+        <Tooltip title="Coming soon">
+          <ToggleButton
+            sx={{
+              cursor: "not-allowed",
+            }}
+            disabled
+            className={classes.leftContainer}
+            name="deploySafe"
+            id="deploySafe"
+            value="oldSafe">
+            I already have a multisig wallet
+            <br />
+            Coming soon
+          </ToggleButton>
+        </Tooltip>
       </ToggleButtonGroup>
 
       {/* {props.formik.values.deploySafe} */}

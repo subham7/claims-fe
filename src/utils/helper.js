@@ -1,6 +1,6 @@
 import Web3 from "web3";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
-import WrongNetworkModal from "../components/modals/WrongNetworkModal";
+
 import { QUERY_ALL_MEMBERS } from "api/graphql/stationQueries";
 import { subgraphQuery } from "./subgraphs";
 import {
@@ -10,7 +10,7 @@ import {
   contractNetworks,
   supportedChainsDrops,
 } from "./constants";
-import { getPublicClient, getWalletClient } from "utils/viemConfig";
+import { getPublicClient } from "utils/viemConfig";
 import { uploadToAWS } from "api/club";
 import { baseLinks } from "data/dashboard";
 import SafeApiKit from "@safe-global/api-kit";
@@ -133,7 +133,9 @@ export const showWrongNetworkModal = (networkId, routeNetworkId) => {
       routeNetworkId !== "disburse") ||
     !supportedChainsDrops.includes(networkId)
   ) {
-    return <WrongNetworkModal chainId={routeNetworkId} />;
+    return true;
+  } else {
+    return false;
   }
 };
 
@@ -231,10 +233,10 @@ export const writeContractFunction = async ({
   account,
   networkId,
   value,
+  walletClient,
 }) => {
   try {
     const publicClient = getPublicClient(networkId);
-    const walletClient = getWalletClient(networkId);
 
     const { request } = await publicClient.simulateContract({
       address,
@@ -245,7 +247,7 @@ export const writeContractFunction = async ({
       value,
     });
 
-    const txHash = await walletClient.writeContract(request);
+    const txHash = await walletClient?.data?.writeContract(request);
     const txReciept = await publicClient.waitForTransactionReceipt({
       hash: txHash,
       confirmations: BLOCK_CONFIRMATIONS,
@@ -427,20 +429,31 @@ export const formatCash = (n) => {
 };
 
 export const getLinks = (daoAddress, networkId) => {
-  return baseLinks.map((link, index) => ({
-    ...link,
-    icon: `/assets/icons/${link.icon}.svg`,
-    hoveredLink: `/assets/icons/${link.icon}_hovered.svg`,
-    route: `/${link.routeHeader}/${daoAddress}/${networkId}`,
-    id: String(index + 1),
-  }));
+  return baseLinks
+    .filter((link) => !link?.hideNetworks?.includes(networkId))
+    ?.map((link, index) => ({
+      ...link,
+      icon: `/assets/icons/${link.icon}.svg`,
+      hoveredLink: `/assets/icons/${link.icon}_hovered.svg`,
+      route: `/${link.routeHeader}/${daoAddress}/${networkId}`,
+      id: String(index + 1),
+    }));
 };
 
 export const isNative = (depositTokenAddress, networkId) => {
-  return (
-    depositTokenAddress?.toLowerCase() ===
-    CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
-  );
+  try {
+    if (depositTokenAddress === "0x0000000000000000000000000000000000001010") {
+      return true;
+    } else {
+      return (
+        depositTokenAddress?.toLowerCase() ===
+        CHAIN_CONFIG[networkId]?.nativeToken?.toLowerCase()
+      );
+    }
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
 };
 
 export const switchNetworkHandler = async (networkId, setLoading) => {
@@ -474,4 +487,26 @@ export const switchNetworkHandler = async (networkId, setLoading) => {
       }
     }
   }
+};
+
+export function customToFixedAutoPrecision(num) {
+  try {
+    let decimalPlaces = 2;
+    let tempNum = num;
+    while (tempNum < 1 && tempNum > 0) {
+      tempNum *= 10;
+      decimalPlaces++;
+    }
+    return num.toFixed(decimalPlaces);
+  } catch (err) {
+    console.error(err);
+    return "0.00";
+  }
+}
+
+export const withHttps = (url) =>
+  !!url && !/^https?:\/\//i.test(url) ? `https://${url}` : url;
+
+export const formatNumbers = (number) => {
+  return number?.toLocaleString("en-US");
 };

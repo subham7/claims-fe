@@ -1,8 +1,9 @@
-import { Button, Skeleton, Typography } from "@mui/material";
+import { Skeleton, Typography } from "@mui/material";
 import React from "react";
 import classes from "../claims/Claim.module.scss";
 import { formatEpochTime } from "utils/helper";
-import { AiFillInfoCircle } from "react-icons/ai";
+import Image from "next/image";
+import SwapInfo from "./SwapInfo";
 
 const HeaderShimmer = () => {
   return (
@@ -21,6 +22,9 @@ const Header = ({
   tokenDetails,
   isDeposit = false,
   deadline,
+  networkId,
+  logoUrl,
+  routeNetworkId = "0x89",
 }) => {
   const getStatusText = () => {
     if (isDeposit) {
@@ -48,6 +52,22 @@ const Header = ({
 
   return (
     <>
+      {/* {routeNetworkId === "0x1" && (
+        <div className={classes.infoContainer}>
+          GM Astronaut! StationX is currently undergoing maintenance.
+          <br />
+          {`We'll be back shortly!`}
+        </div>
+      )} */}
+      {logoUrl ? (
+        <Image
+          className={classes.logoImg}
+          src={logoUrl}
+          height={80}
+          width={80}
+          alt="Logo Image"
+        />
+      ) : null}
       <h1>
         {isDeposit ? contractData?.name : `$${tokenDetails?.tokenSymbol}`}
       </h1>
@@ -67,26 +87,9 @@ const Header = ({
           </Typography>
         ) : null}
       </div>
-      <div className={classes.infoContainer}>
-        <AiFillInfoCircle size={20} />
-        This club accepts USDC.e as deposits
-        <br />
-        <Button
-          style={{
-            backgroundColor: "white",
-            color: "black",
-            textTransform: "none",
-          }}
-          variant="contained"
-          onClick={() =>
-            window.open(
-              "https://quickswap.exchange/#/swap?swapIndex=0&currency0=0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359&currency1=0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
-              "_blank",
-            )
-          }>
-          Get USDC.e
-        </Button>
-      </div>
+
+      {(networkId === "0x89" || networkId === "0xa4b1") &&
+        !tokenDetails?.isNativeToken && <SwapInfo networkId={networkId} />}
     </>
   );
 };

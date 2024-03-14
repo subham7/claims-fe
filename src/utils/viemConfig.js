@@ -1,4 +1,4 @@
-import { createPublicClient, createWalletClient, custom, http } from "viem";
+import { createPublicClient, http } from "viem";
 import {
   polygon,
   base,
@@ -16,6 +16,7 @@ import {
   mantaMainnet,
   mantleMainnetViem,
   scrollMainnet,
+  blastTestnetWalletConnect,
   blastMainnetWalletConnect,
 } from "utils/constants";
 
@@ -34,7 +35,8 @@ const viemChains = {
   "0x28c5f": taikoJolnir,
   "0x138d5": beraMainnetWalletConnect,
   "0x5": goerli,
-  "0xa0c71fd": blastMainnetWalletConnect,
+  "0xa0c71fd": blastTestnetWalletConnect,
+  "0x13e31": blastMainnetWalletConnect,
 };
 
 export const getPublicClient = (networkId) => {
@@ -48,16 +50,4 @@ export const getPublicClient = (networkId) => {
   } else {
     return {};
   }
-};
-
-export const getWalletClient = (networkId) => {
-  let walletClient;
-  if (typeof window !== "undefined") {
-    walletClient = createWalletClient({
-      chain: viemChains[networkId],
-      transport: custom(window.ethereum),
-    });
-  }
-
-  return walletClient;
 };

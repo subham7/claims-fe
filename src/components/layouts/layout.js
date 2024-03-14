@@ -8,6 +8,7 @@ import Sidebar from "@components/ui/Sidebar/Sidebar";
 import CustomAlert from "@components/common/CustomAlert";
 import { showWrongNetworkModal } from "utils/helper";
 import { useRouter } from "next/router";
+import WrongNetworkModal from "@components/modals/WrongNetworkModal";
 
 const drawerWidth = 50;
 
@@ -31,7 +32,7 @@ export default function Layout(props) {
   return (
     <>
       <div>
-        <Navbar />
+        <Navbar daoAddress={daoAddress} routeNetworkId={routeNetworkId} />
         {showSidebar && (
           <Sidebar daoAddress={daoAddress} networkId={networkId} />
         )}
@@ -40,7 +41,9 @@ export default function Layout(props) {
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
 
-        {!router.pathname.includes("join") && (!walletAddress || !networkId) ? (
+        {!router.pathname.includes("join") &&
+        !router.pathname.includes("profile") &&
+        (!walletAddress || !networkId) ? (
           <Grid
             sx={{
               height: "75vh",
@@ -65,23 +68,27 @@ export default function Layout(props) {
           </Grid>
         ) : (
           <>
-            <Box
-              component="main"
-              sx={{
-                flexGrow: 1,
-                width: { sm: `calc(100% - ${drawerWidth}px)` },
-                paddingX: showSidebar ? "0px" : "60px",
-              }}>
-              <div
-                className={classes.container}
-                style={{
-                  marginLeft: showSidebar ? "80px" : 0,
-                }}>
-                {props.children}
-              </div>
-            </Box>
             {!router.pathname.includes("join") &&
-              showWrongNetworkModal(networkId, routeNetworkId)}
+            !router.pathname.includes("profile") &&
+            showWrongNetworkModal(networkId, routeNetworkId) ? (
+              <WrongNetworkModal chainId={routeNetworkId} />
+            ) : (
+              <Box
+                component="main"
+                sx={{
+                  flexGrow: 1,
+                  width: { sm: `calc(100% - ${drawerWidth}px)` },
+                  paddingX: showSidebar ? "0px" : "60px",
+                }}>
+                <div
+                  className={classes.container}
+                  style={{
+                    marginLeft: showSidebar ? "80px" : 0,
+                  }}>
+                  {props.children}
+                </div>
+              </Box>
+            )}
           </>
         )}
         <CustomAlert />

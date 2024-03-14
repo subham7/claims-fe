@@ -1,0 +1,172 @@
+@import "../../styles/variables.scss";
+
+.profileDiv {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background-color: #181818;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+
+  > div {
+    display: flex;
+  }
+
+  .editIcon {
+    display: flex;
+    font-size: 24px;
+    color: $gray;
+    margin-right: 12px;
+
+    &:hover {
+      color: $typography-primary;
+      cursor: pointer;
+    }
+  }
+}
+
+.stnList {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: 24px;
+}
+
+.stationCard {
+  background-color: #181818;
+  border-radius: 12px;
+  padding: 24px;
+  width: calc(25% - 18px);
+
+  .stnHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+@media (max-width: 1024px) {
+  .stationCard {
+    width: calc(33% - 18px);
+  }
+}
+
+@media (max-width: 768px) {
+  .stationCard {
+    width: calc(50% - 18px);
+  }
+}
+
+@media (max-width: 512px) {
+  .stationCard {
+    width: calc(100%);
+  }
+}
+
+.img {
+  border-radius: 12px;
+  height: 100px;
+  width: 100px;
+  background-size: cover;
+  border: 1px solid $gray;
+  margin-right: 24px;
+}
+
+.stnImg {
+  border-radius: 12px;
+  height: 60px;
+  width: 60px;
+  background-size: cover;
+  border: 1px solid $gray;
+}
+
+.stnInfo {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  > div {
+    display: flex;
+    justify-content: space-between;
+
+    :nth-child(1) {
+      color: $gray;
+    }
+  }
+
+  button {
+    background-color: #282828;
+    border: none;
+    outline: none;
+    padding: 12px 0;
+    width: 100%;
+    font-family: inherit;
+    border-radius: 12px;
+    font-weight: 500;
+    color: white;
+    cursor: pointer;
+
+    &:hover {
+      background: white;
+      color: #151515;
+    }
+  }
+}
+
+.loaderContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.linkDiv {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  > svg {
+    color: $gray;
+  }
+
+  .link {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    width: 18rem;
+    height: 1.5rem;
+    color: $primary;
+
+    :hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+  height: 1.5rem;
+  display: block !important;
+}
+
+.truncateInfo {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 50%;
+  display: block !important;
+}
+
+.active {
+  color: $active-text;
+}
+
+.inactive {
+  color: $inactive-text;
+}

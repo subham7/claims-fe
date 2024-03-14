@@ -227,14 +227,9 @@ export const getEncodedData = async ({
   proposalData,
   daoAddress,
   clubData,
-  factoryData,
   contractABI,
   setMembers,
-  getBalance,
-  getERC20TotalSupply,
-  getNftOwnersCount,
   networkId,
-  gnosisAddress,
   getDecimals,
 }) => {
   let membersArray = [];
@@ -265,9 +260,10 @@ export const getEncodedData = async ({
     sendTokenAddresses,
     sendToken,
   } = proposalData.commands[0];
+
   let iface;
   if (contractABI) iface = new Interface(contractABI);
-  const tokenDecimals = await getDecimals(factoryData?.depositTokenAddress);
+  const tokenDecimals = await getDecimals(clubData?.depositTokenAddress);
 
   switch (executionId) {
     case 0:
@@ -284,63 +280,18 @@ export const getEncodedData = async ({
         airDropAmount,
       ]);
 
-      if (airDropCarryFee !== 0) {
-        const carryFeeAmount = (airDropAmount * airDropCarryFee) / 100;
-        airDropAmountArray = await Promise.all(
-          membersArray.map(async (member) => {
-            const balance = await getBalance(
-              daoAddress,
-              Web3.utils.toChecksumAddress(member),
-            );
-
-            let clubTokensMinted;
-            if (clubData.tokenType === "erc20") {
-              clubTokensMinted = await getERC20TotalSupply();
-            } else {
-              clubTokensMinted = await getNftOwnersCount();
-            }
-
-            return (
-              ((airDropAmount - carryFeeAmount) * balance) /
-              clubTokensMinted
-            )
-              .toFixed(0)
-              .toString();
-          }),
-        );
-        airDropAmountArray.unshift(carryFeeAmount.toString());
-        membersArray.unshift(
-          Web3.utils.toChecksumAddress(proposalData.createdBy),
-        );
-      } else {
-        airDropAmountArray = await Promise.all(
-          membersArray.map(async (member) => {
-            const balance = await getBalance(
-              daoAddress,
-              Web3.utils.toChecksumAddress(member),
-            );
-
-            let clubTokensMinted;
-            if (clubData.tokenType === "erc20") {
-              clubTokensMinted = await getERC20TotalSupply();
-            } else {
-              clubTokensMinted = await getNftOwnersCount();
-            }
-
-            return ((airDropAmount * balance) / clubTokensMinted)
-              .toFixed(0)
-              .toString();
-          }),
-        );
-      }
-
       data = iface.encodeFunctionData("airDropToken", [
         airDropToken,
-        airDropAmountArray,
-        membersArray,
+        sendTokenAmounts,
+        sendTokenAddresses,
       ]);
 
-      return { data, approvalData, membersArray, airDropAmountArray };
+      return {
+        data,
+        approvalData,
+        membersArray: sendTokenAddresses,
+        airDropAmountArray: sendTokenAmounts,
+      };
 
     case 1:
       if (clubData.tokenType === "erc20") {
@@ -381,10 +332,10 @@ export const getEncodedData = async ({
       data = iface.encodeFunctionData("updateTotalRaiseAmount", [
         convertToWeiGovernance(
           convertToWeiGovernance(totalDeposits, tokenDecimals) /
-            factoryData?.pricePerToken,
+            clubData?.pricePerToken,
           18,
         ),
-        factoryData?.pricePerToken,
+        clubData?.pricePerToken,
         daoAddress,
       ]);
       return { data };
@@ -503,7 +454,7 @@ export const getEncodedData = async ({
       return { data, approvalData };
     case 13:
       data = iface.encodeFunctionData("updateTotalRaiseAmount", [
-        convertToFullNumber(factoryData?.distributionAmount + ""),
+        convertToFullNumber(clubData?.distributionAmount + ""),
         convertToWeiGovernance(pricePerToken, tokenDecimals),
         daoAddress,
       ]);
@@ -511,7 +462,7 @@ export const getEncodedData = async ({
     case 20:
       data = iface.encodeFunctionData("updateTotalRaiseAmount", [
         nftSupply,
-        convertToWeiGovernance(factoryData?.pricePerToken, tokenDecimals),
+        convertToWeiGovernance(clubData?.pricePerToken, tokenDecimals),
         daoAddress,
       ]);
       return { data };

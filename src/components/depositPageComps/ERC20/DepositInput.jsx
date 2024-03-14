@@ -13,6 +13,15 @@ import { switchNetworkHandler } from "utils/helper";
 import { useAccount, useNetwork } from "wagmi";
 import classes from "../../claims/Claim.module.scss";
 
+const ClaimInputShimmer = () => {
+  return (
+    <div>
+      <Skeleton width={120} height={60} />
+      <Skeleton height={40} width={150} />
+    </div>
+  );
+};
+
 const DepositInput = ({
   formik,
   tokenDetails,
@@ -21,15 +30,6 @@ const DepositInput = ({
   approveERC20Handler,
   routeNetworkId,
 }) => {
-  const ClaimInputShimmer = () => {
-    return (
-      <div>
-        <Skeleton width={120} height={60} />
-        <Skeleton height={40} width={150} />
-      </div>
-    );
-  };
-
   const { address: walletAddress } = useAccount();
   const { open } = useWeb3Modal();
   const { chain } = useNetwork();
@@ -48,6 +48,31 @@ const DepositInput = ({
     formik.values.tokenInput,
     tokenDetails?.tokenDecimal,
   );
+
+  const onDepositClick = async () => {
+    if (tokenDetails?.isNativeToken === false) {
+      if (Number(inputValue) <= allowanceValue) {
+        await formik.handleSubmit();
+      } else {
+        await approveERC20Handler();
+        await formik.handleSubmit();
+      }
+    } else {
+      await formik.handleSubmit();
+    }
+  };
+
+  const depositBtnTxt = () => {
+    if (tokenDetails?.isNativeToken === false) {
+      if (Number(inputValue <= allowanceValue)) {
+        return "Deposit";
+      } else {
+        return "Approve & Deposit";
+      }
+    } else {
+      return "Deposit";
+    }
+  };
 
   return (
     <>
@@ -93,12 +118,7 @@ const DepositInput = ({
       {walletAddress && networkId === routeNetworkId ? (
         <Button
           disabled={isDisabled}
-          onClick={
-            Number(inputValue) > allowanceValue &&
-            tokenDetails?.isNativeToken === false
-              ? approveERC20Handler
-              : formik.handleSubmit
-          }
+          onClick={onDepositClick}
           variant="contained"
           sx={{
             width: "100%",
@@ -106,10 +126,7 @@ const DepositInput = ({
             margin: "10px 0",
             fontFamily: "inherit",
           }}>
-          {Number(inputValue) > allowanceValue &&
-          tokenDetails?.isNativeToken === false
-            ? "Approve"
-            : "Deposit"}
+          {depositBtnTxt()}
         </Button>
       ) : walletAddress && networkId !== routeNetworkId ? (
         <Button

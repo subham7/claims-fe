@@ -4,7 +4,10 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
-import { getDaysDifferenceDescription } from "utils/helper";
+import {
+  customToFixedAutoPrecision,
+  getDaysDifferenceDescription,
+} from "utils/helper";
 import Web3 from "web3";
 import classes from "./Dashboard.module.scss";
 import { getTransactionsByNetworkId } from "api/transactions";
@@ -72,7 +75,7 @@ const TransactionItem = ({ item }) => {
         }
         variant="inherit">
         {item.to.toLowerCase() === gnosisAddress?.toLowerCase() ? "+" : "-"}
-        {Number(value).toFixed(4)}
+        {customToFixedAutoPrecision(Number(value))}
       </Typography>
     </div>
   );
@@ -87,7 +90,7 @@ const DashboardActivities = ({ proposals, daoAddress, networkId }) => {
 
   const fetchTransactions = async () => {
     try {
-      const transfers = await getTransactionsByNetworkId(
+      const { transfers } = await getTransactionsByNetworkId(
         Web3.utils.toChecksumAddress(gnosisAddress),
         networkId,
       );

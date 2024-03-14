@@ -28,6 +28,10 @@ import { getPublicClient } from "utils/viemConfig";
 import { formatEther } from "viem";
 import { isNative } from "utils/helper";
 import { addClubData } from "redux/reducers/club";
+import Modal from "@components/common/Modal/Modal";
+import Image from "next/image";
+import { Typography } from "@mui/material";
+import classes from "@components/modals/StatusModal/StatusModal.module.scss";
 
 const DepositInputComponents = ({
   formik,
@@ -70,6 +74,7 @@ const ERC20 = ({
   fetchCurrentAllowance,
   fetchErc20ContractDetails,
   routeNetworkId,
+  isMetamaskPresent,
 }) => {
   const [loading, setLoading] = useState(false);
   const [depositSuccessfull, setDepositSuccessfull] = useState(null);
@@ -113,7 +118,7 @@ const ERC20 = ({
         daoAddress,
         routeNetworkId,
       );
-      if (users) setMembers(users?.reverse());
+      if (users) setMembers(users);
     } catch (error) {
       dispatch(
         setAlertData({
@@ -188,7 +193,6 @@ const ERC20 = ({
       );
 
       fetchCurrentAllowance();
-      setLoading(false);
       dispatch(
         setAlertData({
           open: true,
@@ -241,7 +245,6 @@ const ERC20 = ({
           tokenDetails?.tokenDecimal,
         );
         await buyGovernanceTokenERC20DAO(
-          walletAddress,
           convertToWeiGovernance(
             (inputValue / +clubData?.pricePerToken).toString(),
             18,
@@ -401,6 +404,9 @@ const ERC20 = ({
           tokenDetails: tokenDetails,
           isDeposit: true,
           isActive: active,
+          networkId: routeNetworkId,
+          logoUrl: clubInfo?.logoUrl,
+          routeNetworkId,
         }}
         inputComponents={
           <DepositInputComponents
@@ -445,6 +451,7 @@ const ERC20 = ({
           onButtonClick={() => {
             router.push(`/dashboard/${daoAddress}/${networkId}?join=true`);
           }}
+          isErc20={true}
         />
       ) : failed ? (
         <StatusModal
@@ -459,6 +466,27 @@ const ERC20 = ({
             setFailed(false);
           }}
         />
+      ) : null}
+
+      {!isMetamaskPresent && walletAddress && routeNetworkId !== networkId ? (
+        <Modal className={classes.warningModal}>
+          <div className={classes.image}>
+            <Image
+              src={"/assets/images/astronaut3.png"}
+              height={200}
+              width={200}
+              alt={`Change network`}
+            />
+          </div>
+          <Typography className={classes.heading} variant="inherit">
+            Switch to {CHAIN_CONFIG[routeNetworkId]?.shortName}!
+          </Typography>
+
+          <Typography className={classes.subheading} variant="inherit">
+            Please switch to {CHAIN_CONFIG[routeNetworkId]?.shortName} from your
+            phone&apos;s wallet to access deposit.
+          </Typography>
+        </Modal>
       ) : null}
     </>
   );
