@@ -460,7 +460,7 @@ export const DEFI_PROPOSALS = ({
     {
       name: "Stargate Finance",
       logo: "/assets/icons/stargate.png",
-      APY: "11.34",
+      APY: "3.5%",
       staked: stargateStaked,
       token: "ETH",
       executionIds: {
@@ -471,6 +471,16 @@ export const DEFI_PROPOSALS = ({
       unstakeTokenAddress: CHAIN_CONFIG[networkId]?.stargateUnstakingAddresses
         ? CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0]
         : "",
+      risk: "Low",
+      info: (
+        <span>
+          This strategy stake ETH for sETH. You earn 3.5% native yield on
+          holding the sETH from Stargate Finance.
+          <br />
+          <br />
+          This is a new protocol, deposit at your own risk.
+        </span>
+      ),
     },
 
     {

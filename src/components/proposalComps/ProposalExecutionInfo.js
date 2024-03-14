@@ -1,12 +1,13 @@
 import { Card, Divider, Grid, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { proposalDetailsData } from "utils/proposalData";
 import { isNative } from "utils/helper";
 import { useNetwork } from "wagmi";
+import { extractContractDetails } from "utils/proposalHelper";
 
 const useStyles = makeStyles({
   listFont2: {
@@ -20,22 +21,13 @@ const useStyles = makeStyles({
   },
 });
 
-const ProposalExecutionInfo = ({
-  proposalData,
-  fetched,
-  daoDetails,
-  routeNetworkId,
-}) => {
+const ProposalExecutionInfo = ({ proposalData, routeNetworkId }) => {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
   const classes = useStyles();
 
   const { getDecimals, getTokenSymbol } = useCommonContractMethods({
     routeNetworkId,
-  });
-
-  const tokenType = useSelector((state) => {
-    return state.club.clubData.tokenType;
   });
 
   const clubData = useSelector((state) => {
@@ -50,122 +42,30 @@ const ProposalExecutionInfo = ({
     amount: 0,
   });
 
-  const {
-    executionId,
-    airDropToken,
-    customToken,
-    depositToken,
-    withdrawToken,
-    depositAmount,
-    withdrawAmount,
-    airDropAmount,
-    quorum,
-    threshold,
-    totalDeposits,
-    customTokenAmounts,
-    customTokenAddresses,
-    mintGTAddresses,
-    customNft,
-    ownerAddress,
-    nftLink,
-    pricePerToken,
-    mintGTAmounts,
-    usdcGovernanceTokenDecimal,
-    customNftToken,
-    usdcTokenSymbol,
-    whitelistAddresses,
-    airDropCarryFee,
-    stakeToken,
-    stakeAmount,
-    unstakeToken,
-    unstakeAmount,
-    swapToken,
-    swapAmount,
-    destinationToken,
-    sendTokenAmounts,
-    sendToken,
-  } = proposalData?.commands[0];
+  const { executionId } = proposalData?.commands[0];
 
-  const fetchAirDropContractDetails = useCallback(async () => {
+  const fetchAirDropContractDetails = async () => {
     try {
-      const depositTokenAddress = clubData.depositTokenAddress;
-      const isNativeToken = isNative(clubData.depositTokenAddress, networkId);
-
-      if (
-        airDropToken ||
-        customToken ||
-        depositToken ||
-        withdrawToken ||
-        stakeToken ||
-        unstakeToken ||
-        swapToken ||
-        sendToken ||
-        depositTokenAddress
-      ) {
-        const decimal = await getDecimals(
-          airDropToken
-            ? airDropToken
-            : customToken
-            ? customToken
-            : depositToken
-            ? depositToken
-            : withdrawToken
-            ? withdrawToken
-            : stakeToken
-            ? stakeToken
-            : unstakeToken
-            ? unstakeToken
-            : swapToken
-            ? swapToken
-            : sendToken,
-        );
-
-        const symbol = await getTokenSymbol(
-          airDropToken
-            ? airDropToken
-            : customToken
-            ? customToken
-            : depositToken
-            ? depositToken
-            : withdrawToken
-            ? withdrawToken
-            : stakeToken
-            ? stakeToken
-            : unstakeToken
-            ? unstakeToken
-            : swapToken
-            ? swapToken
-            : sendToken
-            ? sendToken
-            : depositTokenAddress,
-        );
-
-        const amount = convertFromWeiGovernance(
-          depositAmount
-            ? depositAmount
-            : withdrawAmount
-            ? withdrawAmount
-            : stakeAmount
-            ? stakeAmount
-            : unstakeAmount
-            ? unstakeAmount
-            : swapAmount,
-          decimal,
-        );
-        setTokenDetails({
-          decimals: isNativeToken ? 18 : decimal,
-          symbol: symbol,
-          amount,
-        });
+      const contractDetails = await extractContractDetails(
+        proposalData,
+        clubData,
+        networkId,
+        getDecimals,
+        getTokenSymbol,
+        convertFromWeiGovernance,
+      );
+      if (contractDetails) {
+        setTokenDetails(contractDetails);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
-  }, [proposalData, tokenType, daoDetails]);
+  };
 
   useEffect(() => {
     fetchAirDropContractDetails();
-  }, [fetchAirDropContractDetails]);
+  }, [proposalData.commands[0], clubData, networkId]);
+
   const getProposalDetailsData = () => {
     const response = proposalDetailsData({
       data: proposalData?.commands[0],

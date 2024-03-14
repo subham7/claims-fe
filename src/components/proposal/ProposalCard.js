@@ -10,6 +10,7 @@ import useCommonContractMethods from "hooks/useCommonContractMehods.js";
 import { proposalData } from "utils/proposalData.js";
 import { isNative, shortAddress } from "utils/helper.js";
 import { useNetwork } from "wagmi";
+import { extractTokenDetails } from "utils/proposalHelper.js";
 
 const ProposalCard = ({ proposal, daoAddress, routeNetworkId }) => {
   const { chain } = useNetwork();
@@ -35,78 +36,20 @@ const ProposalCard = ({ proposal, daoAddress, routeNetworkId }) => {
   });
 
   const fetchTokenDetails = useCallback(async () => {
+    if (!proposal) return;
     try {
-      if (proposal) {
-        let decimal = 18;
-        let symbol = "";
-        const depositTokenAddress = clubData.depositTokenAddress;
-        const isNativeToken = isNative(clubData.depositTokenAddress, networkId);
-        const {
-          executionId,
-          airDropToken,
-          customToken,
-          depositToken,
-          withdrawToken,
-          swapToken,
-          stakeToken,
-          unstakeToken,
-          sendToken,
-        } = proposal?.commands[0];
-        if (tokenType === "erc20" || executionId !== 1) {
-          decimal = await getDecimals(
-            executionId === 0
-              ? airDropToken
-              : executionId === 1
-              ? daoAddress
-              : executionId === 4
-              ? customToken
-              : executionId === 14 || executionId === 24
-              ? depositToken
-              : executionId === 15 || executionId === 25
-              ? withdrawToken
-              : executionId === 17
-              ? stakeToken
-              : executionId === 18
-              ? unstakeToken
-              : executionId === 19
-              ? swapToken
-              : executionId === 21 || executionId === 22 || executionId === 23
-              ? sendToken
-              : "",
-          );
-        }
-
-        symbol = await getTokenSymbol(
-          executionId === 0
-            ? airDropToken
-            : executionId === 1
-            ? daoAddress
-            : executionId === 4
-            ? customToken
-            : executionId === 14 || executionId === 24
-            ? depositToken
-            : executionId === 15 || executionId === 25
-            ? withdrawToken
-            : executionId === 17
-            ? stakeToken
-            : executionId === 18
-            ? unstakeToken
-            : executionId === 19
-            ? swapToken
-            : executionId === 21 || executionId === 22 || executionId === 23
-            ? sendToken
-            : executionId === 13
-            ? depositTokenAddress
-            : "",
-        );
-
-        setTokenDetails({
-          decimals: isNativeToken ? 18 : decimal,
-          symbol: symbol,
-        });
-      }
+      const { decimals, symbol } = await extractTokenDetails(
+        proposal,
+        clubData,
+        tokenType,
+        daoAddress,
+        networkId,
+        getDecimals,
+        getTokenSymbol,
+      );
+      setTokenDetails({ decimals, symbol });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }, [proposal, tokenType, daoAddress, clubData, networkId]);
 
