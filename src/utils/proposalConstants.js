@@ -40,6 +40,10 @@ export const proposalActionCommands = {
   25: "Withdraw tokens with clip-finance",
   26: "Stake eth through eigen layer",
   27: "Remove stake from eigen layer",
+  47: "Stake tokens through layer-bank",
+  48: "Unstake tokens through layer-bank",
+  49: "Stake tokens through mendi-finance",
+  48: "Unstake tokens through mendi-finance",
 };
 
 export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {

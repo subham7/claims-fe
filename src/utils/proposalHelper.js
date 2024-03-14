@@ -85,6 +85,10 @@ const getTokenAddressByExecutionId = (
   }
 };
 
+const selectTokenAddress = (tokens) => tokens.find((token) => !!token);
+
+const selectTokenAmount = (amounts) => amounts.find((amount) => !!amount);
+
 export const extractContractDetails = async (
   proposalData,
   clubData,
@@ -144,7 +148,3 @@ export const extractContractDetails = async (
     amount,
   };
 };
-
-const selectTokenAddress = (tokens) => tokens.find((token) => !!token);
-
-const selectTokenAmount = (amounts) => amounts.find((amount) => !!amount);
