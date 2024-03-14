@@ -72,6 +72,11 @@
   .joinBtn {
     font-size: 24px !important;
   }
+
+  .profileContainer {
+    margin-left: -50px;
+    margin-right: -50px;
+  }
 }
 
 .img {
@@ -178,4 +183,21 @@
 
 .inactive {
   color: $inactive-text;
+}
+
+.stnName {
+  font-size: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+  height: 1.8rem;
+  display: block !important;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 512px) {
+  .stnName {
+    font-size: 24px;
+  }
 }
