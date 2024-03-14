@@ -114,6 +114,7 @@ const ProfilePage = () => {
   const getUserProfileData = async () => {
     try {
       const response = await getUserData(wallet);
+
       if (response?.data) {
         setUserData(response.data);
       }
@@ -125,14 +126,9 @@ const ProfilePage = () => {
   useEffect(() => {
     if (wallet) {
       getUserProfileData();
-    }
-  }, [wallet]);
-
-  useEffect(() => {
-    if (wallet) {
       getClubsData();
     }
-  }, [wallet, chain]);
+  }, [wallet]);
 
   if (!wallet) {
     return;
