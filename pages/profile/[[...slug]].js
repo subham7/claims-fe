@@ -76,6 +76,7 @@ const StationCard = ({ club }) => {
             </div>
           </div>
           <button
+            className={classes.joinBtn}
             onClick={() => {
               window.open(`/join/${daoAddress}/${networkId}`, "_blank");
             }}>
