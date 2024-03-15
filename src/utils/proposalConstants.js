@@ -692,10 +692,10 @@ export const DEFI_PROPOSALS = ({
         Stake: 37,
         Unstake: 38,
       },
-      availableOnNetworkIds: ["0x1"],
-      risk: "Medium",
-      // unstakeTokenAddress: CHAIN_CONFIG[networkId]?.swellRswETHAddress
-      //   ? CHAIN_CONFIG[networkId].swellRswETHAddress
+      availableOnNetworkIds: ["0x1", "0xe708"],
+      risk: "Low",
+      // unstakeTokenAddress: CHAIN_CONFIG[networkId]?.renzoEzETHAddress
+      //   ? CHAIN_CONFIG[networkId].renzoEzETHAddress
       //   : "",
       isUnstakeDisabled: true,
       info: (
@@ -708,7 +708,7 @@ export const DEFI_PROPOSALS = ({
           accrued on your Stations treasury address.
         </span>
       ),
-      tags: ["🏆 EIGEN POINTS", "⭐ STARS", "🏆 exPoints"],
+      // tags: ["🏆 EIGEN POINTS", "⭐ STARS", "🏆 exPoints"],
     },
 
     {

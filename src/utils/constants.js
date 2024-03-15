@@ -8,6 +8,8 @@ import {
 } from "abis/gnosis-abis/safeSendAbi";
 import { signMessageLibAbi } from "abis/gnosis-abis/signMessageLibAbi";
 import { simulateTxAccessorAbi } from "abis/gnosis-abis/simulateTxAccessorAbi";
+import { renzoStakingPoolABI } from "abis/renzo/renzoStakingPoolContract";
+import { renzoStakingPoolABILinea } from "abis/renzo/renzoStakingPoolLinea";
 
 export const BLOCK_CONFIRMATIONS = 4;
 export const BLOCK_TIMEOUT = 240000;
@@ -175,6 +177,7 @@ export const CHAIN_CONFIG = {
     mantleDepositPoolAddress: "0xe3cBd06D7dadB3F4e6557bAb7EdD924CD1489E8f",
     mantleMEthAddress: "0xd5F7838F5C461fefF7FE49ea5ebaF7728bB0ADfa",
     mantleEigenStrategyAddress: "0x298aFB19A105D59E74658C4C334Ff360BadE6dd2",
+    renzoStakingPoolABI,
   },
   "0x2105": {
     chainName: "Base Mainnet",
@@ -270,6 +273,9 @@ export const CHAIN_CONFIG = {
     layerBankToken: "0xc7D8489DaE3D2EbEF075b1dB2257E2c231C9D231",
     layerBankPool: "0x009a0b7C38B542208936F1179151CD08E2943833",
     mendiTokenAddress: "0x333d8b480bdb25ea7be4dd87eeb359988ce1b30d",
+    renzoStakingPoolAddress: "0x4D7572040B84b41a6AA2efE4A93eFFF182388F88",
+    renzoEzETHAddress: "0x2416092f143378750bb29b79eD961ab195CcEea5",
+    renzoStakingPoolABI: renzoStakingPoolABILinea,
   },
   "0x38": {
     chainName: "BNB Smart Chain",

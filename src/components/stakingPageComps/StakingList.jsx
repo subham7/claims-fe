@@ -126,6 +126,7 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
           clipFinanceBalance,
           layerBankEthBalance,
           mendiUSDCBalance,
+          renzoEzEthBalance,
         ] = await Promise.all([
           fetchTokenBalance(
             CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0],
@@ -136,6 +137,8 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
           fetchTokenBalance(CHAIN_CONFIG[networkId].layerBankToken),
 
           fetchTokenBalance(CHAIN_CONFIG[networkId].mendiTokenAddress),
+
+          fetchTokenBalance(CHAIN_CONFIG[networkId].renzoEzETHAddress),
         ]);
       } else if (networkId === "0x1") {
         renzoEzEthBalance = await fetchTokenBalance(

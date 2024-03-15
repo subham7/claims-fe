@@ -38,7 +38,6 @@ import { SharesToken } from "abis/clip-finance/sharesToken";
 import { kelpPoolABI } from "abis/kelp/kelpPoolContract";
 import { rswETHABI } from "abis/swell/rswETHContract";
 import { swETHABI } from "abis/swell/swETHContract";
-import { renzoStakingPoolABI } from "abis/renzo/renzoStakingPoolContract";
 import { stETHTokenABI } from "abis/lido/lidoStETHContract";
 import { rocketPoolABI } from "abis/rocketPool/rocketPoolContract";
 import { rETHTokenABI } from "abis/rocketPool/rETHTokenContract";
@@ -46,6 +45,7 @@ import { mantlePoolABI } from "abis/mantlePool/manelPoolContract";
 import { LayerBankABI } from "abis/layerBankContract";
 import { ScrollAaveABI } from "abis/ScrollAaveABI";
 import { mendiTokenContract } from "abis/mendi/mendiToken";
+import { BigNumber } from "bignumber.js";
 
 export const fetchProposals = async (daoAddress, type) => {
   let proposalData;
@@ -778,16 +778,34 @@ const kelpStakeMethodEncoded = async (
   }
 };
 
-const renzoEthStakeEncoded = ({ renzoStakingPoolAddress, web3Call }) => {
+const renzoEthStakeEncoded = ({
+  renzoStakingPoolAddress,
+  web3Call,
+  depositAmount,
+  networkId,
+}) => {
   if (renzoStakingPoolAddress) {
     const renzoStakingPoolContract = new web3Call.eth.Contract(
-      renzoStakingPoolABI, // OR swETHABI
+      CHAIN_CONFIG[networkId]?.renzoStakingPoolABI,
       renzoStakingPoolAddress,
     );
 
-    return renzoStakingPoolContract.methods
-      .depositETH(REFERRAL_ADDRESS)
-      .encodeABI();
+    if (networkId === "0x1") {
+      return renzoStakingPoolContract.methods
+        .depositETH(REFERRAL_ADDRESS)
+        .encodeABI();
+    } else if (networkId === "0xe708") {
+      const minimumOutAmount = BigNumber(depositAmount)
+        .times(95)
+        .dividedBy(100)
+        .toString();
+
+      const deadline = Math.floor(new Date().getTime() / 1000) + 1200; // 20 mins ahead of current time
+
+      return renzoStakingPoolContract.methods
+        .depositETH(convertToWeiGovernance(minimumOutAmount, 18), deadline)
+        .encodeABI();
+    }
   }
 };
 
@@ -2033,6 +2051,8 @@ export const getTransaction = async ({
           renzoStakingPoolAddress:
             CHAIN_CONFIG[networkId].renzoStakingPoolAddress,
           web3Call,
+          depositAmount,
+          networkId,
         }),
         value: convertToWeiGovernance(depositAmount, 18).toString(),
       };
