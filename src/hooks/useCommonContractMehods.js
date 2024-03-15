@@ -6,9 +6,9 @@ import {
   readContractFunction,
   writeContractFunction,
 } from "utils/helper";
-import { encodePacked } from "viem";
 import { CHAIN_CONFIG, ZERO_ADDRESS } from "utils/constants";
 import { getPublicClient } from "utils/viemConfig";
+import Web3 from "web3";
 
 const useCommonContractMethods = (params) => {
   const walletClient = useWalletClient();
@@ -216,9 +216,12 @@ const useCommonContractMethods = (params) => {
 
   const encode = (address, amount) => {
     try {
+      const web3Call = new Web3(CHAIN_CONFIG[networkId]?.appRpcUrl);
+
       const types = ["address", "uint256"];
       const values = [address, amount];
-      const encodedData = encodePacked(types, values);
+      // Encode the address and amount together
+      const encodedData = web3Call.eth.abi.encodeParameters(types, values);
       return encodedData;
     } catch (error) {
       console.error(error);
