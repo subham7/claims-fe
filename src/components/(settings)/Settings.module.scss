@@ -1,0 +1,89 @@
+@import "../../../styles/variables.scss";
+
+.settings {
+  .header {
+    .subHeading {
+      color: $gray;
+    }
+  }
+  .tabsSelection {
+    margin-top: 16px;
+    border-bottom: 1px solid $border-color;
+  }
+
+  .settingItem {
+    padding: 24px 0;
+    display: flex;
+    border-bottom: 1px solid $border-color;
+    gap: 80px;
+    align-items: center;
+
+    .info {
+      width: 300px;
+      .infoHeading {
+        font-size: 16px;
+        font-weight: 600;
+      }
+      .infoSubHeading {
+        font-size: 14px;
+        color: $gray;
+      }
+    }
+
+    .input {
+      background-color: transparent;
+      border: 1px solid $border-color;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      font-family: inherit;
+      padding: 8px;
+      width: 300px;
+      color: $typography-primary;
+
+      &:disabled {
+        cursor: not-allowed;
+      }
+    }
+
+    .input.address {
+      width: 220px;
+    }
+
+    .input.percentage {
+      width: 120px;
+    }
+
+    .copyTextContainer {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .icon {
+      background-color: #1e1e1e;
+      padding: 8px;
+      font-size: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: $gray;
+
+      &:hover {
+        color: white;
+      }
+    }
+
+    .icon.active {
+      background-color: $active-background;
+      color: $active-text;
+    }
+
+    .icon.disabled {
+      cursor: not-allowed;
+
+      &:hover {
+        color: $gray;
+      }
+    }
+  }
+}
