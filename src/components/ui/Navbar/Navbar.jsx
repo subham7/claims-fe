@@ -12,7 +12,6 @@ import { useAccount, useNetwork } from "wagmi";
 import { Typography } from "@mui/material";
 import EditDetails from "@components/settingsComps/modals/EditDetails";
 import { useSelector } from "react-redux";
-import { Person2Outlined } from "@mui/icons-material";
 
 const Navbar = ({ daoAddress, routeNetworkId }) => {
   const [showEditDetails, setShowEditDetails] = useState(false);
@@ -79,8 +78,15 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
           )}
           <w3m-account-button balance="hide" />
           {address && (
-            <Person2Outlined
+            <Image
               onClick={() => router.push(`/profile/${address}`)}
+              src="/assets/icons/astronaut_icon.svg"
+              alt="profile image"
+              height={24}
+              width={24}
+              style={{
+                cursor: "pointer",
+              }}
             />
           )}
         </div>
