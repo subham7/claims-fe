@@ -19,7 +19,7 @@
     align-items: center;
 
     .info {
-      width: 300px;
+      width: 350px;
       .infoHeading {
         font-size: 16px;
         font-weight: 600;
@@ -46,12 +46,40 @@
       }
     }
 
+    .amountInputField {
+      display: flex;
+      align-items: center;
+      border: 1px solid $border-color;
+      border-radius: 8px;
+      width: 300px;
+      padding: 8px 10px;
+      font-family: inherit;
+      color: $gray;
+      font-size: 14px;
+
+      .amountInput {
+        background: inherit;
+        border: none;
+        outline: none;
+        width: 100%;
+        color: $typography-primary;
+
+        &::placeholder {
+          color: $gray;
+        }
+
+        &:disabled {
+          cursor: not-allowed;
+        }
+      }
+    }
+
     .input.address {
-      width: 220px;
+      width: 230px;
     }
 
     .input.percentage {
-      width: 120px;
+      width: 100px;
     }
 
     .copyTextContainer {

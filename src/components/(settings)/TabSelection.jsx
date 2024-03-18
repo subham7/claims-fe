@@ -2,7 +2,7 @@ import React from "react";
 import { Tabs, Tab } from "@mui/material";
 import classes from "./Settings.module.scss";
 
-const TabSelection = () => {
+const TabSelection = ({ settingsType, onChange }) => {
   return (
     <div className={classes.tabsSelection}>
       <Tabs
@@ -10,7 +10,8 @@ const TabSelection = () => {
           style: { backgroundColor: "#fff" },
         }}
         textColor="inherit"
-        value={"general"}>
+        onChange={onChange}
+        value={settingsType}>
         <Tab
           sx={{
             fontFamily: "inherit",
