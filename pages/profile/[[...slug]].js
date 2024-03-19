@@ -12,8 +12,6 @@ import { CircularProgress, MenuItem, Select } from "@mui/material";
 import { CHAIN_CONFIG } from "utils/constants";
 import { RiLinkM } from "react-icons/ri";
 import Image from "next/image";
-// import { getUploadedNFT } from "api/assets";
-// import { getImageURL } from "utils/globalFunctions";
 
 const StationCard = ({ club }) => {
   const {
@@ -126,9 +124,14 @@ const ProfilePage = () => {
   useEffect(() => {
     if (wallet) {
       getUserProfileData();
-      getClubsData();
     }
   }, [wallet]);
+
+  useEffect(() => {
+    if (wallet) {
+      getClubsData();
+    }
+  }, [wallet, chain]);
 
   if (!wallet) {
     return;
