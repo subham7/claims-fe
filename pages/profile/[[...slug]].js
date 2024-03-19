@@ -30,19 +30,14 @@ const StationCard = ({ club }) => {
   return (
     <div className={classes.stationCard}>
       <div className={classes.stnHeader}>
-        {/* <div
-          style={{
-            backgroundImage: imageUrl
-              ? `url(${imageUrl})`
-              : `/assets/images/fallbackDao.png`,
-          }}
-          className={classes.stnImg}
-        /> */}
         <Image
           src={clubSocials?.logoUrl ?? "/assets/images/fallbackDao.png"}
           height={60}
           width={60}
           alt="Fallback Image"
+          style={{
+            borderRadius: "12px",
+          }}
         />
         <div className={isActive ? classes.active : classes.inactive}>
           {isActive ? "Active" : "Inactive"}
