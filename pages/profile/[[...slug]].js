@@ -48,7 +48,12 @@ const StationCard = ({ club }) => {
           <div className={classes.stnName}>{name}</div>
           <div>
             <div>Total Raised</div>
-            <div>{Number(totalAmountRaised ?? 0).toFixed(4)} USDC</div>
+            <div>
+              {Number(totalAmountRaised ?? 0).toFixed(4)}{" "}
+              {isNative
+                ? "USDC"
+                : CHAIN_CONFIG[networkId]?.nativeCurrency?.symbol}
+            </div>
           </div>
           <div>
             <div>Last Date</div>
