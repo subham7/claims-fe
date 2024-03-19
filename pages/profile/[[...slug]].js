@@ -152,7 +152,7 @@ const ProfilePage = () => {
             />
             <div>
               <Typography className={classes.truncateInfo} variant="subheading">
-                {userData?.userName}
+                {userData?.userName ?? wallet}
               </Typography>
               <Typography className={classes.truncateInfo} variant="body">
                 {userData?.bio}
