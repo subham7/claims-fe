@@ -3,6 +3,7 @@ import React from "react";
 import SettingItem from "./SettingItem";
 import CopyText from "./CopyText";
 import AdminFee from "./adminFee";
+import CustomizedSlider from "@components/common/CustomizedSlider";
 
 const GeneralSettings = () => {
   return (
@@ -40,7 +41,9 @@ const GeneralSettings = () => {
         heading={"Signing Threshold"}
         description={
           "How many signatures are needed for any transaction to pass inside the station?"
-        }></SettingItem>
+        }>
+        <CustomizedSlider />
+      </SettingItem>
     </div>
   );
 };

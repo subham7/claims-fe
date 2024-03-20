@@ -89,7 +89,7 @@
     }
 
     .icon {
-      background-color: #1e1e1e;
+      background-color: $dark-gray;
       padding: 8px;
       font-size: 32px;
       border-radius: 8px;
@@ -113,5 +113,32 @@
         color: $gray;
       }
     }
+
+    .tokenPriceContainer {
+      display: flex;
+      align-items: center;
+      .tokenPrice {
+        padding: 8px 12px;
+        border-radius: 8px 0 0 8px;
+        background-color: $dark-gray;
+      }
+    }
+
+    .tokenPriceInput {
+      width: 180px;
+      border-radius: 0 8px 8px 0;
+    }
+  }
+
+  .allowlistButton {
+    background-color: $dark-gray;
+    padding: 12px 20px;
+    border-radius: 50px;
+    border: none;
+    outline: none;
+    color: white;
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
   }
 }

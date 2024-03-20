@@ -1,6 +1,8 @@
 import React from "react";
 import SettingItem from "./SettingItem";
 import UpdateAmountTextfield from "./UpdateAmountTextfield";
+import TokenPriceInput from "./TokenPriceInput";
+import ImportAllowlist from "./ImportAllowlist";
 
 const DepositSettings = () => {
   return (
@@ -9,7 +11,9 @@ const DepositSettings = () => {
         heading={"Allowlist users"}
         description={
           "By allowlisting specific addresses, only these users will be able to deposit funds to your station. No other wallet will be able to make any deposit. You can either import addresses from a CSV file or manually copy and paste them here."
-        }></SettingItem>
+        }>
+        <ImportAllowlist />
+      </SettingItem>
 
       <SettingItem
         heading={"Tokengating"}
@@ -27,7 +31,9 @@ const DepositSettings = () => {
         heading={"Token Price"}
         description={
           "Members receive these tokens when they deposit funds to the station. Tokens are minted automatically to users’ wallets as per the set price. These token(s) are non-transferrable, and only exist to represent their ownership in the station. You can learn more about memberships here."
-        }></SettingItem>
+        }>
+        <TokenPriceInput />
+      </SettingItem>
 
       <SettingItem
         heading={"Minimum deposit"}
