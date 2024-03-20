@@ -66,3 +66,9 @@ export const generateBoundary = () => {
 
   return boundary;
 };
+
+export const generateAlertData = (message, severity) => ({
+  open: true,
+  message,
+  severity,
+});

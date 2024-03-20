@@ -30,7 +30,6 @@ const UpdateAmountTextfield = ({ prevAmount, className }) => {
             setAmount(e.target.value);
           }}
           value={amount}
-          // autoFocus={canEdit}
         />
         <div>USDC</div>
       </div>

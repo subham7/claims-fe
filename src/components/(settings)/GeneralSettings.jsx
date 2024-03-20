@@ -1,21 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 // import classes from "@components/(settings)/Settings.module.scss";
 import SettingItem from "./SettingItem";
 import CopyText from "./CopyText";
 import AdminFee from "./adminFee";
 import CustomizedSlider from "@components/common/CustomizedSlider";
 import TreasurySigner from "./TreasurySigner";
+import BackdropLoader from "@components/common/BackdropLoader";
 
-const GeneralSettings = () => {
+const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
+  const [loading, setLoading] = useState(false);
+  const { gnosisAddress } = clubData;
+
   return (
     <div>
       <SettingItem
         heading={"Share Page"}
         description={"Share this page with your audience to collect deposits."}>
         <CopyText
-          value={
-            "https://app.stationx.network/join/0x38ed8407df36b456add16d50b1f61721cba6fbc0/0x89"
-          }
+          value={`https://app.stationx.network/join/${daoAddress}/${routeNetworkId}`}
         />
       </SettingItem>
 
@@ -24,7 +26,11 @@ const GeneralSettings = () => {
         description={
           "Set a percentage of the funds raised to be deducted and sent as administrative fees."
         }>
-        <AdminFee adminAddress={"0x38ed8407df36b456add16d50b1f61721cba6fbc0"} />
+        <AdminFee
+          setLoading={setLoading}
+          daoAddress={daoAddress}
+          clubData={clubData}
+        />
       </SettingItem>
 
       <SettingItem
@@ -32,7 +38,7 @@ const GeneralSettings = () => {
         description={
           "Funds raised are held in your station’s multisig. You can also send assets to this address directly. Learn more about treasuries on StationX."
         }>
-        <CopyText value={"0x38ed8407df36b456add16d50b1f61721cba6fbc0"} />
+        <CopyText value={`${gnosisAddress}`} />
       </SettingItem>
 
       <SettingItem
@@ -50,6 +56,8 @@ const GeneralSettings = () => {
         }>
         <CustomizedSlider />
       </SettingItem>
+
+      <BackdropLoader isOpen={loading} />
     </div>
   );
 };
