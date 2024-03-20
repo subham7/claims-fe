@@ -12,8 +12,6 @@ import { CircularProgress, MenuItem, Select } from "@mui/material";
 import { CHAIN_CONFIG } from "utils/constants";
 import { RiLinkM } from "react-icons/ri";
 import Image from "next/image";
-// import { getUploadedNFT } from "api/assets";
-// import { getImageURL } from "utils/globalFunctions";
 
 const StationCard = ({ club }) => {
   const {
@@ -32,19 +30,14 @@ const StationCard = ({ club }) => {
   return (
     <div className={classes.stationCard}>
       <div className={classes.stnHeader}>
-        {/* <div
-          style={{
-            backgroundImage: imageUrl
-              ? `url(${imageUrl})`
-              : `/assets/images/fallbackDao.png`,
-          }}
-          className={classes.stnImg}
-        /> */}
         <Image
           src={clubSocials?.logoUrl ?? "/assets/images/fallbackDao.png"}
           height={60}
           width={60}
           alt="Fallback Image"
+          style={{
+            borderRadius: "12px",
+          }}
         />
         <div className={isActive ? classes.active : classes.inactive}>
           {isActive ? "Active" : "Inactive"}
@@ -55,7 +48,12 @@ const StationCard = ({ club }) => {
           <div className={classes.stnName}>{name}</div>
           <div>
             <div>Total Raised</div>
-            <div>{Number(totalAmountRaised ?? 0).toFixed(4)} USDC</div>
+            <div>
+              {Number(totalAmountRaised ?? 0).toFixed(4)}{" "}
+              {isNative
+                ? "USDC"
+                : CHAIN_CONFIG[networkId]?.nativeCurrency?.symbol}
+            </div>
           </div>
           <div>
             <div>Last Date</div>
@@ -126,9 +124,14 @@ const ProfilePage = () => {
   useEffect(() => {
     if (wallet) {
       getUserProfileData();
-      getClubsData();
     }
   }, [wallet]);
+
+  useEffect(() => {
+    if (wallet) {
+      getClubsData();
+    }
+  }, [wallet, chain]);
 
   if (!wallet) {
     return;
@@ -149,7 +152,7 @@ const ProfilePage = () => {
             />
             <div>
               <Typography className={classes.truncateInfo} variant="subheading">
-                {userData?.userName}
+                {userData?.userName ?? wallet}
               </Typography>
               <Typography className={classes.truncateInfo} variant="body">
                 {userData?.bio}
