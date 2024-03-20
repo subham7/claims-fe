@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Modal from "@components/common/Modal/Modal";
-import { TextField, Typography } from "@mui/material";
+import { TextField, Typography, Skeleton } from "@mui/material";
 import classes from "./Staking.module.scss";
 import Image from "next/image";
 import { useFormik } from "formik";
@@ -17,6 +17,10 @@ import { convertFromWeiGovernance } from "utils/globalFunctions";
 import BackdropLoader from "@components/common/BackdropLoader";
 import { stakingValidation } from "@components/createClubComps/ValidationSchemas";
 
+const TokenLoadingShimmer = () => {
+  return <Skeleton width={60} height={30} />;
+};
+
 const StakingModal = ({
   image,
   type,
@@ -31,6 +35,7 @@ const StakingModal = ({
 }) => {
   const [tokenData, setTokenData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isFetchingValue, setIsFetchingValue] = useState(false);
   const [stakeTokenBalance, setStakeTokenDetails] = useState();
 
   const tokenType = useSelector((state) => {
@@ -68,6 +73,7 @@ const StakingModal = ({
   };
 
   const fetchTokens = async () => {
+    setIsFetchingValue(true);
     if (daoAddress && gnosisAddress && networkId) {
       const tokensList = await getTokensList(
         CHAIN_CONFIG[networkId].covalentNetworkName,
@@ -82,10 +88,12 @@ const StakingModal = ({
 
       setTokenData(data?.filter((token) => token.symbol !== null));
     }
+    setIsFetchingValue(false);
   };
 
   const fetchAvailableTokenDetails = async () => {
     try {
+      setIsFetchingValue(true);
       if (token === "ETH") {
         setStakeTokenDetails(tokenData.find((token) => token.symbol === "ETH"));
       } else if (token === "USDC") {
@@ -93,8 +101,10 @@ const StakingModal = ({
           tokenData.find((token) => token.symbol === "USDC"),
         );
       }
+      setIsFetchingValue(false);
     } catch (error) {
       console.log(error);
+      setIsFetchingValue(false);
     }
   };
 
@@ -277,18 +287,31 @@ const StakingModal = ({
             <Typography
               className={classes.staked}
               fontSize={14}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+              }}
               fontWeight={500}
               variant="inherit">
               You have{" "}
-              <span>
-                {Number(
-                  convertFromWeiGovernance(
-                    stakeTokenBalance?.balance,
-                    stakeTokenBalance?.decimals,
-                  ),
-                ).toFixed(6)}{" "}
-                {stakeTokenBalance?.symbol}
-              </span>{" "}
+              {isFetchingValue ? (
+                <TokenLoadingShimmer />
+              ) : (
+                <span>
+                  {isFetchingValue ? (
+                    <TokenLoadingShimmer />
+                  ) : (
+                    Number(
+                      convertFromWeiGovernance(
+                        stakeTokenBalance?.balance,
+                        stakeTokenBalance?.decimals,
+                      ) ?? 0,
+                    ).toFixed(4)
+                  )}{" "}
+                  {stakeTokenBalance?.symbol}
+                </span>
+              )}{" "}
               in your station
             </Typography>
           ) : (
