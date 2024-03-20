@@ -141,4 +141,25 @@
     font-weight: 500;
     cursor: pointer;
   }
+
+  .treasurySignerContainer {
+    display: flex;
+    flex-direction: column;
+
+    button {
+      padding: 8px 24px;
+      width: fit-content;
+      background-color: $dark-gray;
+      color: white;
+      border-radius: 24px;
+      border: none;
+      outline: none;
+      font-family: inherit;
+      margin-top: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+  }
 }

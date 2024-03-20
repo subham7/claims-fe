@@ -4,6 +4,7 @@ import SettingItem from "./SettingItem";
 import CopyText from "./CopyText";
 import AdminFee from "./adminFee";
 import CustomizedSlider from "@components/common/CustomizedSlider";
+import TreasurySigner from "./TreasurySigner";
 
 const GeneralSettings = () => {
   return (
@@ -17,6 +18,7 @@ const GeneralSettings = () => {
           }
         />
       </SettingItem>
+
       <SettingItem
         heading={"Add Admin Fees"}
         description={
@@ -24,6 +26,7 @@ const GeneralSettings = () => {
         }>
         <AdminFee adminAddress={"0x38ed8407df36b456add16d50b1f61721cba6fbc0"} />
       </SettingItem>
+
       <SettingItem
         heading={"Treasury multisig"}
         description={
@@ -31,11 +34,14 @@ const GeneralSettings = () => {
         }>
         <CopyText value={"0x38ed8407df36b456add16d50b1f61721cba6fbc0"} />
       </SettingItem>
+
       <SettingItem
         heading={"Treasury Signer(s)"}
         description={
           "You can add up to 9 signers. Signers have access control to funds, so choose carefully."
-        }></SettingItem>
+        }>
+        <TreasurySigner />
+      </SettingItem>
 
       <SettingItem
         heading={"Signing Threshold"}
