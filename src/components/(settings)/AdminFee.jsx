@@ -4,7 +4,7 @@ import { IoMdCheckmark } from "react-icons/io";
 import classNames from "classnames";
 import { GoPencil } from "react-icons/go";
 import useAppContractMethods from "hooks/useAppContractMethods";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setAlertData } from "redux/reducers/alert";
 import { addClubData } from "redux/reducers/club";
 import { generateAlertData } from "utils/globalFunctions";
@@ -14,6 +14,10 @@ const AdminFee = ({ daoAddress, clubData, setLoading }) => {
   const [percentageValue, setPercentageValue] = useState(0);
   const inputRef = useRef(null);
   const dispatch = useDispatch();
+
+  const isAdmin = useSelector((state) => {
+    return state.gnosis.adminUser;
+  });
 
   const { updateOwnerFee } = useAppContractMethods({
     daoAddress,
@@ -34,7 +38,6 @@ const AdminFee = ({ daoAddress, clubData, setLoading }) => {
     setLoading(true);
     try {
       await updateOwnerFee(percentageValue * 100);
-      setLoading(false);
       dispatchAlert("Owner fee updated successfully", "success");
       dispatch(
         addClubData({
@@ -42,9 +45,13 @@ const AdminFee = ({ daoAddress, clubData, setLoading }) => {
           ownerFeePerDepositPercent: percentageValue * 100,
         }),
       );
+      setLoading(false);
+      setCanEdit(false);
     } catch (error) {
       console.log(error.code);
       setLoading(false);
+      setCanEdit(false);
+
       if (error.code === 4001) {
         dispatchAlert("Metamask Signature denied", "error");
       } else {
@@ -81,19 +88,24 @@ const AdminFee = ({ daoAddress, clubData, setLoading }) => {
         disabled={!canEdit}
         className={classNames(classes.input, classes.percentage)}
       />
-      {canEdit ? (
-        <IoMdCheckmark
-          onClick={adminFeeSubmitHandler}
-          className={classNames(classes.icon, checkMarkClass)}
-        />
-      ) : (
-        <GoPencil
-          onClick={() => {
-            setCanEdit(true);
-          }}
-          className={classes.icon}
-        />
-      )}
+
+      {isAdmin ? (
+        <>
+          {canEdit ? (
+            <IoMdCheckmark
+              onClick={adminFeeSubmitHandler}
+              className={classNames(classes.icon, checkMarkClass)}
+            />
+          ) : (
+            <GoPencil
+              onClick={() => {
+                setCanEdit(true);
+              }}
+              className={classes.icon}
+            />
+          )}
+        </>
+      ) : null}
     </div>
   );
 };

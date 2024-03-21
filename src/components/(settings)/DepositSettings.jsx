@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import BackdropLoader from "@components/common/BackdropLoader";
 import StatusModal from "@components/modals/StatusModal/StatusModal";
 import { useRouter } from "next/router";
+import DeadlineInput from "./DeadlineInput";
 
 const DepositSettings = ({ routeNetworkId, daoAddress }) => {
   const [loading, setLoading] = useState(false);
@@ -22,8 +23,6 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
     maxDepositAmountFormatted,
     raiseAmountFormatted,
     pricePerTokenFormatted,
-    distributionAmountFormatted,
-    depositTokenDecimal,
     symbol,
   } = clubData;
 
@@ -54,7 +53,13 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
         heading={"Deadline"}
         description={
           "Last date for members to deposit funds before the gates close."
-        }></SettingItem>
+        }>
+        <DeadlineInput
+          setLoading={setLoading}
+          daoAddress={daoAddress}
+          clubData={clubData}
+        />
+      </SettingItem>
 
       <SettingItem
         heading={"Token Price"}

@@ -78,6 +78,10 @@ const UpdateAmountTextfield = ({
     return state.club.erc721ClubDetails.isGovernanceActive;
   });
 
+  const isAdmin = useSelector((state) => {
+    return state.gnosis.adminUser;
+  });
+
   const isGovernanceActive =
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
 
@@ -144,10 +148,12 @@ const UpdateAmountTextfield = ({
         signature,
       });
       setLoading(false);
+      setCanEdit(false);
       handleActionComplete("success", request.data?.proposalId);
     } catch (error) {
       console.log(error);
       setLoading(false);
+      setCanEdit(false);
       handleActionComplete("failure");
     }
   };
@@ -176,20 +182,23 @@ const UpdateAmountTextfield = ({
         />
         <div>USDC</div>
       </div>
-
-      {canEdit ? (
-        <IoMdCheckmark
-          onClick={submitHandler}
-          className={classNames(classes.icon, checkMarkClass)}
-        />
-      ) : (
-        <GoPencil
-          onClick={() => {
-            setCanEdit(true);
-          }}
-          className={classes.icon}
-        />
-      )}
+      {isAdmin ? (
+        <>
+          {canEdit ? (
+            <IoMdCheckmark
+              onClick={submitHandler}
+              className={classNames(classes.icon, checkMarkClass)}
+            />
+          ) : (
+            <GoPencil
+              onClick={() => {
+                setCanEdit(true);
+              }}
+              className={classes.icon}
+            />
+          )}
+        </>
+      ) : null}
     </div>
   );
 };
