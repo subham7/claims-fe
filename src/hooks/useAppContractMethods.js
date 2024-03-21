@@ -300,6 +300,23 @@ const useAppContractMethods = (params) => {
     }
   };
 
+  const updateMinMaxDeposit = async (minDepositPerUser, maxDepositPerUser) => {
+    try {
+      const res = await writeContractFunction({
+        address: CHAIN_CONFIG[networkId].factoryContractAddress,
+        abi: factoryContractABI,
+        functionName: "updateMinMaxDeposit",
+        args: [minDepositPerUser, maxDepositPerUser, daoAddress],
+        account: walletAddress,
+        networkId,
+        walletClient,
+      });
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const setupTokenGating = async (
     tokenA,
     tokenB,
@@ -614,6 +631,7 @@ const useAppContractMethods = (params) => {
     updateProposalAndExecution,
     toggleWhitelist,
     fetchEigenTokenBalance,
+    updateMinMaxDeposit,
   };
 };
 

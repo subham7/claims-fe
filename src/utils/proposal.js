@@ -206,6 +206,8 @@ export const fetchABI = async (executionId, tokenType) => {
     case 16:
     case 13:
     case 20:
+    case 49:
+    case 50:
       return factoryContractABI;
     case 8:
       return seaportABI;
@@ -257,11 +259,14 @@ export const getEncodedData = async ({
     sendTokenAmounts,
     sendTokenAddresses,
     sendToken,
+    updatedMinimumDepositAmount,
+    updatedMaximumDepositAmount,
   } = proposalData.commands[0];
 
   let iface;
   if (contractABI) iface = new Interface(contractABI);
   const tokenDecimals = clubData?.depositTokenDecimal;
+  const { minDepositAmountFormatted, maxDepositAmountFormatted } = clubData;
 
   switch (executionId) {
     case 0:
@@ -497,6 +502,22 @@ export const getEncodedData = async ({
 
         return { data, approvalData, membersArray, airDropAmountArray };
       }
+    case 49:
+      data = iface.encodeFunctionData("updateMinMaxDeposit", [
+        convertToWeiGovernance(updatedMinimumDepositAmount, tokenDecimals),
+        maxDepositAmountFormatted?.actualValue,
+        daoAddress,
+      ]);
+
+      return { data };
+    case 50:
+      data = iface.encodeFunctionData("updateMinMaxDeposit", [
+        minDepositAmountFormatted?.actualValue,
+        convertToWeiGovernance(updatedMaximumDepositAmount, tokenDecimals),
+        daoAddress,
+      ]);
+
+      return { data };
     default:
       return {};
   }
@@ -1372,6 +1393,8 @@ export const getTransaction = async ({
     case 3:
     case 13:
     case 20:
+    case 49:
+    case 50:
       transaction = {
         //dao
         to: Web3.utils.toChecksumAddress(daoAddress),

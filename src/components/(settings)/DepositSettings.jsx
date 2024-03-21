@@ -3,8 +3,22 @@ import SettingItem from "./SettingItem";
 import UpdateAmountTextfield from "./UpdateAmountTextfield";
 import TokenPriceInput from "./TokenPriceInput";
 import ImportAllowlist from "./ImportAllowlist";
+import { useSelector } from "react-redux";
 
-const DepositSettings = () => {
+const DepositSettings = ({ routeNetworkId, daoAddress }) => {
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
+  });
+
+  const {
+    minDepositAmountFormatted,
+    maxDepositAmountFormatted,
+    raiseAmountFormatted,
+    pricePerTokenFormatted,
+    distributionAmountFormatted,
+    depositTokenDecimal,
+  } = clubData;
+
   return (
     <div>
       <SettingItem
@@ -40,7 +54,12 @@ const DepositSettings = () => {
         description={
           "Minimum amount of funds a user can deposit into the station."
         }>
-        <UpdateAmountTextfield prevAmount={10} />
+        <UpdateAmountTextfield
+          routeNetworkId={routeNetworkId}
+          daoAddress={daoAddress}
+          prevAmount={Number(minDepositAmountFormatted?.formattedValue)}
+          type="updateMinDeposit"
+        />
       </SettingItem>
 
       <SettingItem
@@ -48,7 +67,12 @@ const DepositSettings = () => {
         description={
           "Maximum amount of funds a user can deposit into the station."
         }>
-        <UpdateAmountTextfield prevAmount={1200} />
+        <UpdateAmountTextfield
+          routeNetworkId={routeNetworkId}
+          daoAddress={daoAddress}
+          prevAmount={Number(maxDepositAmountFormatted?.formattedValue)}
+          type="updateMaxDeposit"
+        />
       </SettingItem>
 
       <SettingItem
@@ -56,7 +80,7 @@ const DepositSettings = () => {
         description={
           "Station deposits close automatically when the funding target is met."
         }>
-        <UpdateAmountTextfield prevAmount={20900} />
+        <UpdateAmountTextfield type="updateRaiseAmount" prevAmount={20900} />
       </SettingItem>
     </div>
   );

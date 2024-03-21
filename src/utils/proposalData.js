@@ -56,6 +56,8 @@ export const proposalData = ({
     stakeAmount,
     unstakeAmount,
     nftSupply,
+    updatedMinimumDepositAmount,
+    updatedMaximumDepositAmount,
   } = data ?? {};
 
   switch (executionId) {
@@ -156,6 +158,16 @@ export const proposalData = ({
           withdrawAmount,
           decimals,
         )} $${symbol}`,
+      };
+
+    case 49:
+      return {
+        "Updated amount:": `${updatedMinimumDepositAmount} ${symbol}`,
+      };
+
+    case 50:
+      return {
+        "Updated amount:": `${updatedMaximumDepositAmount} ${symbol}`,
       };
 
     case 26:
@@ -1848,6 +1860,16 @@ export const getProposalCommands = async ({
     //       tokenDecimal,
     //     ),
     //   };
+
+    case 49:
+      return {
+        updatedMinimumDepositAmount: values.updatedMinimumDepositAmount,
+      };
+    case 50:
+      return {
+        updatedMaximumDepositAmount: values.updatedMaximumDepositAmount,
+      };
+
     case 26:
     case 31:
     case 33:
@@ -1905,6 +1927,8 @@ export const proposalDetailsData = ({
     nftSupply,
     sendTokenAmounts,
     sendTokenAddresses,
+    updatedMinimumDepositAmount,
+    updatedMaximumDepositAmount,
   } = data ?? {};
 
   let responseData = {
@@ -2072,6 +2096,20 @@ export const proposalDetailsData = ({
 
       return responseData;
 
+    case 49:
+      responseData.data = {
+        "Updated amount:": updatedMinimumDepositAmount,
+      };
+
+      return responseData;
+
+    case 50:
+      responseData.data = {
+        "Updated amount:": updatedMaximumDepositAmount,
+      };
+
+      return responseData;
+
     case 26:
     case 31:
     case 33:
@@ -2098,7 +2136,6 @@ export const getSafeTransaction = async (
   walletAddress,
   gnosisTxUrl,
 ) => {
-  debugger;
   return await getSafeSdk(gnosisAddress, walletAddress, gnosisTxUrl);
 };
 
