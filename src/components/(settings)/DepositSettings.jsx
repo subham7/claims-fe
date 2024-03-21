@@ -1,11 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import SettingItem from "./SettingItem";
 import UpdateAmountTextfield from "./UpdateAmountTextfield";
 import TokenPriceInput from "./TokenPriceInput";
 import ImportAllowlist from "./ImportAllowlist";
 import { useSelector } from "react-redux";
+import BackdropLoader from "@components/common/BackdropLoader";
+import StatusModal from "@components/modals/StatusModal/StatusModal";
+import { useRouter } from "next/router";
 
 const DepositSettings = ({ routeNetworkId, daoAddress }) => {
+  const [loading, setLoading] = useState(false);
+  const [proposalId, setProposalId] = useState("");
+  const [isActionCreated, setIsActionCreated] = useState(null);
+
   const clubData = useSelector((state) => {
     return state.club.clubData;
   });
@@ -17,7 +24,15 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
     pricePerTokenFormatted,
     distributionAmountFormatted,
     depositTokenDecimal,
+    symbol,
   } = clubData;
+
+  const handleActionComplete = (result, proposalId = "") => {
+    setIsActionCreated(result);
+    setProposalId(proposalId);
+  };
+
+  const router = useRouter();
 
   return (
     <div>
@@ -46,7 +61,14 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
         description={
           "Members receive these tokens when they deposit funds to the station. Tokens are minted automatically to users’ wallets as per the set price. These token(s) are non-transferrable, and only exist to represent their ownership in the station. You can learn more about memberships here."
         }>
-        <TokenPriceInput />
+        <TokenPriceInput
+          routeNetworkId={routeNetworkId}
+          daoAddress={daoAddress}
+          prevAmount={Number(pricePerTokenFormatted?.formattedValue)}
+          setLoading={setLoading}
+          handleActionComplete={handleActionComplete}
+          symbol={symbol}
+        />
       </SettingItem>
 
       <SettingItem
@@ -59,6 +81,8 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
           daoAddress={daoAddress}
           prevAmount={Number(minDepositAmountFormatted?.formattedValue)}
           type="updateMinDeposit"
+          setLoading={setLoading}
+          handleActionComplete={handleActionComplete}
         />
       </SettingItem>
 
@@ -72,6 +96,8 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
           daoAddress={daoAddress}
           prevAmount={Number(maxDepositAmountFormatted?.formattedValue)}
           type="updateMaxDeposit"
+          setLoading={setLoading}
+          handleActionComplete={handleActionComplete}
         />
       </SettingItem>
 
@@ -80,8 +106,45 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
         description={
           "Station deposits close automatically when the funding target is met."
         }>
-        <UpdateAmountTextfield type="updateRaiseAmount" prevAmount={20900} />
+        <UpdateAmountTextfield
+          type="updateRaiseAmount"
+          routeNetworkId={routeNetworkId}
+          daoAddress={daoAddress}
+          setLoading={setLoading}
+          handleActionComplete={handleActionComplete}
+          prevAmount={Number(raiseAmountFormatted?.formattedValue)}
+        />
       </SettingItem>
+
+      <BackdropLoader isOpen={loading} />
+
+      {isActionCreated === "success" ? (
+        <StatusModal
+          heading={"Hurray! We made it"}
+          subheading="Transaction created successfully!"
+          isError={false}
+          onClose={() => setIsActionCreated(null)}
+          buttonText="View & Sign Transaction"
+          onButtonClick={() => {
+            router.push(
+              `/proposals/${daoAddress}/${routeNetworkId}/${proposalId}`,
+            );
+          }}
+        />
+      ) : isActionCreated === "failure" ? (
+        <StatusModal
+          heading={"Something went wrong"}
+          subheading="Looks like we hit a bump here, try again?"
+          isError={true}
+          onClose={() => {
+            setIsActionCreated(null);
+          }}
+          buttonText="Try Again?"
+          onButtonClick={() => {
+            setIsActionCreated(null);
+          }}
+        />
+      ) : null}
     </div>
   );
 };

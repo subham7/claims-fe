@@ -162,12 +162,12 @@ export const proposalData = ({
 
     case 49:
       return {
-        "Updated amount:": `${updatedMinimumDepositAmount} ${symbol}`,
+        "Updated amount:": `${updatedMinimumDepositAmount}`,
       };
 
     case 50:
       return {
-        "Updated amount:": `${updatedMaximumDepositAmount} ${symbol}`,
+        "Updated amount:": `${updatedMaximumDepositAmount}`,
       };
 
     case 26:
@@ -1610,6 +1610,7 @@ export const getProposalCommands = async ({
   daoAddress,
   networkId,
 }) => {
+  debugger;
   const executionId = values.actionCommand;
   let data;
   let followersAddresses;

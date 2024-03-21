@@ -102,7 +102,7 @@ const ProposalCard = ({ proposal, daoAddress, routeNetworkId }) => {
 
         setTokenDetails({
           decimals: isNativeToken ? 18 : decimal,
-          symbol: symbol ?? clubData?.depositTokenSymbol,
+          symbol: symbol,
         });
       }
     } catch (error) {

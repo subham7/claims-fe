@@ -28,6 +28,20 @@ const dummyData = (amount, symbol, type) => {
         actionCommand: 50,
       };
 
+    case "updatePricePerToken":
+      return {
+        title: "Update price per token",
+        description: `Update price per token to ${amount} ${symbol}`,
+        actionCommand: 13,
+      };
+
+    case "updateRaiseAmount":
+      return {
+        title: "Update total raise amount",
+        description: `Update total raise amount to ${amount} ${symbol}`,
+        actionCommand: 3,
+      };
+
     default:
       break;
   }
@@ -39,6 +53,8 @@ const UpdateAmountTextfield = ({
   routeNetworkId,
   daoAddress,
   type,
+  setLoading,
+  handleActionComplete,
 }) => {
   const [canEdit, setCanEdit] = useState(false);
   const [amount, setAmount] = useState(prevAmount);
@@ -49,8 +65,6 @@ const UpdateAmountTextfield = ({
   const clubData = useSelector((state) => {
     return state.club.clubData;
   });
-
-  console.log("xxx", clubData);
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
@@ -74,56 +88,68 @@ const UpdateAmountTextfield = ({
     return block;
   };
 
-  const values = {
-    updatedMinimumDepositAmount: amount,
-    updatedMinimumDepositAmount: amount,
-    actionCommand: dummyData(amount, clubData?.depositTokenSymbol, type)
-      .actionCommand,
-    note: dummyData(amount, clubData?.depositTokenSymbol, type).description,
-    title: dummyData(amount, clubData?.depositTokenSymbol, type).title,
-  };
-
   const submitHandler = async () => {
-    let commands = await getProposalCommands({
-      values,
-      clubData,
-      daoAddress,
-      networkId: routeNetworkId,
-    });
+    try {
+      setLoading(true);
+      const values = {
+        updatedMinimumDepositAmount: amount,
+        updatedMaximumDepositAmount: amount,
+        totalDeposit: amount,
+        pricePerToken: amount,
+        actionCommand: dummyData(amount, clubData?.depositTokenSymbol, type)
+          .actionCommand,
+        note: dummyData(amount, clubData?.depositTokenSymbol, type).description,
+        title: dummyData(amount, clubData?.depositTokenSymbol, type).title,
+      };
 
-    const blockNum = await fetchLatestBlockNumber();
-    commands = {
-      executionId: values.actionCommand,
-      ...commands,
-      usdcTokenSymbol: "USDC",
-      usdcTokenDecimal: 6,
-      usdcGovernanceTokenDecimal: 18,
-    };
+      debugger;
+      let commands = await getProposalCommands({
+        values,
+        clubData,
+        daoAddress,
+        networkId: routeNetworkId,
+      });
 
-    const payload = {
-      clubId: daoAddress,
-      name: values.title,
-      createdBy: walletAddress,
-      votingDuration: dayjs().add(100, "year").unix(),
-      votingOptions: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
-      commands: [commands],
-      type: "action",
-      tokenType,
-      daoAddress: daoAddress,
-      block: blockNum,
-      networkId: routeNetworkId,
-    };
+      const blockNum = await fetchLatestBlockNumber();
+      commands = {
+        executionId: values.actionCommand,
+        ...commands,
+        usdcTokenSymbol: "USDC",
+        usdcTokenDecimal: 6,
+        usdcGovernanceTokenDecimal: 18,
+      };
 
-    const { signature } = await handleSignMessage(
-      walletAddress,
-      JSON.stringify(payload),
-    );
+      const payload = {
+        clubId: daoAddress,
+        name: values.title,
+        createdBy: walletAddress,
+        votingDuration: dayjs().add(100, "year").unix(),
+        votingOptions: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
+        commands: [commands],
+        type: "action",
+        tokenType,
+        daoAddress: daoAddress,
+        block: blockNum,
+        networkId: routeNetworkId,
+      };
 
-    const request = await createProposal(isGovernanceActive, {
-      ...payload,
-      description: values.note,
-      signature,
-    });
+      const { signature } = await handleSignMessage(
+        walletAddress,
+        JSON.stringify(payload),
+      );
+
+      const request = await createProposal(isGovernanceActive, {
+        ...payload,
+        description: values.note,
+        signature,
+      });
+      setLoading(false);
+      handleActionComplete("success", request.data?.proposalId);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+      handleActionComplete("failure");
+    }
   };
 
   const checkMarkClass =
