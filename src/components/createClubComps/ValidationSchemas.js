@@ -332,7 +332,7 @@ export const getProposalValidationSchema = ({
         "price of token should be greater than current price",
         async (value, context) => {
           const { actionCommand } = context.parent;
-          if (actionCommand === 13) {
+          if (actionCommand === 13 && tokenType === "erc20") {
             try {
               const { pricePerToken, depositTokenAddress } = factoryData;
               const decimals = await getDecimals(depositTokenAddress);
