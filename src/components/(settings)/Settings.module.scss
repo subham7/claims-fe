@@ -105,6 +105,10 @@
       background-color: $active-background;
       color: $active-text;
     }
+    .icon.delete {
+      background-color: $inactive-background;
+      color: $inactive-text;
+    }
 
     .icon.disabled {
       cursor: not-allowed;
@@ -160,6 +164,11 @@
       display: flex;
       align-items: center;
       gap: 4px;
+
+      &:disabled {
+        color: gray;
+        cursor: not-allowed;
+      }
     }
   }
 

@@ -6,10 +6,22 @@ import AdminFee from "./adminFee";
 import CustomizedSlider from "@components/common/CustomizedSlider";
 import TreasurySigner from "./TreasurySigner";
 import BackdropLoader from "@components/common/BackdropLoader";
+import { useRouter } from "next/router";
+import StatusModal from "@components/modals/StatusModal/StatusModal";
 
 const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
   const [loading, setLoading] = useState(false);
+  const [proposalId, setProposalId] = useState("");
+  const [isActionCreated, setIsActionCreated] = useState(null);
+
   const { gnosisAddress } = clubData;
+
+  const handleActionComplete = (result, proposalId = "") => {
+    setIsActionCreated(result);
+    setProposalId(proposalId);
+  };
+
+  const router = useRouter();
 
   return (
     <div>
@@ -46,7 +58,13 @@ const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
         description={
           "You can add up to 9 signers. Signers have access control to funds, so choose carefully."
         }>
-        <TreasurySigner />
+        <TreasurySigner
+          clubData={clubData}
+          daoAddress={daoAddress}
+          routeNetworkId={routeNetworkId}
+          setLoading={setLoading}
+          handleActionComplete={handleActionComplete}
+        />
       </SettingItem>
 
       <SettingItem
@@ -58,6 +76,34 @@ const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
       </SettingItem>
 
       <BackdropLoader isOpen={loading} />
+
+      {isActionCreated === "success" ? (
+        <StatusModal
+          heading={"Hurray! We made it"}
+          subheading="Transaction created successfully!"
+          isError={false}
+          onClose={() => setIsActionCreated(null)}
+          buttonText="View & Sign Transaction"
+          onButtonClick={() => {
+            router.push(
+              `/proposals/${daoAddress}/${routeNetworkId}/${proposalId}`,
+            );
+          }}
+        />
+      ) : isActionCreated === "failure" ? (
+        <StatusModal
+          heading={"Something went wrong"}
+          subheading="Looks like we hit a bump here, try again?"
+          isError={true}
+          onClose={() => {
+            setIsActionCreated(null);
+          }}
+          buttonText="Try Again?"
+          onButtonClick={() => {
+            setIsActionCreated(null);
+          }}
+        />
+      ) : null}
     </div>
   );
 };

@@ -216,6 +216,11 @@ const useClubFetch = ({ daoAddress, routeNetworkId }) => {
       const ownerAddressesArray = ownerAddresses.map((value) =>
         value.toLowerCase(),
       );
+
+      dispatch(
+        addClubData({ ...reduxClubData, adminAddresses: ownerAddressesArray }),
+      );
+
       if (ownerAddressesArray.includes(walletAddress.toLowerCase())) {
         dispatch(setAdminUser(true));
       } else {

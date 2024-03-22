@@ -35,6 +35,7 @@ export const slice = createSlice({
       ownerFeePerDepositPercent: null,
       depositTokenDecimal: null,
       depositTokenSymbol: null,
+      adminAddresses: null,
       pricePerTokenFormatted: {
         formattedValue: null,
         actualValue: null,
@@ -131,6 +132,7 @@ export const slice = createSlice({
 
       state.clubData.depositTokenDecimal = action.payload.depositTokenDecimal;
       state.clubData.depositTokenSymbol = action.payload.depositTokenSymbol;
+      state.clubData.adminAddresses = action.payload.adminAddresses;
     },
     addErc20ClubDetails: (state, action) => {
       state.erc20ClubDetails.quorum = action.payload.quorum;

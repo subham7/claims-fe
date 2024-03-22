@@ -10,7 +10,6 @@ const ImportAllowlist = () => {
 
   const handleChange = (event) => {
     const fileUploaded = event.target.files[0];
-    // formik.setFieldValue("pdfFile", fileUploaded);
   };
 
   return (

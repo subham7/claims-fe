@@ -1610,7 +1610,6 @@ export const getProposalCommands = async ({
   daoAddress,
   networkId,
 }) => {
-  debugger;
   const executionId = values.actionCommand;
   let data;
   let followersAddresses;

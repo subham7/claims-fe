@@ -5,12 +5,12 @@ import { IoMdCheckmark } from "react-icons/io";
 import classNames from "classnames";
 import { useSelector } from "react-redux";
 import { getProposalCommands } from "utils/proposalData";
-import { getPublicClient } from "utils/viemConfig";
 import { useAccount } from "wagmi";
 
 import dayjs from "dayjs";
 import { createProposal } from "api/proposal";
 import { handleSignMessage } from "utils/helper";
+import { fetchLatestBlockNumber } from "utils/globalFunctions";
 
 const dummyData = (amount, symbol, type) => {
   switch (type) {
@@ -85,13 +85,6 @@ const UpdateAmountTextfield = ({
   const isGovernanceActive =
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
 
-  const fetchLatestBlockNumber = async () => {
-    const publicClient = getPublicClient(routeNetworkId);
-    const block = Number(await publicClient.getBlockNumber());
-
-    return block;
-  };
-
   const submitHandler = async () => {
     try {
       setLoading(true);
@@ -106,7 +99,6 @@ const UpdateAmountTextfield = ({
         title: dummyData(amount, clubData?.depositTokenSymbol, type).title,
       };
 
-      debugger;
       let commands = await getProposalCommands({
         values,
         clubData,
@@ -114,7 +106,7 @@ const UpdateAmountTextfield = ({
         networkId: routeNetworkId,
       });
 
-      const blockNum = await fetchLatestBlockNumber();
+      const blockNum = await fetchLatestBlockNumber(routeNetworkId);
       commands = {
         executionId: values.actionCommand,
         ...commands,
