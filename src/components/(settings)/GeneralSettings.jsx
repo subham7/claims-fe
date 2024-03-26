@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-// import classes from "@components/(settings)/Settings.module.scss";
 import SettingItem from "./SettingItem";
 import CopyText from "./CopyText";
 import AdminFee from "./adminFee";
@@ -23,41 +22,43 @@ const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
 
   const router = useRouter();
 
-  return (
-    <div>
-      <SettingItem
-        heading={"Share Page"}
-        description={"Share this page with your audience to collect deposits."}>
+  const settings = [
+    {
+      key: "sharePage",
+      heading: "Share Page",
+      description: "Share this page with your audience to collect deposits.",
+      content: (
         <CopyText
           value={`https://app.stationx.network/join/${daoAddress}/${routeNetworkId}`}
         />
-      </SettingItem>
-
-      <SettingItem
-        heading={"Add Admin Fees"}
-        description={
-          "Set a percentage of the funds raised to be deducted and sent as administrative fees."
-        }>
+      ),
+    },
+    {
+      key: "addAdminFees",
+      heading: "Add Admin Fees",
+      description:
+        "Set a percentage of the funds raised to be deducted and sent as administrative fees.",
+      content: (
         <AdminFee
           setLoading={setLoading}
           daoAddress={daoAddress}
           clubData={clubData}
         />
-      </SettingItem>
-
-      <SettingItem
-        heading={"Treasury multisig"}
-        description={
-          "Funds raised are held in your station’s multisig. You can also send assets to this address directly. Learn more about treasuries on StationX."
-        }>
-        <CopyText value={`${gnosisAddress}`} />
-      </SettingItem>
-
-      <SettingItem
-        heading={"Treasury Signer(s)"}
-        description={
-          "You can add up to 9 signers. Signers have access control to funds, so choose carefully."
-        }>
+      ),
+    },
+    {
+      key: "treasuryMultisig",
+      heading: "Treasury Multisig",
+      description:
+        "Funds raised are held in your station’s multisig. You can also send assets to this address directly. Learn more about treasuries on StationX.",
+      content: <CopyText value={gnosisAddress} />,
+    },
+    {
+      key: "treasurySigners",
+      heading: "Treasury Signer(s)",
+      description:
+        "You can add up to 9 signers. Signers have access control to funds, so choose carefully.",
+      content: (
         <TreasurySigner
           clubData={clubData}
           daoAddress={daoAddress}
@@ -65,45 +66,58 @@ const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
           setLoading={setLoading}
           handleActionComplete={handleActionComplete}
         />
-      </SettingItem>
+      ),
+    },
+    {
+      key: "signingThreshold",
+      heading: "Signing Threshold",
+      description:
+        "How many signatures are needed for any transaction to pass inside the station?",
+      content: <CustomizedSlider />,
+    },
+  ];
 
-      <SettingItem
-        heading={"Signing Threshold"}
-        description={
-          "How many signatures are needed for any transaction to pass inside the station?"
-        }>
-        <CustomizedSlider />
-      </SettingItem>
+  return (
+    <div>
+      {settings.map(({ key, heading, description, content }) => (
+        <SettingItem key={key} heading={heading} description={description}>
+          {content}
+        </SettingItem>
+      ))}
 
       <BackdropLoader isOpen={loading} />
 
-      {isActionCreated === "success" ? (
+      {isActionCreated && (
         <StatusModal
-          heading={"Hurray! We made it"}
-          subheading="Transaction created successfully!"
-          isError={false}
+          isOpen={isActionCreated !== null}
+          heading={
+            isActionCreated === "success"
+              ? "Hurray! We made it"
+              : "Something went wrong"
+          }
+          subheading={
+            isActionCreated === "success"
+              ? "Transaction created successfully!"
+              : "Looks like we hit a bump here, try again?"
+          }
+          isError={isActionCreated !== "success"}
           onClose={() => setIsActionCreated(null)}
-          buttonText="View & Sign Transaction"
+          buttonText={
+            isActionCreated === "success"
+              ? "View & Sign Transaction"
+              : "Try Again?"
+          }
           onButtonClick={() => {
-            router.push(
-              `/proposals/${daoAddress}/${routeNetworkId}/${proposalId}`,
-            );
+            if (isActionCreated === "success") {
+              router.push(
+                `/proposals/${daoAddress}/${routeNetworkId}/${proposalId}`,
+              );
+            } else {
+              setIsActionCreated(null);
+            }
           }}
         />
-      ) : isActionCreated === "failure" ? (
-        <StatusModal
-          heading={"Something went wrong"}
-          subheading="Looks like we hit a bump here, try again?"
-          isError={true}
-          onClose={() => {
-            setIsActionCreated(null);
-          }}
-          buttonText="Try Again?"
-          onButtonClick={() => {
-            setIsActionCreated(null);
-          }}
-        />
-      ) : null}
+      )}
     </div>
   );
 };

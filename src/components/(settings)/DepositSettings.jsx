@@ -8,6 +8,7 @@ import BackdropLoader from "@components/common/BackdropLoader";
 import StatusModal from "@components/modals/StatusModal/StatusModal";
 import { useRouter } from "next/router";
 import DeadlineInput from "./DeadlineInput";
+import TokenGatingList from "./TokenGatingList";
 
 const DepositSettings = ({ routeNetworkId, daoAddress }) => {
   const [loading, setLoading] = useState(false);
@@ -47,7 +48,9 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
         heading={"Tokengating"}
         description={
           "Manage the tokens that users will need to be eligible for joining this station. Setup existing NFTs or ERC20 tokens on any EVM compatible network as a qualifier to make a deposit. Read more about tokengating on StationX."
-        }></SettingItem>
+        }>
+        <TokenGatingList />
+      </SettingItem>
 
       <SettingItem
         heading={"Deadline"}
