@@ -324,12 +324,13 @@ const useAppContractMethods = (params) => {
     comparator,
     value,
   ) => {
+    debugger;
     try {
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
         abi: factoryContractABI,
         functionName: "setupTokenGating",
-        args: [tokenA, tokenB, operator, comparator, value, daoAddress],
+        args: [tokenA, tokenB, operator, comparator, value, daoAddress], // ["address", "address", 0, 0, ["1", "1"], "daoAddress"]
         account: walletAddress,
         networkId,
         walletClient,

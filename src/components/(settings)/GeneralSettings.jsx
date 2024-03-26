@@ -2,18 +2,19 @@ import React, { useState } from "react";
 import SettingItem from "./SettingItem";
 import CopyText from "./CopyText";
 import AdminFee from "./adminFee";
-import CustomizedSlider from "@components/common/CustomizedSlider";
 import TreasurySigner from "./TreasurySigner";
 import BackdropLoader from "@components/common/BackdropLoader";
 import { useRouter } from "next/router";
 import StatusModal from "@components/modals/StatusModal/StatusModal";
+import UpdateAmountTextfield from "./UpdateAmountTextfield";
+import classes from "@components/(settings)/Settings.module.scss";
 
 const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
   const [loading, setLoading] = useState(false);
   const [proposalId, setProposalId] = useState("");
   const [isActionCreated, setIsActionCreated] = useState(null);
 
-  const { gnosisAddress } = clubData;
+  const { gnosisAddress, currentSafeThreshold } = clubData;
 
   const handleActionComplete = (result, proposalId = "") => {
     setIsActionCreated(result);
@@ -73,7 +74,17 @@ const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
       heading: "Signing Threshold",
       description:
         "How many signatures are needed for any transaction to pass inside the station?",
-      content: <CustomizedSlider />,
+      content: (
+        <UpdateAmountTextfield
+          className={classes.signators}
+          daoAddress={daoAddress}
+          handleActionComplete={handleActionComplete}
+          routeNetworkId={routeNetworkId}
+          setLoading={setLoading}
+          type={"signators"}
+          prevAmount={Number(currentSafeThreshold)}
+        />
+      ),
     },
   ];
 

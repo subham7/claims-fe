@@ -212,13 +212,18 @@ const useClubFetch = ({ daoAddress, routeNetworkId }) => {
         walletAddress,
       );
 
+      const safeThreshold = await safeSdk.getThreshold();
       const ownerAddresses = await safeSdk.getOwners();
       const ownerAddressesArray = ownerAddresses.map((value) =>
         value.toLowerCase(),
       );
 
       dispatch(
-        addClubData({ ...reduxClubData, adminAddresses: ownerAddressesArray }),
+        addClubData({
+          ...reduxClubData,
+          adminAddresses: ownerAddressesArray,
+          currentSafeThreshold: safeThreshold,
+        }),
       );
 
       if (ownerAddressesArray.includes(walletAddress.toLowerCase())) {

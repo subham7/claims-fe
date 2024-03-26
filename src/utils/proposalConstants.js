@@ -42,6 +42,7 @@ export const proposalActionCommands = {
   27: "Remove stake from eigen layer",
   49: "Update minimum deposit amount per user",
   50: "Update maximum deposit amount per user",
+  51: "Update signing threshold",
 };
 
 export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {

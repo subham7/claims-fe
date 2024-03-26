@@ -12,7 +12,7 @@ import { createProposal } from "api/proposal";
 import { handleSignMessage } from "utils/helper";
 import { fetchLatestBlockNumber } from "utils/globalFunctions";
 
-const dummyData = (amount, symbol, type) => {
+const casesForInputType = (amount, symbol, type) => {
   switch (type) {
     case "updateMinDeposit":
       return {
@@ -40,6 +40,13 @@ const dummyData = (amount, symbol, type) => {
         title: "Update total raise amount",
         description: `Update total raise amount to ${amount} ${symbol}`,
         actionCommand: 3,
+      };
+
+    case "signators":
+      return {
+        title: "Update signing threshold",
+        description: `Update signing threshold to ${amount}`,
+        actionCommand: 51,
       };
 
     default:
@@ -93,10 +100,16 @@ const UpdateAmountTextfield = ({
         updatedMaximumDepositAmount: amount,
         totalDeposit: amount,
         pricePerToken: amount,
-        actionCommand: dummyData(amount, clubData?.depositTokenSymbol, type)
-          .actionCommand,
-        note: dummyData(amount, clubData?.depositTokenSymbol, type).description,
-        title: dummyData(amount, clubData?.depositTokenSymbol, type).title,
+        safeThreshold: amount,
+        actionCommand: casesForInputType(
+          amount,
+          clubData?.depositTokenSymbol,
+          type,
+        ).actionCommand,
+        note: casesForInputType(amount, clubData?.depositTokenSymbol, type)
+          .description,
+        title: casesForInputType(amount, clubData?.depositTokenSymbol, type)
+          .title,
       };
 
       let commands = await getProposalCommands({
@@ -150,8 +163,13 @@ const UpdateAmountTextfield = ({
     }
   };
 
-  const checkMarkClass =
-    prevAmount !== amount && amount > 0 ? classes.active : classes.disabled;
+  const checkMarkClass = (
+    type === "signators"
+      ? amount <= Number(clubData?.adminAddresses?.length) && amount > 0
+      : prevAmount !== amount && amount > 0
+  )
+    ? classes.active
+    : classes.disabled;
 
   useEffect(() => {
     if (canEdit) {
@@ -172,7 +190,11 @@ const UpdateAmountTextfield = ({
           }}
           value={amount}
         />
-        <div>USDC</div>
+        <div>
+          {type === "signators"
+            ? `/${clubData?.adminAddresses?.length}`
+            : clubData?.depositTokenSymbol}
+        </div>
       </div>
       {isAdmin ? (
         <>

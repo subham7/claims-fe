@@ -36,6 +36,7 @@ export const slice = createSlice({
       depositTokenDecimal: null,
       depositTokenSymbol: null,
       adminAddresses: null,
+      currentSafeThreshold: null,
       pricePerTokenFormatted: {
         formattedValue: null,
         actualValue: null,
@@ -133,6 +134,7 @@ export const slice = createSlice({
       state.clubData.depositTokenDecimal = action.payload.depositTokenDecimal;
       state.clubData.depositTokenSymbol = action.payload.depositTokenSymbol;
       state.clubData.adminAddresses = action.payload.adminAddresses;
+      state.clubData.currentSafeThreshold = action.payload.currentSafeThreshold;
     },
     addErc20ClubDetails: (state, action) => {
       state.erc20ClubDetails.quorum = action.payload.quorum;

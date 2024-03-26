@@ -1431,6 +1431,10 @@ export const getTransaction = async ({
         threshold: safeThreshold,
       };
       return { transaction };
+
+    case 51:
+      transaction = safeThreshold;
+      return { transaction };
     case 8:
       if (isAssetsStoredOnGnosis) {
         const seaportContract = new web3Call.eth.Contract(

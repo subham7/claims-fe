@@ -49,7 +49,7 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
         description={
           "Manage the tokens that users will need to be eligible for joining this station. Setup existing NFTs or ERC20 tokens on any EVM compatible network as a qualifier to make a deposit. Read more about tokengating on StationX."
         }>
-        <TokenGatingList />
+        <TokenGatingList setLoading={setLoading} daoAddress={daoAddress} />
       </SettingItem>
 
       <SettingItem

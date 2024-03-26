@@ -58,6 +58,7 @@ export const proposalData = ({
     nftSupply,
     updatedMinimumDepositAmount,
     updatedMaximumDepositAmount,
+    safeThreshold,
   } = data ?? {};
 
   switch (executionId) {
@@ -99,6 +100,10 @@ export const proposalData = ({
     case 7:
       return {
         Address: shortAddress(ownerAddress),
+      };
+    case 51:
+      return {
+        safeThreshold: safeThreshold,
       };
     case 8:
     case 9:
@@ -1678,6 +1683,11 @@ export const getProposalCommands = async ({
         safeThreshold: values.safeThreshold,
       };
 
+    case 51:
+      return {
+        safeThreshold: values.safeThreshold,
+      };
+
     case 8:
     case 9:
       return {
@@ -1929,6 +1939,7 @@ export const proposalDetailsData = ({
     sendTokenAddresses,
     updatedMinimumDepositAmount,
     updatedMaximumDepositAmount,
+    safeThreshold,
   } = data ?? {};
 
   let responseData = {
@@ -1985,6 +1996,10 @@ export const proposalDetailsData = ({
     case 6:
     case 7:
       responseData.data = { "Owner address": shortAddress(ownerAddress) };
+      return responseData;
+
+    case 51:
+      responseData.data = { "Safe threshold": safeThreshold };
       return responseData;
 
     case 8:
@@ -2160,6 +2175,8 @@ export const createOrUpdateSafeTransaction = async ({
     safeTransaction = await safeSdk.createAddOwnerTx(transaction);
   } else if (executionId === 7) {
     safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
+  } else if (executionId === 51) {
+    safeTransaction = await safeSdk.createChangeThresholdTx(transaction);
   } else {
     safeTransaction = await safeSdk.createTransaction({
       safeTransactionData: createSafeTransactionData({
