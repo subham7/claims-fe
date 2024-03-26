@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import SettingItem from "./SettingItem";
 import CopyText from "./CopyText";
-import AdminFee from "./adminFee";
+import AdminFee from "./AdminFee";
 import TreasurySigner from "./TreasurySigner";
 import BackdropLoader from "@components/common/BackdropLoader";
 import { useRouter } from "next/router";
