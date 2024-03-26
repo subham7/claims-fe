@@ -10,7 +10,7 @@ import {
   generateAlertData,
 } from "utils/globalFunctions";
 import { setAlertData } from "redux/reducers/alert";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Typography } from "@mui/material";
 
 const TokenGatingList = ({ daoAddress, setLoading }) => {
@@ -22,6 +22,10 @@ const TokenGatingList = ({ daoAddress, setLoading }) => {
     amount: 0,
   });
   const [showErrorText, setShowErrorText] = useState(false);
+
+  const isAdmin = useSelector((state) => {
+    return state.gnosis.adminUser;
+  });
 
   const { setupTokenGating, getTokenGatingDetails, disableTokenGating } =
     useAppContractMethods({
@@ -215,7 +219,7 @@ const TokenGatingList = ({ daoAddress, setLoading }) => {
           </Typography>
         )}
 
-        {showAddButton && tokenGatedDetails.length ? (
+        {isAdmin && showAddButton && tokenGatedDetails.length ? (
           <div className={classes.copyTextContainer}>
             <button
               onClick={() => {

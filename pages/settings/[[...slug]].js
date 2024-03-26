@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 
 const SettingPage2 = () => {
-  const [settingsType, setSettingsType] = useState("deposits");
+  const [settingsType, setSettingsType] = useState("general");
 
   const router = useRouter();
   const [daoAddress, networkId = "0x89"] = router?.query?.slug ?? [];

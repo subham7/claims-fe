@@ -197,7 +197,7 @@ const TreasurySigner = ({
         </Typography>
       )}
 
-      {showEditButton && adminAddresses?.length && (
+      {isAdmin && showEditButton && adminAddresses?.length && (
         <button
           onClick={() => {
             setShowAddDeleteButtons(true);

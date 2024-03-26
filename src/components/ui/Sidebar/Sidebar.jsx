@@ -42,6 +42,9 @@ const Sidebar = ({ daoAddress, networkId }) => {
           height="28"
           width="28"
           alt="monogram"
+          style={{
+            marginBottom: "20px",
+          }}
           onClick={() => {
             router.push("/");
           }}
