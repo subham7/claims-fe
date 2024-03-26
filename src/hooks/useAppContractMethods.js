@@ -324,7 +324,6 @@ const useAppContractMethods = (params) => {
     comparator,
     value,
   ) => {
-    debugger;
     try {
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,

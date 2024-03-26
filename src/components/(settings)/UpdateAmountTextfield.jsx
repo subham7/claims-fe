@@ -177,6 +177,10 @@ const UpdateAmountTextfield = ({
     }
   }, [canEdit]);
 
+  useEffect(() => {
+    setAmount(prevAmount);
+  }, [prevAmount]);
+
   return (
     <div className={classes.copyTextContainer}>
       <div className={classNames(classes.amountInputField, className)}>

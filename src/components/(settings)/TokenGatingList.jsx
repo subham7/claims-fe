@@ -11,6 +11,7 @@ import {
 } from "utils/globalFunctions";
 import { setAlertData } from "redux/reducers/alert";
 import { useDispatch } from "react-redux";
+import { Typography } from "@mui/material";
 
 const TokenGatingList = ({ daoAddress, setLoading }) => {
   const [showAddButton, setShowAddButton] = useState(true);
@@ -20,11 +21,13 @@ const TokenGatingList = ({ daoAddress, setLoading }) => {
     address: "",
     amount: 0,
   });
+  const [showErrorText, setShowErrorText] = useState(false);
 
-  const { setupTokenGating, getTokenGatingDetails } = useAppContractMethods({
-    daoAddress,
-  });
-  const { getDecimals } = useCommonContractMethods({
+  const { setupTokenGating, getTokenGatingDetails, disableTokenGating } =
+    useAppContractMethods({
+      daoAddress,
+    });
+  const { getDecimals, getTokenSymbol } = useCommonContractMethods({
     daoAddress,
   });
 
@@ -37,7 +40,19 @@ const TokenGatingList = ({ daoAddress, setLoading }) => {
   const tokenGatingHandler = async () => {
     try {
       setLoading(true);
+
+      const symbol = await getTokenSymbol(tokenGatingDetails.address);
+
+      if (!symbol) {
+        setShowErrorText(true);
+        setLoading(false);
+        return;
+      } else {
+        setShowErrorText(false);
+      }
+
       const decimals = await getDecimals(tokenGatingDetails.address);
+
       const convertedAmount = convertToWeiGovernance(
         tokenGatingDetails.amount,
         decimals,
@@ -48,18 +63,44 @@ const TokenGatingList = ({ daoAddress, setLoading }) => {
         tokenGatingDetails.address,
         0,
         0,
-        [convertedAmount, convertedAmount],
+        [
+          decimals ? convertedAmount : tokenGatingDetails.amount,
+          decimals ? convertedAmount : tokenGatingDetails.amount,
+        ],
       );
       fetchTokenGatingDetails();
       setLoading(false);
-      dispatchAlert("Deadline updated successfully", "success");
+      dispatchAlert("Token gated successfully", "success");
+      setTokenGatingDetails({
+        address: "",
+        amount: 0,
+      });
+      setShowAddButton(true);
+      setShowSaveButton(false);
     } catch (error) {
       console.error(error);
       setLoading(false);
       if (error.code === 4001) {
         dispatchAlert("Metamask Signature denied", "error");
       } else {
-        dispatchAlert("Deadline updation failed", "error");
+        dispatchAlert("Tokengating failed!", "error");
+      }
+    }
+  };
+
+  const removeTokenGatingHandler = async () => {
+    try {
+      setLoading(true);
+      await disableTokenGating();
+      fetchTokenGatingDetails();
+      dispatchAlert("Token gating removed successfully", "success");
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      if (error.code === 4001) {
+        dispatchAlert("Metamask Signature denied", "error");
+      } else {
+        dispatchAlert("Tokengating removal failed!", "error");
       }
     }
   };
@@ -105,7 +146,9 @@ const TokenGatingList = ({ daoAddress, setLoading }) => {
               <input
                 type="number"
                 value={Number(
-                  convertFromWeiGovernance(item.value, item.decimal),
+                  item.decimal
+                    ? convertFromWeiGovernance(item.value, item.decimal)
+                    : item.value,
                 )}
                 placeholder="0"
                 disabled
@@ -144,24 +187,49 @@ const TokenGatingList = ({ daoAddress, setLoading }) => {
               className={classNames(classes.input, classes.percentage)}
             />
 
-            <RxCross2
-              onClick={() => {
-                setShowAddButton(true);
-                setShowSaveButton(false);
-              }}
-              className={classNames(classes.icon)}
-            />
+            {tokenGatedDetails.length ? (
+              <RxCross2
+                onClick={() => {
+                  setShowAddButton(true);
+                  setShowSaveButton(false);
+                  setShowErrorText(false);
+                  setTokenGatingDetails({
+                    amount: 0,
+                    address: "",
+                  });
+                }}
+                className={classNames(classes.icon)}
+              />
+            ) : null}
           </div>
         ) : null}
 
+        {showErrorText && (
+          <Typography
+            variant="inherit"
+            fontSize={12}
+            color={"red"}
+            ml={1}
+            mt={0.5}>
+            Not a valid token address
+          </Typography>
+        )}
+
         {showAddButton && tokenGatedDetails.length ? (
-          <button
-            onClick={() => {
-              setShowAddButton(false);
-              setShowSaveButton(true);
-            }}>
-            Add +{" "}
-          </button>
+          <div className={classes.copyTextContainer}>
+            <button
+              onClick={() => {
+                setShowAddButton(false);
+                setShowSaveButton(true);
+              }}>
+              Add +{" "}
+            </button>
+            <button
+              onClick={removeTokenGatingHandler}
+              className={classes.remove}>
+              Remove Tokengating
+            </button>
+          </div>
         ) : null}
 
         {showSaveButton || !tokenGatedDetails.length ? (

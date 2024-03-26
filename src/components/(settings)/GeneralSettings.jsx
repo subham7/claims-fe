@@ -30,6 +30,7 @@ const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
       description: "Share this page with your audience to collect deposits.",
       content: (
         <CopyText
+          type="share"
           value={`https://app.stationx.network/join/${daoAddress}/${routeNetworkId}`}
         />
       ),
@@ -52,13 +53,19 @@ const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
       heading: "Treasury Multisig",
       description:
         "Funds raised are held in your station’s multisig. You can also send assets to this address directly. Learn more about treasuries on StationX.",
-      content: <CopyText value={gnosisAddress} />,
+      content: (
+        <CopyText
+          routeNetworkId={routeNetworkId}
+          type="daoAddress"
+          value={gnosisAddress}
+        />
+      ),
     },
     {
       key: "treasurySigners",
       heading: "Treasury Signer(s)",
       description:
-        "You can add up to 9 signers. Signers have access control to funds, so choose carefully.",
+        "You can add up to 9 signers, but only 1 at a time. Signers have access control to funds, so choose carefully.",
       content: (
         <TreasurySigner
           clubData={clubData}

@@ -235,7 +235,6 @@ export const writeContractFunction = async ({
   value,
   walletClient,
 }) => {
-  debugger;
   try {
     const publicClient = getPublicClient(networkId);
 
