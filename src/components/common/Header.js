@@ -1,9 +1,12 @@
-import { Skeleton, Typography } from "@mui/material";
-import React from "react";
+import { Button, Skeleton, Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import classes from "../claims/Claim.module.scss";
 import { formatEpochTime } from "utils/helper";
 import Image from "next/image";
 import SwapInfo from "./SwapInfo";
+import ZkMe from "@components/zkMe/zkMe";
+import { verifyWithZkMeServices } from "@zkmelabs/widget";
+import { useAccount } from "wagmi";
 
 const HeaderShimmer = () => {
   return (
@@ -26,6 +29,11 @@ const Header = ({
   logoUrl,
   routeNetworkId = "0x89",
 }) => {
+  const [open, setOpen] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const { address } = useAccount();
+
   const getStatusText = () => {
     if (isDeposit) {
       return isActive ? "Active" : "Finished";
@@ -45,6 +53,20 @@ const Header = ({
     }
     return classes.inactive;
   };
+
+  const checkIfUserHasVerified = async () => {
+    const results = await verifyWithZkMeServices(
+      "M2024031204490984947737391718575",
+      address,
+    );
+
+    setIsVerified(results);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    checkIfUserHasVerified();
+  }, []);
 
   if (!tokenDetails?.tokenSymbol || !contractData) {
     return <HeaderShimmer />;
@@ -90,6 +112,21 @@ const Header = ({
 
       {(networkId === "0x89" || networkId === "0xa4b1") &&
         !tokenDetails?.isNativeToken && <SwapInfo networkId={networkId} />}
+
+      {open ? <ZkMe /> : null}
+      {loading || isVerified ? null : (
+        <Button
+          onClick={() => setOpen(!open)}
+          variant="contained"
+          sx={{
+            width: "100%",
+            padding: "10px 0",
+            margin: "10px 0",
+            fontFamily: "inherit",
+          }}>
+          Perform KYC
+        </Button>
+      )}
     </>
   );
 };
