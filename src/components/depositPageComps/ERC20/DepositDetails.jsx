@@ -1,85 +1,65 @@
 import { Typography } from "@mui/material";
 import React from "react";
 import { useSelector } from "react-redux";
-import { convertFromWeiGovernance } from "utils/globalFunctions";
 import classes from "../../claims/Claim.module.scss";
-import { formatNumbers } from "utils/helper";
+import { formatNumbers, shortAddress } from "utils/helper";
 
-const Detail = ({
-  title,
-  value,
-  isAmount = false,
-  isPricePerToken = false,
-  tokenName = "",
-}) => {
-  const renderedValue = isPricePerToken
-    ? `1 ${title}: ${value} ${tokenName}`
-    : `${title}: ${value} ${isAmount ? tokenName : ""}`;
-
-  return (
-    <div className={classes.detailCard}>
-      <Typography variant="inherit">{renderedValue}</Typography>
-    </div>
-  );
-};
-
-const DepositDetails = ({ contractData = {}, tokenDetails = {} }) => {
-  const {
-    minDepositAmount,
-    maxDepositAmount,
-    quorum = "-",
-    threshold = "-",
-    pricePerToken,
-    symbol,
-  } = contractData;
-  const { tokenSymbol, tokenDecimal } = tokenDetails;
-
-  const isGovernanceActive = useSelector((state) => {
-    return state.club.erc20ClubDetails.isGovernanceActive;
-  });
-
+const DepositDetails = () => {
   const clubData = useSelector((state) => {
     return state.club.clubData;
   });
 
+  const {
+    minDepositAmountFormatted,
+    maxDepositAmountFormatted,
+    ownerAddress,
+    depositTokenSymbol,
+  } = clubData;
+
   return (
     <div>
       <div className={classes.detailContainer}>
-        <Detail
-          title="Min"
-          value={formatNumbers(
-            Number(convertFromWeiGovernance(minDepositAmount, tokenDecimal)),
-          )}
-          isAmount
-          tokenName={tokenSymbol}
-        />
-        <Detail
-          title="Max"
-          value={formatNumbers(
-            Number(convertFromWeiGovernance(maxDepositAmount, tokenDecimal)),
-          )}
-          isAmount
-          tokenName={tokenSymbol}
-        />
-        <Detail
-          title={symbol}
-          value={formatNumbers(
-            Number(clubData?.pricePerTokenFormatted?.formattedValue),
-          )}
-          tokenName={tokenSymbol}
-          isPricePerToken
-        />
-      </div>
-      <div className={classes.detailContainer}>
-        <Detail
-          title="Control"
-          value={isGovernanceActive ? "Community" : "Admins"}
-        />
-        <Detail title="Quorum" value={isGovernanceActive ? quorum : "N/A"} />
-        <Detail
-          title="Threshold"
-          value={isGovernanceActive ? threshold : "N/A"}
-        />
+        <div className={classes.detailCard}>
+          <Typography fontSize={14} fontWeight={400} color={"#707070"}>
+            Minimum
+          </Typography>
+          <Typography
+            fontSize={16}
+            mt={0.4}
+            fontWeight={600}
+            color={"white"}
+            variant="inherit">
+            {formatNumbers(Number(minDepositAmountFormatted?.formattedValue))}{" "}
+            {depositTokenSymbol}
+          </Typography>
+        </div>
+        <div className={classes.detailCard}>
+          <Typography fontSize={14} fontWeight={400} color={"#707070"}>
+            Maximum
+          </Typography>
+          <Typography
+            fontSize={16}
+            mt={0.4}
+            fontWeight={600}
+            color={"white"}
+            variant="inherit">
+            {formatNumbers(Number(maxDepositAmountFormatted?.formattedValue))}{" "}
+            {depositTokenSymbol}
+          </Typography>
+        </div>
+        <div className={classes.detailCard}>
+          <Typography fontSize={14} fontWeight={400} color={"#707070"}>
+            Owner
+          </Typography>
+          <Typography
+            fontSize={16}
+            mt={0.4}
+            fontWeight={600}
+            color={"white"}
+            variant="inherit">
+            {shortAddress(ownerAddress)}
+          </Typography>
+        </div>
       </div>
     </div>
   );
