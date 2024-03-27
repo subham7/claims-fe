@@ -267,4 +267,30 @@
   .send {
     color: $inactive-text;
   }
+
+  .copyContainer{
+    background-color: $background-primary;
+    border-radius: 12px;
+    padding: 24px;
+
+    .flexContainer{
+      display: flex;
+      justify-content: space-between;
+      background-color: $dark-gray;
+      border-radius: 8px;
+      padding: 12px;
+      align-items: center;
+      margin-top: 12px;
+      margin-bottom: 4px;
+
+      .copyText{
+        overflow: hidden;
+        font-size: 14px;
+       
+      }
+    }
+
+  
+  }
+
 }

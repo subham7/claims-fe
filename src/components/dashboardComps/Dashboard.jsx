@@ -278,9 +278,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
           <ComponentHeader
             title={clubData?.name}
             subtext="Astronauts, welcome to your station"
-            showButton
-            buttonText="Send Invite"
-            onClickHandler={() => setShowInviteModal(true)}
+            showButton={false}
           />
         </div>
 

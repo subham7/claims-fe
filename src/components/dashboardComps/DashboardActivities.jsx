@@ -11,6 +11,7 @@ import {
 import Web3 from "web3";
 import classes from "./Dashboard.module.scss";
 import { getTransactionsByNetworkId } from "api/transactions";
+import CopyLinkContainer from "./CopyLinkContainer";
 
 const ActivityItem = ({ item, daoAddress, networkId }) => {
   const router = useRouter();
@@ -109,6 +110,7 @@ const DashboardActivities = ({ proposals, daoAddress, networkId }) => {
 
   return (
     <div className={classes.rightContainer}>
+      <CopyLinkContainer daoAddress={daoAddress} routeNetworkId={networkId} />
       {[
         {
           title: "Latest Activity",
