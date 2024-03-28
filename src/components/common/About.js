@@ -1,10 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import classes from "../claims/Claim.module.scss";
 import ReactHtmlParser from "react-html-parser";
 import { BiSolidDownArrow, BiSolidUpArrow } from "react-icons/bi";
 
+import { parseHyperlinks } from "utils/replaceLinks";
+
 const About = ({ bio }) => {
   const [showMore, setShowMore] = useState(false);
+  const [content, setContent] = useState("");
+
+  const transformContent = async () => {
+    setContent(
+      bio
+        ? parseHyperlinks(
+            ReactHtmlParser(showMore ? bio : bio.slice(0, 600))[0],
+          )
+        : null,
+    );
+  };
+
+  useEffect(() => {
+    transformContent();
+  }, [showMore, bio]);
 
   return (
     <>
@@ -12,7 +29,7 @@ const About = ({ bio }) => {
       <div
         className={classes.about}
         dangerouslySetInnerHTML={{
-          __html: ReactHtmlParser(showMore ? bio : bio.slice(0, 600)),
+          __html: content,
         }}></div>
 
       {bio.length > 600 ? (
