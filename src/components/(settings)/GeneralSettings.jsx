@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import StatusModal from "@components/modals/StatusModal/StatusModal";
 import UpdateAmountTextfield from "./UpdateAmountTextfield";
 import classes from "@components/(settings)/Settings.module.scss";
+import EnableKYC from "./EnableKyc";
 
 const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
   const [loading, setLoading] = useState(false);
@@ -76,6 +77,7 @@ const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
         />
       ),
     },
+
     {
       key: "signingThreshold",
       heading: "Signing Threshold",
@@ -90,6 +92,20 @@ const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
           setLoading={setLoading}
           type={"signators"}
           prevAmount={Number(currentSafeThreshold)}
+        />
+      ),
+    },
+    {
+      key: "enableKYC",
+      heading: "KYC",
+      description: "Enable KYC on deposits",
+      content: (
+        <EnableKYC
+          clubData={clubData}
+          daoAddress={daoAddress}
+          routeNetworkId={routeNetworkId}
+          setLoading={setLoading}
+          handleActionComplete={handleActionComplete}
         />
       ),
     },

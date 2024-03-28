@@ -1,29 +1,16 @@
 import "@zkmelabs/widget/dist/style.css";
 import { ZkMeWidget } from "@zkmelabs/widget";
 import { useAccount, useWalletClient } from "wagmi";
+import { getKYCToken } from "api/club";
 
-const ZkMe = () => {
+const ZkMe = ({ daoAddress }) => {
   const { address } = useAccount();
   const walletClient = useWalletClient();
 
   const provider = {
     async getAccessToken() {
-      const response = await fetch("https://nest-api.zk.me/api/token/get", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          apiKey: "bee8ca94.ddb4b6a2acbae35e10c7c9564cab5b4b",
-          appId: "M2024031204490984947737391718575",
-          apiModePermission: 0,
-          lv: 1,
-        }),
-      });
-
-      const result = await response.json();
-
-      return result.data.accessToken;
+      const token = await getKYCToken(daoAddress);
+      return token;
     },
 
     async getUserAccounts() {

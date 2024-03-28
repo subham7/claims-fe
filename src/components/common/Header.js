@@ -28,6 +28,7 @@ const Header = ({
   networkId,
   logoUrl,
   routeNetworkId = "0x89",
+  daoAddress,
 }) => {
   const [open, setOpen] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
@@ -113,7 +114,7 @@ const Header = ({
       {(networkId === "0x89" || networkId === "0xa4b1") &&
         !tokenDetails?.isNativeToken && <SwapInfo networkId={networkId} />}
 
-      {open ? <ZkMe /> : null}
+      {open ? <ZkMe daoAddress={daoAddress} /> : null}
       {loading || isVerified ? null : (
         <Button
           onClick={() => setOpen(!open)}
