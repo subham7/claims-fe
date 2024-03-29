@@ -42,13 +42,13 @@ const EnableKYC = ({ daoAddress, setLoading }) => {
         JSON.stringify(payload),
       );
 
-      if (isEnabledOld !== isEnabled) {
+      if (isEnabledOld !== isEnabled && isEnabled) {
         await createKYC({
           ...payload,
           signature,
         });
         dispatchAlert("KYC enabled successfully", "success");
-      } else {
+      } else if (!isEnabled) {
         await updateKYC({
           ...payload,
           signature,
