@@ -4,42 +4,58 @@ import { MetaMaskAvatar } from "react-metamask-avatar";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { returnRemainingTime, shortAddress } from "utils/helper";
 import classes from "../claims/Claim.module.scss";
+import { useEnsName } from "wagmi";
 
-const ClaimerActivity = ({ activity, tokenDetails }) => (
-  <div className={classes.activity}>
-    <div>
-      <MetaMaskAvatar address={activity?.claimerAddress} />
+const ClaimerActivity = ({ activity, tokenDetails }) => {
+  const { data: ensName } = useEnsName({
+    address: activity?.claimerAddress,
+    chainId: 1,
+  });
+
+  return (
+    <div className={classes.activity}>
+      <div>
+        <MetaMaskAvatar address={activity?.claimerAddress} />
+        <Typography variant="inherit">
+          {ensName ? ensName : shortAddress(activity?.claimerAddress)}
+        </Typography>
+      </div>
       <Typography variant="inherit">
-        {shortAddress(activity?.claimerAddress)}
+        {convertFromWeiGovernance(
+          activity?.amountClaimed,
+          tokenDetails.tokenDecimal,
+        )}{" "}
+        <span>{tokenDetails?.tokenSymbol}</span>
       </Typography>
     </div>
-    <Typography variant="inherit">
-      {convertFromWeiGovernance(
-        activity?.amountClaimed,
-        tokenDetails.tokenDecimal,
-      )}{" "}
-      <span>{tokenDetails?.tokenSymbol}</span>
-    </Typography>
-  </div>
-);
+  );
+};
 
-const DepositorActivity = ({ member }) => (
-  <div key={member?.userAddress} className={classes.flexContainer}>
-    <div
-      style={{
-        display: "flex",
-        gap: "8px",
-      }}>
-      <MetaMaskAvatar address={member?.userAddress} />
-      <Typography variant="inherit">
-        {shortAddress(member?.userAddress)} joined this station
+const DepositorActivity = ({ member }) => {
+  const { data: ensName } = useEnsName({
+    address: member?.userAddress,
+    chainId: 1,
+  });
+
+  return (
+    <div key={member?.userAddress} className={classes.flexContainer}>
+      <div
+        style={{
+          display: "flex",
+          gap: "8px",
+        }}>
+        <MetaMaskAvatar address={member?.userAddress} />
+        <Typography variant="inherit">
+          {ensName ? ensName : shortAddress(member?.userAddress)} joined this
+          station
+        </Typography>
+      </div>
+      <Typography variant="inherit" className={classes.time}>
+        {returnRemainingTime(+member?.timeStamp)} ago
       </Typography>
     </div>
-    <Typography variant="inherit" className={classes.time}>
-      {returnRemainingTime(+member?.timeStamp)} ago
-    </Typography>
-  </div>
-);
+  );
+};
 
 const Activity = ({ activityDetails, tokenDetails, isDeposit = false }) => {
   return (
