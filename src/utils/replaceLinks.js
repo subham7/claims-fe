@@ -6,8 +6,9 @@ const Regex_Url_Str =
   "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
   "(\\#[-a-z\\d_]*)?";
 
-export const parseHyperlinks = (str) =>
-  str.replaceAll(
-    new RegExp(Regex_Url_Str, "gim"),
-    '<a class="joinLink" target="_blank" rel="noreferrer" href="$&">$&</a>',
-  );
+export const parseHyperlinks = (str) => str;
+
+// .replaceAll(
+//   new RegExp(Regex_Url_Str, "gim"),
+//   '<a class="joinLink" target="_blank" rel="noreferrer" href="$&">$&</a>',
+// );
