@@ -84,10 +84,16 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
   const fetchClubDetails = async () => {
     try {
       if (daoAddress && networkId) {
+        debugger;
         if (clubData) {
           let percentageShare;
 
           const myBalance = await getBalance(daoAddress);
+
+          if (myBalance === 0) {
+            setMyShare(0);
+            return;
+          }
 
           if (tokenType === "erc20") {
             const totalSupply = await getERC20TotalSupply();
