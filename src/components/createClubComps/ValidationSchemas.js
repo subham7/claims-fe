@@ -251,12 +251,11 @@ export const getProposalValidationSchema = ({
 
             let availableAmount;
             if (tokenType === "erc20") {
-              const { bigNumberValue: clubTokensMinted } =
-                await getERC20TotalSupply();
+              const clubTokensMinted = await getERC20TotalSupply();
 
               availableAmount = convertFromWeiGovernance(
                 distributionAmountFormatted?.bigNumberValue
-                  .minus(clubTokensMinted)
+                  .minus(clubTokensMinted?.bigNumberValue)
                   .integerValue()
                   .toString(),
                 18,

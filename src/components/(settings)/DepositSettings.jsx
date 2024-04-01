@@ -19,6 +19,10 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
     return state.club.clubData;
   });
 
+  const tokenType = useSelector((state) => {
+    return state.club.clubData.tokenType;
+  });
+
   const {
     minDepositAmountFormatted,
     maxDepositAmountFormatted,
@@ -90,6 +94,7 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
           handleActionComplete={handleActionComplete}
         />
       ),
+      isHidden: tokenType === "erc721",
     },
     {
       heading: "Maximum deposit",
@@ -105,6 +110,7 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
           handleActionComplete={handleActionComplete}
         />
       ),
+      isHidden: tokenType === "erc721",
     },
     {
       heading: "Total Fundraise",
@@ -120,6 +126,7 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
           prevAmount={Number(raiseAmountFormatted?.formattedValue)}
         />
       ),
+      isHidden: tokenType === "erc721",
     },
   ];
 
@@ -129,6 +136,7 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
         <SettingItem
           key={index}
           heading={item.heading}
+          isHidden={item?.isHidden}
           description={item.description}>
           {item.component}
         </SettingItem>
