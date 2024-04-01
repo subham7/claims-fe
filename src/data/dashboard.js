@@ -72,7 +72,7 @@ export const baseLinks = [
     icon: "Wallet_icon",
     title: "Staking",
     routeHeader: "staking",
-    hideNetworks: ["0x89"],
+    hideNetworks: ["0x89", "0xa86a"],
   },
   { icon: "astronaut_icon", title: "Members", routeHeader: "members" },
   // { icon: "document_icon", title: "Documents", routeHeader: "documents" },
