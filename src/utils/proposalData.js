@@ -101,7 +101,7 @@ export const proposalData = ({
       return {
         Address: shortAddress(ownerAddress),
       };
-    case 51:
+    case 62:
       return {
         safeThreshold: safeThreshold,
       };
@@ -166,12 +166,12 @@ export const proposalData = ({
         )} $${symbol}`,
       };
 
-    case 49:
+    case 60:
       return {
         "Updated amount:": `${updatedMinimumDepositAmount}`,
       };
 
-    case 50:
+    case 61:
       return {
         "Updated amount:": `${updatedMaximumDepositAmount}`,
       };
@@ -1689,7 +1689,7 @@ export const getProposalCommands = async ({
         safeThreshold: values.safeThreshold,
       };
 
-    case 51:
+    case 62:
       return {
         safeThreshold: values.safeThreshold,
       };
@@ -1888,11 +1888,11 @@ export const getProposalCommands = async ({
     //     ),
     //   };
 
-    case 49:
+    case 60:
       return {
         updatedMinimumDepositAmount: values.updatedMinimumDepositAmount,
       };
-    case 50:
+    case 61:
       return {
         updatedMaximumDepositAmount: values.updatedMaximumDepositAmount,
       };
@@ -2016,7 +2016,7 @@ export const proposalDetailsData = ({
       responseData.data = { "Owner address": shortAddress(ownerAddress) };
       return responseData;
 
-    case 51:
+    case 62:
       responseData.data = { "Safe threshold": safeThreshold };
       return responseData;
 
@@ -2141,14 +2141,14 @@ export const proposalDetailsData = ({
 
       return responseData;
 
-    case 49:
+    case 60:
       responseData.data = {
         "Updated amount:": updatedMinimumDepositAmount,
       };
 
       return responseData;
 
-    case 50:
+    case 61:
       responseData.data = {
         "Updated amount:": updatedMaximumDepositAmount,
       };
@@ -2213,7 +2213,7 @@ export const createOrUpdateSafeTransaction = async ({
     safeTransaction = await safeSdk.createAddOwnerTx(transaction);
   } else if (executionId === 7) {
     safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
-  } else if (executionId === 51) {
+  } else if (executionId === 62) {
     safeTransaction = await safeSdk.createChangeThresholdTx(transaction);
   } else {
     safeTransaction = await safeSdk.createTransaction({

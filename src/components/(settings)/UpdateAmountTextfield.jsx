@@ -18,14 +18,14 @@ const casesForInputType = (amount, symbol, type) => {
       return {
         title: "Update Minimum deposit amount",
         description: `Update minimum deposit amount to ${amount} ${symbol}`,
-        actionCommand: 49,
+        actionCommand: 60,
       };
 
     case "updateMaxDeposit":
       return {
         title: "Update Maximum deposit amount",
         description: `Update maximum deposit amount to ${amount} ${symbol}`,
-        actionCommand: 50,
+        actionCommand: 61,
       };
 
     case "updatePricePerToken":
@@ -46,7 +46,7 @@ const casesForInputType = (amount, symbol, type) => {
       return {
         title: "Update signing threshold",
         description: `Update signing threshold to ${amount}`,
-        actionCommand: 51,
+        actionCommand: 62,
       };
 
     default:
