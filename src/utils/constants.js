@@ -276,6 +276,8 @@ export const CHAIN_CONFIG = {
     renzoStakingPoolAddress: "0x4D7572040B84b41a6AA2efE4A93eFFF182388F88",
     renzoEzETHAddress: "0x2416092f143378750bb29b79eD961ab195CcEea5",
     renzoStakingPoolABI: renzoStakingPoolABILinea,
+    zeroETHAddress: "0x0684FC172a0B8e6A65cF4684eDb2082272fe9050",
+    zeroLendStakingPoolAddress: "0x2f9bB73a8e98793e26Cb2F6C4ad037BDf1C6B269",
   },
   "0x38": {
     chainName: "BNB Smart Chain",
