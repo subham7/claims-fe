@@ -128,10 +128,9 @@ const ProposalDetail = ({ pid, daoAddress, routeNetworkId }) => {
   const [isCancelExecuted, setIsCancelExecuted] = useState(false);
   const [isRejectTxnSigned, setIsRejectTxnSigned] = useState(false);
 
-  const { getERC20TotalSupply, updateProposalAndExecution, getNftOwnersCount } =
-    useAppContractMethods({ daoAddress });
+  const { updateProposalAndExecution } = useAppContractMethods({ daoAddress });
 
-  const { getBalance, getDecimals } = useCommonContractMethods({
+  const { getDecimals } = useCommonContractMethods({
     routeNetworkId,
   });
 

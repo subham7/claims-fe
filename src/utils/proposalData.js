@@ -56,6 +56,9 @@ export const proposalData = ({
     stakeAmount,
     unstakeAmount,
     nftSupply,
+    updatedMinimumDepositAmount,
+    updatedMaximumDepositAmount,
+    safeThreshold,
   } = data ?? {};
 
   switch (executionId) {
@@ -81,18 +84,11 @@ export const proposalData = ({
       };
     case 3:
       return {
-        "Raise Amount :":
-          (convertToWeiGovernance(
-            convertToWeiGovernance(totalDeposits, decimals) /
-              factoryData?.pricePerToken,
-            18,
-          ) /
-            10 ** 18) *
-          convertFromWeiGovernance(factoryData?.pricePerToken, decimals),
+        "Raise Amount :": totalDeposits,
       };
     case 4:
       return {
-        Amount: customTokenAmounts[0] / 10 ** decimals,
+        Amount: convertFromWeiGovernance(customTokenAmounts[0], decimals),
         Recipient: shortAddress(customTokenAddresses[0]),
       };
     case 5:
@@ -104,6 +100,10 @@ export const proposalData = ({
     case 7:
       return {
         Address: shortAddress(ownerAddress),
+      };
+    case 51:
+      return {
+        safeThreshold: safeThreshold,
       };
     case 8:
     case 9:
@@ -164,6 +164,16 @@ export const proposalData = ({
           withdrawAmount,
           decimals,
         )} $${symbol}`,
+      };
+
+    case 49:
+      return {
+        "Updated amount:": `${updatedMinimumDepositAmount}`,
+      };
+
+    case 50:
+      return {
+        "Updated amount:": `${updatedMaximumDepositAmount}`,
       };
 
     case 26:
@@ -1679,6 +1689,11 @@ export const getProposalCommands = async ({
         safeThreshold: values.safeThreshold,
       };
 
+    case 51:
+      return {
+        safeThreshold: values.safeThreshold,
+      };
+
     case 8:
     case 9:
       return {
@@ -1872,6 +1887,16 @@ export const getProposalCommands = async ({
     //       tokenDecimal,
     //     ),
     //   };
+
+    case 49:
+      return {
+        updatedMinimumDepositAmount: values.updatedMinimumDepositAmount,
+      };
+    case 50:
+      return {
+        updatedMaximumDepositAmount: values.updatedMaximumDepositAmount,
+      };
+
     case 26:
     case 31:
     case 33:
@@ -1931,6 +1956,9 @@ export const proposalDetailsData = ({
     nftSupply,
     sendTokenAmounts,
     sendTokenAddresses,
+    updatedMinimumDepositAmount,
+    updatedMaximumDepositAmount,
+    safeThreshold,
   } = data ?? {};
   let responseData = {
     title: proposalActionCommands[executionId],
@@ -1964,20 +1992,13 @@ export const proposalDetailsData = ({
 
     case 3:
       responseData.data = {
-        "Raise Amount :":
-          (convertToWeiGovernance(
-            convertToWeiGovernance(totalDeposits, decimals) /
-              factoryData?.pricePerToken,
-            18,
-          ) /
-            10 ** 18) *
-          convertFromWeiGovernance(factoryData?.pricePerToken, decimals),
+        "Raise Amount :": totalDeposits,
       };
       return responseData;
 
     case 4:
       responseData.data = {
-        Amount: customTokenAmounts[0] / 10 ** decimals,
+        Amount: convertFromWeiGovernance(customTokenAmounts[0], decimals),
         Recipient: shortAddress(customTokenAddresses[0]),
       };
       return responseData;
@@ -1993,6 +2014,10 @@ export const proposalDetailsData = ({
     case 6:
     case 7:
       responseData.data = { "Owner address": shortAddress(ownerAddress) };
+      return responseData;
+
+    case 51:
+      responseData.data = { "Safe threshold": safeThreshold };
       return responseData;
 
     case 8:
@@ -2116,6 +2141,20 @@ export const proposalDetailsData = ({
 
       return responseData;
 
+    case 49:
+      responseData.data = {
+        "Updated amount:": updatedMinimumDepositAmount,
+      };
+
+      return responseData;
+
+    case 50:
+      responseData.data = {
+        "Updated amount:": updatedMaximumDepositAmount,
+      };
+
+      return responseData;
+
     case 26:
     case 31:
     case 33:
@@ -2174,6 +2213,8 @@ export const createOrUpdateSafeTransaction = async ({
     safeTransaction = await safeSdk.createAddOwnerTx(transaction);
   } else if (executionId === 7) {
     safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
+  } else if (executionId === 51) {
+    safeTransaction = await safeSdk.createChangeThresholdTx(transaction);
   } else {
     safeTransaction = await safeSdk.createTransaction({
       safeTransactionData: createSafeTransactionData({

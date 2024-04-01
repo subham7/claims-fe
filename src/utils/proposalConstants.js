@@ -43,7 +43,15 @@ export const proposalActionCommands = {
   47: "Stake tokens through layer-bank",
   48: "Unstake tokens through layer-bank",
   49: "Stake tokens through mendi-finance",
-  48: "Unstake tokens through mendi-finance",
+  50: "Unstake tokens through mendi-finance",
+
+  // 49: "Update minimum deposit amount per user",
+  // 50: "Update maximum deposit amount per user",
+  // 51: "Update signing threshold",
+
+  60: "Update minimum deposit amount per user",
+  61: "Update maximum deposit amount per user",
+  62: "Update signing threshold",
 };
 
 export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {

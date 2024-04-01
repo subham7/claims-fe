@@ -17,6 +17,8 @@ import {
 } from "utils/proposalData";
 import { eigenContractABI } from "abis/eigenContract";
 import { mendiTokenContract } from "abis/mendi/mendiToken";
+import { BigNumber } from "bignumber.js";
+import { convertFromWeiGovernance } from "utils/globalFunctions";
 
 const useAppContractMethods = (params) => {
   const walletClient = useWalletClient();
@@ -190,7 +192,11 @@ const useAppContractMethods = (params) => {
         networkId: routeNetworkId ?? networkId,
       });
 
-      return Number(response ?? 0);
+      return {
+        actualValue: Number(response ?? 0),
+        bigNumberValue: BigNumber(response ?? 0),
+        formattedValue: convertFromWeiGovernance(response ?? 0, 18),
+      };
     } catch (error) {
       console.log(error);
     }
@@ -206,7 +212,10 @@ const useAppContractMethods = (params) => {
         // account: walletAddress,
         networkId: routeNetworkId ?? networkId,
       });
-      return Number(response ?? 0);
+      return {
+        actualValue: response ?? 0,
+        bigNumberValue: BigNumber(response ?? 0),
+      };
     } catch (error) {
       console.error(error);
     }
@@ -292,6 +301,23 @@ const useAppContractMethods = (params) => {
     }
   };
 
+  const updateMinMaxDeposit = async (minDepositPerUser, maxDepositPerUser) => {
+    try {
+      const res = await writeContractFunction({
+        address: CHAIN_CONFIG[networkId].factoryContractAddress,
+        abi: factoryContractABI,
+        functionName: "updateMinMaxDeposit",
+        args: [minDepositPerUser, maxDepositPerUser, daoAddress],
+        account: walletAddress,
+        networkId,
+        walletClient,
+      });
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const setupTokenGating = async (
     tokenA,
     tokenB,
@@ -304,7 +330,7 @@ const useAppContractMethods = (params) => {
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
         abi: factoryContractABI,
         functionName: "setupTokenGating",
-        args: [tokenA, tokenB, operator, comparator, value, daoAddress],
+        args: [tokenA, tokenB, operator, comparator, value, daoAddress], // ["address", "address", 0, 0, ["1", "1"], "daoAddress"]
         account: walletAddress,
         networkId,
         walletClient,
@@ -623,6 +649,7 @@ const useAppContractMethods = (params) => {
     toggleWhitelist,
     fetchEigenTokenBalance,
     fetchMendiUsdcExhcangeRate,
+    updateMinMaxDeposit,
   };
 };
 

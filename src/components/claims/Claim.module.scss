@@ -274,18 +274,17 @@
 
 .detailContainer {
   display: flex;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: 12px;
   flex-wrap: wrap;
   width: 100%;
+  margin-top: 4px;
 
   .detailCard {
-    background-color: $background-primary;
-    padding: 10px;
+    background-color: $dark-gray;
+    padding: 10px 16px;
     border-radius: 8px;
     flex: 0.33;
     // width: 170px;
-    text-align: center;
   }
 }
 
@@ -329,4 +328,54 @@
 .logoImg {
   border: 1px solid $gray;
   border-radius: 12px;
+}
+
+.primaryButton{
+  width: 100%;
+  padding: 12px 0;
+  margin: 10px 0;
+  font-family: inherit;
+  background-color: white;
+  color: black;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: 500;
+  text-transform: uppercase;
+
+  &:hover{
+    background-color: whitesmoke;
+  }
+
+  &:disabled{
+    cursor: not-allowed;
+    background-color: $gray;
+
+    &:hover{
+    background-color: $gray;
+    }
+  }
+  
+  
+}
+
+.createStationDiv{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 28px;
+  gap: 12px;
+  cursor: pointer;
+
+.createStationText{
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // padding-top: 28px;
+  background: linear-gradient(to right, #FF279C, #2E55FF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
 }

@@ -42,8 +42,8 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
         <div className={classes["wallet-div"]}>
           <Image
             src="/assets/images/monogram.png"
-            height="40"
-            width="40"
+            height="28"
+            width="28"
             alt="monogram"
             onClick={() => {
               router.push("/");

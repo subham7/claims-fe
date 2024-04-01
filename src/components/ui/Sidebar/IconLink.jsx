@@ -13,8 +13,8 @@ const IconLink = ({ link, isActive, onEnter, onLeave, onClick }) => {
         className={classes.link}>
         <Image
           src={isActive ? hoveredLink : icon}
-          height={17}
-          width={17}
+          height={16}
+          width={16}
           alt={title}
         />
       </div>

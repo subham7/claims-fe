@@ -37,12 +37,8 @@ import { CHAIN_CONFIG } from "utils/constants";
 import { getDefaultProfile } from "utils/lensHelper";
 import BackdropLoader from "@components/common/BackdropLoader";
 import ComponentHeader from "@components/common/ComponentHeader";
-import useCommonContractMethods from "hooks/useCommonContractMehods";
 
 const Members = ({ daoAddress, routeNetworkId }) => {
-  const { getDecimals, getTokenSymbol } = useCommonContractMethods({
-    routeNetworkId,
-  });
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
 
@@ -85,8 +81,8 @@ const Members = ({ daoAddress, routeNetworkId }) => {
     const depositTokenAddress = clubData.depositTokenAddress;
     const isNativeToken = isNative(depositTokenAddress, networkId);
 
-    const decimals = await getDecimals(depositTokenAddress);
-    const symbol = await getTokenSymbol(depositTokenAddress);
+    const decimals = clubData?.depositTokenDecimal;
+    const symbol = clubData?.depositTokenSymbol;
 
     setTokenDetails({
       tokenSymbol: symbol,

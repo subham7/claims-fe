@@ -32,6 +32,7 @@ import Modal from "@components/common/Modal/Modal";
 import Image from "next/image";
 import { Typography } from "@mui/material";
 import classes from "@components/modals/StatusModal/StatusModal.module.scss";
+import { BigNumber } from "bignumber.js";
 
 const DepositInputComponents = ({
   formik,
@@ -54,7 +55,7 @@ const DepositInputComponents = ({
         approveERC20Handler={approveERC20Handler}
         allowanceValue={allowanceValue}
       />
-      <DepositDetails contractData={clubData} tokenDetails={tokenDetails} />
+      <DepositDetails />
     </>
   );
 };
@@ -97,8 +98,9 @@ const ERC20 = ({
 
   const router = useRouter();
   const dispatch = useDispatch();
-  const { approveDeposit, getDecimals, getTokenSymbol, getBalance } =
-    useCommonContractMethods({ routeNetworkId });
+  const { approveDeposit, getBalance } = useCommonContractMethods({
+    routeNetworkId,
+  });
   const publicClient = getPublicClient(networkId);
 
   const { buyGovernanceTokenERC20DAO } = useAppContractMethods({
@@ -139,17 +141,14 @@ const ERC20 = ({
     setIsW8BenSigned(newValue);
   };
 
+  console.log(clubData);
+
   const minValidation = yup.object().shape({
     tokenInput: yup
       .number()
       .required("Input is required")
       .min(
-        Number(
-          convertFromWeiGovernance(
-            clubData?.minDepositAmount,
-            tokenDetails?.tokenDecimal,
-          ),
-        ),
+        Number(clubData?.minDepositAmountFormatted?.formattedValue),
         "Amount should be greater than min deposit",
       )
       .lessThan(
@@ -157,12 +156,7 @@ const ERC20 = ({
         "Amount can't be greater than wallet balance",
       )
       .max(
-        Number(
-          convertFromWeiGovernance(
-            clubData?.maxDepositAmount,
-            tokenDetails?.tokenDecimal,
-          ),
-        ),
+        Number(clubData?.maxDepositAmountFormatted?.formattedValue),
         "Amount should be less than max deposit",
       ),
   });
@@ -242,11 +236,15 @@ const ERC20 = ({
         setLoading(true);
         const inputValue = convertToWeiGovernance(
           values.tokenInput,
-          tokenDetails?.tokenDecimal,
+          clubData?.depositTokenDecimal,
         );
+
         await buyGovernanceTokenERC20DAO(
           convertToWeiGovernance(
-            (inputValue / +clubData?.pricePerToken).toString(),
+            BigNumber(inputValue)
+              .dividedBy(clubData?.pricePerTokenFormatted?.bigNumberValue)
+              .integerValue()
+              .toString(),
             18,
           ),
           whitelistUserData?.proof ? whitelistUserData.proof : [],
@@ -284,8 +282,8 @@ const ERC20 = ({
         routeNetworkId,
       );
 
-      const decimals = await getDecimals(depositTokenAddress);
-      const symbol = await getTokenSymbol(depositTokenAddress);
+      const decimals = clubData.depositTokenDecimal;
+      const symbol = clubData.depositTokenSymbol;
       let userBalance = 0;
 
       if (walletAddress) {

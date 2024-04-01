@@ -1,7 +1,7 @@
 import { getProposalByDaoAddress } from "../api/proposal";
 import { createCancelProposal, getProposalTxHash } from "api/proposal";
 import Web3 from "web3";
-import { convertToFullNumber, getIncreaseGasPrice, getSafeSdk } from "./helper";
+import { getIncreaseGasPrice, getSafeSdk } from "./helper";
 import { factoryContractABI } from "abis/factoryContract.js";
 import { erc721DaoABI } from "abis/erc721Dao";
 import { erc20DaoABI } from "abis/erc20Dao";
@@ -207,6 +207,8 @@ export const fetchABI = async (executionId, tokenType) => {
     case 16:
     case 13:
     case 20:
+    case 49:
+    case 50:
       return factoryContractABI;
     case 8:
       return seaportABI;
@@ -230,7 +232,6 @@ export const getEncodedData = async ({
   contractABI,
   setMembers,
   networkId,
-  getDecimals,
 }) => {
   let membersArray = [];
   let airDropAmountArray = [];
@@ -259,11 +260,14 @@ export const getEncodedData = async ({
     sendTokenAmounts,
     sendTokenAddresses,
     sendToken,
+    updatedMinimumDepositAmount,
+    updatedMaximumDepositAmount,
   } = proposalData.commands[0];
 
   let iface;
   if (contractABI) iface = new Interface(contractABI);
-  const tokenDecimals = await getDecimals(clubData?.depositTokenAddress);
+  const tokenDecimals = clubData?.depositTokenDecimal;
+  const { minDepositAmountFormatted, maxDepositAmountFormatted } = clubData;
 
   switch (executionId) {
     case 0:
@@ -329,13 +333,16 @@ export const getEncodedData = async ({
       return { data };
 
     case 3:
+      const value = BigNumber(
+        convertToWeiGovernance(totalDeposits, tokenDecimals),
+      )
+        .dividedBy(clubData?.pricePerTokenFormatted?.bigNumberValue)
+        .integerValue()
+        .toString();
+
       data = iface.encodeFunctionData("updateTotalRaiseAmount", [
-        convertToWeiGovernance(
-          convertToWeiGovernance(totalDeposits, tokenDecimals) /
-            clubData?.pricePerToken,
-          18,
-        ),
-        clubData?.pricePerToken,
+        convertToWeiGovernance(value, 18),
+        clubData?.pricePerTokenFormatted?.actualValue,
         daoAddress,
       ]);
       return { data };
@@ -454,15 +461,17 @@ export const getEncodedData = async ({
       return { data, approvalData };
     case 13:
       data = iface.encodeFunctionData("updateTotalRaiseAmount", [
-        convertToFullNumber(clubData?.distributionAmount + ""),
-        convertToWeiGovernance(pricePerToken, tokenDecimals),
+        clubData?.distributionAmountFormatted?.bigNumberValue
+          ?.integerValue()
+          .toFixed(),
+        convertToWeiGovernance(pricePerToken, clubData?.depositTokenDecimal),
         daoAddress,
       ]);
       return { data };
     case 20:
       data = iface.encodeFunctionData("updateTotalRaiseAmount", [
         nftSupply,
-        convertToWeiGovernance(clubData?.pricePerToken, tokenDecimals),
+        clubData?.pricePerTokenFormatted?.formattedValue,
         daoAddress,
       ]);
       return { data };
@@ -474,13 +483,13 @@ export const getEncodedData = async ({
         return {};
       } else {
         const totalAmount = sendTokenAmounts.reduce(
-          (partialSum, a) => partialSum + Number(a),
+          (partialSum, a) => BigNumber(partialSum).plus(BigNumber(a)),
           0,
         );
 
         approvalData = iface.encodeFunctionData("approve", [
           CHAIN_CONFIG[networkId]?.airdropContractAddress,
-          (totalAmount * 2).toString(),
+          BigNumber(totalAmount).times(2).integerValue().toString(),
         ]);
 
         data = iface.encodeFunctionData("airDropToken", [
@@ -494,6 +503,22 @@ export const getEncodedData = async ({
 
         return { data, approvalData, membersArray, airDropAmountArray };
       }
+    case 49:
+      data = iface.encodeFunctionData("updateMinMaxDeposit", [
+        convertToWeiGovernance(updatedMinimumDepositAmount, tokenDecimals),
+        maxDepositAmountFormatted?.actualValue,
+        daoAddress,
+      ]);
+
+      return { data };
+    case 50:
+      data = iface.encodeFunctionData("updateMinMaxDeposit", [
+        minDepositAmountFormatted?.actualValue,
+        convertToWeiGovernance(updatedMaximumDepositAmount, tokenDecimals),
+        daoAddress,
+      ]);
+
+      return { data };
     default:
       return {};
   }
@@ -1453,6 +1478,8 @@ export const getTransaction = async ({
     case 3:
     case 13:
     case 20:
+    case 49:
+    case 50:
       transaction = {
         //dao
         to: Web3.utils.toChecksumAddress(daoAddress),
@@ -1488,6 +1515,10 @@ export const getTransaction = async ({
         ownerAddress,
         threshold: safeThreshold,
       };
+      return { transaction };
+
+    case 51:
+      transaction = safeThreshold;
       return { transaction };
     case 8:
       if (isAssetsStoredOnGnosis) {

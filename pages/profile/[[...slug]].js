@@ -12,8 +12,6 @@ import { CircularProgress, MenuItem, Select } from "@mui/material";
 import { CHAIN_CONFIG } from "utils/constants";
 import { RiLinkM } from "react-icons/ri";
 import Image from "next/image";
-// import { getUploadedNFT } from "api/assets";
-// import { getImageURL } from "utils/globalFunctions";
 
 const StationCard = ({ club }) => {
   const {
@@ -32,19 +30,14 @@ const StationCard = ({ club }) => {
   return (
     <div className={classes.stationCard}>
       <div className={classes.stnHeader}>
-        {/* <div
-          style={{
-            backgroundImage: imageUrl
-              ? `url(${imageUrl})`
-              : `/assets/images/fallbackDao.png`,
-          }}
-          className={classes.stnImg}
-        /> */}
         <Image
           src={clubSocials?.logoUrl ?? "/assets/images/fallbackDao.png"}
           height={60}
           width={60}
           alt="Fallback Image"
+          style={{
+            borderRadius: "12px",
+          }}
         />
         <div className={isActive ? classes.active : classes.inactive}>
           {isActive ? "Active" : "Inactive"}
@@ -52,12 +45,15 @@ const StationCard = ({ club }) => {
       </div>
       <div>
         <div className={classes.stnInfo}>
-          <Typography className={classes.truncate} variant="body">
-            {name}
-          </Typography>
+          <div className={classes.stnName}>{name}</div>
           <div>
             <div>Total Raised</div>
-            <div>{Number(totalAmountRaised ?? 0).toFixed(4)} USDC</div>
+            <div>
+              {Number(totalAmountRaised ?? 0).toFixed(4)}{" "}
+              {isNative
+                ? "USDC"
+                : CHAIN_CONFIG[networkId]?.nativeCurrency?.symbol}
+            </div>
           </div>
           <div>
             <div>Last Date</div>
@@ -76,6 +72,7 @@ const StationCard = ({ club }) => {
             </div>
           </div>
           <button
+            className={classes.joinBtn}
             onClick={() => {
               window.open(`/join/${daoAddress}/${networkId}`, "_blank");
             }}>
@@ -115,6 +112,7 @@ const ProfilePage = () => {
   const getUserProfileData = async () => {
     try {
       const response = await getUserData(wallet);
+
       if (response?.data) {
         setUserData(response.data);
       }
@@ -141,83 +139,87 @@ const ProfilePage = () => {
 
   return (
     <Layout showSidebar={false}>
-      <div className={classes.profileDiv}>
-        <div>
-          <div
-            style={{
-              backgroundImage: userData?.imgUrl
-                ? `url(${userData.imgUrl})`
-                : `url(/assets/images/fallbackDao.png)`,
-            }}
-            className={classes.img}
-          />
+      <div className={classes.profileContainer}>
+        <div className={classes.profileDiv}>
           <div>
-            <Typography className={classes.truncateInfo} variant="subheading">
-              {userData?.userName}
-            </Typography>
-            <Typography className={classes.truncateInfo} variant="body">
-              {userData?.bio}
-            </Typography>
-            <Typography className={classes.linkDiv} variant="body">
-              {userData?.socialLinks?.website && <RiLinkM />}
-              <div
-                onClick={() =>
-                  window.open(userData?.socialLinks?.website, "_blank")
-                }
-                className={classes.link}>
-                {userData?.socialLinks?.website}
-              </div>
-            </Typography>
+            <div
+              style={{
+                backgroundImage: userData?.imgUrl
+                  ? `url(${userData.imgUrl})`
+                  : `url(/assets/images/fallbackDao.png)`,
+              }}
+              className={classes.img}
+            />
+            <div>
+              <Typography className={classes.truncateInfo} variant="subheading">
+                {userData?.userName ?? wallet}
+              </Typography>
+              <Typography className={classes.truncateInfo} variant="body">
+                {userData?.bio}
+              </Typography>
+              <Typography className={classes.linkDiv} variant="body">
+                {userData?.socialLinks?.website && <RiLinkM />}
+                <div
+                  onClick={() =>
+                    window.open(userData?.socialLinks?.website, "_blank")
+                  }
+                  className={classes.link}>
+                  {userData?.socialLinks?.website}
+                </div>
+              </Typography>
+            </div>
+          </div>
+          <div>
+            {wallet === address ? (
+              <EditIcon
+                onClick={() => setOpenEditModal(true)}
+                className={classes.editIcon}
+                size={20}
+              />
+            ) : null}
+            <SocialButtons
+              data={userData}
+              shareLink={address ? `/profile/${address}` : ""}
+            />
           </div>
         </div>
-        <div>
-          {wallet === address ? (
-            <EditIcon
-              onClick={() => setOpenEditModal(true)}
-              className={classes.editIcon}
-              size={20}
-            />
-          ) : null}
-          <SocialButtons
-            data={userData}
-            shareLink={address ? `/profile/${address}` : ""}
+        <Select
+          value={chain}
+          onChange={(e) => setSelectedChain(e.target.value)}>
+          <MenuItem value={"0x89"}>Polygon</MenuItem>
+          <MenuItem value={"0x2105"}>Base</MenuItem>
+          <MenuItem value={"0x82750"}>Scroll</MenuItem>
+          <MenuItem value={"0x1"}>Ethereum</MenuItem>
+          <MenuItem value={"0x5"}>Goerli</MenuItem>
+        </Select>
+        {loading ? (
+          <div className={classes.loaderContainer}>
+            <CircularProgress />
+          </div>
+        ) : (
+          <div className={classes.stnList}>
+            {clubsData?.map((club, index) => (
+              <StationCard club={club} key={index} />
+            ))}
+          </div>
+        )}
+
+        {clubsData.length == 0 && !loading && (
+          <div className={classes.loaderContainer}>
+            <p>No clubs to show</p>
+          </div>
+        )}
+
+        {openEditModal ? (
+          <EditProfileDetails
+            open={openEditModal}
+            wallet={address}
+            onClose={() => setOpenEditModal(false)}
+            userData={userData}
+            getUserProfileData={getUserProfileData}
           />
-        </div>
+        ) : null}
       </div>
-      <Select value={chain} onChange={(e) => setSelectedChain(e.target.value)}>
-        <MenuItem value={"0x89"}>Polygon</MenuItem>
-        <MenuItem value={"0x2105"}>Base</MenuItem>
-        <MenuItem value={"0x82750"}>Scroll</MenuItem>
-        <MenuItem value={"0x1"}>Ethereum</MenuItem>
-        <MenuItem value={"0x5"}>Goerli</MenuItem>
-      </Select>
-      {loading ? (
-        <div className={classes.loaderContainer}>
-          <CircularProgress />
-        </div>
-      ) : (
-        <div className={classes.stnList}>
-          {clubsData?.map((club, index) => (
-            <StationCard club={club} key={index} />
-          ))}
-        </div>
-      )}
-
-      {clubsData.length == 0 && !loading && (
-        <div className={classes.loaderContainer}>
-          <p>No clubs to show</p>
-        </div>
-      )}
-
-      {openEditModal ? (
-        <EditProfileDetails
-          open={openEditModal}
-          wallet={address}
-          onClose={() => setOpenEditModal(false)}
-          userData={userData}
-          getUserProfileData={getUserProfileData}
-        />
-      ) : null}
     </Layout>
   );
 };
