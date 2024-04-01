@@ -2,7 +2,6 @@ import ProgressBar from "@components/progressbar";
 import { Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React from "react";
-import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { formatNumbers } from "utils/helper";
 
 const useStyles = makeStyles({
@@ -17,17 +16,16 @@ const useStyles = makeStyles({
   },
 });
 
-const DepositProgress = ({ clubData, tokenDetails, nftMinted = 0 }) => {
+const DepositProgress = ({ clubData, nftMinted = 0 }) => {
   const {
-    totalAmountRaised = 0,
-    distributionAmount = 0,
-    raiseAmount = 0,
+    totalAmountRaisedFormatted,
+    distributionAmountFormatted = 0,
+    raiseAmountFormatted,
     tokenType = "erc20",
+    depositTokenSymbol,
   } = clubData;
 
   const classes = useStyles();
-
-  const { tokenDecimal, tokenSymbol } = tokenDetails;
 
   return (
     <div className={classes.layout}>
@@ -36,26 +34,20 @@ const DepositProgress = ({ clubData, tokenDetails, nftMinted = 0 }) => {
           <Typography variant="inherit">{nftMinted} minted</Typography>
         ) : (
           <Typography variant="inherit" className="tb-mar-1">
-            {formatNumbers(
-              Number(convertFromWeiGovernance(totalAmountRaised, tokenDecimal)),
-            )}{" "}
-            {tokenSymbol} raised
+            {formatNumbers(Number(totalAmountRaisedFormatted?.formattedValue))}{" "}
+            {depositTokenSymbol} raised
           </Typography>
         )}
 
         {tokenType === "erc721" ? (
-          <Typography variant="inherit">{distributionAmount} total</Typography>
+          <Typography variant="inherit">
+            {formatNumbers(Number(distributionAmountFormatted?.formattedValue))}{" "}
+            total
+          </Typography>
         ) : (
           <Typography variant="inherit">
-            {formatNumbers(
-              Number(
-                convertFromWeiGovernance(
-                  raiseAmount,
-                  tokenDetails?.tokenDecimal,
-                ),
-              ),
-            )}{" "}
-            {tokenSymbol} total
+            {formatNumbers(Number(raiseAmountFormatted?.formattedValue))}{" "}
+            {depositTokenSymbol} total
           </Typography>
         )}
       </div>
@@ -64,8 +56,13 @@ const DepositProgress = ({ clubData, tokenDetails, nftMinted = 0 }) => {
         zIndex={-1}
         value={
           tokenType === "erc721"
-            ? (Number(nftMinted) * 100) / Number(distributionAmount)
-            : (Number(totalAmountRaised) * 100) / Number(raiseAmount)
+            ? (Number(nftMinted) * 100) /
+              Number(distributionAmountFormatted?.formattedValue)
+            : totalAmountRaisedFormatted?.bigNumberValue
+                .times(100)
+                .dividedBy(raiseAmountFormatted?.bigNumberValue)
+                .integerValue()
+                .toFixed()
         }
       />
     </div>

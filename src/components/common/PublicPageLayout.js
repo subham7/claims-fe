@@ -8,6 +8,8 @@ import BackdropLoader from "./BackdropLoader";
 import Eligibility from "./Eligibility";
 import Header from "./Header";
 import SocialButtons from "./SocialButtons";
+import { Typography } from "@mui/material";
+import { FaLongArrowAltRight } from "react-icons/fa";
 
 const PublicPageLayout = ({
   clubData,
@@ -85,7 +87,9 @@ const PublicPageLayout = ({
 
         {isDeposit ? (
           clubData?.tokenType === "erc721" &&
-          Number(clubData?.distributionAmount) === 0 ? null : (
+          clubData?.distributionAmountFormatted?.bigNumberValue.isEqualTo(
+            0,
+          ) ? null : (
             <DepositProgress
               clubData={clubData}
               tokenDetails={tokenDetails}
@@ -109,6 +113,22 @@ const PublicPageLayout = ({
           activityDetails={members}
           tokenDetails={tokenDetails}
         />
+
+        {isDeposit && (
+          <div
+            onClick={() => {
+              window.open("https://app.stationx.network/stations", "_blank");
+            }}
+            className={classes.createStationDiv}>
+            <Typography
+              fontSize={20}
+              variant="inherit"
+              className={classes.createStationText}>
+              Create your station
+            </Typography>
+            <FaLongArrowAltRight color="#2E55FF" />
+          </div>
+        )}
 
         {/* For mobile screen */}
         <div className={classes.secondarySocials}>

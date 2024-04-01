@@ -1,22 +1,54 @@
-import React from "react";
-import { useRouter } from "next/router";
 import Layout from "@components/layouts/layout";
-import Settings from "@components/settings/setttings";
+import classes from "@components/(settings)/Settings.module.scss";
+import Header from "@components/(settings)/Header";
+import TabSelection from "@components/(settings)/TabSelection";
+import GeneralSettings from "@components/(settings)/GeneralSettings";
+import { useState } from "react";
+import DepositSettings from "@components/(settings)/DepositSettings";
+import { useRouter } from "next/router";
+import { useSelector } from "react-redux";
 
-const SettingsPage = () => {
+const SettingPage2 = () => {
+  const [settingsType, setSettingsType] = useState("general");
+
   const router = useRouter();
-
   const [daoAddress, networkId = "0x89"] = router?.query?.slug ?? [];
+
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
+  });
 
   if (!daoAddress) {
     return null;
   }
 
+  const tabChangeHandler = (event, newValue) => {
+    setSettingsType(newValue);
+  };
+
   return (
-    <Layout daoAddress={daoAddress} networkId={networkId} page={5}>
-      <Settings daoAddress={daoAddress} routeNetworkId={networkId} />
+    <Layout daoAddress={daoAddress} networkId={networkId} showSidebar={true}>
+      <div className={classes.settings}>
+        <Header clubName={clubData?.name} clubSymbol={clubData?.symbol} />
+
+        <TabSelection settingsType={settingsType} onChange={tabChangeHandler} />
+
+        {settingsType === "general" ? (
+          <GeneralSettings
+            daoAddress={daoAddress}
+            clubData={clubData}
+            routeNetworkId={networkId}
+          />
+        ) : (
+          <DepositSettings
+            daoAddress={daoAddress}
+            clubData={clubData}
+            routeNetworkId={networkId}
+          />
+        )}
+      </div>
     </Layout>
   );
 };
 
-export default SettingsPage;
+export default SettingPage2;

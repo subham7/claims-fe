@@ -5,6 +5,7 @@ import { convertToFullNumber } from "utils/helper";
 import { isMember } from "utils/stationsSubgraphHelper";
 import { getPublicClient } from "utils/viemConfig";
 import * as yup from "yup";
+import { BigNumber } from "bignumber.js";
 
 export const step1ValidationSchema = yup.object({
   clubName: yup
@@ -241,7 +242,7 @@ export const getProposalValidationSchema = ({
           if (context.parent.actionCommand !== 1) return true;
 
           try {
-            const { distributionAmount } = factoryData;
+            const { distributionAmountFormatted } = factoryData;
             const totalAmount = value.reduce(
               (partialSum, a) => partialSum + Number(a),
               0,
@@ -250,21 +251,26 @@ export const getProposalValidationSchema = ({
 
             let availableAmount;
             if (tokenType === "erc20") {
-              const clubTokensMinted = await getERC20TotalSupply();
+              const { bigNumberValue: clubTokensMinted } =
+                await getERC20TotalSupply();
 
               availableAmount = convertFromWeiGovernance(
-                convertToFullNumber(
-                  (distributionAmount - clubTokensMinted).toString(),
-                ),
+                distributionAmountFormatted?.bigNumberValue
+                  .minus(clubTokensMinted)
+                  .integerValue()
+                  .toString(),
                 18,
               );
             } else if (tokenType === "erc721") {
-              if (distributionAmount == 0) return true;
+              if (distributionAmountFormatted?.bigNumberValue?.isEqualTo(0))
+                return true;
 
-              const clubTokensMinted = await getNftOwnersCount();
-              availableAmount = convertToFullNumber(
-                (distributionAmount - clubTokensMinted).toString(),
-              );
+              const { bigNumberValue: clubTokensMinted } =
+                await getNftOwnersCount();
+              availableAmount = distributionAmountFormatted?.bigNumberValue
+                .minus(clubTokensMinted)
+                .integerValue()
+                .toString();
             } else {
               return true;
             }
@@ -306,14 +312,12 @@ export const getProposalValidationSchema = ({
           const { actionCommand } = context.parent;
           if (actionCommand === 3) {
             try {
-              const { distributionAmount, pricePerToken, depositTokenAddress } =
-                factoryData;
+              const { raiseAmountFormatted } = factoryData;
 
-              const tokenDecimals = await getDecimals(depositTokenAddress);
               if (
-                Number(value) >
-                Number(convertFromWeiGovernance(distributionAmount, 18)) *
-                  Number(convertFromWeiGovernance(pricePerToken, tokenDecimals))
+                BigNumber(value).isGreaterThan(
+                  BigNumber(raiseAmountFormatted?.formattedValue),
+                )
               ) {
                 return true;
               } else return false;
@@ -334,11 +338,9 @@ export const getProposalValidationSchema = ({
           const { actionCommand } = context.parent;
           if (actionCommand === 13 && tokenType === "erc20") {
             try {
-              const { pricePerToken, depositTokenAddress } = factoryData;
-              const decimals = await getDecimals(depositTokenAddress);
+              const { pricePerTokenFormatted } = factoryData;
               if (
-                Number(value) >
-                Number(convertFromWeiGovernance(pricePerToken, decimals))
+                Number(value) > Number(pricePerTokenFormatted?.formattedValue)
               ) {
                 return true;
               } else return false;

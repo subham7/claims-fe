@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import { getPublicClient } from "./viemConfig";
 
 // function for calculating the balance percentage of the users share
 export const calculateUserSharePercentage = (balance, total) => {
@@ -65,4 +66,17 @@ export const generateBoundary = () => {
   }
 
   return boundary;
+};
+
+export const generateAlertData = (message, severity) => ({
+  open: true,
+  message,
+  severity,
+});
+
+export const fetchLatestBlockNumber = async (networkId) => {
+  const publicClient = getPublicClient(networkId);
+  const block = Number(await publicClient.getBlockNumber());
+
+  return block;
 };
