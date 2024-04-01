@@ -8,6 +8,7 @@ import {
   gnosis,
   taikoJolnir,
   goerli,
+  avalanche,
 } from "viem/chains";
 import {
   CHAIN_CONFIG,
@@ -37,6 +38,7 @@ const viemChains = {
   "0x5": goerli,
   "0xa0c71fd": blastTestnetWalletConnect,
   "0x13e31": blastMainnetWalletConnect,
+  "0xa86a": avalanche,
 };
 
 export const getPublicClient = (networkId) => {
