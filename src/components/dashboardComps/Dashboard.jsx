@@ -84,7 +84,6 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
   const fetchClubDetails = async () => {
     try {
       if (daoAddress && networkId) {
-        debugger;
         if (clubData) {
           let percentageShare;
 

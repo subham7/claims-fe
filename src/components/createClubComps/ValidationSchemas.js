@@ -248,18 +248,15 @@ export const getProposalValidationSchema = ({
               0,
             );
             if (totalAmount <= 0) return false;
-
             let availableAmount;
             if (tokenType === "erc20") {
               const clubTokensMinted = await getERC20TotalSupply();
 
-              availableAmount = convertFromWeiGovernance(
-                distributionAmountFormatted?.bigNumberValue
-                  .minus(clubTokensMinted?.bigNumberValue)
-                  .integerValue()
-                  .toString(),
-                18,
-              );
+              availableAmount = distributionAmountFormatted?.bigNumberValue
+                .minus(clubTokensMinted?.bigNumberValue)
+                .dividedBy(10 ** 18)
+                .integerValue()
+                .toString();
             } else if (tokenType === "erc721") {
               if (distributionAmountFormatted?.bigNumberValue?.isEqualTo(0))
                 return true;
