@@ -32,7 +32,7 @@ const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
       content: (
         <CopyText
           type="share"
-          value={`https://app.stationx.network/join/${daoAddress}/${routeNetworkId}`}
+          value={`${window.location.origin}/join/${daoAddress}/${routeNetworkId}`}
         />
       ),
     },

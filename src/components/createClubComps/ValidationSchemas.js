@@ -248,19 +248,15 @@ export const getProposalValidationSchema = ({
               0,
             );
             if (totalAmount <= 0) return false;
-
             let availableAmount;
             if (tokenType === "erc20") {
-              const { bigNumberValue: clubTokensMinted } =
-                await getERC20TotalSupply();
+              const clubTokensMinted = await getERC20TotalSupply();
 
-              availableAmount = convertFromWeiGovernance(
-                distributionAmountFormatted?.bigNumberValue
-                  .minus(clubTokensMinted)
-                  .integerValue()
-                  .toString(),
-                18,
-              );
+              availableAmount = distributionAmountFormatted?.bigNumberValue
+                .minus(clubTokensMinted?.bigNumberValue)
+                .dividedBy(10 ** 18)
+                .integerValue()
+                .toString();
             } else if (tokenType === "erc721") {
               if (distributionAmountFormatted?.bigNumberValue?.isEqualTo(0))
                 return true;
@@ -336,7 +332,7 @@ export const getProposalValidationSchema = ({
         "price of token should be greater than current price",
         async (value, context) => {
           const { actionCommand } = context.parent;
-          if (actionCommand === 13) {
+          if (actionCommand === 13 && tokenType === "erc20") {
             try {
               const { pricePerTokenFormatted } = factoryData;
               if (

@@ -55,7 +55,7 @@ const DepositInputComponents = ({
         approveERC20Handler={approveERC20Handler}
         allowanceValue={allowanceValue}
       />
-      <DepositDetails contractData={clubData} tokenDetails={tokenDetails} />
+      <DepositDetails />
     </>
   );
 };
@@ -140,8 +140,6 @@ const ERC20 = ({
   const handleIsW8BenSignedChange = (newValue) => {
     setIsW8BenSigned(newValue);
   };
-
-  console.log(clubData);
 
   const minValidation = yup.object().shape({
     tokenInput: yup
@@ -243,7 +241,6 @@ const ERC20 = ({
           convertToWeiGovernance(
             BigNumber(inputValue)
               .dividedBy(clubData?.pricePerTokenFormatted?.bigNumberValue)
-              .integerValue()
               .toString(),
             18,
           ),
@@ -350,16 +347,6 @@ const ERC20 = ({
 
     const isRemainingTimeInvalid =
       remainingDays < 0 || remainingTimeInSecs <= 0;
-
-    console.log(
-      "xxx",
-      isRemainingTimeInvalid,
-      +clubData?.raiseAmount <= +clubData?.totalAmountRaised,
-      +remainingClaimAmount <= 0,
-      formik.values.tokenInput === 0,
-      Number(tokenDetails.userBalance) < formik.values.tokenInput,
-      formik.errors.tokenInput,
-    );
 
     if (isRemainingTimeInvalid) return true;
     else if (isTokenGated && !isEligibleForTokenGating) return true;
