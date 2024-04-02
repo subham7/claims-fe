@@ -7,7 +7,7 @@ import { setAlertData } from "redux/reducers/alert";
 import { generateAlertData } from "utils/globalFunctions";
 import { useAccount } from "wagmi";
 import { handleSignMessage } from "utils/helper";
-import { createKYC, getClubData, updateKYC } from "api/club";
+import { createKYC, getClubData } from "api/club";
 
 const KycModal = ({ onClose, daoAddress, setLoading }) => {
   const [apiKey, setApiKey] = useState("");
@@ -33,7 +33,6 @@ const KycModal = ({ onClose, daoAddress, setLoading }) => {
   const submitHandler = async () => {
     try {
       setLoading(true);
-
       const payload = isEnabled
         ? {
             apiKey,
@@ -47,20 +46,17 @@ const KycModal = ({ onClose, daoAddress, setLoading }) => {
         JSON.stringify(payload),
       );
 
-      if (isEnabledOld !== isEnabled && isEnabled) {
-        await createKYC({
-          ...payload,
-          signature,
-        });
+      const response = await createKYC({
+        ...payload,
+        signature,
+      });
+      if (response) {
         dispatchAlert("KYC enabled successfully", "success");
-      } else if (!isEnabled) {
-        await updateKYC({
-          ...payload,
-          signature,
-        });
-        dispatchAlert("KYC disabled successfully", "success");
+        onClose();
+      } else {
+        dispatchAlert("Could not update KYC settings ", "error");
       }
-
+      await getKycSetting();
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -69,9 +65,20 @@ const KycModal = ({ onClose, daoAddress, setLoading }) => {
   };
 
   const getKycSetting = async () => {
-    const response = await getClubData(daoAddress);
-    if (response) {
-      setIsEnabledOld(response.kycEnabled);
+    try {
+      setLoading(true);
+      const response = await getClubData(daoAddress);
+      if (response) {
+        setIsEnabledOld(response.kyc.isKycEnabled);
+        setIsEnabled(response.kyc.isKycEnabled);
+        if (response.kyc.isKycCreated) {
+          setApiKey("abcdefghijklmnop");
+          setAppId("abcdefghijklmnop");
+        }
+      }
+      setLoading(false);
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -149,7 +156,7 @@ const KycModal = ({ onClose, daoAddress, setLoading }) => {
           Cancel
         </button>
         <button
-          disabled={!isAdmin || !apiKey || !appId || isEnabledOld === isEnabled}
+          disabled={!isAdmin || !apiKey || !appId}
           onClick={submitHandler}>
           Save
         </button>

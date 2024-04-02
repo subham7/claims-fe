@@ -21,7 +21,7 @@ const useCommonContractMethods = (params) => {
       const symbol = localStorage.getItem(
         `stationx-${contractAddress}-${networkId}-symbol`,
       );
-      if (symbol) {
+      if (symbol !== "undefined") {
         return symbol;
       } else if (isNative(contractAddress, networkId)) {
         localStorage.setItem(
@@ -58,7 +58,7 @@ const useCommonContractMethods = (params) => {
       const name = localStorage.getItem(
         `stationx-${contractAddress}-${networkId}--name`,
       );
-      if (name) {
+      if (name !== "undefined") {
         return name;
       } else if (isNative(contractAddress, networkId)) {
         localStorage.setItem(
@@ -93,7 +93,7 @@ const useCommonContractMethods = (params) => {
       const decimals = localStorage.getItem(
         `stationx-${contractAddress}-${networkId}-decimals`,
       );
-      if (decimals) {
+      if (!isNaN(Number(decimals))) {
         return Number(decimals);
       } else if (isNative(contractAddress, networkId)) {
         localStorage.setItem(
