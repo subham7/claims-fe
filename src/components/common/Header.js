@@ -60,14 +60,13 @@ const Header = ({
   };
 
   const getKycSetting = async () => {
-    debugger;
     try {
       const response = await getClubData(daoAddress);
       if (response) {
         setKycEnabled(response.kyc.isKycEnabled);
         if (response.kyc.isKycEnabled) {
           const results = await verifyWithZkMeServices(
-            response.kyc.zkMeAppId,
+            response.kyc.zkmeAppId,
             address,
           );
           setIsVerified(results);
