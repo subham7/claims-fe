@@ -1,4 +1,4 @@
-import { Button, Skeleton, Typography } from "@mui/material";
+import { Skeleton, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import classes from "../claims/Claim.module.scss";
 import { formatEpochTime } from "utils/helper";
@@ -7,6 +7,8 @@ import SwapInfo from "./SwapInfo";
 import ZkMe from "@components/zkMe/zkMe";
 import { verifyWithZkMeServices } from "@zkmelabs/widget";
 import { useAccount } from "wagmi";
+import { IoIosArrowRoundForward } from "react-icons/io";
+import { IoCheckmark } from "react-icons/io5";
 
 const HeaderShimmer = () => {
   return (
@@ -115,7 +117,7 @@ const Header = ({
         !tokenDetails?.isNativeToken && <SwapInfo networkId={networkId} />}
 
       {open ? <ZkMe daoAddress={daoAddress} /> : null}
-      {loading || isVerified ? null : (
+      {/* {loading || isVerified ? null : (
         <Button
           onClick={() => setOpen(!open)}
           variant="contained"
@@ -127,7 +129,38 @@ const Header = ({
           }}>
           Perform KYC
         </Button>
-      )}
+      )} */}
+
+      <div className={classes.kycContainer}>
+        <div>
+          <Typography variant="inherit" fontWeight={600}>
+            KYC Verification
+          </Typography>
+
+          {isVerified ? (
+            <Typography className={classes.completed} variant="inherit">
+              Completed
+            </Typography>
+          ) : (
+            <Typography className={classes.action} variant="inherit">
+              Action Required
+            </Typography>
+          )}
+        </div>
+
+        {isVerified ? (
+          <IoCheckmark />
+        ) : (
+          <div
+            onClick={() => {
+              setOpen(!open);
+            }}
+            className={classes.kycButton}>
+            <Typography variant="inherit">Complete KYC</Typography>
+            <IoIosArrowRoundForward />
+          </div>
+        )}
+      </div>
     </>
   );
 };
