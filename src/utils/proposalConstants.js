@@ -75,6 +75,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
         "0x82750",
         "0xa9",
         "0x28c5f",
+        "0xa86a",
       ],
     },
     {
@@ -96,6 +97,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
         "0x82750",
         "0xa9",
         "0x28c5f",
+        "0xa86a",
       ],
     },
     {
@@ -118,6 +120,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
         "0x82750",
         "0xa9",
         "0x28c5f",
+        "0xa86a",
       ],
     },
     {
@@ -140,6 +143,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
         "0x82750",
         "0xa9",
         "0x28c5f",
+        "0xa86a",
       ],
     },
     {
@@ -161,6 +165,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
         "0x82750",
         "0xa9",
         "0x28c5f",
+        "0xa86a",
       ],
     },
     {
@@ -183,6 +188,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
         "0x82750",
         "0xa9",
         "0x28c5f",
+        "0xa86a",
       ],
     },
     {
@@ -204,6 +210,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
         "0x82750",
         "0xa9",
         "0x28c5f",
+        "0xa86a",
       ],
     },
     {
@@ -225,6 +232,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
         "0x82750",
         "0xa9",
         "0x28c5f",
+        "0xa86a",
       ],
     },
     // {
@@ -266,6 +274,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
         "0x82750",
         "0xa9",
         "0x28c5f",
+        "0xa86a",
       ],
     },
     {
@@ -287,6 +296,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
         "0x82750",
         "0xa9",
         "0x28c5f",
+        "0xa86a",
       ],
     },
     {
@@ -308,6 +318,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
         "0x82750",
         "0xa9",
         "0x28c5f",
+        "0xa86a",
       ],
     },
     // {
