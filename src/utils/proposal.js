@@ -839,7 +839,7 @@ const zeroLendEthStakeEncoded = async ({
   depositAmount,
   networkId,
   web3Call,
-  walletAddress,
+  gnosisAddress,
 }) => {
   const zeroLendPoolContract = new web3Call.eth.Contract(
     zeroLendStakingPoolABI,
@@ -857,14 +857,19 @@ const zeroLendEthStakeEncoded = async ({
   const convertedRate = convertFromWeiGovernance(rateOfEzETH, 18);
 
   const amountOfEzETHToDeposit = BigNumber(depositAmount)
-    .times(BigNumber(convertedRate))
+    .dividedBy(BigNumber(convertedRate))
+    .toString();
+
+  const minAmount = BigNumber(depositAmount)
+    .times(98.5)
+    .dividedBy(100)
     .toString();
 
   return zeroLendPoolContract.methods
     ?.supply(
       CHAIN_CONFIG[networkId].renzoEzETHAddress,
-      convertToWeiGovernance(amountOfEzETHToDeposit, 18),
-      walletAddress,
+      convertToWeiGovernance(minAmount, 18),
+      gnosisAddress,
       zeroAddress,
     )
     .encodeABI();
@@ -2457,7 +2462,7 @@ export const getTransaction = async ({
           depositAmount,
           networkId,
           web3Call,
-          walletAddress,
+          gnosisAddress,
         }),
         value: "0",
       };
