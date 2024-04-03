@@ -89,6 +89,11 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
 
           const myBalance = await getBalance(daoAddress);
 
+          if (myBalance === 0) {
+            setMyShare(0);
+            return;
+          }
+
           if (tokenType === "erc20") {
             const totalSupply = await getERC20TotalSupply();
             percentageShare = BigNumber(myBalance)
@@ -301,7 +306,6 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
             daoAddress={daoAddress}
             gnosisAddress={gnosisAddress}
             networkId={networkId}
-            routeNetworkId={routeNetworkId}
           />
         )}
 

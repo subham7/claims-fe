@@ -141,8 +141,6 @@ const ERC20 = ({
     setIsW8BenSigned(newValue);
   };
 
-  console.log(clubData);
-
   const minValidation = yup.object().shape({
     tokenInput: yup
       .number()
@@ -243,7 +241,6 @@ const ERC20 = ({
           convertToWeiGovernance(
             BigNumber(inputValue)
               .dividedBy(clubData?.pricePerTokenFormatted?.bigNumberValue)
-              .integerValue()
               .toString(),
             18,
           ),

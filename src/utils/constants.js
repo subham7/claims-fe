@@ -43,6 +43,7 @@ export const supportedChainsDrops = [
   "0x5",
   "0xa0c71fd",
   "0x13e31",
+  "0xa86a",
 ];
 
 export const CHAIN_CONFIG = {
@@ -497,6 +498,36 @@ export const CHAIN_CONFIG = {
     disburseContractAddress: "",
     logoUri: "/assets/networks/0x13e31.png",
   },
+  "0xa86a": {
+    chainName: "Avalanche",
+    shortName: "Avax",
+    chainId: 43114,
+    nativeCurrency: {
+      name: "Avalanche",
+      decimals: 18,
+      symbol: "AVAX",
+    },
+    rpcUrls: ["https://avalanche-mainnet.infura.io/"],
+    appRpcUrl: `https://long-silent-slug.avalanche-mainnet.quiknode.pro/93921ef01877ec563a000c867071a109a881c419/ext/bc/C/rpc/`,
+    claimFactoryAddress: "",
+    factoryContractAddress: "0xA242fb1dc2Baf4ca49371f11940cF8bF4DC909c3",
+    stationSubgraphUrl:
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-avax/prod/gn",
+    claimsSubgraphUrl: "",
+    covalentNetworkName: "avalanche-mainnet",
+    nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    usdcAddress: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+    airdropContractAddress: "0x80e1429430cfB717187BD37eb5Bd0076d77dcE85",
+    aavePoolAddress: "",
+    aaveMaticPoolAddress: "",
+    aaveWrappedUsdcAddress: "",
+    aaveWrappedMaticAddress: "",
+    blockExplorerUrl: "https://snowtrace.io/",
+    logoUri: "/assets/networks/0xa86a.png",
+    disburseContractAddress: "",
+    uniswapRouterAddress: "",
+    gnosisTxUrl: "https://safe-transaction-avalanche.safe.global/",
+  },
 };
 
 export const lineaMainnetWalletConnect = {
@@ -523,6 +554,7 @@ export const lineaMainnetWalletConnect = {
     },
   },
 };
+
 export const beraMainnetWalletConnect = {
   id: 80085,
   name: "Bera",
@@ -879,11 +911,15 @@ export const stationNetworksChainId = [
     chainId: 59144,
     networkId: "0xe708",
   },
+  {
+    chainId: 43114,
+    networkId: "0xa86a",
+  },
   // {
   //   chainId: 100,
   //   networkId: "0x64",
   // },
-  // { chainId: 534352, networkId: "0x82750" },
+  { chainId: 534352, networkId: "0x82750" },
 ];
 
 export const ALLOWED_NETWORKS_FOR_STATION = [
@@ -891,5 +927,6 @@ export const ALLOWED_NETWORKS_FOR_STATION = [
   "0x1",
   "0xa4b1",
   "0xe708",
-  // "0x82750",
+  "0xa86a",
+  "0x82750",
 ];

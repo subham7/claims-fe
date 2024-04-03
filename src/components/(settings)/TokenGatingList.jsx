@@ -174,6 +174,7 @@ const TokenGatingList = ({ daoAddress, setLoading }) => {
                   address: e.target.value,
                 });
               }}
+              disabled={!isAdmin}
               value={tokenGatingDetails.address}
               placeholder="Contract address"
               className={classNames(classes.input, classes.address)}
@@ -188,6 +189,7 @@ const TokenGatingList = ({ daoAddress, setLoading }) => {
                 });
               }}
               placeholder="0"
+              disabled={!isAdmin}
               className={classNames(classes.input, classes.percentage)}
             />
 
@@ -236,7 +238,7 @@ const TokenGatingList = ({ daoAddress, setLoading }) => {
           </div>
         ) : null}
 
-        {showSaveButton || !tokenGatedDetails.length ? (
+        {isAdmin && (showSaveButton || !tokenGatedDetails.length) ? (
           <button onClick={tokenGatingHandler}>Save</button>
         ) : null}
       </div>
