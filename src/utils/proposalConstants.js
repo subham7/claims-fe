@@ -44,6 +44,10 @@ export const proposalActionCommands = {
   48: "Unstake tokens through layer-bank",
   49: "Stake tokens through mendi-finance",
   50: "Unstake tokens through mendi-finance",
+  51: "Stake tokens through AAVE",
+  52: "Unstake tokens from AAVE",
+
+  53: "Stake ezETH(Renzo) on Zerolend",
 
   // 49: "Update minimum deposit amount per user",
   // 50: "Update maximum deposit amount per user",
@@ -464,6 +468,7 @@ export const DEFI_PROPOSALS = ({
   layerBankStaked,
   aaveScrollStaked,
   mendiStaked,
+  renzoZerolLendStaked,
 }) => {
   return [
     // {
@@ -837,6 +842,32 @@ export const DEFI_PROPOSALS = ({
         </span>
       ),
       tags: [],
+    },
+
+    {
+      name: "Renzo X Zerolend",
+      logo: "/assets/icons/zerolend.png",
+      APY: "3.4",
+      staked: renzoZerolLendStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 53,
+        Unstake: 54,
+      },
+      availableOnNetworkIds: ["0xe708"],
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.zeroETHAddress
+        ? CHAIN_CONFIG[networkId].zeroETHAddress
+        : "",
+      isUnstakeDisabled: true,
+      risk: "Low",
+      info: (
+        <span>
+          This strategy swaps ETH for ezETH and then stake ezETH in Zerolend to
+          get zeroETH (an LST by Zerolend). All of it in a single transaction.
+          You earn 3.4% native yield on holding aaveWETH by AAVE.
+        </span>
+      ),
+      tags: ["🐚 ZERO POINTS", "⭐ ezPOINTS", "🏆 EIGEN POINTS"],
     },
   ];
 };

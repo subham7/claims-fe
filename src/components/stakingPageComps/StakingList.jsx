@@ -27,6 +27,7 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
   const [unstakeLayerBankToken, setUnstakeLayerBankToken] = useState(0);
   const [unstakeAaveScrollToken, setUnstakeAaveScrollToken] = useState(0);
   const [unstakeMendiUsdcToken, setUnstakeMendiUsdcToken] = useState(0);
+  const [unstakeZeroLendToken, setUnstakeZeroLendToken] = useState(0);
 
   const { getBalance, getDecimals } = useCommonContractMethods({
     routeNeworkId,
@@ -117,6 +118,7 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
         renzoEzEthBalance = 0,
         layerBankEthBalance = 0,
         aaveScrollEthBalance = 0,
+        zeroLendEthBalance = 0,
         mendiUSDCBalance = 0;
       // mendiExchangeRate = 0;
 
@@ -127,6 +129,7 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
           layerBankEthBalance,
           mendiUSDCBalance,
           renzoEzEthBalance,
+          zeroLendEthBalance,
         ] = await Promise.all([
           fetchTokenBalance(
             CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0],
@@ -139,6 +142,8 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
           fetchTokenBalance(CHAIN_CONFIG[networkId].mendiTokenAddress),
 
           fetchTokenBalance(CHAIN_CONFIG[networkId].renzoEzETHAddress),
+
+          fetchTokenBalance(CHAIN_CONFIG[networkId].zeroETHAddress),
         ]);
       } else if (networkId === "0x1") {
         renzoEzEthBalance = await fetchTokenBalance(
@@ -174,6 +179,7 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
       setUnstakeLayerBankToken(layerBankEthBalance);
       setUnstakeAaveScrollToken(aaveScrollEthBalance);
       setUnstakeMendiUsdcToken(mendiUSDCBalance);
+      setUnstakeZeroLendToken(zeroLendEthBalance);
     };
 
     fetchBalances();
@@ -200,6 +206,7 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
           layerBankStaked: Number(unstakeLayerBankToken),
           aaveScrollStaked: Number(unstakeAaveScrollToken),
           mendiStaked: Number(unstakeMendiUsdcToken),
+          renzoZerolLendStaked: Number(unstakeZeroLendToken),
           networkId,
         })
           .filter((item) => item.availableOnNetworkIds.includes(networkId))
