@@ -12,6 +12,7 @@ import { convertToWeiGovernance } from "utils/globalFunctions";
 import { switchNetworkHandler } from "utils/helper";
 import { useAccount, useNetwork } from "wagmi";
 import classes from "../../claims/Claim.module.scss";
+import Image from "next/image";
 
 const ClaimInputShimmer = () => {
   return (
@@ -84,6 +85,9 @@ const DepositInput = ({
               disabled={!walletAddress || networkId !== routeNetworkId}
               sx={{
                 "& fieldset": { border: "none" },
+                "& .MuiInputBase-root": {
+                  backgroundColor: "#111111",
+                },
               }}
               value={formik.values.tokenInput}
               name="tokenInput"
@@ -102,9 +106,23 @@ const DepositInput = ({
 
           {tokenDetails?.tokenDecimal ? (
             <div className={classes.tokenContainer}>
-              <Typography variant="inherit" className={classes.token}>
-                {tokenDetails?.tokenSymbol}
-              </Typography>
+              <div className={classes.token} style={{}}>
+                <Image
+                  style={{
+                    borderRadius: "50px",
+                  }}
+                  width={25}
+                  height={25}
+                  src={
+                    tokenDetails?.isNativeToken
+                      ? CHAIN_CONFIG[routeNetworkId]?.nativeCurrency?.image
+                      : "/assets/icons/usd.png"
+                  }
+                />
+                <Typography mt={0.5} variant="inherit">
+                  {tokenDetails?.tokenSymbol}
+                </Typography>
+              </div>
               <Typography variant="inherit" className={classes.smallFont}>
                 Balance: {tokenDetails?.userBalance}
               </Typography>

@@ -141,16 +141,15 @@
       }
 
       .token {
-        // background: $border-color;
-        // padding: 10px 20px;
+        background: $border-color;
+        padding: 10px 20px;
         border-radius: 8px;
         font-weight: 500;
         width: fit-content;
-        cursor: pointer;
-
-        // &:hover {
-        //   background-color: $primary;
-        // }
+        // cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
     }
 
