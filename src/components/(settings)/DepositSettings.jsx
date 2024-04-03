@@ -9,6 +9,7 @@ import StatusModal from "@components/modals/StatusModal/StatusModal";
 import { useRouter } from "next/router";
 import DeadlineInput from "./DeadlineInput";
 import TokenGatingList from "./TokenGatingList";
+import KycSettings from "./KycSettings";
 
 const DepositSettings = ({ routeNetworkId, daoAddress }) => {
   const [loading, setLoading] = useState(false);
@@ -45,6 +46,16 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
     //     "By allowlisting specific addresses, only these users will be able to deposit funds to your station. No other wallet will be able to make any deposit. You can either import addresses from a CSV file or manually copy and paste them here.",
     //   component: <ImportAllowlist />,
     // },
+    {
+      key: "enableKYC",
+      heading: "KYC",
+      description:
+        "Enable/disable KYC for investors that are contributing funds to this station.",
+      component: (
+        <KycSettings daoAddress={daoAddress} setLoading={setLoading} />
+      ),
+    },
+
     {
       heading: "Tokengating",
       description:

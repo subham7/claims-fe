@@ -394,6 +394,7 @@ const ERC20 = ({
         clubData={clubData}
         tokenDetails={tokenDetails}
         headerProps={{
+          daoAddress: daoAddress,
           contractData: clubData,
           deadline: daoDetails?.depositDeadline,
           tokenDetails: tokenDetails,

@@ -41,7 +41,6 @@ export const supportedChainsDrops = [
   "0x5",
   "0xa0c71fd",
   "0x13e31",
-  "0xa86a",
 ];
 
 export const CHAIN_CONFIG = {
@@ -238,7 +237,7 @@ export const CHAIN_CONFIG = {
       symbol: "ETH",
     },
     rpcUrls: ["https://rpc.linea.build"],
-    appRpcUrl: `https://linea-mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}/`,
+    appRpcUrl: `https://linea-mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
     factoryContractAddress: "0xd3AfdA70B888388a1d5e8737Ba8b533fFE352e92",
     claimFactoryAddress: "0x50702Fd9086BAbDB0A3A576bFe22D4dD47b09937",
     claimsSubgraphUrl:
@@ -914,7 +913,7 @@ export const ALLOWED_NETWORKS_FOR_STATION = [
   "0x89",
   "0x1",
   "0xa4b1",
-  // "0xe708",
+  "0xe708",
   // "0x82750",
   "0xa86a",
 ];

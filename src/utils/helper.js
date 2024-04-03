@@ -4,6 +4,7 @@ import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 import { QUERY_ALL_MEMBERS } from "api/graphql/stationQueries";
 import { subgraphQuery } from "./subgraphs";
 import {
+  ALLOWED_NETWORKS_FOR_STATION,
   BLOCK_CONFIRMATIONS,
   BLOCK_TIMEOUT,
   CHAIN_CONFIG,
@@ -123,17 +124,21 @@ export function returnRemainingTime(epochTime) {
     : 0;
 }
 
-export const showWrongNetworkModal = (networkId, routeNetworkId) => {
+export const showWrongNetworkModal = (networkId, routeNetworkId, isClaims) => {
   networkId = networkId?.toLowerCase();
   routeNetworkId = routeNetworkId?.toLowerCase();
   if (
-    (routeNetworkId &&
-      routeNetworkId !== networkId &&
-      routeNetworkId !== "create" &&
-      routeNetworkId !== "disburse") ||
-    !supportedChainsDrops.includes(networkId)
+    routeNetworkId &&
+    routeNetworkId !== networkId &&
+    routeNetworkId !== "create" &&
+    routeNetworkId !== "disburse"
   ) {
-    return true;
+    if (isClaims && !supportedChainsDrops.includes(networkId)) {
+      return true;
+    }
+    if (!isClaims && !ALLOWED_NETWORKS_FOR_STATION.includes(networkId)) {
+      return true;
+    }
   } else {
     return false;
   }
