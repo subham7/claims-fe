@@ -216,9 +216,10 @@ export const CHAIN_CONFIG = {
       image: "/assets/icons/eth.png",
     },
     rpcUrls: ["https://arb1.arbitrum.io/rpc"],
-    appRpcUrl: `https://arbitrum-mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
+    appRpcUrl: `https://nameless-lingering-slug.arbitrum-mainnet.quiknode.pro/4fe4d99e7b0909d4f1913740227511bb977fc33a/`,
     factoryContractAddress: "0x7213172eAad75D3d94Bc09ff4E0008f7FF66b041",
     claimFactoryAddress: "0x28F06a3415A741367303Db36a6646C354cCE1340",
+    airdropContractAddress: "0x63d5BaeA805Af5768105F38aE12f933f29c674a9",
     claimsSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-arbitrum/prod/gn",
     stationSubgraphUrl:
