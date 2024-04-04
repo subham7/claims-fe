@@ -144,6 +144,8 @@ export const proposalData = ({
     case 18:
     case 48:
     case 50:
+    case 56:
+    case 58:
       return {
         "Unstake token": symbol,
         "Unstake amount": convertFromWeiGovernance(unstakeAmount, decimals),
@@ -188,10 +190,12 @@ export const proposalData = ({
     case 47:
     case 51:
     case 53:
+    case 57:
       return {
         "Deposit Amount :": `${depositAmount} ETH`,
       };
     case 49:
+    case 55:
       return {
         "Deposit Amount :": `${depositAmount} USDC`,
       };
@@ -1628,6 +1632,7 @@ export const getProposalCommands = async ({
   let merkleRoot;
   let tokenDecimal;
   let mirrorAddresses;
+
   switch (executionId) {
     case 0:
       const airDropTokenDecimal = tokenData?.find(
@@ -1820,6 +1825,8 @@ export const getProposalCommands = async ({
     case 18:
     case 48:
     case 50:
+    case 56:
+    case 58:
       tokenDecimal = tokenData?.find(
         (token) =>
           token.address.toLowerCase() ===
@@ -1911,6 +1918,8 @@ export const getProposalCommands = async ({
     case 51:
     case 49:
     case 53:
+    case 55:
+    case 57:
       return {
         depositToken: values.stakeTokenAddress,
         depositAmount: values.stakeAmount,
@@ -2079,6 +2088,8 @@ export const proposalDetailsData = ({
 
     case 18:
     case 48:
+    case 56:
+    case 58:
       responseData.data = {
         "Unstake token": symbol,
         "Unstake amount": convertFromWeiGovernance(unstakeAmount, decimals),
@@ -2169,6 +2180,7 @@ export const proposalDetailsData = ({
     case 47:
     case 51:
     case 53:
+    case 57:
       responseData.data = {
         "Deposit Amount": `${depositAmount} ETH`,
       };
@@ -2176,6 +2188,7 @@ export const proposalDetailsData = ({
       return responseData;
 
     case 49:
+    case 55:
       responseData.data = {
         "Deposit Amount": `${depositAmount} USDC`,
       };

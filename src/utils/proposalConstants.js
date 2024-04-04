@@ -452,43 +452,27 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
   ];
 };
 
-export const DEFI_PROPOSALS = ({
-  clipFinanceStaked = 0,
+export const DEFI_PROPOSALS_ETH_POOLS = ({
   staderETHStaked = 0,
   stargateStaked,
   kelpEthStaked,
   swellRswEthStaked,
   swellEigenEthStaked,
   renzoEzEthStaked,
-  networkId,
   lidoEigenEthStaked,
   restakeRstETHStaked,
-  rocketEigenStaked,
   mantleEigenStaked,
   layerBankStaked,
   aaveScrollStaked,
-  mendiStaked,
   renzoZerolLendStaked,
+  zeroLendNativeETHStaked,
+  networkId,
 }) => {
   return [
-    // {
-    //   name: "Clip Finance",
-    //   logo: "/assets/images/clipFinanceLogo.png",
-    //   APY: "17.36",
-    //   staked: clipFinanceStaked,
-    //   token: "USDC",
-    //   executionIds: {
-    //     Stake: 24,
-    //     Unstake: 25,
-    //   },
-    //   availableOnNetworkIds: ["0xe708"],
-    //   isUnstakeDisabled: true,
-    // },
-
     {
       name: "Stargate Finance",
       logo: "/assets/icons/stargate.png",
-      APY: "3.5%",
+      APY: "3.5",
       staked: stargateStaked,
       token: "ETH",
       executionIds: {
@@ -565,33 +549,6 @@ export const DEFI_PROPOSALS = ({
       ),
       tags: ["🏆 EIGEN POINTS", "⭐ STARS"],
     },
-
-    // {
-    //   name: "Rocket X Eigen",
-    //   logo: "/assets/images/rocket.png",
-    //   APY: "3.4",
-    //   staked: rocketEigenStaked,
-    //   token: "ETH",
-    //   executionIds: {
-    //     Stake: 43,
-    //     Unstake: 44,
-    //   },
-    //   availableOnNetworkIds: ["0x1"],
-    //   isUnstakeDisabled: true,
-    //   risk: "Low",
-
-    //   info: (
-    //     <span>
-    //       This strategy earns Eigen Points by staking ETH on Rocketpool to get
-    //       rETH (an LST by Rocketpool with 3.4% APR on ETH) and by restaking rETH
-    //       directly on Eigen Pool. All of it in a single transaction.
-    //       <br /> <br /> Reward points are accrued on your Stations treasury
-    //       address.
-    //     </span>
-    //   ),
-    //   tags: ["🏆 EIGEN POINTS", "⭐ STARS"],
-    // },
-
     {
       name: "Mantle X Eigen",
       logo: "/assets/icons/mantle.png",
@@ -646,7 +603,6 @@ export const DEFI_PROPOSALS = ({
       //   ? CHAIN_CONFIG[networkId].swellRswETHAddress
       //   : "",
     },
-
     {
       name: "Stader X Kelp LRT",
       logo: "/assets/icons/kelp.png",
@@ -791,7 +747,88 @@ export const DEFI_PROPOSALS = ({
       ),
       tags: [],
     },
+    {
+      name: "Zerolend",
+      logo: "/assets/icons/zerolend.png",
+      APY: "3.4",
+      staked: zeroLendNativeETHStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 57,
+        Unstake: 58,
+      },
+      availableOnNetworkIds: ["0xe708"],
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.zeroWETHAddress
+        ? CHAIN_CONFIG[networkId].zeroWETHAddress
+        : "",
+      isUnstakeDisabled: false,
+      risk: "Low",
+      info: (
+        <span>
+          This strategy swaps USDC for z0USDC in Zerolend&apos;s USDC pool. You
+          earn 12.4% APY holding z0USDC by Zerolend.
+        </span>
+      ),
+      tags: ["🐚 ZERO POINTS"],
+    },
+    {
+      name: "Aave",
+      logo: "/assets/icons/aave.svg",
+      APY: "3.4",
+      staked: aaveScrollStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 51,
+        Unstake: 52,
+      },
+      availableOnNetworkIds: ["0x82750"],
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.aaveWrappedScrollEthAddress
+        ? CHAIN_CONFIG[networkId].aaveWrappedScrollEthAddress
+        : "",
+      isUnstakeDisabled: false,
+      risk: "High",
+      info: (
+        <span>
+          This strategy swaps ETH for aaveWETH. You earn 3.4% native yield on
+          holding aaveWETH by AAVE.
+        </span>
+      ),
+      tags: [],
+    },
+    {
+      name: "Renzo X Zerolend",
+      logo: "/assets/icons/zerolend.png",
+      APY: "3.4",
+      staked: renzoZerolLendStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 53,
+        Unstake: 54,
+      },
+      availableOnNetworkIds: ["0xe708"],
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.zeroETHAddress
+        ? CHAIN_CONFIG[networkId].zeroETHAddress
+        : "",
+      isUnstakeDisabled: true,
+      risk: "Low",
+      info: (
+        <span>
+          This strategy swaps ETH for ezETH and then stake ezETH in Zerolend to
+          get z0ETH (an LST by Zerolend). All of it in a single transaction. You
+          earn 3.4% native yield on holding z0ETH by AAVE.
+        </span>
+      ),
+      tags: ["🐚 ZERO POINTS", "⭐ ezPOINTS", "🏆 EIGEN POINTS"],
+    },
+  ];
+};
 
+export const DEFI_PROPOSALS_USDC_POOLS = ({
+  mendiStaked,
+  zeroLendUSDCStaked,
+  networkId,
+}) => {
+  return [
     {
       name: "Mendi Finance",
       logo: "/assets/icons/mendi.jpeg",
@@ -820,54 +857,28 @@ export const DEFI_PROPOSALS = ({
       tags: [],
     },
     {
-      name: "Aave",
-      logo: "/assets/icons/aave.svg",
-      APY: "3.4",
-      staked: aaveScrollStaked,
-      token: "ETH",
-      executionIds: {
-        Stake: 51,
-        Unstake: 52,
-      },
-      availableOnNetworkIds: ["0x82750"],
-      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.aaveWrappedScrollEthAddress
-        ? CHAIN_CONFIG[networkId].aaveWrappedScrollEthAddress
-        : "",
-      isUnstakeDisabled: false,
-      risk: "High",
-      info: (
-        <span>
-          This strategy swaps ETH for aaveWETH. You earn 3.4% native yield on
-          holding aaveWETH by AAVE.
-        </span>
-      ),
-      tags: [],
-    },
-
-    {
-      name: "Renzo X Zerolend",
+      name: "Zerolend",
       logo: "/assets/icons/zerolend.png",
       APY: "3.4",
-      staked: renzoZerolLendStaked,
-      token: "ETH",
+      staked: zeroLendUSDCStaked,
+      token: "USDC",
       executionIds: {
-        Stake: 53,
-        Unstake: 54,
+        Stake: 55,
+        Unstake: 56,
       },
       availableOnNetworkIds: ["0xe708"],
-      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.zeroETHAddress
-        ? CHAIN_CONFIG[networkId].zeroETHAddress
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.zeroUSDCAddress
+        ? CHAIN_CONFIG[networkId].zeroUSDCAddress
         : "",
-      isUnstakeDisabled: true,
+      isUnstakeDisabled: false,
       risk: "Low",
       info: (
         <span>
-          This strategy swaps ETH for ezETH and then stake ezETH in Zerolend to
-          get zeroETH (an LST by Zerolend). All of it in a single transaction.
-          You earn 3.4% native yield on holding aaveWETH by AAVE.
+          This strategy swaps USDC for z0USDC in Zerolend&apos;s USDC pool. You
+          earn 12.4% APY holding z0USDC by Zerolend.
         </span>
       ),
-      tags: ["🐚 ZERO POINTS", "⭐ ezPOINTS", "🏆 EIGEN POINTS"],
+      tags: ["🐚 ZERO POINTS"],
     },
   ];
 };

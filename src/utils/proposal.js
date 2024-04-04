@@ -47,6 +47,7 @@ import { ScrollAaveABI } from "abis/ScrollAaveABI";
 import { mendiTokenContract } from "abis/mendi/mendiToken";
 import { BigNumber } from "bignumber.js";
 import { zeroLendStakingPoolABI } from "abis/zerolend/zerolendStakingPool";
+import { zeroLendEthStakingPool } from "abis/zerolend/zeroLendEthPool";
 
 export const fetchProposals = async (daoAddress, type) => {
   let proposalData;
@@ -851,8 +852,6 @@ const zeroLendEthStakeEncoded = async ({
     CHAIN_CONFIG[networkId]?.renzoStakingPoolAddress,
   );
 
-  debugger;
-
   const rateOfEzETH = await renzoStakingPoolContract?.methods?.getRate().call();
   const convertedRate = convertFromWeiGovernance(rateOfEzETH, 18);
 
@@ -871,6 +870,86 @@ const zeroLendEthStakeEncoded = async ({
       convertToWeiGovernance(minAmount, 18),
       gnosisAddress,
       zeroAddress,
+    )
+    .encodeABI();
+};
+
+const zeroLendUSDCStakeEncoded = ({
+  depositAmount,
+  networkId,
+  web3Call,
+  gnosisAddress,
+}) => {
+  const zeroLendPoolContract = new web3Call.eth.Contract(
+    zeroLendStakingPoolABI,
+    CHAIN_CONFIG[networkId]?.zeroLendStakingPoolAddress,
+  );
+
+  return zeroLendPoolContract.methods
+    ?.supply(
+      CHAIN_CONFIG[networkId].usdcAddress,
+      convertToWeiGovernance(depositAmount, 6),
+      gnosisAddress,
+      zeroAddress,
+    )
+    .encodeABI();
+};
+
+const zeroLendNativeETHStakeEncoded = ({
+  networkId,
+  web3Call,
+  gnosisAddress,
+}) => {
+  const zeroLendPoolContract = new web3Call.eth.Contract(
+    zeroLendEthStakingPool,
+    CHAIN_CONFIG[networkId]?.zeroETHLendStakingPoolAddresS,
+  );
+
+  return zeroLendPoolContract.methods
+    ?.depositETH(
+      CHAIN_CONFIG[networkId].zeroLendStakingPoolAddress,
+      gnosisAddress,
+      zeroAddress,
+    )
+    .encodeABI();
+};
+
+const zeroLendNativeETHWithdrawEncoded = ({
+  networkId,
+  web3Call,
+  gnosisAddress,
+  withdrawAmount,
+}) => {
+  const zeroLendPoolContract = new web3Call.eth.Contract(
+    zeroLendEthStakingPool,
+    CHAIN_CONFIG[networkId]?.zeroETHLendStakingPoolAddresS,
+  );
+
+  return zeroLendPoolContract.methods
+    ?.withdrawETH(
+      CHAIN_CONFIG[networkId].zeroLendStakingPoolAddress,
+      withdrawAmount,
+      gnosisAddress,
+    )
+    .encodeABI();
+};
+
+const zeroLendUSDCWithdrawEncoded = ({
+  networkId,
+  web3Call,
+  gnosisAddress,
+  withdrawAmount,
+}) => {
+  const zeroLendPoolContract = new web3Call.eth.Contract(
+    zeroLendStakingPoolABI,
+    CHAIN_CONFIG[networkId]?.zeroLendStakingPoolAddress,
+  );
+
+  return zeroLendPoolContract.methods
+    ?.withdraw(
+      CHAIN_CONFIG[networkId].usdcAddress,
+      withdrawAmount,
+      gnosisAddress,
     )
     .encodeABI();
 };
@@ -2468,6 +2547,104 @@ export const getTransaction = async ({
       };
 
       return { stakeETHTransaction, approvalTransaction, transaction };
+
+    case 55:
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(CHAIN_CONFIG[networkId].usdcAddress),
+        data: approveDepositWithEncodeABI(
+          CHAIN_CONFIG[networkId].usdcAddress,
+          CHAIN_CONFIG[networkId].zeroLendStakingPoolAddress,
+          convertToWeiGovernance(depositAmount, 6).toString(),
+          web3Call,
+        ),
+        value: "0",
+      };
+
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].zeroLendStakingPoolAddress,
+        ),
+        data: zeroLendUSDCStakeEncoded({
+          depositAmount,
+          networkId,
+          web3Call,
+          gnosisAddress,
+        }),
+        value: "0",
+      };
+
+      return { approvalTransaction, transaction };
+
+    case 56:
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].zeroUSDCAddress,
+        ),
+        data: approveDepositWithEncodeABI(
+          CHAIN_CONFIG[networkId].zeroUSDCAddress,
+          CHAIN_CONFIG[networkId].zeroLendStakingPoolAddress,
+          unstakeAmount,
+          web3Call,
+        ),
+        value: "0",
+      };
+
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].zeroLendStakingPoolAddress,
+        ),
+        data: zeroLendUSDCWithdrawEncoded({
+          gnosisAddress,
+          networkId,
+          web3Call,
+          withdrawAmount: unstakeAmount,
+        }),
+        value: "0",
+      };
+      return { approvalTransaction, transaction };
+
+    case 57:
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].zeroETHLendStakingPoolAddresS,
+        ),
+        data: zeroLendNativeETHStakeEncoded({
+          networkId,
+          web3Call,
+          gnosisAddress,
+        }),
+        value: convertToWeiGovernance(depositAmount, 18).toString(),
+      };
+
+      return { transaction };
+
+    case 58:
+      approvalTransaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].zeroWETHAddress,
+        ),
+        data: approveDepositWithEncodeABI(
+          CHAIN_CONFIG[networkId].zeroWETHAddress,
+          CHAIN_CONFIG[networkId].zeroETHLendStakingPoolAddresS,
+          unstakeAmount,
+          web3Call,
+        ),
+        value: "0",
+      };
+
+      transaction = {
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].zeroETHLendStakingPoolAddresS,
+        ),
+        data: zeroLendNativeETHWithdrawEncoded({
+          gnosisAddress,
+          networkId,
+          web3Call,
+          withdrawAmount: unstakeAmount,
+        }),
+        value: "0",
+      };
+      return { approvalTransaction, transaction };
   }
 };
 
@@ -2552,6 +2729,8 @@ export const getTokenTypeByExecutionId = (commands) => {
     case 18:
     case 48:
     case 50:
+    case 56:
+    case 58:
       return commands[0]?.unstakeToken;
     case 21:
     case 22:
@@ -2571,6 +2750,8 @@ export const getTokenTypeByExecutionId = (commands) => {
     case 51:
     case 49:
     case 53:
+    case 55:
+    case 57:
       return commands[0]?.depositToken;
     case 25:
       return commands[0]?.withdrawToken;

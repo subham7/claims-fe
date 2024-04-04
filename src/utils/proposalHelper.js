@@ -71,6 +71,8 @@ const getTokenAddressByExecutionId = (
     case 18:
     case 48:
     case 50:
+    case 56:
+    case 58:
       return unstakeToken;
     case 19:
       return swapToken;
