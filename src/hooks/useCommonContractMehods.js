@@ -49,6 +49,7 @@ const useCommonContractMethods = (params) => {
           return "";
         }
       }
+      return "";
     } catch (error) {
       console.error(error);
       return "";
