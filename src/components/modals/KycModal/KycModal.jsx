@@ -12,8 +12,9 @@ import { createKYC, getClubData } from "api/club";
 const KycModal = ({ onClose, daoAddress, setLoading }) => {
   const [apiKey, setApiKey] = useState("");
   const [appId, setAppId] = useState("");
-  const [isEnabledOld, setIsEnabledOld] = useState(false);
+  const [appIdOld, setAppIdOld] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
+  const [isEnabledOld, setIsEnabledOld] = useState(false);
 
   const dispatch = useDispatch();
   const { address: walletAddress } = useAccount();
@@ -52,7 +53,11 @@ const KycModal = ({ onClose, daoAddress, setLoading }) => {
         signature,
       });
       if (response) {
-        dispatchAlert("KYC enabled successfully", "success");
+        if (isEnabled) {
+          dispatchAlert("KYC enabled successfully", "success");
+        } else {
+          dispatchAlert("KYC disabled successfully", "success");
+        }
         onClose();
       } else {
         dispatchAlert("Could not update KYC settings ", "error");
@@ -70,11 +75,12 @@ const KycModal = ({ onClose, daoAddress, setLoading }) => {
       setLoading(true);
       const response = await getClubData(daoAddress);
       if (response) {
-        setIsEnabledOld(response.kyc.isKycEnabled);
         setIsEnabled(response.kyc.isKycEnabled);
+        setIsEnabledOld(response.kyc.isKycEnabled);
         if (response.kyc.isKycCreated) {
-          setApiKey(response.kyc.zkmeAppId);
-          setAppId("abcdefghijklmnop");
+          setApiKey("abcdefghijklmnopqr");
+          setAppId(response.kyc.zkmeAppId);
+          setAppIdOld(response.kyc.zkmeAppId);
         }
       }
       setLoading(false);
@@ -120,42 +126,51 @@ const KycModal = ({ onClose, daoAddress, setLoading }) => {
         />
       </div>
 
-      <div className={classes.inputsContainer}>
-        <div>
-          <Typography variant="inherit" fontSize={14} fontWeight={500}>
-            Add zkMe App ID
-          </Typography>
-          <input
-            disabled={!isAdmin || !isEnabled}
-            onChange={(e) => {
-              setAppId(e.target.value);
-            }}
-            placeholder="App ID"
-            value={appId}
-          />
+      {isEnabled ? (
+        <div className={classes.inputsContainer}>
+          <div>
+            <Typography variant="inherit" fontSize={14} fontWeight={500}>
+              Add zkMe App ID
+            </Typography>
+            <input
+              disabled={!isAdmin || !isEnabled}
+              onChange={(e) => {
+                setAppId(e.target.value);
+              }}
+              placeholder="App ID"
+              value={appId}
+            />
+          </div>
+          <div>
+            <Typography variant="inherit" fontSize={14} fontWeight={500}>
+              Add ZkMe API Key
+            </Typography>
+            <input
+              disabled={!isAdmin || !isEnabled}
+              onChange={(e) => {
+                setApiKey(e.target.value);
+              }}
+              placeholder="API Key"
+              value={apiKey}
+              type="password"
+            />
+          </div>
         </div>
-        <div>
-          <Typography variant="inherit" fontSize={14} fontWeight={500}>
-            Add ZkMe API Key
-          </Typography>
-          <input
-            disabled={!isAdmin || !isEnabled}
-            onChange={(e) => {
-              setApiKey(e.target.value);
-            }}
-            placeholder="API Key"
-            value={apiKey}
-            type="password"
-          />
-        </div>
-      </div>
+      ) : null}
 
       <div className={classes.buttons}>
         <button onClick={onClose} className={classes.cancel}>
           Cancel
         </button>
         <button
-          disabled={!isAdmin || !apiKey || !appId}
+          disabled={
+            !isAdmin ||
+            !apiKey ||
+            !appId ||
+            (appId === appIdOld &&
+              apiKey === "abcdefghijklmnopqr" &&
+              isEnabled === isEnabledOld)
+          }
           onClick={submitHandler}>
           Save
         </button>
