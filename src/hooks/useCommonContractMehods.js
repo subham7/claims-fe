@@ -18,34 +18,36 @@ const useCommonContractMethods = (params) => {
 
   const getTokenSymbol = async (contractAddress) => {
     try {
-      const symbol = localStorage.getItem(
-        `stationx-${contractAddress}-${networkId}-symbol`,
-      );
-      if (symbol !== "undefined") {
-        return symbol;
-      } else if (isNative(contractAddress, networkId)) {
-        localStorage.setItem(
-          `stationx-${contractAddress}-${networkId}-name`,
-          CHAIN_CONFIG[networkId].nativeCurrency.symbol,
+      if (contractAddress) {
+        const symbol = localStorage.getItem(
+          `stationx-${contractAddress}-${networkId}-symbol`,
         );
-        return CHAIN_CONFIG[networkId].nativeCurrency.symbol;
-      } else if (contractAddress === ZERO_ADDRESS) {
-        return "";
-      } else if (contractAddress) {
-        const response = await readContractFunction({
-          address: contractAddress,
-          abi: erc20TokenABI,
-          functionName: "symbol",
-          args: [],
-          networkId,
-        });
-        localStorage.setItem(
-          `stationx-${contractAddress}-${networkId}-name`,
-          response,
-        );
-        return response;
-      } else {
-        return "";
+        if (symbol !== "undefined" && symbol) {
+          return symbol;
+        } else if (isNative(contractAddress, networkId)) {
+          localStorage.setItem(
+            `stationx-${contractAddress}-${networkId}-name`,
+            CHAIN_CONFIG[networkId].nativeCurrency.symbol,
+          );
+          return CHAIN_CONFIG[networkId].nativeCurrency.symbol;
+        } else if (contractAddress === ZERO_ADDRESS) {
+          return "";
+        } else if (contractAddress) {
+          const response = await readContractFunction({
+            address: contractAddress,
+            abi: erc20TokenABI,
+            functionName: "symbol",
+            args: [],
+            networkId,
+          });
+          localStorage.setItem(
+            `stationx-${contractAddress}-${networkId}-name`,
+            response,
+          );
+          return response;
+        } else {
+          return "";
+        }
       }
     } catch (error) {
       console.error(error);
