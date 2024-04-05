@@ -35,6 +35,7 @@ const KycModal = ({ onClose, daoAddress, setLoading }) => {
       setLoading(true);
       const payload = isEnabled
         ? {
+            isActive: true,
             apiKey,
             appId,
             daoAddress,
@@ -72,7 +73,7 @@ const KycModal = ({ onClose, daoAddress, setLoading }) => {
         setIsEnabledOld(response.kyc.isKycEnabled);
         setIsEnabled(response.kyc.isKycEnabled);
         if (response.kyc.isKycCreated) {
-          setApiKey("abcdefghijklmnop");
+          setApiKey(response.kyc.zkmeAppId);
           setAppId("abcdefghijklmnop");
         }
       }
@@ -122,6 +123,19 @@ const KycModal = ({ onClose, daoAddress, setLoading }) => {
       <div className={classes.inputsContainer}>
         <div>
           <Typography variant="inherit" fontSize={14} fontWeight={500}>
+            Add zkMe App ID
+          </Typography>
+          <input
+            disabled={!isAdmin || !isEnabled}
+            onChange={(e) => {
+              setAppId(e.target.value);
+            }}
+            placeholder="App ID"
+            value={appId}
+          />
+        </div>
+        <div>
+          <Typography variant="inherit" fontSize={14} fontWeight={500}>
             Add ZkMe API Key
           </Typography>
           <input
@@ -132,21 +146,6 @@ const KycModal = ({ onClose, daoAddress, setLoading }) => {
             placeholder="API Key"
             value={apiKey}
             type="password"
-          />
-        </div>
-
-        <div>
-          <Typography variant="inherit" fontSize={14} fontWeight={500}>
-            Add zkMe App ID
-          </Typography>
-          <input
-            disabled={!isAdmin || !isEnabled}
-            type="password"
-            onChange={(e) => {
-              setAppId(e.target.value);
-            }}
-            placeholder="App ID"
-            value={appId}
           />
         </div>
       </div>
