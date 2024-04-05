@@ -86,6 +86,7 @@ const KycModal = ({ onClose, daoAddress, setLoading }) => {
       setLoading(false);
     } catch (e) {
       console.error(e);
+      setLoading(false);
     }
   };
 

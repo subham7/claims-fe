@@ -5,7 +5,7 @@ import { AWS_API_URL } from "utils/constants";
 
 export const getClubData = async (daoAddress) => {
   try {
-    const response = await axios.get(`${MAIN_API_URL}/club/${daoAddress}`);
+    const response = await axios.get(`${MAIN_API_URL}club/${daoAddress}`);
     return response.data;
   } catch (error) {
     console.log(error);
