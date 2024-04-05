@@ -13,6 +13,7 @@ const KycModal = ({ onClose, daoAddress, setLoading }) => {
   const [apiKey, setApiKey] = useState("");
   const [appId, setAppId] = useState("");
   const [appIdOld, setAppIdOld] = useState(false);
+  const [isCreated, setIsCreated] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
   const [isEnabledOld, setIsEnabledOld] = useState(false);
 
@@ -34,14 +35,34 @@ const KycModal = ({ onClose, daoAddress, setLoading }) => {
   const submitHandler = async () => {
     try {
       setLoading(true);
-      const payload = isEnabled
-        ? {
-            isActive: true,
+      let payload = {};
+
+      if (isCreated && isEnabled) {
+        payload = {
+          isActive: true,
+          appId,
+          daoAddress,
+        };
+
+        if (apiKey !== "abcdefghijklmnopqr") {
+          payload = {
+            ...payload,
             apiKey,
-            appId,
-            daoAddress,
-          }
-        : { daoAddress, isActive: false };
+          };
+        }
+      } else if (isCreated && !isEnabled) {
+        payload = {
+          daoAddress,
+          isActive: false,
+        };
+      } else if (!isCreated) {
+        payload = {
+          isActive: true,
+          apiKey,
+          appId,
+          daoAddress,
+        };
+      }
 
       const { signature } = await handleSignMessage(
         walletAddress,
@@ -52,6 +73,7 @@ const KycModal = ({ onClose, daoAddress, setLoading }) => {
         ...payload,
         signature,
       });
+
       if (response) {
         if (isEnabled) {
           dispatchAlert("KYC enabled successfully", "success");
@@ -78,6 +100,7 @@ const KycModal = ({ onClose, daoAddress, setLoading }) => {
         setIsEnabled(response.kyc.isKycEnabled);
         setIsEnabledOld(response.kyc.isKycEnabled);
         if (response.kyc.isKycCreated) {
+          setIsCreated(true);
           setApiKey("abcdefghijklmnopqr");
           setAppId(response.kyc.zkmeAppId);
           setAppIdOld(response.kyc.zkmeAppId);
