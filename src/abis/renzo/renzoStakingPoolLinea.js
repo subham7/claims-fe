@@ -1,4 +1,4 @@
-[
+export const renzoStakingPoolABILinea = [
   { inputs: [], stateMutability: "nonpayable", type: "constructor" },
   { inputs: [], name: "InsufficientOutputAmount", type: "error" },
   { inputs: [], name: "InvalidOraclePrice", type: "error" },

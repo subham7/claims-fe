@@ -20,10 +20,13 @@ export const calculateDays = (dateTime) => {
 export const convertToWeiGovernance = (convertValue, decimal) => {
   if (decimal) {
     try {
-      return ethers
-        .parseUnits(convertValue.toString(), Number(decimal))
-        ?.toString();
-    } catch (error) {}
+      const truncatedValue = convertValue
+        .toString()
+        .match(/^-?\d+(?:\.\d{0,18})?/)[0];
+      return ethers.parseUnits(truncatedValue, Number(decimal))?.toString();
+    } catch (error) {
+      console.log(error);
+    }
   }
 };
 

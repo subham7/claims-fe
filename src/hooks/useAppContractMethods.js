@@ -16,6 +16,7 @@ import {
   signAndConfirmTransaction,
 } from "utils/proposalData";
 import { eigenContractABI } from "abis/eigenContract";
+import { mendiTokenContract } from "abis/mendi/mendiToken";
 import { BigNumber } from "bignumber.js";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 
@@ -612,6 +613,22 @@ const useAppContractMethods = (params) => {
     }
   };
 
+  const fetchMendiUsdcExhcangeRate = async () => {
+    try {
+      const res = await readContractFunction({
+        address: CHAIN_CONFIG[networkId].mendiTokenAddress,
+        abi: mendiTokenContract,
+        functionName: "exchangeRateStored",
+        account: walletAddress,
+        networkId,
+      });
+      return res;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  };
+
   return {
     createERC20DAO,
     createERC721DAO,
@@ -631,6 +648,7 @@ const useAppContractMethods = (params) => {
     updateProposalAndExecution,
     toggleWhitelist,
     fetchEigenTokenBalance,
+    fetchMendiUsdcExhcangeRate,
     updateMinMaxDeposit,
   };
 };
