@@ -30,7 +30,7 @@ const CopyLinkContainer = ({ daoAddress, routeNetworkId }) => {
         <Typography className={classes.copyText} variant="inherit">
           {`${window.location.origin}/join/${daoAddress}/${routeNetworkId}`.substring(
             0,
-            35,
+            30,
           )}
           ...
         </Typography>

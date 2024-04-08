@@ -23,9 +23,6 @@ const TreasuryItem = ({
   return (
     <div className={containerClass}>
       <div className={classes.treasury}>
-        <div className={classes.imgContainer}>
-          <Image src={iconSrc} height={22} width={25} alt={altText} />
-        </div>
         <div>
           <Typography className={classes.title} variant="inherit">
             {title}

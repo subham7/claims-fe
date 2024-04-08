@@ -231,8 +231,8 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
     {
       containerClass: classes.treasuryContainer,
       iconSrc: "/assets/icons/stats_hovered.svg",
-      altText: "Treasury Holdings",
-      title: "Treasury Holdings",
+      altText: "Balance",
+      title: "Balance",
       value: `$${customToFixedAutoPrecision(treasuryAmount)}`,
     },
     {
@@ -247,8 +247,8 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
     {
       containerClass: classes.ownershipContainer,
       iconSrc: "/assets/icons/astronaut_icon.svg",
-      altText: "Total Members",
-      title: "Total Members",
+      altText: "Members",
+      title: "Members",
       value: clubData?.membersCount,
     },
   ];
@@ -282,7 +282,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
         <div className={classes.headerContainer}>
           <ComponentHeader
             title={clubData?.name}
-            subtext="Astronauts, welcome to your station"
+            subtext={`$${clubData?.symbol}`}
             showButton={false}
           />
         </div>

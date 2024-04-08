@@ -58,11 +58,12 @@
           }
 
           .title {
-            font-weight: 500;
+            font-weight: 600;
             font-size: 14px;
             display: flex;
             align-items: center;
             gap: 8px;
+            margin-bottom: 8px;
 
             > img {
               cursor: pointer;
@@ -85,7 +86,7 @@
 
       .treasuryContainer {
         background: transparent
-          linear-gradient(238deg, #2d55ff 0%, #d55439 100%) 0% 0% no-repeat
+          linear-gradient(238deg, #2E55FF 0%, #FF279C 100%) 0% 0% no-repeat
           padding-box;
       }
 
@@ -179,6 +180,7 @@
           padding-left: 16px;
           font-family: inherit;
           font-size: 16px;
+          background-color: $background-color-dark;
         }
 
         .tableHeader {
@@ -187,6 +189,7 @@
 
         .tableCell {
           font-weight: 500;
+          background-color: $background-color-dark;
         }
       }
     }
@@ -276,12 +279,15 @@
     .flexContainer{
       display: flex;
       justify-content: space-between;
-      background-color: $dark-gray;
+      // background-color: $dark-gray;
       border-radius: 8px;
       padding: 12px;
       align-items: center;
       margin-top: 12px;
       margin-bottom: 4px;
+      background: transparent
+    linear-gradient(238deg, #2E55FF 0%, #FF279C 100%) 0% 0% no-repeat
+    padding-box;
 
       .copyText{
         overflow: hidden;

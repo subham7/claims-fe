@@ -82,8 +82,8 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
               onClick={() => router.push(`/profile/${address}`)}
               src="/assets/icons/astronaut_icon.svg"
               alt="profile image"
-              height={24}
-              width={24}
+              height={20}
+              width={20}
               style={{
                 cursor: "pointer",
               }}
