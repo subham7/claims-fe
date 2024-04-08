@@ -96,7 +96,7 @@ const useCommonContractMethods = (params) => {
       const decimals = localStorage.getItem(
         `stationx-${contractAddress}-${networkId}-decimals`,
       );
-      if (!isNaN(Number(decimals))) {
+      if (decimals && !isNaN(Number(decimals))) {
         return Number(decimals);
       } else if (isNative(contractAddress, networkId)) {
         localStorage.setItem(

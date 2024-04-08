@@ -117,95 +117,93 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
     setTabType(newValue);
   };
 
+  const fetchBalances = async () => {
+    let stargateBalance = 0,
+      clipFinanceBalance = 0,
+      kelpBalance = 0,
+      swellRswETH = 0,
+      restakeRstETH = 0,
+      renzoEzEthBalance = 0,
+      layerBankEthBalance = 0,
+      aaveScrollEthBalance = 0,
+      zeroLendEthBalance = 0,
+      zeroLendUSDCBalance = 0,
+      zeroLendNativeETHBalance = 0,
+      mendiUSDCBalance = 0;
+    // mendiExchangeRate = 0;
+
+    if (networkId === "0xe708") {
+      [
+        stargateBalance,
+        clipFinanceBalance,
+        layerBankEthBalance,
+        mendiUSDCBalance,
+        renzoEzEthBalance,
+        zeroLendEthBalance,
+        zeroLendUSDCBalance,
+        zeroLendNativeETHBalance,
+      ] = await Promise.all([
+        fetchTokenBalance(
+          CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0],
+        ),
+        fetchTokenBalance(
+          CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
+        ),
+        fetchTokenBalance(CHAIN_CONFIG[networkId].layerBankToken),
+
+        fetchTokenBalance(CHAIN_CONFIG[networkId].mendiTokenAddress),
+
+        fetchTokenBalance(CHAIN_CONFIG[networkId].renzoEzETHAddress),
+
+        fetchTokenBalance(CHAIN_CONFIG[networkId].zeroETHAddress),
+
+        fetchTokenBalance(CHAIN_CONFIG[networkId].zeroUSDCAddress),
+
+        fetchTokenBalance(CHAIN_CONFIG[networkId].zeroWETHAddress),
+      ]);
+    } else if (networkId === "0x1") {
+      renzoEzEthBalance = await fetchTokenBalance(
+        CHAIN_CONFIG[networkId].renzoEzETHAddress,
+      );
+
+      kelpBalance = await fetchTokenBalance(
+        CHAIN_CONFIG[networkId].kelpRsETHAddress,
+      );
+
+      swellRswETH = await fetchTokenBalance(
+        CHAIN_CONFIG[networkId].swellRswETHAddress,
+      );
+
+      restakeRstETH = await fetchTokenBalance(
+        CHAIN_CONFIG[networkId].restakeRstETHAddress,
+      );
+    } else if (networkId === "0x82750") {
+      [aaveScrollEthBalance, layerBankEthBalance] = await Promise.all([
+        fetchTokenBalance(CHAIN_CONFIG[networkId].aaveWrappedScrollEthAddress),
+        fetchTokenBalance(CHAIN_CONFIG[networkId].layerBankToken),
+      ]);
+    }
+
+    setUnstakeTokenBalance(stargateBalance);
+    setUnstakeClipFinanceToken(clipFinanceBalance);
+    setUnstakeKelpToken(kelpBalance);
+    setUnstakeSwellRswETHToken(swellRswETH);
+    setUnstakeRenzoEzETHToken(renzoEzEthBalance);
+    setUnstakeRestakeRstETHToken(restakeRstETH);
+    setUnstakeLayerBankToken(layerBankEthBalance);
+    setUnstakeAaveScrollToken(aaveScrollEthBalance);
+    setUnstakeMendiUsdcToken(mendiUSDCBalance);
+    setUnstakeZeroLendToken(zeroLendEthBalance);
+    setUnstakeZeroLendUSDCToken(zeroLendUSDCBalance);
+    setUnstakeZeroLendNativeETHToken(zeroLendNativeETHBalance);
+  };
+
   useEffect(() => {
     if (gnosisAddress) fetchEigenToken();
   }, [gnosisAddress]);
 
   useEffect(() => {
-    const fetchBalances = async () => {
-      let stargateBalance = 0,
-        clipFinanceBalance = 0,
-        kelpBalance = 0,
-        swellRswETH = 0,
-        restakeRstETH = 0,
-        renzoEzEthBalance = 0,
-        layerBankEthBalance = 0,
-        aaveScrollEthBalance = 0,
-        zeroLendEthBalance = 0,
-        zeroLendUSDCBalance = 0,
-        zeroLendNativeETHBalance = 0,
-        mendiUSDCBalance = 0;
-      // mendiExchangeRate = 0;
-
-      if (networkId === "0xe708") {
-        [
-          stargateBalance,
-          clipFinanceBalance,
-          layerBankEthBalance,
-          mendiUSDCBalance,
-          renzoEzEthBalance,
-          zeroLendEthBalance,
-          zeroLendUSDCBalance,
-          zeroLendNativeETHBalance,
-        ] = await Promise.all([
-          fetchTokenBalance(
-            CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0],
-          ),
-          fetchTokenBalance(
-            CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
-          ),
-          fetchTokenBalance(CHAIN_CONFIG[networkId].layerBankToken),
-
-          fetchTokenBalance(CHAIN_CONFIG[networkId].mendiTokenAddress),
-
-          fetchTokenBalance(CHAIN_CONFIG[networkId].renzoEzETHAddress),
-
-          fetchTokenBalance(CHAIN_CONFIG[networkId].zeroETHAddress),
-
-          fetchTokenBalance(CHAIN_CONFIG[networkId].zeroUSDCAddress),
-
-          fetchTokenBalance(CHAIN_CONFIG[networkId].zeroWETHAddress),
-        ]);
-      } else if (networkId === "0x1") {
-        renzoEzEthBalance = await fetchTokenBalance(
-          CHAIN_CONFIG[networkId].renzoEzETHAddress,
-        );
-
-        kelpBalance = await fetchTokenBalance(
-          CHAIN_CONFIG[networkId].kelpRsETHAddress,
-        );
-
-        swellRswETH = await fetchTokenBalance(
-          CHAIN_CONFIG[networkId].swellRswETHAddress,
-        );
-
-        restakeRstETH = await fetchTokenBalance(
-          CHAIN_CONFIG[networkId].restakeRstETHAddress,
-        );
-      } else if (networkId === "0x82750") {
-        [aaveScrollEthBalance, layerBankEthBalance] = await Promise.all([
-          fetchTokenBalance(
-            CHAIN_CONFIG[networkId].aaveWrappedScrollEthAddress,
-          ),
-          fetchTokenBalance(CHAIN_CONFIG[networkId].layerBankToken),
-        ]);
-      }
-
-      setUnstakeTokenBalance(stargateBalance);
-      setUnstakeClipFinanceToken(clipFinanceBalance);
-      setUnstakeKelpToken(kelpBalance);
-      setUnstakeSwellRswETHToken(swellRswETH);
-      setUnstakeRenzoEzETHToken(renzoEzEthBalance);
-      setUnstakeRestakeRstETHToken(restakeRstETH);
-      setUnstakeLayerBankToken(layerBankEthBalance);
-      setUnstakeAaveScrollToken(aaveScrollEthBalance);
-      setUnstakeMendiUsdcToken(mendiUSDCBalance);
-      setUnstakeZeroLendToken(zeroLendEthBalance);
-      setUnstakeZeroLendUSDCToken(zeroLendUSDCBalance);
-      setUnstakeZeroLendNativeETHToken(zeroLendNativeETHBalance);
-    };
-
-    fetchBalances();
+    if (gnosisAddress) fetchBalances();
   }, [gnosisAddress, networkId]);
   return (
     <div className={classes.container}>
