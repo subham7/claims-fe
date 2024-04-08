@@ -1,9 +1,15 @@
 import { Skeleton, Typography } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import classes from "../claims/Claim.module.scss";
 import { formatEpochTime } from "utils/helper";
 import Image from "next/image";
 import SwapInfo from "./SwapInfo";
+import ZkMe from "@components/zkMe/zkMe";
+import { verifyWithZkMeServices } from "@zkmelabs/widget";
+import { useAccount } from "wagmi";
+import { IoIosArrowRoundForward } from "react-icons/io";
+import { IoCheckmark } from "react-icons/io5";
+import { getClubData } from "api/club";
 
 const HeaderShimmer = () => {
   return (
@@ -25,7 +31,14 @@ const Header = ({
   networkId,
   logoUrl,
   routeNetworkId = "0x89",
+  daoAddress,
 }) => {
+  const [open, setOpen] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [kycEnabled, setKycEnabled] = useState(false);
+  const { address } = useAccount();
+
   const getStatusText = () => {
     if (isDeposit) {
       return isActive ? "Active" : "Finished";
@@ -45,6 +58,30 @@ const Header = ({
     }
     return classes.inactive;
   };
+
+  const getKycSetting = async () => {
+    try {
+      const response = await getClubData(daoAddress);
+      if (response) {
+        setKycEnabled(response.kyc.isKycEnabled);
+        if (response.kyc.isKycEnabled) {
+          const results = await verifyWithZkMeServices(
+            response.kyc.zkmeAppId,
+            address,
+          );
+          setIsVerified(results);
+        }
+        setLoading(false);
+      }
+    } catch (e) {
+      console.error(e);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getKycSetting();
+  }, [address, daoAddress]);
 
   if (!tokenDetails?.tokenSymbol || !contractData) {
     return <HeaderShimmer />;
@@ -90,6 +127,54 @@ const Header = ({
 
       {(networkId === "0x89" || networkId === "0xa4b1") &&
         !tokenDetails?.isNativeToken && <SwapInfo networkId={networkId} />}
+
+      {open ? <ZkMe daoAddress={daoAddress} /> : null}
+      {/* {loading || isVerified ? null : (
+        <Button
+          onClick={() => setOpen(!open)}
+          variant="contained"
+          sx={{
+            width: "100%",
+            padding: "10px 0",
+            margin: "10px 0",
+            fontFamily: "inherit",
+          }}>
+          Perform KYC
+        </Button>
+      )} */}
+
+      {kycEnabled && !loading ? (
+        <div className={classes.kycContainer}>
+          <div>
+            <Typography variant="inherit" fontWeight={600}>
+              KYC Verification
+            </Typography>
+
+            {isVerified ? (
+              <Typography className={classes.completed} variant="inherit">
+                Completed
+              </Typography>
+            ) : (
+              <Typography className={classes.action} variant="inherit">
+                Action Required
+              </Typography>
+            )}
+          </div>
+
+          {isVerified ? (
+            <IoCheckmark />
+          ) : (
+            <div
+              onClick={() => {
+                setOpen(!open);
+              }}
+              className={classes.kycButton}>
+              <Typography variant="inherit">Complete KYC</Typography>
+              <IoIosArrowRoundForward />
+            </div>
+          )}
+        </div>
+      ) : null}
     </>
   );
 };

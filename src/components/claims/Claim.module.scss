@@ -6,8 +6,8 @@
   padding-bottom: 100px;
 
   .infoContainer {
-    color: #ffb74d;
-    background: #ffb74d30;
+    color: $light-gray;
+    background: $border-color;
     padding: 12px;
     border-radius: 8px;
     width: fit-content;
@@ -17,6 +17,41 @@
     margin-top: 12px;
     font-size: 14px;
     justify-content: center;
+  }
+
+  .kycContainer{
+    margin-top: 16px;
+    border-radius: 12px;
+    background-color: $border-color;
+    display: flex;
+    padding: 16px;
+    justify-content: space-between;
+    align-items: center;
+    
+    div{
+      display: flex;
+      gap: 8px;
+      align-items: center;
+
+      .action{
+        background-color:#ffb74d30;
+        color:#ffb74d;
+        padding: 0px 12px;
+        border-radius: 50px;
+      }
+
+      .completed{
+        background-color:$active-background;
+        color:$active-text;
+        padding: 0px 12px;
+        border-radius: 50px;
+      }
+
+    }
+
+    div.kycButton{
+      cursor: pointer;
+    }
   }
 
   @media (max-width: 768px) {
@@ -141,16 +176,15 @@
       }
 
       .token {
-        // background: $border-color;
-        // padding: 10px 20px;
+        background: $border-color;
+        padding: 10px 20px;
         border-radius: 8px;
         font-weight: 500;
         width: fit-content;
-        cursor: pointer;
-
-        // &:hover {
-        //   background-color: $primary;
-        // }
+        // cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
     }
 
@@ -209,6 +243,8 @@
       padding-bottom: 4px;
       border-bottom: 1px solid $divider-color;
       margin-bottom: 20px;
+
+      
     }
 
     .whoCanClaimContainer {
@@ -378,4 +414,8 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+
+
+
 }

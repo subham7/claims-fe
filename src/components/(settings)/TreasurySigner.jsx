@@ -75,7 +75,7 @@ const TreasurySigner = ({
       const values = {
         ownerAddress:
           type === "add" ? newArr[newArr.length - 1] : newArr[clickedIndex],
-        safeThreshold: 1,
+        safeThreshold: type !== "add" ? 1 : 0,
         actionCommand: type === "add" ? 6 : 7,
         title: type === "add" ? "Add signer" : "Remove sginer",
         note: `${

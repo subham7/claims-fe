@@ -18,35 +18,38 @@ const useCommonContractMethods = (params) => {
 
   const getTokenSymbol = async (contractAddress) => {
     try {
-      const symbol = localStorage.getItem(
-        `stationx-${contractAddress}-${networkId}-symbol`,
-      );
-      if (symbol) {
-        return symbol;
-      } else if (isNative(contractAddress, networkId)) {
-        localStorage.setItem(
-          `stationx-${contractAddress}-${networkId}-name`,
-          CHAIN_CONFIG[networkId].nativeCurrency.symbol,
+      if (contractAddress) {
+        const symbol = localStorage.getItem(
+          `stationx-${contractAddress}-${networkId}-symbol`,
         );
-        return CHAIN_CONFIG[networkId].nativeCurrency.symbol;
-      } else if (contractAddress === ZERO_ADDRESS) {
-        return "";
-      } else if (contractAddress) {
-        const response = await readContractFunction({
-          address: contractAddress,
-          abi: erc20TokenABI,
-          functionName: "symbol",
-          args: [],
-          networkId,
-        });
-        localStorage.setItem(
-          `stationx-${contractAddress}-${networkId}-name`,
-          response,
-        );
-        return response;
-      } else {
-        return "";
+        if (symbol !== "undefined" && symbol) {
+          return symbol;
+        } else if (isNative(contractAddress, networkId)) {
+          localStorage.setItem(
+            `stationx-${contractAddress}-${networkId}-name`,
+            CHAIN_CONFIG[networkId].nativeCurrency.symbol,
+          );
+          return CHAIN_CONFIG[networkId].nativeCurrency.symbol;
+        } else if (contractAddress === ZERO_ADDRESS) {
+          return "";
+        } else if (contractAddress) {
+          const response = await readContractFunction({
+            address: contractAddress,
+            abi: erc20TokenABI,
+            functionName: "symbol",
+            args: [],
+            networkId,
+          });
+          localStorage.setItem(
+            `stationx-${contractAddress}-${networkId}-name`,
+            response,
+          );
+          return response;
+        } else {
+          return "";
+        }
       }
+      return "";
     } catch (error) {
       console.error(error);
       return "";
@@ -58,7 +61,7 @@ const useCommonContractMethods = (params) => {
       const name = localStorage.getItem(
         `stationx-${contractAddress}-${networkId}--name`,
       );
-      if (name) {
+      if (name !== "undefined") {
         return name;
       } else if (isNative(contractAddress, networkId)) {
         localStorage.setItem(
@@ -93,7 +96,7 @@ const useCommonContractMethods = (params) => {
       const decimals = localStorage.getItem(
         `stationx-${contractAddress}-${networkId}-decimals`,
       );
-      if (decimals) {
+      if (!isNaN(Number(decimals))) {
         return Number(decimals);
       } else if (isNative(contractAddress, networkId)) {
         localStorage.setItem(

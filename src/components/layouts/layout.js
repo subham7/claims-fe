@@ -70,7 +70,11 @@ export default function Layout(props) {
           <>
             {!router.pathname.includes("join") &&
             !router.pathname.includes("profile") &&
-            showWrongNetworkModal(networkId, routeNetworkId) ? (
+            showWrongNetworkModal(
+              networkId,
+              routeNetworkId,
+              router.pathname.includes("claim"),
+            ) ? (
               <WrongNetworkModal chainId={routeNetworkId} />
             ) : (
               <Box
