@@ -58,6 +58,10 @@ const Members = ({ daoAddress, routeNetworkId }) => {
     return state.club.clubData;
   });
 
+  const isAdmin = useSelector((state) => {
+    return state.gnosis.adminUser;
+  });
+
   const [membersData, setMembersData] = useState([]);
   const [memberProfiles, setMemberProfiles] = useState();
 
@@ -222,8 +226,11 @@ const Members = ({ daoAddress, routeNetworkId }) => {
         const time = timestamp.toLocaleTimeString();
         return [
           item.userAddress,
-          item.depositAmount,
-          item.gtAmount,
+          convertFromWeiGovernance(
+            item.depositAmount,
+            clubData?.depositTokenDecimal,
+          ),
+          convertFromWeiGovernance(item.gtAmount, 18),
           `${date} ${time}`,
         ].join(",");
       }),
@@ -298,13 +305,15 @@ const Members = ({ daoAddress, routeNetworkId }) => {
               </Typography>
             </Grid>
             <Grid item mt={1}>
-              <Button onClick={formik.handleSubmit} variant="normal">
-                {downloadLoading ? (
-                  <CircularProgress size={24} />
-                ) : (
-                  "Download CSV"
-                )}
-              </Button>
+              {isAdmin ? (
+                <Button onClick={formik.handleSubmit} variant="normal">
+                  {downloadLoading ? (
+                    <CircularProgress size={24} />
+                  ) : (
+                    "Download CSV"
+                  )}
+                </Button>
+              ) : null}
             </Grid>
           </Grid>
           <TableContainer component={Paper}>
