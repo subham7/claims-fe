@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SettingItem from "./SettingItem";
 import UpdateAmountTextfield from "./UpdateAmountTextfield";
 import TokenPriceInput from "./TokenPriceInput";
@@ -10,11 +10,19 @@ import { useRouter } from "next/router";
 import DeadlineInput from "./DeadlineInput";
 import TokenGatingList from "./TokenGatingList";
 import KycSettings from "./KycSettings";
+import useAppContractMethods from "hooks/useAppContractMethods";
+import { getClubData } from "api/club";
 
 const DepositSettings = ({ routeNetworkId, daoAddress }) => {
   const [loading, setLoading] = useState(false);
   const [proposalId, setProposalId] = useState("");
   const [isActionCreated, setIsActionCreated] = useState(null);
+  const [isTokenGated, setIsTokenGated] = useState(false);
+  const [isKycEnabled, setIsKycEnabled] = useState(false);
+
+  const { getTokenGatingDetails } = useAppContractMethods({
+    daoAddress,
+  });
 
   const clubData = useSelector((state) => {
     return state.club.clubData;
@@ -37,6 +45,32 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
     setProposalId(proposalId);
   };
 
+  const fetchTokenGatingDetails = async () => {
+    const details = await getTokenGatingDetails();
+
+    if (details && details.length) {
+      setIsTokenGated(true);
+    } else {
+      setIsTokenGated(false);
+    }
+  };
+
+  const fetchKycDetails = async () => {
+    try {
+      const response = await getClubData(daoAddress);
+      if (response) {
+        setIsKycEnabled(response.kyc.isKycEnabled);
+      }
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchTokenGatingDetails();
+    fetchKycDetails();
+  }, [daoAddress]);
+
   const router = useRouter();
 
   const settingItems = [
@@ -54,6 +88,7 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
       component: (
         <KycSettings daoAddress={daoAddress} setLoading={setLoading} />
       ),
+      isDisabled: !isKycEnabled,
     },
 
     {
@@ -63,6 +98,7 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
       component: (
         <TokenGatingList setLoading={setLoading} daoAddress={daoAddress} />
       ),
+      isDisabled: !isTokenGated,
     },
     {
       heading: "Deadline",
@@ -148,7 +184,8 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
           key={index}
           heading={item.heading}
           isHidden={item?.isHidden}
-          description={item.description}>
+          description={item.description}
+          isDisabled={item?.isDisabled}>
           {item.component}
         </SettingItem>
       ))}

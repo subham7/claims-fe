@@ -21,6 +21,19 @@
 
     .info {
       width: 350px;
+      div{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    
+      .disabled{
+        font-size: 12px;
+        background-color: $inactive-background;
+        color: $inactive-text;
+        padding: 2px 12px;
+        border-radius: 50px;
+      }
+    }
       .infoHeading {
         font-size: 16px;
         font-weight: 600;
@@ -28,6 +41,7 @@
       .infoSubHeading {
         font-size: 14px;
         color: $gray;
+        margin-top: 2px;
       }
     }
 

@@ -32,14 +32,14 @@ const DashboardActionContainer = ({ daoAddress, networkId, gnosisAddress }) => {
       <div className={classes.actionsContainer}>
         <button onClick={sendModalHandler} className={classes.actionButton}>
           <FaArrowUp />
-          <p>Send</p>
+          <p style={{ marginBottom: "-2px" }}>Send</p>
         </button>
 
         <button
           onClick={distributeModalHandler}
           className={classes.actionButton}>
           <FaArrowDownShortWide />
-          <p>Distribute</p>
+          <p style={{ marginBottom: "-2px" }}>Distribute</p>
         </button>
       </div>
 
