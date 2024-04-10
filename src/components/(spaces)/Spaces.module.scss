@@ -1,0 +1,87 @@
+@import "../../../styles/variables.scss";
+
+.spacesContainer{
+    width: 100%;
+    min-height: 100vh;
+    background-color: $background-color-dark;
+
+    .headerImage{
+        background-image:linear-gradient(180deg, rgba(30, 30, 30, 0) 0%, rgba(24, 24, 24, 0.6) 39.11%, #111111 86.57%), url("/assets/images/spacesHeader.png");
+        background-position: center;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        display: flex;
+        height: 50vh;
+
+        .spaceInfoContainer{
+            padding: 24px 48px;
+            bottom: 4px;
+            align-items: center;
+            justify-content: center;
+            align-self:flex-end;
+            flex: 1;
+
+            .logo{
+                border-radius: 8px;
+            }
+            .name{
+                font-size: 36px;
+                color: white;
+                font-weight: 800;
+                margin: 12px 0;
+            }
+
+            .address{
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 16px;
+
+                .walletAddress{
+                    color: $gray
+                }
+            }
+
+            .infoContainer{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+                .details{
+                    width: 400px;
+                    // margin-top: 8px;
+                    color: $typography-primary;
+                }
+
+                .spaceDetails{
+                    display: flex;
+                    gap: 44px;
+                    align-items: center;
+                }
+            }
+        }
+    }
+
+    .stationsContainer{
+        padding: 24px 48px;
+
+        .header{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            .socials{
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+        }
+
+        .erc20List{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+        }
+    }
+}
