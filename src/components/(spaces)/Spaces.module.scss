@@ -85,3 +85,61 @@
         }
     }
 }
+
+.footer{
+    background-color: $background-color-dark;
+    padding: 24px 48px;
+
+    .topContainer{
+        border-top: 0.5px solid $divider-color;
+        padding: 24px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .linksContainer{
+            display: flex;
+            align-items: center;
+            color: #C4C4C4;
+            gap: 32px;
+            font-size: 14px;
+
+            img{
+                margin-right: 12px;
+            }
+            
+        }
+
+        .socials{
+            display: flex;
+            gap: 12px;
+            align-items: center;
+    
+            img{
+                cursor: pointer;
+            }
+    
+        }
+    }
+
+    
+    .createSpaceContainer{
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 4px;
+
+        .createStationText{
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            // padding-top: 28px;
+            background: linear-gradient(to right, #FF279C, #2E55FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+          }
+    }
+
+}
