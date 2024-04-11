@@ -1,10 +1,7 @@
 import { Button, CircularProgress, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { AiFillMinusCircle, AiFillPlusCircle } from "react-icons/ai";
-import {
-  convertFromWeiGovernance,
-  convertToWeiGovernance,
-} from "utils/globalFunctions";
+import { convertToWeiGovernance } from "utils/globalFunctions";
 import classes from "./Mint.module.scss";
 import { CHAIN_CONFIG } from "utils/constants";
 import { useAccount } from "wagmi";
@@ -45,7 +42,11 @@ const Mint = ({
     }
   };
 
-  const inputValue = clubData.pricePerToken * count;
+  // const inputValue = clubData.pricePerToken * count;
+  const inputValue = clubData.pricePerTokenFormatted.bigNumberValue
+    .times(count)
+    .integerValue()
+    .toFixed();
 
   const isButtonDisabled = () => {
     if (isSignable) {
@@ -65,10 +66,11 @@ const Mint = ({
       return true;
     else if (isTokenGated) {
       return !isEligibleForTokenGating;
-    } else if (inputValue === 0) return true;
+    } else if (inputValue == 0) return true;
     else if (
-      (convertToWeiGovernance(userBalance, tokenDetails.tokenDecimal) ?? 0) <
-      inputValue
+      Number(
+        convertToWeiGovernance(userBalance, tokenDetails.tokenDecimal) ?? 0,
+      ) < Number(inputValue)
     ) {
       return true;
     }
@@ -103,10 +105,7 @@ const Mint = ({
     <div className={classes.mintContainer}>
       <Typography variant="inherit">Price per piece</Typography>
       <h2>
-        {convertFromWeiGovernance(
-          clubData?.pricePerToken,
-          tokenDetails.tokenDecimal,
-        )}{" "}
+        {clubData?.pricePerTokenFormatted?.formattedValue}{" "}
         {tokenDetails.tokenSymbol}
       </h2>
       <h5>Your balance - {Number(userBalance ?? 0).toFixed(4)}</h5>

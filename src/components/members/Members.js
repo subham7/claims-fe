@@ -37,12 +37,8 @@ import { CHAIN_CONFIG } from "utils/constants";
 import { getDefaultProfile } from "utils/lensHelper";
 import BackdropLoader from "@components/common/BackdropLoader";
 import ComponentHeader from "@components/common/ComponentHeader";
-import useCommonContractMethods from "hooks/useCommonContractMehods";
 
 const Members = ({ daoAddress, routeNetworkId }) => {
-  const { getDecimals, getTokenSymbol } = useCommonContractMethods({
-    routeNetworkId,
-  });
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
 
@@ -60,6 +56,10 @@ const Members = ({ daoAddress, routeNetworkId }) => {
 
   const clubData = useSelector((state) => {
     return state.club.clubData;
+  });
+
+  const isAdmin = useSelector((state) => {
+    return state.gnosis.adminUser;
   });
 
   const [membersData, setMembersData] = useState([]);
@@ -85,8 +85,8 @@ const Members = ({ daoAddress, routeNetworkId }) => {
     const depositTokenAddress = clubData.depositTokenAddress;
     const isNativeToken = isNative(depositTokenAddress, networkId);
 
-    const decimals = await getDecimals(depositTokenAddress);
-    const symbol = await getTokenSymbol(depositTokenAddress);
+    const decimals = clubData?.depositTokenDecimal;
+    const symbol = clubData?.depositTokenSymbol;
 
     setTokenDetails({
       tokenSymbol: symbol,
@@ -226,8 +226,11 @@ const Members = ({ daoAddress, routeNetworkId }) => {
         const time = timestamp.toLocaleTimeString();
         return [
           item.userAddress,
-          item.depositAmount,
-          item.gtAmount,
+          convertFromWeiGovernance(
+            item.depositAmount,
+            clubData?.depositTokenDecimal,
+          ),
+          convertFromWeiGovernance(item.gtAmount, 18),
           `${date} ${time}`,
         ].join(",");
       }),
@@ -302,13 +305,15 @@ const Members = ({ daoAddress, routeNetworkId }) => {
               </Typography>
             </Grid>
             <Grid item mt={1}>
-              <Button onClick={formik.handleSubmit} variant="normal">
-                {downloadLoading ? (
-                  <CircularProgress size={24} />
-                ) : (
-                  "Download CSV"
-                )}
-              </Button>
+              {isAdmin ? (
+                <Button onClick={formik.handleSubmit} variant="normal">
+                  {downloadLoading ? (
+                    <CircularProgress size={24} />
+                  ) : (
+                    "Download CSV"
+                  )}
+                </Button>
+              ) : null}
             </Grid>
           </Grid>
           <TableContainer component={Paper}>

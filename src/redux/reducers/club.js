@@ -21,9 +21,7 @@ export const slice = createSlice({
       threshold: null,
       raiseAmount: null,
       totalAmountRaised: null,
-      distributionAmount: null,
       maxTokensPerUser: null,
-      depositTokenAddress: null,
       assetsStoredOnGnosis: null,
       depositCloseTime: null,
       depositTokenAddress: null,
@@ -35,7 +33,40 @@ export const slice = createSlice({
       merkleRoot: null,
       minDepositPerUser: null,
       ownerFeePerDepositPercent: null,
-      pricePerToken: null,
+      depositTokenDecimal: null,
+      depositTokenSymbol: null,
+      adminAddresses: null,
+      currentSafeThreshold: null,
+      pricePerTokenFormatted: {
+        formattedValue: null,
+        actualValue: null,
+        bigNumberValue: null,
+      },
+      minDepositAmountFormatted: {
+        formattedValue: null,
+        actualValue: null,
+        bigNumberValue: null,
+      },
+      maxDepositAmountFormatted: {
+        formattedValue: null,
+        actualValue: null,
+        bigNumberValue: null,
+      },
+      raiseAmountFormatted: {
+        formattedValue: null,
+        actualValue: null,
+        bigNumberValue: null,
+      },
+      totalAmountRaisedFormatted: {
+        formattedValue: null,
+        actualValue: null,
+        bigNumberValue: null,
+      },
+      distributionAmountFormatted: {
+        formattedValue: null,
+        actualValue: null,
+        bigNumberValue: null,
+      },
     },
     erc20ClubDetails: {
       quorum: null,
@@ -88,6 +119,22 @@ export const slice = createSlice({
       state.clubData.ownerFeePerDepositPercent =
         action.payload.ownerFeePerDepositPercent;
       state.clubData.merkleRoot = action.payload.merkleRoot;
+      state.clubData.pricePerTokenFormatted =
+        action.payload.pricePerTokenFormatted;
+      state.clubData.minDepositAmountFormatted =
+        action.payload.minDepositAmountFormatted;
+      state.clubData.maxDepositAmountFormatted =
+        action.payload.maxDepositAmountFormatted;
+      state.clubData.raiseAmountFormatted = action.payload.raiseAmountFormatted;
+      state.clubData.totalAmountRaisedFormatted =
+        action.payload.totalAmountRaisedFormatted;
+      state.clubData.distributionAmountFormatted =
+        action.payload.distributionAmountFormatted;
+
+      state.clubData.depositTokenDecimal = action.payload.depositTokenDecimal;
+      state.clubData.depositTokenSymbol = action.payload.depositTokenSymbol;
+      state.clubData.adminAddresses = action.payload.adminAddresses;
+      state.clubData.currentSafeThreshold = action.payload.currentSafeThreshold;
     },
     addErc20ClubDetails: (state, action) => {
       state.erc20ClubDetails.quorum = action.payload.quorum;

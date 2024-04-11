@@ -14,7 +14,7 @@ const drawerWidth = 50;
 
 const useStyles = makeStyles({
   container: {
-    padding: "12px 10px 0px 10px",
+    padding: "0 10px 0px 10px",
     marginTop: "80px",
   },
 });
@@ -70,7 +70,11 @@ export default function Layout(props) {
           <>
             {!router.pathname.includes("join") &&
             !router.pathname.includes("profile") &&
-            showWrongNetworkModal(networkId, routeNetworkId) ? (
+            showWrongNetworkModal(
+              networkId,
+              routeNetworkId,
+              router.pathname.includes("claim"),
+            ) ? (
               <WrongNetworkModal chainId={routeNetworkId} />
             ) : (
               <Box

@@ -1,5 +1,4 @@
 import {
-  Button,
   CircularProgress,
   Skeleton,
   TextField,
@@ -134,48 +133,30 @@ const DepositInput = ({
       </div>
 
       {walletAddress && networkId === routeNetworkId ? (
-        <Button
+        <button
           disabled={isDisabled}
           onClick={onDepositClick}
-          variant="contained"
-          sx={{
-            width: "100%",
-            padding: "10px 0",
-            margin: "10px 0",
-            fontFamily: "inherit",
-          }}>
+          className={classes.primaryButton}>
           {depositBtnTxt()}
-        </Button>
+        </button>
       ) : walletAddress && networkId !== routeNetworkId ? (
-        <Button
+        <button
           onClick={() => {
             switchNetworkHandler(routeNetworkId, setLoading);
           }}
-          variant="contained"
-          sx={{
-            width: "100%",
-            padding: "10px 0",
-            margin: "10px 0",
-            fontFamily: "inherit",
-          }}>
+          className={classes.primaryButton}>
           {loading ? (
             <CircularProgress size={25} />
           ) : (
             `Switch to ${CHAIN_CONFIG[routeNetworkId]?.shortName}`
           )}
-        </Button>
+        </button>
       ) : (
-        <Button
+        <button
           onClick={connectWalletHandler}
-          variant="contained"
-          sx={{
-            width: "100%",
-            padding: "10px 0",
-            margin: "10px 0",
-            fontFamily: "inherit",
-          }}>
+          className={classes.primaryButton}>
           Connect
-        </Button>
+        </button>
       )}
     </>
   );

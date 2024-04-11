@@ -42,8 +42,8 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
         <div className={classes["wallet-div"]}>
           <Image
             src="/assets/images/monogram.png"
-            height="40"
-            width="40"
+            height="28"
+            width="28"
             alt="monogram"
             onClick={() => {
               router.push("/");
@@ -82,8 +82,8 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
               onClick={() => router.push(`/profile/${address}`)}
               src="/assets/icons/astronaut_icon.svg"
               alt="profile image"
-              height={24}
-              width={24}
+              height={20}
+              width={20}
               style={{
                 cursor: "pointer",
               }}

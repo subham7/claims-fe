@@ -26,6 +26,7 @@ import StatusModal from "@components/modals/StatusModal/StatusModal";
 import CreateClubModal from "@components/modals/CreateClubModal/CreateClubModal";
 import BackdropLoader from "@components/common/BackdropLoader";
 import DashboardActionContainer from "./dashboardActions/DashboardActionContainer";
+import { BigNumber } from "bignumber.js";
 
 const Dashboard = ({ daoAddress, routeNetworkId }) => {
   const gnosisAddress = useSelector((state) => {
@@ -84,15 +85,29 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
     try {
       if (daoAddress && networkId) {
         if (clubData) {
-          let totalSupply, totalNftMinted, percentageShare, balance, myBalance;
+          let percentageShare;
+
+          const myBalance = await getBalance(daoAddress);
+
+          if (myBalance === 0) {
+            setMyShare(0);
+            return;
+          }
+
           if (tokenType === "erc20") {
-            totalSupply = await getERC20TotalSupply();
-            myBalance = await getBalance(daoAddress);
-            percentageShare = (myBalance / totalSupply) * 100;
+            const totalSupply = await getERC20TotalSupply();
+            percentageShare = BigNumber(myBalance)
+              .dividedBy(totalSupply?.bigNumberValue)
+              .times(100)
+              .integerValue()
+              .toFixed();
           } else if (tokenType === "erc721") {
-            totalNftMinted = await getNftOwnersCount();
-            myBalance = await getBalance(daoAddress);
-            percentageShare = (myBalance / totalNftMinted) * 100;
+            const totalNftMinted = await getNftOwnersCount();
+            percentageShare = BigNumber(myBalance)
+              .dividedBy(totalNftMinted?.bigNumberValue)
+              .times(100)
+              .integerValue()
+              .toFixed();
           }
           setMyShare(percentageShare ? Number(percentageShare) : 0);
         }
@@ -216,8 +231,8 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
     {
       containerClass: classes.treasuryContainer,
       iconSrc: "/assets/icons/stats_hovered.svg",
-      altText: "Treasury Holdings",
-      title: "Treasury Holdings",
+      altText: "Balance",
+      title: "Balance",
       value: `$${customToFixedAutoPrecision(treasuryAmount)}`,
     },
     {
@@ -232,8 +247,8 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
     {
       containerClass: classes.ownershipContainer,
       iconSrc: "/assets/icons/astronaut_icon.svg",
-      altText: "Total Members",
-      title: "Total Members",
+      altText: "Members",
+      title: "Members",
       value: clubData?.membersCount,
     },
   ];
@@ -267,10 +282,8 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
         <div className={classes.headerContainer}>
           <ComponentHeader
             title={clubData?.name}
-            subtext="Astronauts, welcome to your station"
-            showButton
-            buttonText="Send Invite"
-            onClickHandler={() => setShowInviteModal(true)}
+            subtext={`$${clubData?.symbol}`}
+            showButton={false}
           />
         </div>
 
@@ -293,7 +306,6 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
             daoAddress={daoAddress}
             gnosisAddress={gnosisAddress}
             networkId={networkId}
-            routeNetworkId={routeNetworkId}
           />
         )}
 

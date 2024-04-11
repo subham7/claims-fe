@@ -106,7 +106,7 @@ const Transactions = ({ networkId }) => {
             <div className="tb-pad-2 f-d f-h-c f-v-c">
               <CircularProgress />
             </div>
-          ) : !loading && !transactions?.transfers.length ? (
+          ) : !loading && !transactions?.transfers?.length ? (
             <div className="tb-pad-2 f-d f-h-c f-v-c">
               <Typography variant="subheading">
                 No Transactions to show
@@ -123,7 +123,7 @@ const Transactions = ({ networkId }) => {
                   ))}
                 </TableHead>
                 <TableBody>
-                  {transactions?.transfers.map((txn) => {
+                  {transactions?.transfers?.map((txn) => {
                     return (
                       <>
                         <TableRow key={txn.transactionHash}>

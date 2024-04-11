@@ -41,7 +41,9 @@
     "@web3modal/ethereum": "^2.7.1",
     "@web3modal/react": "^2.7.1",
     "@web3modal/wagmi": "^3.4.0",
+    "@zkmelabs/widget": "^0.1.7",
     "axios": "^0.26.0",
+    "bignumber.js": "^9.1.2",
     "classnames": "^2.3.2",
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.8",
@@ -63,12 +65,14 @@
     "react-twitter-embed": "^4.0.4",
     "redux": "^4.1.2",
     "sass": "^1.63.6",
+    "sharp": "^0.33.3",
     "viem": "^1.19.9",
     "wagmi": "^1.4.7",
     "web3": "^1.9.0",
     "yup": "^1.0.2"
   },
   "devDependencies": {
+    "autoprefixer": "^10",
     "eslint": "8.10.0",
     "eslint-config-next": "12.1.0",
     "eslint-config-prettier": "^8.5.0",
@@ -76,10 +80,9 @@
     "eslint-plugin-unused-imports": "^2.0.0",
     "husky": "^8.0.3",
     "lint-staged": "^13.2.2",
-    "prettier": "^2.7.1",
-    "autoprefixer": "^10",
-    "tailwindcss": "^3.4.1",
     "postcss": "^8",
-    "postcss-loader": "^7.3.3"
+    "postcss-loader": "^7.3.3",
+    "prettier": "^2.7.1",
+    "tailwindcss": "^3.4.1"
   }
 }

@@ -93,10 +93,11 @@ const Join = ({ daoAddress, routeNetworkId }) => {
     try {
       setLoading(true);
       const nftMinted = await getNftOwnersCount();
-      if (clubData?.depositCloseTime && nftMinted >= 0) {
+
+      if (clubData?.depositCloseTime && Number(nftMinted?.actualValue) >= 0) {
         setDaoDetails({
           depositDeadline: clubData?.depositCloseTime,
-          nftMinted: nftMinted,
+          nftMinted: nftMinted.actualValue,
         });
       }
       setLoading(false);

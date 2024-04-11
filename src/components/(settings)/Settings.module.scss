@@ -1,0 +1,212 @@
+@import "../../../styles/variables.scss";
+
+.settings {
+  padding-bottom: 20px;
+  .header {
+    .subHeading {
+      color: $gray;
+    }
+  }
+  .tabsSelection {
+    margin-top: 16px;
+    border-bottom: 1px solid $border-color;
+  }
+
+  .settingItem {
+    padding: 24px 0;
+    display: flex;
+    border-bottom: 1px solid $border-color;
+    gap: 80px;
+    align-items: center;
+
+    .info {
+      width: 350px;
+      div{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    
+      .disabled{
+        font-size: 12px;
+        background-color: $inactive-background;
+        color: $inactive-text;
+        padding: 2px 12px;
+        border-radius: 50px;
+      }
+    }
+      .infoHeading {
+        font-size: 16px;
+        font-weight: 600;
+      }
+      .infoSubHeading {
+        font-size: 14px;
+        color: $gray;
+        margin-top: 2px;
+      }
+    }
+
+    .input {
+      background-color: transparent;
+      border: 1px solid $border-color;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      font-family: inherit;
+      padding: 8px;
+      width: 300px;
+      color: $typography-primary;
+
+      &:disabled {
+        cursor: not-allowed;
+      }
+    }
+
+    .amountInputField {
+      display: flex;
+      align-items: center;
+      border: 1px solid $border-color;
+      border-radius: 8px;
+      width: 300px;
+      padding: 8px 10px;
+      font-family: inherit;
+      color: $gray;
+      font-size: 14px;
+
+      .amountInput {
+        background: inherit;
+        border: none;
+        outline: none;
+        width: 100%;
+        color: $typography-primary;
+
+        &::placeholder {
+          color: $gray;
+        }
+
+        &:disabled {
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    .amountInputField.signators {
+      width: 150px;
+    }
+
+    .input.address {
+      width: 230px;
+    }
+
+    .input.percentage {
+      width: 100px;
+    }
+
+    .copyTextContainer {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .icon {
+      background-color: $dark-gray;
+      padding: 8px;
+      font-size: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: $gray;
+
+      &:hover {
+        color: white;
+      }
+    }
+
+    .icon.active {
+      background-color: $active-background;
+      color: $active-text;
+    }
+    .icon.delete {
+      background-color: $inactive-background;
+      color: $inactive-text;
+    }
+
+    .icon.disabled {
+      cursor: not-allowed;
+
+      &:hover {
+        color: $gray;
+      }
+    }
+
+    .tokenPriceContainer {
+      display: flex;
+      align-items: center;
+      .tokenPrice {
+        padding: 8px 12px;
+        border-radius: 8px 0 0 8px;
+        background-color: $dark-gray;
+      }
+    }
+
+    .tokenPriceInput {
+      width: 180px;
+      border-radius: 0 8px 8px 0;
+    }
+  }
+
+  .allowlistButton {
+    background-color: $dark-gray;
+    padding: 12px 20px;
+    border-radius: 50px;
+    border: none;
+    outline: none;
+    color: white;
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .treasurySignerContainer {
+    display: flex;
+    flex-direction: column;
+
+    button {
+      padding: 8px 24px;
+      width: fit-content;
+      background-color: $dark-gray;
+      color: white;
+      border-radius: 24px;
+      border: none;
+      outline: none;
+      font-family: inherit;
+      margin-top: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+
+      &:disabled {
+        color: gray;
+        cursor: not-allowed;
+      }
+    }
+
+    button.remove {
+      background-color: $inactive-background;
+      color: $inactive-text;
+    }
+  }
+
+  .dateInput {
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    background-color: $dark-gray;
+    color: white;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+}

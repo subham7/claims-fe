@@ -56,6 +56,9 @@ export const proposalData = ({
     stakeAmount,
     unstakeAmount,
     nftSupply,
+    updatedMinimumDepositAmount,
+    updatedMaximumDepositAmount,
+    safeThreshold,
   } = data ?? {};
 
   switch (executionId) {
@@ -81,18 +84,11 @@ export const proposalData = ({
       };
     case 3:
       return {
-        "Raise Amount :":
-          (convertToWeiGovernance(
-            convertToWeiGovernance(totalDeposits, decimals) /
-              factoryData?.pricePerToken,
-            18,
-          ) /
-            10 ** 18) *
-          convertFromWeiGovernance(factoryData?.pricePerToken, decimals),
+        "Raise Amount :": totalDeposits,
       };
     case 4:
       return {
-        Amount: customTokenAmounts[0] / 10 ** decimals,
+        Amount: convertFromWeiGovernance(customTokenAmounts[0], decimals),
         Recipient: shortAddress(customTokenAddresses[0]),
       };
     case 5:
@@ -104,6 +100,10 @@ export const proposalData = ({
     case 7:
       return {
         Address: shortAddress(ownerAddress),
+      };
+    case 62:
+      return {
+        safeThreshold: safeThreshold,
       };
     case 8:
     case 9:
@@ -143,6 +143,9 @@ export const proposalData = ({
       };
     case 18:
     case 48:
+    case 50:
+    case 56:
+    case 58:
       return {
         "Unstake token": symbol,
         "Unstake amount": convertFromWeiGovernance(unstakeAmount, decimals),
@@ -165,6 +168,16 @@ export const proposalData = ({
         )} $${symbol}`,
       };
 
+    case 60:
+      return {
+        "Updated amount:": `${updatedMinimumDepositAmount}`,
+      };
+
+    case 61:
+      return {
+        "Updated amount:": `${updatedMaximumDepositAmount}`,
+      };
+
     case 26:
     case 31:
     case 33:
@@ -175,8 +188,16 @@ export const proposalData = ({
     case 43:
     case 45:
     case 47:
+    case 51:
+    case 53:
+    case 57:
       return {
         "Deposit Amount :": `${depositAmount} ETH`,
+      };
+    case 49:
+    case 55:
+      return {
+        "Deposit Amount :": `${depositAmount} USDC`,
       };
     default:
       return {};
@@ -1611,6 +1632,7 @@ export const getProposalCommands = async ({
   let merkleRoot;
   let tokenDecimal;
   let mirrorAddresses;
+
   switch (executionId) {
     case 0:
       const airDropTokenDecimal = tokenData?.find(
@@ -1670,6 +1692,11 @@ export const getProposalCommands = async ({
     case 7:
       return {
         ownerAddress: values.ownerAddress,
+        safeThreshold: values.safeThreshold,
+      };
+
+    case 62:
+      return {
         safeThreshold: values.safeThreshold,
       };
 
@@ -1797,11 +1824,14 @@ export const getProposalCommands = async ({
       };
     case 18:
     case 48:
+    case 50:
+    case 56:
+    case 58:
       tokenDecimal = tokenData?.find(
         (token) =>
           token.address.toLowerCase() ===
           values.unstakeTokenAddress.toLowerCase(),
-      ).decimals;
+      )?.decimals;
       return {
         unstakeToken: values.unstakeTokenAddress,
         unstakeAmount: convertToWeiGovernance(values.stakeAmount, tokenDecimal),
@@ -1843,6 +1873,16 @@ export const getProposalCommands = async ({
         depositToken: values.stakeTokenAddress,
         depositAmount: convertToWeiGovernance(values.stakeAmount, tokenDecimal),
       };
+    case 52:
+      tokenDecimal = tokenData?.find(
+        (token) =>
+          token.address.toLowerCase() ===
+          values.stakeTokenAddress.toLowerCase(),
+      ).decimals;
+      return {
+        depositToken: values.unstakeTokenAddress,
+        depositAmount: convertToWeiGovernance(values.stakeAmount, tokenDecimal),
+      };
 
     // case 25:
     //   tokenDecimal = tokenData?.find(
@@ -1855,6 +1895,16 @@ export const getProposalCommands = async ({
     //       tokenDecimal,
     //     ),
     //   };
+
+    case 60:
+      return {
+        updatedMinimumDepositAmount: values.updatedMinimumDepositAmount,
+      };
+    case 61:
+      return {
+        updatedMaximumDepositAmount: values.updatedMaximumDepositAmount,
+      };
+
     case 26:
     case 31:
     case 33:
@@ -1865,6 +1915,11 @@ export const getProposalCommands = async ({
     case 43:
     case 45:
     case 47:
+    case 51:
+    case 49:
+    case 53:
+    case 55:
+    case 57:
       return {
         depositToken: values.stakeTokenAddress,
         depositAmount: values.stakeAmount,
@@ -1912,8 +1967,10 @@ export const proposalDetailsData = ({
     nftSupply,
     sendTokenAmounts,
     sendTokenAddresses,
+    updatedMinimumDepositAmount,
+    updatedMaximumDepositAmount,
+    safeThreshold,
   } = data ?? {};
-
   let responseData = {
     title: proposalActionCommands[executionId],
   };
@@ -1946,20 +2003,13 @@ export const proposalDetailsData = ({
 
     case 3:
       responseData.data = {
-        "Raise Amount :":
-          (convertToWeiGovernance(
-            convertToWeiGovernance(totalDeposits, decimals) /
-              factoryData?.pricePerToken,
-            18,
-          ) /
-            10 ** 18) *
-          convertFromWeiGovernance(factoryData?.pricePerToken, decimals),
+        "Raise Amount :": totalDeposits,
       };
       return responseData;
 
     case 4:
       responseData.data = {
-        Amount: customTokenAmounts[0] / 10 ** decimals,
+        Amount: convertFromWeiGovernance(customTokenAmounts[0], decimals),
         Recipient: shortAddress(customTokenAddresses[0]),
       };
       return responseData;
@@ -1975,6 +2025,10 @@ export const proposalDetailsData = ({
     case 6:
     case 7:
       responseData.data = { "Owner address": shortAddress(ownerAddress) };
+      return responseData;
+
+    case 62:
+      responseData.data = { "Safe threshold": safeThreshold };
       return responseData;
 
     case 8:
@@ -2034,9 +2088,23 @@ export const proposalDetailsData = ({
 
     case 18:
     case 48:
+    case 56:
+    case 58:
       responseData.data = {
         "Unstake token": symbol,
         "Unstake amount": convertFromWeiGovernance(unstakeAmount, decimals),
+      };
+      return responseData;
+    case 52:
+      responseData.data = {
+        "Unstake token": symbol,
+        "Unstake amount": convertFromWeiGovernance(depositAmount, decimals),
+      };
+      return responseData;
+    case 50:
+      responseData.data = {
+        "Unstake token": symbol,
+        "Unstake amount": convertFromWeiGovernance(unstakeAmount, 8),
       };
       return responseData;
     case 20:
@@ -2086,6 +2154,20 @@ export const proposalDetailsData = ({
 
       return responseData;
 
+    case 60:
+      responseData.data = {
+        "Updated amount:": updatedMinimumDepositAmount,
+      };
+
+      return responseData;
+
+    case 61:
+      responseData.data = {
+        "Updated amount:": updatedMaximumDepositAmount,
+      };
+
+      return responseData;
+
     case 26:
     case 31:
     case 33:
@@ -2096,8 +2178,19 @@ export const proposalDetailsData = ({
     case 43:
     case 45:
     case 47:
+    case 51:
+    case 53:
+    case 57:
       responseData.data = {
         "Deposit Amount": `${depositAmount} ETH`,
+      };
+
+      return responseData;
+
+    case 49:
+    case 55:
+      responseData.data = {
+        "Deposit Amount": `${depositAmount} USDC`,
       };
 
       return responseData;
@@ -2136,6 +2229,8 @@ export const createOrUpdateSafeTransaction = async ({
     safeTransaction = await safeSdk.createAddOwnerTx(transaction);
   } else if (executionId === 7) {
     safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
+  } else if (executionId === 62) {
+    safeTransaction = await safeSdk.createChangeThresholdTx(transaction);
   } else {
     safeTransaction = await safeSdk.createTransaction({
       safeTransactionData: createSafeTransactionData({

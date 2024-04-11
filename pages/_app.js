@@ -16,6 +16,7 @@ import {
   taikoJolnir,
   mainnet,
   goerli,
+  avalanche,
 } from "wagmi/chains";
 import {
   lineaMainnetWalletConnect,
@@ -60,6 +61,7 @@ const chains = [
   mantaMainnet,
   goerli,
   blastMainnetWalletConnect,
+  avalanche,
 ];
 
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });

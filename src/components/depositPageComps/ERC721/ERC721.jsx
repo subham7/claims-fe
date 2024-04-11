@@ -85,13 +85,9 @@ const ERC721 = ({
   const router = useRouter();
   const dispatch = useDispatch();
 
-  const {
-    approveDeposit,
-    getDecimals,
-    getTokenSymbol,
-    getBalance,
-    getTokenName,
-  } = useCommonContractMethods({ routeNetworkId });
+  const { approveDeposit, getBalance } = useCommonContractMethods({
+    routeNetworkId,
+  });
 
   const { buyGovernanceTokenERC721DAO, getDaoDetails } = useAppContractMethods({
     daoAddress,
@@ -138,9 +134,8 @@ const ERC721 = ({
           routeNetworkId,
         );
 
-        const decimals = await getDecimals(depositTokenAddress);
-        const symbol = await getTokenSymbol(depositTokenAddress);
-        const name = await getTokenName(depositTokenAddress);
+        const decimals = clubData?.depositTokenDecimal;
+        const symbol = clubData?.depositTokenSymbol;
 
         let userBalance = 0;
 
@@ -161,7 +156,6 @@ const ERC721 = ({
 
         setTokenDetails({
           tokenSymbol: symbol,
-          tokenName: name,
           tokenDecimal: decimals,
           userBalance: userBalance,
           isNativeToken: isNativeToken,
@@ -204,12 +198,7 @@ const ERC721 = ({
       await approveDeposit(
         clubData.depositTokenAddress,
         CHAIN_CONFIG[networkId].factoryContractAddress,
-        Number(
-          convertFromWeiGovernance(
-            clubData?.pricePerToken,
-            tokenDetails.tokenDecimal,
-          ),
-        ) * count,
+        Number(clubData.pricePerTokenFormatted.formattedValue) * count,
         tokenDetails.tokenDecimal,
       );
 
@@ -244,7 +233,10 @@ const ERC721 = ({
         whitelistUserData?.proof ? whitelistUserData.proof : [],
         clubData.depositTokenAddress.toLowerCase() ===
           CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
-          ? (clubData?.pricePerToken * count).toString()
+          ? clubData?.pricePerTokenFormatted.bigNumberValue
+              .times(count)
+              .integerValue()
+              .toFixed()
           : "0",
       );
       await whitelistOnDeposit(walletAddress);
@@ -348,6 +340,7 @@ const ERC721 = ({
         clubData={clubData}
         tokenDetails={tokenDetails}
         headerProps={{
+          daoAddress: daoAddress,
           contractData: clubData,
           deadline: daoDetails?.depositDeadline,
           tokenDetails: tokenDetails,

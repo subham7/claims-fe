@@ -18,6 +18,9 @@ import { convertToFullNumber, shortAddress } from "utils/helper";
 import { useRouter } from "next/router";
 import BackdropLoader from "@components/common/BackdropLoader";
 import useAppContractMethods from "hooks/useAppContractMethods";
+import { convertFromWeiGovernance } from "utils/globalFunctions";
+import { BigNumber } from "bignumber.js";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
 
 const useStyles = makeStyles({
   container: {
@@ -124,6 +127,7 @@ const StationsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const { getDaoDetails } = useAppContractMethods();
+  const { getDecimals, getTokenSymbol } = useCommonContractMethods();
 
   const handleCreateButtonClick = async () => {
     const { pathname } = router;
@@ -140,6 +144,13 @@ const StationsPage = () => {
         networkId,
       );
       const daoDetails = await getDaoDetails(data.daoAddress);
+
+      const depositTokenDecimal = await getDecimals(
+        daoDetails.depositTokenAddress,
+      );
+      const depositTokenSymbol = await getTokenSymbol(
+        daoDetails.depositTokenAddress,
+      );
 
       if (clubData?.stations?.length)
         dispatch(
@@ -162,7 +173,66 @@ const StationsPage = () => {
             raiseAmount: clubData.stations[0].raiseAmount,
             totalAmountRaised: clubData.stations[0].totalAmountRaised,
             maxTokensPerUser: clubData.stations[0].maxTokensPerUser,
+            depositTokenDecimal,
+            depositTokenSymbol,
             ...daoDetails,
+
+            raiseAmountFormatted: {
+              formattedValue: convertFromWeiGovernance(
+                clubData.stations[0].raiseAmount,
+                depositTokenDecimal,
+              ),
+              actualValue: clubData.stations[0].raiseAmount,
+              bigNumberValue: BigNumber(clubData.stations[0].raiseAmount),
+            },
+
+            totalAmountRaisedFormatted: {
+              formattedValue: convertFromWeiGovernance(
+                clubData.stations[0].totalAmountRaised,
+                depositTokenDecimal,
+              ),
+              actualValue: clubData.stations[0].totalAmountRaised,
+              bigNumberValue: BigNumber(clubData.stations[0].totalAmountRaised),
+            },
+
+            distributionAmountFormatted: {
+              formattedValue: convertFromWeiGovernance(
+                daoDetails.distributionAmount.toString(),
+                18,
+              ),
+              actualValue: daoDetails.distributionAmount.toString(),
+              bigNumberValue: BigNumber(
+                daoDetails.distributionAmount.toString(),
+              ),
+            },
+
+            minDepositAmountFormatted: {
+              formattedValue: convertFromWeiGovernance(
+                clubData.stations[0].minDepositAmount,
+                depositTokenDecimal,
+              ),
+              actualValue: clubData.stations[0].minDepositAmount,
+              bigNumberValue: BigNumber(clubData.stations[0].minDepositAmount),
+            },
+
+            maxDepositAmountFormatted: {
+              formattedValue: convertFromWeiGovernance(
+                clubData.stations[0].maxDepositAmount,
+                depositTokenDecimal,
+              ),
+              actualValue: clubData.stations[0].maxDepositAmount,
+              bigNumberValue: BigNumber(clubData.stations[0].maxDepositAmount),
+            },
+
+            pricePerTokenFormatted: {
+              formattedValue: convertFromWeiGovernance(
+                clubData.stations[0].pricePerToken,
+                depositTokenDecimal,
+              ),
+              actualValue: clubData.stations[0].pricePerToken,
+              bigNumberValue: BigNumber(clubData.stations[0].pricePerToken),
+            },
+
             distributionAmount: convertToFullNumber(
               daoDetails.distributionAmount.toString(),
             ),

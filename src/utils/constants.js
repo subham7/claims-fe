@@ -8,6 +8,8 @@ import {
 } from "abis/gnosis-abis/safeSendAbi";
 import { signMessageLibAbi } from "abis/gnosis-abis/signMessageLibAbi";
 import { simulateTxAccessorAbi } from "abis/gnosis-abis/simulateTxAccessorAbi";
+import { renzoStakingPoolABI } from "abis/renzo/renzoStakingPoolContract";
+import { renzoStakingPoolABILinea } from "abis/renzo/renzoStakingPoolLinea";
 
 export const BLOCK_CONFIRMATIONS = 4;
 export const BLOCK_TIMEOUT = 240000;
@@ -177,6 +179,7 @@ export const CHAIN_CONFIG = {
     mantleDepositPoolAddress: "0xe3cBd06D7dadB3F4e6557bAb7EdD924CD1489E8f",
     mantleMEthAddress: "0xd5F7838F5C461fefF7FE49ea5ebaF7728bB0ADfa",
     mantleEigenStrategyAddress: "0x298aFB19A105D59E74658C4C334Ff360BadE6dd2",
+    renzoStakingPoolABI,
   },
   "0x2105": {
     chainName: "Base Mainnet",
@@ -243,7 +246,7 @@ export const CHAIN_CONFIG = {
       image: "/assets/icons/eth.png",
     },
     rpcUrls: ["https://rpc.linea.build"],
-    appRpcUrl: `https://linea-mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}/`,
+    appRpcUrl: `https://linea-mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
     factoryContractAddress: "0xd3AfdA70B888388a1d5e8737Ba8b533fFE352e92",
     claimFactoryAddress: "0x50702Fd9086BAbDB0A3A576bFe22D4dD47b09937",
     claimsSubgraphUrl:
@@ -275,6 +278,15 @@ export const CHAIN_CONFIG = {
     logoUri: "/assets/networks/0xe708.png",
     layerBankToken: "0xc7D8489DaE3D2EbEF075b1dB2257E2c231C9D231",
     layerBankPool: "0x009a0b7C38B542208936F1179151CD08E2943833",
+    mendiTokenAddress: "0x333d8b480bdb25ea7be4dd87eeb359988ce1b30d",
+    renzoStakingPoolAddress: "0x4D7572040B84b41a6AA2efE4A93eFFF182388F88",
+    renzoEzETHAddress: "0x2416092f143378750bb29b79eD961ab195CcEea5",
+    renzoStakingPoolABI: renzoStakingPoolABILinea,
+    zeroETHAddress: "0x0684FC172a0B8e6A65cF4684eDb2082272fe9050",
+    zeroLendStakingPoolAddress: "0x2f9bB73a8e98793e26Cb2F6C4ad037BDf1C6B269",
+    zeroUSDCAddress: "0x2E207ecA8B6Bf77a6ac82763EEEd2A94de4f081d",
+    zeroETHLendStakingPoolAddresS: "0x5d50bE703836C330Fc2d147a631CDd7bb8D7171c",
+    zeroWETHAddress: "0xB4FFEf15daf4C02787bC5332580b838cE39805f5",
   },
   "0x38": {
     chainName: "BNB Smart Chain",
@@ -371,6 +383,9 @@ export const CHAIN_CONFIG = {
     gnosisTxUrl: "https://transaction.safe.scroll.xyz",
     layerBankToken: "0x274C3795dadfEbf562932992bF241ae087e0a98C",
     layerBankPool: "0xEC53c830f4444a8A56455c6836b5D2aA794289Aa",
+    aaveScrollPoolAddress: "0xFF75A4B698E3Ec95E608ac0f22A03B8368E05F5D",
+    aavePoolAddress: "0x11fCfe756c05AD438e312a7fd934381537D3cFfe",
+    aaveWrappedScrollEthAddress: "0xf301805bE1Df81102C957f6d4Ce29d2B8c056B2a",
   },
   "0xa9": {
     chainName: "Manta",
@@ -497,6 +512,36 @@ export const CHAIN_CONFIG = {
     disburseContractAddress: "",
     logoUri: "/assets/networks/0x13e31.png",
   },
+  "0xa86a": {
+    chainName: "Avalanche",
+    shortName: "Avax",
+    chainId: 43114,
+    nativeCurrency: {
+      name: "Avalanche",
+      decimals: 18,
+      symbol: "AVAX",
+    },
+    rpcUrls: ["https://avalanche-mainnet.infura.io/"],
+    appRpcUrl: `https://long-silent-slug.avalanche-mainnet.quiknode.pro/93921ef01877ec563a000c867071a109a881c419/ext/bc/C/rpc/`,
+    claimFactoryAddress: "",
+    factoryContractAddress: "0xA242fb1dc2Baf4ca49371f11940cF8bF4DC909c3",
+    stationSubgraphUrl:
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-avax/prod/gn",
+    claimsSubgraphUrl: "",
+    covalentNetworkName: "avalanche-mainnet",
+    nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    usdcAddress: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+    airdropContractAddress: "0x80e1429430cfB717187BD37eb5Bd0076d77dcE85",
+    aavePoolAddress: "",
+    aaveMaticPoolAddress: "",
+    aaveWrappedUsdcAddress: "",
+    aaveWrappedMaticAddress: "",
+    blockExplorerUrl: "https://snowtrace.io/",
+    logoUri: "/assets/networks/0xa86a.png",
+    disburseContractAddress: "",
+    uniswapRouterAddress: "",
+    gnosisTxUrl: "https://safe-transaction-avalanche.safe.global/",
+  },
 };
 
 export const lineaMainnetWalletConnect = {
@@ -523,6 +568,7 @@ export const lineaMainnetWalletConnect = {
     },
   },
 };
+
 export const beraMainnetWalletConnect = {
   id: 80085,
   name: "Bera",
@@ -875,21 +921,27 @@ export const stationNetworksChainId = [
     chainId: 42161,
     networkId: "0xa4b1",
   },
+  {
+    chainId: 59144,
+    networkId: "0xe708",
+  },
+  {
+    chainId: 43114,
+    networkId: "0xa86a",
+  },
   // {
   //   chainId: 100,
   //   networkId: "0x64",
   // },
-  // {
-  //   chainId: 59144,
-  //   networkId: "0xe708",
-  // },
-  // { chainId: 534352, networkId: "0x82750" },
+  { chainId: 534352, networkId: "0x82750" },
 ];
 
 export const ALLOWED_NETWORKS_FOR_STATION = [
   "0x89",
   "0x1",
   "0xa4b1",
-  // "0xe708",
+  "0xe708",
   // "0x82750",
+  "0xa86a",
+  "0x82750",
 ];

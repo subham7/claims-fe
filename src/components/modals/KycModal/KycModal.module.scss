@@ -1,0 +1,84 @@
+@import "../../../../styles/variables.scss";
+
+.kycModal{
+    width: 500px;
+    background-color: $dark-gray;
+
+    .header{
+        padding-bottom: 12px;
+        border-bottom: 0.5px solid $divider-color;
+    }
+
+    .switchContainer{
+        display: flex;
+        justify-content: space-between;
+        background-color: #282828;
+        align-items: center;
+        padding: 8px 10px 8px 20px;
+        border-radius: 12px;
+        margin-top: 20px;
+    }
+
+    .inputsContainer{
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+
+        input {
+            background-color: transparent;
+            border: 1px solid $divider-color;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            font-family: inherit;
+            padding: 12px;
+            width: 100%;
+            color: $typography-primary;
+            margin-top: 4px;
+      
+            &:disabled {
+              cursor: not-allowed;
+            }
+          }
+    }
+
+    .buttons{
+        display: flex;
+        margin-top: 20px;
+        gap: 20px;
+
+        button{
+            width: 100%;
+            padding: 12px;
+            background-color: white;
+            border: none;
+            font-family: inherit;
+            cursor: pointer;
+            outline: none;
+            border-radius: 8px;
+            font-weight: 600;
+
+            &:disabled{
+                cursor: not-allowed;
+                color: gray;
+            }
+
+            
+        }
+
+        button.cancel{
+            background: #282828;
+            color: $light-gray;
+
+            &:hover{
+                background-color: #383838;
+            }
+        }
+    }
+
+    span{
+        color: $primary;
+        cursor: pointer;
+    }
+}

@@ -3,6 +3,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { getLinks } from "utils/helper";
 import IconLink from "./IconLink";
 import classes from "./Sidebar.module.scss";
+import Image from "next/image";
 
 const Sidebar = ({ daoAddress, networkId }) => {
   const [hoveredLink, setHoveredLink] = useState(null);
@@ -36,6 +37,18 @@ const Sidebar = ({ daoAddress, networkId }) => {
   return (
     <div className={classes.sidebar}>
       <div className={classes.iconsList}>
+        <Image
+          src="/assets/images/monogram.png"
+          height="28"
+          width="28"
+          alt="monogram"
+          style={{
+            marginBottom: "20px",
+          }}
+          onClick={() => {
+            router.push("/");
+          }}
+        />
         {links.map((link) => (
           <IconLink
             key={link.id}

@@ -40,6 +40,22 @@ export const proposalActionCommands = {
   25: "Withdraw tokens with clip-finance",
   26: "Stake eth through eigen layer",
   27: "Remove stake from eigen layer",
+  47: "Stake tokens through layer-bank",
+  48: "Unstake tokens through layer-bank",
+  49: "Stake tokens through mendi-finance",
+  50: "Unstake tokens through mendi-finance",
+  51: "Stake tokens through AAVE",
+  52: "Unstake tokens from AAVE",
+
+  53: "Stake ezETH(Renzo) on Zerolend",
+
+  // 49: "Update minimum deposit amount per user",
+  // 50: "Update maximum deposit amount per user",
+  // 51: "Update signing threshold",
+
+  60: "Update minimum deposit amount per user",
+  61: "Update maximum deposit amount per user",
+  62: "Update signing threshold",
 };
 
 export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
@@ -63,6 +79,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
         "0x82750",
         "0xa9",
         "0x28c5f",
+        "0xa86a",
       ],
     },
     {
@@ -84,6 +101,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
         "0x82750",
         "0xa9",
         "0x28c5f",
+        "0xa86a",
       ],
     },
     {
@@ -106,6 +124,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
         "0x82750",
         "0xa9",
         "0x28c5f",
+        "0xa86a",
       ],
     },
     {
@@ -128,6 +147,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
         "0x82750",
         "0xa9",
         "0x28c5f",
+        "0xa86a",
       ],
     },
     {
@@ -149,6 +169,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
         "0x82750",
         "0xa9",
         "0x28c5f",
+        "0xa86a",
       ],
     },
     {
@@ -171,6 +192,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
         "0x82750",
         "0xa9",
         "0x28c5f",
+        "0xa86a",
       ],
     },
     {
@@ -192,6 +214,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
         "0x82750",
         "0xa9",
         "0x28c5f",
+        "0xa86a",
       ],
     },
     {
@@ -213,6 +236,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
         "0x82750",
         "0xa9",
         "0x28c5f",
+        "0xa86a",
       ],
     },
     // {
@@ -254,6 +278,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
         "0x82750",
         "0xa9",
         "0x28c5f",
+        "0xa86a",
       ],
     },
     {
@@ -275,6 +300,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
         "0x82750",
         "0xa9",
         "0x28c5f",
+        "0xa86a",
       ],
     },
     {
@@ -296,6 +322,7 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
         "0x82750",
         "0xa9",
         "0x28c5f",
+        "0xa86a",
       ],
     },
     // {
@@ -425,40 +452,27 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
   ];
 };
 
-export const DEFI_PROPOSALS = ({
-  clipFinanceStaked = 0,
+export const DEFI_PROPOSALS_ETH_POOLS = ({
   staderETHStaked = 0,
   stargateStaked,
   kelpEthStaked,
   swellRswEthStaked,
   swellEigenEthStaked,
   renzoEzEthStaked,
-  networkId,
   lidoEigenEthStaked,
   restakeRstETHStaked,
-  rocketEigenStaked,
   mantleEigenStaked,
   layerBankStaked,
+  aaveScrollStaked,
+  renzoZerolLendStaked,
+  zeroLendNativeETHStaked,
+  networkId,
 }) => {
   return [
-    // {
-    //   name: "Clip Finance",
-    //   logo: "/assets/images/clipFinanceLogo.png",
-    //   APY: "17.36",
-    //   staked: clipFinanceStaked,
-    //   token: "USDC",
-    //   executionIds: {
-    //     Stake: 24,
-    //     Unstake: 25,
-    //   },
-    //   availableOnNetworkIds: ["0xe708"],
-    //   isUnstakeDisabled: true,
-    // },
-
     {
       name: "Stargate Finance",
       logo: "/assets/icons/stargate.png",
-      APY: "11.34",
+      APY: "3.5",
       staked: stargateStaked,
       token: "ETH",
       executionIds: {
@@ -469,6 +483,16 @@ export const DEFI_PROPOSALS = ({
       unstakeTokenAddress: CHAIN_CONFIG[networkId]?.stargateUnstakingAddresses
         ? CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0]
         : "",
+      risk: "Low",
+      info: (
+        <span>
+          This strategy stake ETH for sETH. You earn 3.5% native yield on
+          holding the sETH from Stargate Finance.
+          <br />
+          <br />
+          This is a new protocol, deposit at your own risk.
+        </span>
+      ),
     },
 
     {
@@ -525,33 +549,6 @@ export const DEFI_PROPOSALS = ({
       ),
       tags: ["🏆 EIGEN POINTS", "⭐ STARS"],
     },
-
-    // {
-    //   name: "Rocket X Eigen",
-    //   logo: "/assets/images/rocket.png",
-    //   APY: "3.4",
-    //   staked: rocketEigenStaked,
-    //   token: "ETH",
-    //   executionIds: {
-    //     Stake: 43,
-    //     Unstake: 44,
-    //   },
-    //   availableOnNetworkIds: ["0x1"],
-    //   isUnstakeDisabled: true,
-    //   risk: "Low",
-
-    //   info: (
-    //     <span>
-    //       This strategy earns Eigen Points by staking ETH on Rocketpool to get
-    //       rETH (an LST by Rocketpool with 3.4% APR on ETH) and by restaking rETH
-    //       directly on Eigen Pool. All of it in a single transaction.
-    //       <br /> <br /> Reward points are accrued on your Stations treasury
-    //       address.
-    //     </span>
-    //   ),
-    //   tags: ["🏆 EIGEN POINTS", "⭐ STARS"],
-    // },
-
     {
       name: "Mantle X Eigen",
       logo: "/assets/icons/mantle.png",
@@ -606,7 +603,6 @@ export const DEFI_PROPOSALS = ({
       //   ? CHAIN_CONFIG[networkId].swellRswETHAddress
       //   : "",
     },
-
     {
       name: "Stader X Kelp LRT",
       logo: "/assets/icons/kelp.png",
@@ -676,10 +672,10 @@ export const DEFI_PROPOSALS = ({
         Stake: 37,
         Unstake: 38,
       },
-      availableOnNetworkIds: ["0x1"],
-      risk: "Medium",
-      // unstakeTokenAddress: CHAIN_CONFIG[networkId]?.swellRswETHAddress
-      //   ? CHAIN_CONFIG[networkId].swellRswETHAddress
+      availableOnNetworkIds: ["0x1", "0xe708"],
+      risk: "Low",
+      // unstakeTokenAddress: CHAIN_CONFIG[networkId]?.renzoEzETHAddress
+      //   ? CHAIN_CONFIG[networkId].renzoEzETHAddress
       //   : "",
       isUnstakeDisabled: true,
       info: (
@@ -692,7 +688,7 @@ export const DEFI_PROPOSALS = ({
           accrued on your Stations treasury address.
         </span>
       ),
-      tags: ["🏆 EIGEN POINTS", "⭐ STARS", "🏆 exPoints"],
+      // tags: ["🏆 EIGEN POINTS", "⭐ STARS", "🏆 exPoints"],
     },
 
     {
@@ -725,7 +721,7 @@ export const DEFI_PROPOSALS = ({
       tags: ["🏆 RSTK APR"],
     },
     {
-      name: " LayerBank",
+      name: "LayerBank",
       logo: "/assets/images/restake.png",
       APY: "3.4",
       staked: layerBankStaked,
@@ -739,19 +735,150 @@ export const DEFI_PROPOSALS = ({
         ? CHAIN_CONFIG[networkId].layerBankToken
         : "",
       isUnstakeDisabled: false,
+      risk: "Low",
+      info: (
+        <span>
+          This strategy swaps ETH for lETH. You earn 3.4% native yield on
+          holding the lETH from LayerBank Finance.
+          <br />
+          <br />
+          This is a new protocol, deposit at your own risk.
+        </span>
+      ),
+      tags: [],
+    },
+    {
+      name: "Zerolend",
+      logo: "/assets/icons/zerolend.png",
+      APY: "3.4",
+      staked: zeroLendNativeETHStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 57,
+        Unstake: 58,
+      },
+      availableOnNetworkIds: ["0xe708"],
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.zeroWETHAddress
+        ? CHAIN_CONFIG[networkId].zeroWETHAddress
+        : "",
+      isUnstakeDisabled: false,
+      risk: "Low",
+      info: (
+        <span>
+          This strategy swaps USDC for z0USDC in Zerolend&apos;s USDC pool. You
+          earn 12.4% APY holding z0USDC by Zerolend.
+        </span>
+      ),
+      tags: ["🐚 ZERO POINTS"],
+    },
+    {
+      name: "Aave",
+      logo: "/assets/icons/aave.svg",
+      APY: "3.4",
+      staked: aaveScrollStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 51,
+        Unstake: 52,
+      },
+      availableOnNetworkIds: ["0x82750"],
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.aaveWrappedScrollEthAddress
+        ? CHAIN_CONFIG[networkId].aaveWrappedScrollEthAddress
+        : "",
+      isUnstakeDisabled: false,
       risk: "High",
       info: (
         <span>
-          This strategy swaps ETH for stETH and then restakes it to get rstETH
-          (LRT by restakefinance.com). You earn 3.4% native yield on holding the
-          LRT & ~10% APR from Eigen Rewards from Restake Finance.
-          <br />
-          <br />
-          This is a new protocol, deposit at your own risk. Reward points are
-          accrued on your Stations treasury address.
+          This strategy swaps ETH for aaveWETH. You earn 3.4% native yield on
+          holding aaveWETH by AAVE.
         </span>
       ),
-      tags: ["🏆 RSTK APR"],
+      tags: [],
+    },
+    {
+      name: "Renzo X Zerolend",
+      logo: "/assets/icons/zerolend.png",
+      APY: "3.4",
+      staked: renzoZerolLendStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 53,
+        Unstake: 54,
+      },
+      availableOnNetworkIds: ["0xe708"],
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.zeroETHAddress
+        ? CHAIN_CONFIG[networkId].zeroETHAddress
+        : "",
+      isUnstakeDisabled: true,
+      risk: "Low",
+      info: (
+        <span>
+          This strategy swaps ETH for ezETH and then stake ezETH in Zerolend to
+          get z0ETH (an LST by Zerolend). All of it in a single transaction. You
+          earn 3.4% native yield on holding z0ETH by AAVE.
+        </span>
+      ),
+      tags: ["🐚 ZERO POINTS", "⭐ ezPOINTS", "🏆 EIGEN POINTS"],
+    },
+  ];
+};
+
+export const DEFI_PROPOSALS_USDC_POOLS = ({
+  mendiStaked,
+  zeroLendUSDCStaked,
+  networkId,
+}) => {
+  return [
+    {
+      name: "Mendi Finance",
+      logo: "/assets/icons/mendi.jpeg",
+      APY: "8.7",
+      staked: mendiStaked,
+      token: "USDC",
+      executionIds: {
+        Stake: 49,
+        Unstake: 50,
+      },
+      availableOnNetworkIds: ["0xe708"],
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.mendiTokenAddress
+        ? CHAIN_CONFIG[networkId].mendiTokenAddress
+        : "",
+      isUnstakeDisabled: false,
+      risk: "Low",
+      info: (
+        <span>
+          This strategy swaps USDC for meUSDC. You earn 8.79% interest on
+          supplying the USDC from Mendi Finance.
+          <br />
+          <br />
+          This is a new protocol, deposit at your own risk.
+        </span>
+      ),
+      tags: [],
+    },
+    {
+      name: "Zerolend",
+      logo: "/assets/icons/zerolend.png",
+      APY: "3.4",
+      staked: zeroLendUSDCStaked,
+      token: "USDC",
+      executionIds: {
+        Stake: 55,
+        Unstake: 56,
+      },
+      availableOnNetworkIds: ["0xe708"],
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.zeroUSDCAddress
+        ? CHAIN_CONFIG[networkId].zeroUSDCAddress
+        : "",
+      isUnstakeDisabled: false,
+      risk: "Low",
+      info: (
+        <span>
+          This strategy swaps USDC for z0USDC in Zerolend&apos;s USDC pool. You
+          earn 12.4% APY holding z0USDC by Zerolend.
+        </span>
+      ),
+      tags: ["🐚 ZERO POINTS"],
     },
   ];
 };

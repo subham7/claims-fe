@@ -46,7 +46,15 @@ const StakingCard = ({
       <div className={classes.stakingCard}>
         <div className={classes.tagContainer}>
           <div className={classes.heading}>
-            <Image src={image} height={30} width={30} alt={name} />
+            <Image
+              style={{
+                borderRadius: "50px",
+              }}
+              src={image}
+              height={30}
+              width={30}
+              alt={name}
+            />
             <Typography fontSize={18} fontWeight={500} variant="inherit">
               {name}
             </Typography>
@@ -104,7 +112,19 @@ const StakingCard = ({
 
           <div>
             <Typography fontWeight={600} variant="inherit">
-              {Number(staked).toFixed(4)} {token}
+              {Number(staked).toFixed(4)}{" "}
+              {executionIds.Stake === 49 ? (
+                <span
+                  style={{
+                    cursor: "help",
+                  }}>
+                  <Tooltip title={"1 USDC = ~48.67 meUSDC"}>meUSDC</Tooltip>
+                </span>
+              ) : executionIds.Stake === 51 ? (
+                "aaveWETH"
+              ) : (
+                token
+              )}
             </Typography>
             <Typography
               className={classes.smallFont}
@@ -125,8 +145,8 @@ const StakingCard = ({
             Unstake
           </button>
           <button
-            className={isUnstakeDisabled && classes.disabled}
-            disabled={isUnstakeDisabled} // Temporary  disabled as Eigen is stopped
+            // className={isUnstakeDisabled && classes.disabled}
+            // disabled={isUnstakeDisabled} // Temporary  disabled as Eigen is stopped
             onClick={() => {
               setShowStakingModal(true);
             }}>

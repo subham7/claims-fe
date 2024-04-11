@@ -5,12 +5,7 @@ import ActionModal from "./ActionModal";
 import StatusModal from "@components/modals/StatusModal/StatusModal";
 import { useRouter } from "next/router";
 
-const DashboardActionContainer = ({
-  daoAddress,
-  networkId,
-  gnosisAddress,
-  routeNetworkId,
-}) => {
+const DashboardActionContainer = ({ daoAddress, networkId, gnosisAddress }) => {
   const [showSendAssetsModal, setShowSendAssetsModal] = useState(false);
   const [showDistributeModal, setShowDistributeModal] = useState(false);
   const [proposalId, setProposalId] = useState("");
@@ -37,17 +32,15 @@ const DashboardActionContainer = ({
       <div className={classes.actionsContainer}>
         <button onClick={sendModalHandler} className={classes.actionButton}>
           <FaArrowUp />
-          <p>Send</p>
+          <p style={{ marginBottom: "-2px" }}>Send</p>
         </button>
 
-        {routeNetworkId === "0x1" || routeNetworkId === "0x89" ? (
-          <button
-            onClick={distributeModalHandler}
-            className={classes.actionButton}>
-            <FaArrowDownShortWide />
-            <p>Distribute</p>
-          </button>
-        ) : null}
+        <button
+          onClick={distributeModalHandler}
+          className={classes.actionButton}>
+          <FaArrowDownShortWide />
+          <p style={{ marginBottom: "-2px" }}>Distribute</p>
+        </button>
       </div>
 
       {showSendAssetsModal && (

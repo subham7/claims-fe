@@ -3,6 +3,15 @@ import { MAIN_API_URL } from "../index";
 import { getJwtToken } from "../../utils/auth";
 import { AWS_API_URL } from "utils/constants";
 
+export const getClubData = async (daoAddress) => {
+  try {
+    const response = await axios.get(`${MAIN_API_URL}club/${daoAddress}`);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export async function getClubListForWallet(wallet, networkId) {
   return await axios.get(
     MAIN_API_URL + `user/${wallet}/clubs?networkId=${networkId}`,
@@ -136,6 +145,45 @@ export const getTotalTreasuryAmount = async (daoAddress) => {
   try {
     const res = await axios.get(
       `${MAIN_API_URL}club/${daoAddress}/hot-wallets/balance`,
+    );
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const createKYC = async (data) => {
+  try {
+    const res = await axios.post(`${MAIN_API_URL}kyc`, data, {
+      headers: {
+        Authorization: "Bearer " + getJwtToken(),
+        "Content-Type": "application/json",
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const updateKYC = async (data) => {
+  try {
+    const res = await axios.post(`${MAIN_API_URL}kyc/update`, data, {
+      headers: {
+        Authorization: "Bearer " + getJwtToken(),
+        "Content-Type": "application/json",
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getKYCToken = async (daoAddress) => {
+  try {
+    const res = await axios.get(
+      `${MAIN_API_URL}kyc/access-token/station/${daoAddress}`,
     );
     return res.data;
   } catch (error) {

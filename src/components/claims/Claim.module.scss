@@ -6,8 +6,8 @@
   padding-bottom: 100px;
 
   .infoContainer {
-    color: #ffb74d;
-    background: #ffb74d30;
+    color: $light-gray;
+    background: $border-color;
     padding: 12px;
     border-radius: 8px;
     width: fit-content;
@@ -17,6 +17,41 @@
     margin-top: 12px;
     font-size: 14px;
     justify-content: center;
+  }
+
+  .kycContainer{
+    margin-top: 16px;
+    border-radius: 12px;
+    background-color: $border-color;
+    display: flex;
+    padding: 16px;
+    justify-content: space-between;
+    align-items: center;
+    
+    div{
+      display: flex;
+      gap: 8px;
+      align-items: center;
+
+      .action{
+        background-color:#ffb74d30;
+        color:#ffb74d;
+        padding: 0px 12px;
+        border-radius: 50px;
+      }
+
+      .completed{
+        background-color:$active-background;
+        color:$active-text;
+        padding: 0px 12px;
+        border-radius: 50px;
+      }
+
+    }
+
+    div.kycButton{
+      cursor: pointer;
+    }
   }
 
   @media (max-width: 768px) {
@@ -208,6 +243,8 @@
       padding-bottom: 4px;
       border-bottom: 1px solid $divider-color;
       margin-bottom: 20px;
+
+      
     }
 
     .whoCanClaimContainer {
@@ -273,18 +310,17 @@
 
 .detailContainer {
   display: flex;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: 12px;
   flex-wrap: wrap;
   width: 100%;
+  margin-top: 4px;
 
   .detailCard {
-    background-color: $background-primary;
-    padding: 10px;
+    background-color: $dark-gray;
+    padding: 10px 16px;
     border-radius: 8px;
     flex: 0.33;
     // width: 170px;
-    text-align: center;
   }
 }
 
@@ -328,4 +364,58 @@
 .logoImg {
   border: 1px solid $gray;
   border-radius: 12px;
+}
+
+.primaryButton{
+  width: 100%;
+  padding: 12px 0;
+  margin: 10px 0;
+  font-family: inherit;
+  background-color: white;
+  color: black;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: 500;
+  text-transform: uppercase;
+
+  &:hover{
+    background-color: whitesmoke;
+  }
+
+  &:disabled{
+    cursor: not-allowed;
+    background-color: $gray;
+
+    &:hover{
+    background-color: $gray;
+    }
+  }
+  
+  
+}
+
+.createStationDiv{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 28px;
+  gap: 12px;
+  cursor: pointer;
+
+.createStationText{
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // padding-top: 28px;
+  background: linear-gradient(to right, #FF279C, #2E55FF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+
+
+
 }

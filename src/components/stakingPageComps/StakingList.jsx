@@ -2,17 +2,23 @@ import { Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import StakingCard from "./StakingCard";
 import classes from "./Staking.module.scss";
-import { DEFI_PROPOSALS } from "utils/proposalConstants";
+import {
+  DEFI_PROPOSALS_ETH_POOLS,
+  DEFI_PROPOSALS_USDC_POOLS,
+} from "utils/proposalConstants";
 import { useNetwork } from "wagmi";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { CHAIN_CONFIG } from "utils/constants";
 import { useSelector } from "react-redux";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import useAppContractMethods from "hooks/useAppContractMethods";
+import StakingTabs from "./StakingTabs";
 
 const StakingList = ({ daoAddress, routeNeworkId }) => {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
+
+  const [tabType, setTabType] = useState("ETH");
   const [unstakeTokenBalance, setUnstakeTokenBalance] = useState(0);
   const [unstakeClipFinanceToken, setUnstakeClipFinanceToken] = useState(0);
   const [unstakeStaderToken, setUnstakeStaderToken] = useState(0);
@@ -25,6 +31,12 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
   const [unstakeRocketEigenToken, setUnstakeRocketEigenToken] = useState(0);
   const [unstakeMantleEigenToken, setUnstakeMantleEigenToken] = useState(0);
   const [unstakeLayerBankToken, setUnstakeLayerBankToken] = useState(0);
+  const [unstakeAaveScrollToken, setUnstakeAaveScrollToken] = useState(0);
+  const [unstakeMendiUsdcToken, setUnstakeMendiUsdcToken] = useState(0);
+  const [unstakeZeroLendToken, setUnstakeZeroLendToken] = useState(0);
+  const [unstakeZeroLendUSDCToken, setUnstakeZeroLendUSDCToken] = useState(0);
+  const [unstakeZeroLendNativeETHToken, setUnstakeZeroLendNativeETHToken] =
+    useState(0);
 
   const { getBalance, getDecimals } = useCommonContractMethods({
     routeNeworkId,
@@ -48,7 +60,6 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
   const fetchEigenToken = async () => {
     try {
       const data = await fetchEigenTokenBalance(gnosisAddress);
-
       const [addresses, amounts] = data;
 
       const formattedData = addresses?.map((address, index) => ({
@@ -102,101 +113,173 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
     }
   };
 
+  const tabChangeHandler = (event, newValue) => {
+    setTabType(newValue);
+  };
+
+  const fetchBalances = async () => {
+    let stargateBalance = 0,
+      clipFinanceBalance = 0,
+      kelpBalance = 0,
+      swellRswETH = 0,
+      restakeRstETH = 0,
+      renzoEzEthBalance = 0,
+      layerBankEthBalance = 0,
+      aaveScrollEthBalance = 0,
+      zeroLendEthBalance = 0,
+      zeroLendUSDCBalance = 0,
+      zeroLendNativeETHBalance = 0,
+      mendiUSDCBalance = 0;
+    // mendiExchangeRate = 0;
+
+    if (networkId === "0xe708") {
+      [
+        stargateBalance,
+        clipFinanceBalance,
+        layerBankEthBalance,
+        mendiUSDCBalance,
+        renzoEzEthBalance,
+        zeroLendEthBalance,
+        zeroLendUSDCBalance,
+        zeroLendNativeETHBalance,
+      ] = await Promise.all([
+        fetchTokenBalance(
+          CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0],
+        ),
+        fetchTokenBalance(
+          CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
+        ),
+        fetchTokenBalance(CHAIN_CONFIG[networkId].layerBankToken),
+
+        fetchTokenBalance(CHAIN_CONFIG[networkId].mendiTokenAddress),
+
+        fetchTokenBalance(CHAIN_CONFIG[networkId].renzoEzETHAddress),
+
+        fetchTokenBalance(CHAIN_CONFIG[networkId].zeroETHAddress),
+
+        fetchTokenBalance(CHAIN_CONFIG[networkId].zeroUSDCAddress),
+
+        fetchTokenBalance(CHAIN_CONFIG[networkId].zeroWETHAddress),
+      ]);
+    } else if (networkId === "0x1") {
+      renzoEzEthBalance = await fetchTokenBalance(
+        CHAIN_CONFIG[networkId].renzoEzETHAddress,
+      );
+
+      kelpBalance = await fetchTokenBalance(
+        CHAIN_CONFIG[networkId].kelpRsETHAddress,
+      );
+
+      swellRswETH = await fetchTokenBalance(
+        CHAIN_CONFIG[networkId].swellRswETHAddress,
+      );
+
+      restakeRstETH = await fetchTokenBalance(
+        CHAIN_CONFIG[networkId].restakeRstETHAddress,
+      );
+    } else if (networkId === "0x82750") {
+      [aaveScrollEthBalance, layerBankEthBalance] = await Promise.all([
+        fetchTokenBalance(CHAIN_CONFIG[networkId].aaveWrappedScrollEthAddress),
+        fetchTokenBalance(CHAIN_CONFIG[networkId].layerBankToken),
+      ]);
+    }
+
+    setUnstakeTokenBalance(stargateBalance);
+    setUnstakeClipFinanceToken(clipFinanceBalance);
+    setUnstakeKelpToken(kelpBalance);
+    setUnstakeSwellRswETHToken(swellRswETH);
+    setUnstakeRenzoEzETHToken(renzoEzEthBalance);
+    setUnstakeRestakeRstETHToken(restakeRstETH);
+    setUnstakeLayerBankToken(layerBankEthBalance);
+    setUnstakeAaveScrollToken(aaveScrollEthBalance);
+    setUnstakeMendiUsdcToken(mendiUSDCBalance);
+    setUnstakeZeroLendToken(zeroLendEthBalance);
+    setUnstakeZeroLendUSDCToken(zeroLendUSDCBalance);
+    setUnstakeZeroLendNativeETHToken(zeroLendNativeETHBalance);
+  };
+
   useEffect(() => {
     if (gnosisAddress) fetchEigenToken();
   }, [gnosisAddress]);
 
   useEffect(() => {
-    const fetchBalances = async () => {
-      let stargateBalance = 0,
-        clipFinanceBalance = 0,
-        kelpBalance = 0,
-        swellRswETH = 0,
-        restakeRstETH = 0,
-        renzoEzEthBalance = 0,
-        layerBankEthBalance = 0;
-
-      if (networkId === "0xe708") {
-        [stargateBalance, clipFinanceBalance, layerBankEthBalance] =
-          await Promise.all([
-            fetchTokenBalance(
-              CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0],
-            ),
-            fetchTokenBalance(
-              CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
-            ),
-            fetchTokenBalance(CHAIN_CONFIG[networkId].layerBankToken),
-          ]);
-      } else if (networkId === "0x1") {
-        renzoEzEthBalance = await fetchTokenBalance(
-          CHAIN_CONFIG[networkId].renzoEzETHAddress,
-        );
-
-        kelpBalance = await fetchTokenBalance(
-          CHAIN_CONFIG[networkId].kelpRsETHAddress,
-        );
-
-        swellRswETH = await fetchTokenBalance(
-          CHAIN_CONFIG[networkId].swellRswETHAddress,
-        );
-
-        restakeRstETH = await fetchTokenBalance(
-          CHAIN_CONFIG[networkId].restakeRstETHAddress,
-        );
-      }
-
-      setUnstakeTokenBalance(stargateBalance);
-      setUnstakeClipFinanceToken(clipFinanceBalance);
-      setUnstakeKelpToken(kelpBalance);
-      setUnstakeSwellRswETHToken(swellRswETH);
-      setUnstakeRenzoEzETHToken(renzoEzEthBalance);
-      setUnstakeRestakeRstETHToken(restakeRstETH);
-      setUnstakeLayerBankToken(layerBankEthBalance);
-    };
-
-    fetchBalances();
+    if (gnosisAddress) fetchBalances();
   }, [gnosisAddress, networkId]);
-
   return (
     <div className={classes.container}>
       <Typography fontSize={24} fontWeight={600} variant="inherit">
         Featured Pools
       </Typography>
 
+      <StakingTabs tabType={tabType} onChange={tabChangeHandler} />
+
       <div className={classes.list}>
-        {DEFI_PROPOSALS({
-          clipFinanceStaked: Number(unstakeClipFinanceToken),
-          stargateStaked: Number(unstakeTokenBalance),
-          staderETHStaked: Number(unstakeStaderToken),
-          kelpEthStaked: Number(unstakeKelpToken),
-          swellRswEthStaked: Number(unstakeSwellRswETHToken),
-          swellEigenEthStaked: Number(unstakeSwellEigenToken),
-          renzoEzEthStaked: Number(unstakeRenzoEzETHToken),
-          lidoEigenEthStaked: Number(unstakeLidoStETHToken),
-          restakeRstETHStaked: Number(unstakeRestakeRstETHToken),
-          rocketEigenStaked: Number(unstakeRocketEigenToken),
-          mantleEigenStaked: Number(unstakeMantleEigenToken),
-          layerBankStaked: Number(unstakeLayerBankToken),
-          networkId,
-        })
-          .filter((item) => item.availableOnNetworkIds.includes(networkId))
-          .map((item) => (
-            <StakingCard
-              apy={item.APY}
-              image={item.logo}
-              name={item.name}
-              staked={item.staked}
-              token={item.token}
-              key={item.name}
-              daoAddress={daoAddress}
-              executionIds={item.executionIds}
-              unstakeTokenAddress={item.unstakeTokenAddress}
-              isUnstakeDisabled={item.isUnstakeDisabled}
-              info={item.info}
-              tags={item.tags}
-              risk={item.risk}
-            />
-          ))}
+        {tabType === "ETH" ? (
+          <>
+            {DEFI_PROPOSALS_ETH_POOLS({
+              clipFinanceStaked: Number(unstakeClipFinanceToken),
+              stargateStaked: Number(unstakeTokenBalance),
+              staderETHStaked: Number(unstakeStaderToken),
+              kelpEthStaked: Number(unstakeKelpToken),
+              swellRswEthStaked: Number(unstakeSwellRswETHToken),
+              swellEigenEthStaked: Number(unstakeSwellEigenToken),
+              renzoEzEthStaked: Number(unstakeRenzoEzETHToken),
+              lidoEigenEthStaked: Number(unstakeLidoStETHToken),
+              restakeRstETHStaked: Number(unstakeRestakeRstETHToken),
+              rocketEigenStaked: Number(unstakeRocketEigenToken),
+              mantleEigenStaked: Number(unstakeMantleEigenToken),
+              layerBankStaked: Number(unstakeLayerBankToken),
+              aaveScrollStaked: Number(unstakeAaveScrollToken),
+              renzoZerolLendStaked: Number(unstakeZeroLendToken),
+              zeroLendNativeETHStaked: Number(unstakeZeroLendNativeETHToken),
+              networkId,
+            })
+              .filter((item) => item.availableOnNetworkIds.includes(networkId))
+              .map((item) => (
+                <StakingCard
+                  apy={item.APY}
+                  image={item.logo}
+                  name={item.name}
+                  staked={item.staked}
+                  token={item.token}
+                  key={item.name}
+                  daoAddress={daoAddress}
+                  executionIds={item.executionIds}
+                  unstakeTokenAddress={item.unstakeTokenAddress}
+                  isUnstakeDisabled={item.isUnstakeDisabled}
+                  info={item.info}
+                  tags={item.tags}
+                  risk={item.risk}
+                />
+              ))}
+          </>
+        ) : (
+          <>
+            {DEFI_PROPOSALS_USDC_POOLS({
+              zeroLendUSDCStaked: Number(unstakeZeroLendUSDCToken),
+              mendiStaked: Number(unstakeMendiUsdcToken),
+              networkId,
+            })
+              .filter((item) => item.availableOnNetworkIds.includes(networkId))
+              .map((item) => (
+                <StakingCard
+                  apy={item.APY}
+                  image={item.logo}
+                  name={item.name}
+                  staked={item.staked}
+                  token={item.token}
+                  key={item.name}
+                  daoAddress={daoAddress}
+                  executionIds={item.executionIds}
+                  unstakeTokenAddress={item.unstakeTokenAddress}
+                  isUnstakeDisabled={item.isUnstakeDisabled}
+                  info={item.info}
+                  tags={item.tags}
+                  risk={item.risk}
+                />
+              ))}
+          </>
+        )}
       </div>
     </div>
   );
