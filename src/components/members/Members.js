@@ -74,12 +74,7 @@ const Members = ({ daoAddress, routeNetworkId }) => {
   const [loading, setLoading] = useState(false);
   const [downloadLoading, setDownloadLoading] = useState(false);
 
-  const header = [
-    "Member address",
-    "Deposit amount",
-    "Station tokens",
-    "Joined on",
-  ];
+  const header = ["Address", "Contribution", "Ownership %", "Joined on"];
 
   const fetchTokenDetails = async () => {
     const depositTokenAddress = clubData.depositTokenAddress;
@@ -324,9 +319,13 @@ const Members = ({ daoAddress, routeNetworkId }) => {
                     return (
                       <TableCell
                         align="left"
-                        variant="tableHeading"
                         key={key}
-                        sx={{ fontFamily: "inherit" }}>
+                        sx={{
+                          fontFamily: "inherit",
+                          fontSize: "16px",
+                          color: "#707070",
+                          background: "#111111",
+                        }}>
                         {data}
                       </TableCell>
                     );
@@ -340,7 +339,13 @@ const Members = ({ daoAddress, routeNetworkId }) => {
                     sx={{
                       "&:last-child td, &:last-child th": { border: 0 },
                     }}>
-                    <TableCell align="left">
+                    <TableCell
+                      sx={{
+                        fontFamily: "inherit",
+                        fontSize: "16px",
+                        background: "#111111",
+                      }}
+                      align="left">
                       <Typography>
                         <Tooltip title={data.userAddress}>
                           <div
@@ -362,7 +367,13 @@ const Members = ({ daoAddress, routeNetworkId }) => {
                       </Typography>
                     </TableCell>
 
-                    <TableCell align="left">
+                    <TableCell
+                      sx={{
+                        fontFamily: "inherit",
+                        fontSize: "16px",
+                        background: "#111111",
+                      }}
+                      align="left">
                       <Typography
                         sx={{ fontSize: "14px !important", fontWeight: "400" }}>
                         {customToFixedAutoPrecision(
@@ -377,7 +388,13 @@ const Members = ({ daoAddress, routeNetworkId }) => {
                       </Typography>
                     </TableCell>
 
-                    <TableCell align="left">
+                    <TableCell
+                      sx={{
+                        fontFamily: "inherit",
+                        fontSize: "16px",
+                        background: "#111111",
+                      }}
+                      align="left">
                       <Typography>
                         {tokenType === "erc20"
                           ? Number(
@@ -387,7 +404,13 @@ const Members = ({ daoAddress, routeNetworkId }) => {
                       </Typography>
                     </TableCell>
 
-                    <TableCell align="left">
+                    <TableCell
+                      sx={{
+                        fontFamily: "inherit",
+                        fontSize: "16px",
+                        background: "#111111",
+                      }}
+                      align="left">
                       <Typography>
                         {new Date(+data.timeStamp * 1000).toLocaleDateString()}
                       </Typography>

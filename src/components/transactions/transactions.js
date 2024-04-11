@@ -28,12 +28,12 @@ dayjs.extend(relativeTime);
 
 const Transactions = ({ networkId }) => {
   const tableHeaders = [
-    "Token",
-    "Txn Hash",
-    "Tag",
-    "Age",
+    "Asset",
+    "Tx",
+    "Type",
+    "Timestamp",
     "From/To",
-    "Tokens ",
+    "Amount ",
   ];
 
   const gnosisAddress = useSelector((state) => {
@@ -117,7 +117,16 @@ const Transactions = ({ networkId }) => {
               <Table>
                 <TableHead>
                   {tableHeaders.map((data, key) => (
-                    <TableCell align="left" variant="tableHeading" key={key}>
+                    <TableCell
+                      sx={{
+                        fontFamily: "inherit",
+                        fontSize: "16px",
+                        color: "#707070",
+                        background: "#111111",
+                      }}
+                      align="left"
+                      variant="tableHeading"
+                      key={key}>
                       {data}
                     </TableCell>
                   ))}
@@ -127,7 +136,13 @@ const Transactions = ({ networkId }) => {
                     return (
                       <>
                         <TableRow key={txn.transactionHash}>
-                          <TableCell align="left">
+                          <TableCell
+                            sx={{
+                              fontFamily: "inherit",
+                              fontSize: "16px",
+                              background: "#111111",
+                            }}
+                            align="left">
                             <div className="f-d f-v-c f-gap-8">
                               <img
                                 style={{
@@ -149,7 +164,13 @@ const Transactions = ({ networkId }) => {
                             </div>
                           </TableCell>
 
-                          <TableCell align="left">
+                          <TableCell
+                            sx={{
+                              fontFamily: "inherit",
+                              fontSize: "16px",
+                              background: "#111111",
+                            }}
+                            align="left">
                             <div className="f-d f-v-c f-gap-8">
                               <Typography variant="info" className="text-blue">
                                 <Tooltip title={txn.transactionHash}>
@@ -167,7 +188,13 @@ const Transactions = ({ networkId }) => {
                             </div>
                           </TableCell>
 
-                          <TableCell align="left">
+                          <TableCell
+                            sx={{
+                              fontFamily: "inherit",
+                              fontSize: "16px",
+                              background: "#111111",
+                            }}
+                            align="left">
                             {txn.to === gnosisAddress && (
                               <Chip
                                 icon={
@@ -207,13 +234,25 @@ const Transactions = ({ networkId }) => {
                             )}
                           </TableCell>
 
-                          <TableCell align="left">
+                          <TableCell
+                            sx={{
+                              fontFamily: "inherit",
+                              fontSize: "16px",
+                              background: "#111111",
+                            }}
+                            align="left">
                             <Typography variant="info">
                               {dayjs(txn?.executionDate).fromNow()}
                             </Typography>
                           </TableCell>
 
-                          <TableCell align="left">
+                          <TableCell
+                            sx={{
+                              fontFamily: "inherit",
+                              fontSize: "16px",
+                              background: "#111111",
+                            }}
+                            align="left">
                             <Typography variant="info" className="text-blue">
                               <Tooltip title={txn?.from}>
                                 <a
@@ -235,7 +274,13 @@ const Transactions = ({ networkId }) => {
                             </Typography>
                           </TableCell>
 
-                          <TableCell align="left">
+                          <TableCell
+                            sx={{
+                              fontFamily: "inherit",
+                              fontSize: "16px",
+                              background: "#111111",
+                            }}
+                            align="left">
                             <Typography variant="body">
                               {txn.value == null
                                 ? "---"
