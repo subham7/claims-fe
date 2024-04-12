@@ -1,4 +1,4 @@
-export const factoryContractABI = [
+export const factoryContractCCABI = [
   {
     inputs: [
       {
@@ -74,6 +74,11 @@ export const factoryContractABI = [
     type: "error",
   },
   {
+    inputs: [],
+    name: "IncorrectProof",
+    type: "error",
+  },
+  {
     inputs: [
       {
         internalType: "uint256",
@@ -92,6 +97,11 @@ export const factoryContractABI = [
   {
     inputs: [],
     name: "InsufficientBalance",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "InsufficientFees",
     type: "error",
   },
   {
@@ -149,6 +159,11 @@ export const factoryContractABI = [
   },
   {
     inputs: [],
+    name: "NotDefaultChain",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "NotERC20Template",
     type: "error",
   },
@@ -174,13 +189,48 @@ export const factoryContractABI = [
     type: "error",
   },
   {
-    inputs: [],
-    name: "_isPaused",
+    inputs: [
+      {
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "amountToLD",
     outputs: [
       {
-        internalType: "bool",
+        internalType: "uint256",
         name: "",
-        type: "bool",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "amountToSD",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -271,14 +321,9 @@ export const factoryContractABI = [
   {
     inputs: [
       {
-        internalType: "string",
-        name: "_DaoName",
-        type: "string",
-      },
-      {
-        internalType: "string",
-        name: "_DaoSymbol",
-        type: "string",
+        internalType: "uint16",
+        name: "_commLayerId",
+        type: "uint16",
       },
       {
         internalType: "uint256",
@@ -326,9 +371,200 @@ export const factoryContractABI = [
         type: "uint256",
       },
       {
+        internalType: "uint256[]",
+        name: "_depositChainIds",
+        type: "uint256[]",
+      },
+      {
+        internalType: "address",
+        name: "_daoAddress",
+        type: "address",
+      },
+      {
         internalType: "address",
         name: "_depositTokenAddress",
         type: "address",
+      },
+      {
+        internalType: "address[]",
+        name: "_admins",
+        type: "address[]",
+      },
+      {
+        internalType: "bool",
+        name: "_onlyAllowWhitelist",
+        type: "bool",
+      },
+      {
+        internalType: "bytes32",
+        name: "_merkleRoot",
+        type: "bytes32",
+      },
+    ],
+    name: "createCrossChainERC20DAO",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint16",
+        name: "_commLayerId",
+        type: "uint16",
+      },
+      {
+        internalType: "uint256",
+        name: "_ownerFeePerDepositPercent",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_depositTime",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_quorumPercent",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_thresholdPercent",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_safeThreshold",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256[]",
+        name: "_depoitChainIds",
+        type: "uint256[]",
+      },
+      {
+        internalType: "address",
+        name: "_daoAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_depositTokenAddress",
+        type: "address",
+      },
+      {
+        internalType: "address[]",
+        name: "_admins",
+        type: "address[]",
+      },
+      {
+        internalType: "uint256",
+        name: "_maxTokensPerUser",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_distributionAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_pricePerToken",
+        type: "uint256",
+      },
+      {
+        internalType: "bool",
+        name: "_onlyAllowWhitelist",
+        type: "bool",
+      },
+      {
+        internalType: "bytes32",
+        name: "_merkleRoot",
+        type: "bytes32",
+      },
+    ],
+    name: "createCrossChainERC721DAO",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "_DaoName",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "_DaoSymbol",
+        type: "string",
+      },
+      {
+        internalType: "uint16",
+        name: "_commLayerId",
+        type: "uint16",
+      },
+      {
+        internalType: "uint256",
+        name: "_distributionAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_pricePerToken",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_minDepositPerUser",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_maxDepositPerUser",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_ownerFeePerDepositPercent",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_depositTime",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_quorumPercent",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_thresholdPercent",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_safeThreshold",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256[]",
+        name: "_depositChainIds",
+        type: "uint256[]",
+      },
+      {
+        internalType: "address",
+        name: "_gnosisAddress",
+        type: "address",
+      },
+      {
+        internalType: "address[]",
+        name: "_depositTokenAddress",
+        type: "address[]",
       },
       {
         internalType: "address[]",
@@ -363,7 +599,7 @@ export const factoryContractABI = [
     ],
     name: "createERC20DAO",
     outputs: [],
-    stateMutability: "nonpayable",
+    stateMutability: "payable",
     type: "function",
   },
   {
@@ -382,6 +618,11 @@ export const factoryContractABI = [
         internalType: "string",
         name: "_tokenURI",
         type: "string",
+      },
+      {
+        internalType: "uint16",
+        name: "_commLayerId",
+        type: "uint16",
       },
       {
         internalType: "uint256",
@@ -409,9 +650,19 @@ export const factoryContractABI = [
         type: "uint256",
       },
       {
+        internalType: "uint256[]",
+        name: "_depositChainIds",
+        type: "uint256[]",
+      },
+      {
         internalType: "address",
-        name: "_depositTokenAddress",
+        name: "_gnosisAddress",
         type: "address",
+      },
+      {
+        internalType: "address[]",
+        name: "_depositTokenAddress",
+        type: "address[]",
       },
       {
         internalType: "address[]",
@@ -466,6 +717,85 @@ export const factoryContractABI = [
     ],
     name: "createERC721DAO",
     outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "createFees",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address payable",
+        name: "_daoAddress",
+        type: "address",
+      },
+      {
+        internalType: "string",
+        name: "_tokenURI",
+        type: "string",
+      },
+      {
+        internalType: "uint16",
+        name: "_commLayerId",
+        type: "uint16",
+      },
+      {
+        internalType: "uint256",
+        name: "_numOfTokensToBuy",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "_extraParams",
+        type: "bytes",
+      },
+      {
+        internalType: "bytes32[]",
+        name: "_merkleProof",
+        type: "bytes32[]",
+      },
+    ],
+    name: "crossChainBuy",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address payable",
+        name: "_daoAddress",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_numOfTokensToBuy",
+        type: "uint256",
+      },
+      {
+        internalType: "string",
+        name: "_tokenURI",
+        type: "string",
+      },
+      {
+        internalType: "bytes32[]",
+        name: "_merkleProof",
+        type: "bytes32[]",
+      },
+    ],
+    name: "crossChainMint",
+    outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
@@ -473,33 +803,36 @@ export const factoryContractABI = [
     inputs: [
       {
         internalType: "address",
-        name: "ERC20ImplementationAddress",
+        name: "_emitter",
         type: "address",
       },
       {
         internalType: "address",
-        name: "ERC721ImplementationAddress",
+        name: "_deployer",
         type: "address",
       },
       {
         internalType: "address",
-        name: "emitterImplementationAddress",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "_safe",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "_singleton",
+        name: "_commLayer",
         type: "address",
       },
     ],
     name: "defineTokenContracts",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "depositFees",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -650,6 +983,19 @@ export const factoryContractABI = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "platformFeeMultiplier",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "address",
@@ -701,8 +1047,21 @@ export const factoryContractABI = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_daoAddress",
+        type: "address",
+      },
+    ],
+    name: "toggleKYC",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
     inputs: [],
-    name: "togglePause",
+    name: "togglePaused",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -723,6 +1082,29 @@ export const factoryContractABI = [
     name: "updateDepositTime",
     outputs: [],
     stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_createFees",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_depositFees",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_val",
+        type: "uint256",
+      },
+    ],
+    name: "updateFees",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {

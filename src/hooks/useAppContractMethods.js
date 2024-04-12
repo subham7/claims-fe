@@ -20,6 +20,7 @@ import { mendiTokenContract } from "abis/mendi/mendiToken";
 import { BigNumber } from "bignumber.js";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import useCommonContractMethods from "./useCommonContractMehods";
+import { factoryContractCCABI } from "abis/factoryContractcc";
 
 const useAppContractMethods = (params) => {
   const walletClient = useWalletClient();
@@ -420,10 +421,10 @@ const useAppContractMethods = (params) => {
     merkleRoot,
   }) => {
     try {
-      const fees = await getCreateFees();
+      const fees = networkId === "0xe708" ? await getCreateFees() : 0;
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
-        abi: factoryContractABI,
+        abi: networkId === "0xe708" ? factoryContractCCABI : factoryContractABI,
         functionName: "createERC721DAO",
         args:
           networkId === "0xe708"
@@ -506,10 +507,10 @@ const useAppContractMethods = (params) => {
     merkleRoot,
   }) => {
     try {
-      const fees = await getCreateFees();
+      const fees = networkId === "0xe708" ? await getCreateFees() : 0;
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
-        abi: factoryContractABI,
+        abi: networkId === "0xe708" ? factoryContractCCABI : factoryContractABI,
         functionName: "createERC20DAO",
         args:
           networkId === "0xe708"
