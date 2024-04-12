@@ -33,6 +33,14 @@
         padding: 2px 12px;
         border-radius: 50px;
       }
+
+      .enabled{
+        font-size: 12px;
+        background-color: $active-background;
+        color: $active-text;
+        padding: 2px 12px;
+        border-radius: 50px;
+      }
     }
       .infoHeading {
         font-size: 16px;

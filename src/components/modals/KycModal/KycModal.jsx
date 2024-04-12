@@ -9,7 +9,12 @@ import { useAccount } from "wagmi";
 import { handleSignMessage } from "utils/helper";
 import { createKYC, getClubData } from "api/club";
 
-const KycModal = ({ onClose, daoAddress, setLoading }) => {
+const KycModal = ({
+  onClose,
+  daoAddress,
+  setLoading,
+  setIsKycEnabledSettings,
+}) => {
   const [apiKey, setApiKey] = useState("");
   const [appId, setAppId] = useState("");
   const [appIdOld, setAppIdOld] = useState(false);
@@ -77,8 +82,10 @@ const KycModal = ({ onClose, daoAddress, setLoading }) => {
       if (response) {
         if (isEnabled) {
           dispatchAlert("KYC enabled successfully", "success");
+          setIsKycEnabledSettings(true);
         } else {
           dispatchAlert("KYC disabled successfully", "success");
+          setIsKycEnabledSettings(false);
         }
         onClose();
       } else {

@@ -86,9 +86,14 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
       description:
         "Enable/disable KYC for investors that are contributing funds to this station.",
       component: (
-        <KycSettings daoAddress={daoAddress} setLoading={setLoading} />
+        <KycSettings
+          setIsKycEnabledSettings={setIsKycEnabled}
+          daoAddress={daoAddress}
+          setLoading={setLoading}
+        />
       ),
       isDisabled: !isKycEnabled,
+      showStatusTag: true,
     },
 
     {
@@ -96,9 +101,14 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
       description:
         "Manage the tokens that users will need to be eligible for joining this station. Setup existing NFTs or ERC20 tokens on any EVM compatible network as a qualifier to make a deposit. Read more about tokengating on StationX.",
       component: (
-        <TokenGatingList setLoading={setLoading} daoAddress={daoAddress} />
+        <TokenGatingList
+          setIsTokenGated={setIsTokenGated}
+          setLoading={setLoading}
+          daoAddress={daoAddress}
+        />
       ),
       isDisabled: !isTokenGated,
+      showStatusTag: true,
     },
     {
       heading: "Deadline",
@@ -185,7 +195,8 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
           heading={item.heading}
           isHidden={item?.isHidden}
           description={item.description}
-          isDisabled={item?.isDisabled}>
+          isDisabled={item?.isDisabled}
+          showStatusTag={item?.showStatusTag}>
           {item.component}
         </SettingItem>
       ))}

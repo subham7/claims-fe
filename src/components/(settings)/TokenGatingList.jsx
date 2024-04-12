@@ -13,7 +13,7 @@ import { setAlertData } from "redux/reducers/alert";
 import { useDispatch, useSelector } from "react-redux";
 import { Typography } from "@mui/material";
 
-const TokenGatingList = ({ daoAddress, setLoading }) => {
+const TokenGatingList = ({ daoAddress, setLoading, setIsTokenGated }) => {
   const [showAddButton, setShowAddButton] = useState(true);
   const [showSaveButton, setShowSaveButton] = useState(false);
   const [tokenGatedDetails, setTokenGatedDetails] = useState([]);
@@ -81,6 +81,7 @@ const TokenGatingList = ({ daoAddress, setLoading }) => {
       });
       setShowAddButton(true);
       setShowSaveButton(false);
+      setIsTokenGated(true);
     } catch (error) {
       console.error(error);
       setLoading(false);
@@ -99,6 +100,7 @@ const TokenGatingList = ({ daoAddress, setLoading }) => {
       fetchTokenGatingDetails();
       dispatchAlert("Token gating removed successfully", "success");
       setLoading(false);
+      setIsTokenGated(false);
     } catch (error) {
       setLoading(false);
       if (error.code === 4001) {

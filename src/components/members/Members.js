@@ -11,9 +11,9 @@ import {
   TablePagination,
   TableRow,
   Tooltip,
-  // Typography,
+  Typography,
 } from "@mui/material";
-import { Typography, Button } from "@components/ui";
+import { Button } from "@components/ui";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
@@ -74,12 +74,7 @@ const Members = ({ daoAddress, routeNetworkId }) => {
   const [loading, setLoading] = useState(false);
   const [downloadLoading, setDownloadLoading] = useState(false);
 
-  const header = [
-    "Member address",
-    "Deposit amount",
-    "Station tokens",
-    "Joined on",
-  ];
+  const header = ["Address", "Contribution", "Ownership %", "Joined on"];
 
   const fetchTokenDetails = async () => {
     const depositTokenAddress = clubData.depositTokenAddress;
@@ -324,9 +319,13 @@ const Members = ({ daoAddress, routeNetworkId }) => {
                     return (
                       <TableCell
                         align="left"
-                        variant="tableHeading"
                         key={key}
-                        sx={{ fontFamily: "inherit" }}>
+                        sx={{
+                          fontFamily: "inherit",
+                          fontSize: "16px",
+                          color: "#707070",
+                          background: "#111111",
+                        }}>
                         {data}
                       </TableCell>
                     );
@@ -340,8 +339,14 @@ const Members = ({ daoAddress, routeNetworkId }) => {
                     sx={{
                       "&:last-child td, &:last-child th": { border: 0 },
                     }}>
-                    <TableCell align="left">
-                      <Typography>
+                    <TableCell
+                      sx={{
+                        fontFamily: "inherit",
+                        fontSize: "16px",
+                        background: "#111111",
+                      }}
+                      align="left">
+                      <Typography variant="inherit">
                         <Tooltip title={data.userAddress}>
                           <div
                             className="f-d f-v-c f-gap-8 c-pointer"
@@ -354,7 +359,7 @@ const Members = ({ daoAddress, routeNetworkId }) => {
                               : shortAddress(data.userAddress)}
                             <OpenInNewIcon
                               sx={{
-                                fontSize: "16px",
+                                fontSize: "14px",
                               }}
                             />
                           </div>
@@ -362,9 +367,14 @@ const Members = ({ daoAddress, routeNetworkId }) => {
                       </Typography>
                     </TableCell>
 
-                    <TableCell align="left">
-                      <Typography
-                        sx={{ fontSize: "14px !important", fontWeight: "400" }}>
+                    <TableCell
+                      sx={{
+                        fontFamily: "inherit",
+                        fontSize: "16px",
+                        background: "#111111",
+                      }}
+                      align="left">
+                      <Typography variant="inherit">
                         {customToFixedAutoPrecision(
                           Number(
                             convertFromWeiGovernance(
@@ -377,8 +387,14 @@ const Members = ({ daoAddress, routeNetworkId }) => {
                       </Typography>
                     </TableCell>
 
-                    <TableCell align="left">
-                      <Typography>
+                    <TableCell
+                      sx={{
+                        fontFamily: "inherit",
+                        fontSize: "16px",
+                        background: "#111111",
+                      }}
+                      align="left">
+                      <Typography variant="inherit">
                         {tokenType === "erc20"
                           ? Number(
                               convertFromWeiGovernance(data?.gtAmount, 18),
@@ -387,8 +403,14 @@ const Members = ({ daoAddress, routeNetworkId }) => {
                       </Typography>
                     </TableCell>
 
-                    <TableCell align="left">
-                      <Typography>
+                    <TableCell
+                      sx={{
+                        fontFamily: "inherit",
+                        fontSize: "16px",
+                        background: "#111111",
+                      }}
+                      align="left">
+                      <Typography variant="inherit">
                         {new Date(+data.timeStamp * 1000).toLocaleDateString()}
                       </Typography>
                     </TableCell>

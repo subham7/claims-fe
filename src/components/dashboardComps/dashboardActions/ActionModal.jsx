@@ -8,6 +8,7 @@ import {
   Select,
   MenuItem,
   InputAdornment,
+  Tooltip,
   // InputLabel,
 } from "@mui/material";
 // import Image from "next/image";
@@ -27,6 +28,7 @@ import { createProposal } from "api/proposal";
 import { useAccount } from "wagmi";
 import BackdropLoader from "@components/common/BackdropLoader";
 import { actionModalValidation } from "@components/createClubComps/ValidationSchemas";
+import { MdInfo } from "react-icons/md";
 
 const ActionModal = ({
   type,
@@ -209,13 +211,34 @@ const ActionModal = ({
     <Modal className={classes.modal}>
       <div className={classes.nameContainer}>
         {type === "send" ? (
-          <Typography fontSize={20} fontWeight={500} variant="inherit">
-            Send <span>to another wallet</span>
-          </Typography>
+          <div>
+            <Typography fontSize={20} fontWeight={500} variant="inherit">
+              Send <span>assets to another wallet</span>
+            </Typography>
+
+            <Typography
+              color={"#707070"}
+              fontSize={14}
+              fontWeight={400}
+              variant="inherit">
+              Send assets from treasury to any onchain address or ENS.
+            </Typography>
+          </div>
         ) : (
-          <Typography fontSize={20} fontWeight={500} variant="inherit">
-            Distribute <span>to members</span>
-          </Typography>
+          <div>
+            <Typography fontSize={20} fontWeight={500} variant="inherit">
+              Distribute <span>to members</span>
+            </Typography>
+
+            <Typography
+              color={"#707070"}
+              fontSize={14}
+              fontWeight={400}
+              variant="inherit">
+              Distribute tokens directly from treasury on a pro-rata basis to
+              members.
+            </Typography>
+          </div>
         )}
       </div>
 
@@ -381,9 +404,20 @@ const ActionModal = ({
               }}
               type="checkbox"
             />
-            <Typography variant="inherit">
-              Deduct fee(s) before distributing
-            </Typography>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <Typography variant="inherit">
+                Deduct fee(s) before distributing
+              </Typography>
+              <Tooltip placement="right" title="Fees go to the admin wallet">
+                <div>
+                  <MdInfo
+                    size={14}
+                    style={{ cursor: "pointer", marginTop: "4px" }}
+                  />
+                </div>
+              </Tooltip>
+            </div>
           </div>
 
           {showFeesAmount && (

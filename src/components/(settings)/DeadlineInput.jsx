@@ -36,6 +36,12 @@ const DeadlineInput = ({ clubData, daoAddress, setLoading }) => {
       : classes.disabled;
 
   const submitHandler = async () => {
+    if (
+      !dayjs.unix(clubData?.depositCloseTime).format("YYYY-MM-DDTHH:mm") !==
+      date
+    ) {
+      return;
+    }
     try {
       setLoading(true);
       await updateDepositTime(dayjs(date).unix());

@@ -1,5 +1,12 @@
-import { FormControl, MenuItem, Select, Typography } from "@mui/material";
+import {
+  FormControl,
+  MenuItem,
+  Select,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { TextField } from "@components/ui";
+import { MdInfo } from "react-icons/md";
 
 export default function Step1(props) {
   return (
@@ -9,7 +16,7 @@ export default function Step1(props) {
         fontWeight={600}
         variant="inherit"
         className="text-blue">
-        Add basic info
+        Basic info
       </Typography>
       <Typography
         fontSize={16}
@@ -70,9 +77,29 @@ export default function Step1(props) {
 
       <br />
 
-      <Typography fontWeight={600} mb={1} variant="body" className="text-blue">
-        Token Type (Recommended ERC20 for member shares and NFTs for
-        memberships)
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <Typography
+          fontWeight={600}
+          mb={0.2}
+          variant="body"
+          className="text-blue">
+          Token Type
+        </Typography>
+        <Tooltip
+          placement="right"
+          title="Token is issued based on contributions members make into the station as per rules set by you in the next step. Non-transferrable means that users can’t transfer or trade these tokens.">
+          <div>
+            <MdInfo size={14} style={{ cursor: "pointer" }} />
+          </div>
+        </Tooltip>
+      </div>
+      <Typography
+        mb={1}
+        fontSize={15}
+        color={"#a0a0a0"}
+        variant="info"
+        className="text-light-gray">
+        {`Token Type This is your station’s token used to represent either membership in case of NFTs or an onchain captable in case of non-transferrable ERC20s.`}
       </Typography>
 
       <FormControl sx={{ width: "100%" }}>

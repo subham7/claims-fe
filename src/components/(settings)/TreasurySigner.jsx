@@ -227,15 +227,17 @@ const TreasurySigner = ({
             <BiPlus size={15} />
           </button>
 
-          <button
-            onClick={() => {
-              setShowAddDeleteButtons(false);
-              setShowDeleteIcons(true);
-              setShowSaveButton(true);
-              setType("delete");
-            }}>
-            <Typography variant="inherit">Delete</Typography>
-          </button>
+          {newArr?.length > 1 ? (
+            <button
+              onClick={() => {
+                setShowAddDeleteButtons(false);
+                setShowDeleteIcons(true);
+                setShowSaveButton(true);
+                setType("delete");
+              }}>
+              <Typography variant="inherit">Delete</Typography>
+            </button>
+          ) : null}
         </div>
       ) : null}
 

@@ -7,8 +7,9 @@ import {
   MenuItem,
   Select,
   Switch,
+  Typography,
 } from "@mui/material";
-import { Button, TextField, Typography } from "@components/ui";
+import { Button, TextField } from "@components/ui";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -47,17 +48,20 @@ export default function NFTStep2(props) {
 
   return (
     <div className="f-d f-vt tb-pad-2 w-100">
-      <Typography variant="body" className="text-blue">
-        Set deposit rules for members
+      <Typography fontSize={24} fontWeight={600} variant="inherit">
+        Contribution rules
+      </Typography>
+      <Typography
+        fontSize={16}
+        color={"#a0a0a0"}
+        variant="info"
+        className="text-light-gray tb-pad-1">
+        Configure membership mint parameters for the station. Members mint their
+        NFT by paying in USDC or native currency to join the station
       </Typography>
 
-      <Typography variant="info" className="text-light-gray tb-pad-1">
-        Community members will receive membership token(s) when they join this
-        station.
-      </Typography>
-
-      <Typography variant="body" className="text-blue">
-        Artwork
+      <Typography fontWeight={600} variant="body" className="text-blue">
+        Upload Artwork
       </Typography>
 
       {/* Image input card */}
@@ -163,7 +167,7 @@ export default function NFTStep2(props) {
             </Typography>
           </div>
 
-          <FormControl fullWidth>
+          <FormControl sx={{ width: "50%" }}>
             <InputLabel id="demo-simple-select-label">Token</InputLabel>
             <Select
               labelId="depositToken-label"
