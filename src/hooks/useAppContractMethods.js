@@ -19,10 +19,15 @@ import { eigenContractABI } from "abis/eigenContract";
 import { mendiTokenContract } from "abis/mendi/mendiToken";
 import { BigNumber } from "bignumber.js";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
+import useCommonContractMethods from "./useCommonContractMehods";
 
 const useAppContractMethods = (params) => {
   const walletClient = useWalletClient();
+
   const { daoAddress, routeNetworkId } = params ?? {};
+  const { getCreateFees, getDepositFees } = useCommonContractMethods({
+    routeNetworkId,
+  });
 
   const { address: walletAddress } = useAccount();
 
@@ -228,6 +233,10 @@ const useAppContractMethods = (params) => {
     value,
   ) => {
     try {
+      // Beacause only single chain so should Multiply is false
+      const depositFees = await getDepositFees(false);
+      value = value + depositFees;
+
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
         abi: factoryContractABI,
@@ -250,6 +259,10 @@ const useAppContractMethods = (params) => {
     value,
   ) => {
     try {
+      // Beacause only single chain so should Multiply is false
+      const depositFees = await getDepositFees(false);
+      value = value + depositFees;
+
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
         abi: factoryContractABI,
@@ -436,6 +449,7 @@ const useAppContractMethods = (params) => {
         account: walletAddress,
         networkId,
         walletClient,
+        value: await getCreateFees(),
       });
       return res;
     } catch (error) {
@@ -493,6 +507,7 @@ const useAppContractMethods = (params) => {
         account: walletAddress,
         networkId,
         walletClient,
+        value: await getCreateFees(),
       });
       return res;
     } catch (error) {
