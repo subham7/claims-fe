@@ -1,13 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Typography } from "@mui/material";
 import { BsCopy } from "react-icons/bs";
 import classes from "./Dashboard.module.scss";
 import { useDispatch } from "react-redux";
 import { setAlertData } from "redux/reducers/alert";
 import { generateAlertData } from "utils/globalFunctions";
+import { RiExternalLinkLine } from "react-icons/ri";
+import { useRouter } from "next/router";
 
 const CopyLinkContainer = ({ daoAddress, routeNetworkId }) => {
+  const [visibleLinkLength, setVisibleLinkLength] = useState(32);
+
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const dispatchAlert = (message, severity) => {
     dispatch(setAlertData(generateAlertData(message, severity)));
@@ -20,25 +25,57 @@ const CopyLinkContainer = ({ daoAddress, routeNetworkId }) => {
     dispatchAlert("Copied", "success");
   };
 
+  useEffect(() => {
+    const updateVisibleLinkLength = () => {
+      const windowWidth = window.innerWidth;
+      if (windowWidth > 1500) {
+        setVisibleLinkLength(50);
+      } else {
+        setVisibleLinkLength(32);
+      }
+    };
+
+    window.addEventListener("resize", updateVisibleLinkLength);
+    updateVisibleLinkLength();
+    return () => window.removeEventListener("resize", updateVisibleLinkLength);
+  }, []);
+
   return (
     <div className={classes.copyContainer}>
-      <Typography fontSize={18} fontWeight={600} variant="inherit">
-        Deposit Page
-      </Typography>
+      <div className={classes.headingContainer2}>
+        <Typography fontSize={18} fontWeight={600} variant="inherit">
+          Contribution link
+        </Typography>
+        <div
+          onClick={() => {
+            router.push(`/join/${daoAddress}/${routeNetworkId}`);
+          }}
+          className={classes.editContainer}>
+          <RiExternalLinkLine />
+          <Typography variant="inherit">Preview & Edit</Typography>
+        </div>
+      </div>
 
-      <div className={classes.flexContainer}>
+      <div
+        onClick={copyHandler}
+        className={classes.flexContainer}
+        style={{ cursor: "pointer" }}>
         <Typography className={classes.copyText} variant="inherit">
           {`${window.location.origin}/join/${daoAddress}/${routeNetworkId}`.substring(
             0,
-            30,
+            visibleLinkLength,
           )}
           ...
         </Typography>
-        <BsCopy onClick={copyHandler} cursor={"pointer"} size={12} />
+
+        <div className={classes.copyButtonContainer}>
+          <BsCopy size={12} />
+        </div>
       </div>
 
-      <Typography fontSize={12} color={"#707070"} variant="inherit">
-        Share this page to start collecting deposits.
+      <Typography mt={1} fontSize={14} color={"#707070"} variant="inherit">
+        Share this link to start collecting fund contributions into this
+        station.
       </Typography>
     </div>
   );
