@@ -10,7 +10,7 @@ const ZkMe = ({ daoAddress }) => {
   const provider = {
     async getAccessToken() {
       const token = await getKYCToken(daoAddress);
-      return token;
+      return token?.accessToken;
     },
 
     async getUserAccounts() {
