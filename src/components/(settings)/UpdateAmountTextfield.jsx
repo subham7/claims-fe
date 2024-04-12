@@ -93,7 +93,6 @@ const UpdateAmountTextfield = ({
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
 
   const submitHandler = async () => {
-    debugger;
     if (type === "signators") {
       if (
         +amount === +prevAmount ||
