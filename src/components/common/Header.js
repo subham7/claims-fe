@@ -156,7 +156,7 @@ const Header = ({
               </Typography>
             ) : (
               <Typography className={classes.action} variant="inherit">
-                Action Required
+                {address ? "Action Required" : "Connect Wallet"}
               </Typography>
             )}
           </div>
@@ -166,7 +166,9 @@ const Header = ({
           ) : (
             <div
               onClick={() => {
-                setOpen(!open);
+                if (address) {
+                  setOpen(!open);
+                }
               }}
               className={classes.kycButton}>
               <Typography variant="inherit">Complete KYC</Typography>
