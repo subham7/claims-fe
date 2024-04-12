@@ -11,9 +11,9 @@ import {
   TablePagination,
   TableRow,
   Tooltip,
-  // Typography,
+  Typography,
 } from "@mui/material";
-import { Typography, Button } from "@components/ui";
+import { Button } from "@components/ui";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
@@ -346,7 +346,7 @@ const Members = ({ daoAddress, routeNetworkId }) => {
                         background: "#111111",
                       }}
                       align="left">
-                      <Typography>
+                      <Typography variant="inherit">
                         <Tooltip title={data.userAddress}>
                           <div
                             className="f-d f-v-c f-gap-8 c-pointer"
@@ -359,7 +359,7 @@ const Members = ({ daoAddress, routeNetworkId }) => {
                               : shortAddress(data.userAddress)}
                             <OpenInNewIcon
                               sx={{
-                                fontSize: "16px",
+                                fontSize: "14px",
                               }}
                             />
                           </div>
@@ -374,8 +374,7 @@ const Members = ({ daoAddress, routeNetworkId }) => {
                         background: "#111111",
                       }}
                       align="left">
-                      <Typography
-                        sx={{ fontSize: "14px !important", fontWeight: "400" }}>
+                      <Typography variant="inherit">
                         {customToFixedAutoPrecision(
                           Number(
                             convertFromWeiGovernance(
@@ -395,7 +394,7 @@ const Members = ({ daoAddress, routeNetworkId }) => {
                         background: "#111111",
                       }}
                       align="left">
-                      <Typography>
+                      <Typography variant="inherit">
                         {tokenType === "erc20"
                           ? Number(
                               convertFromWeiGovernance(data?.gtAmount, 18),
@@ -411,7 +410,7 @@ const Members = ({ daoAddress, routeNetworkId }) => {
                         background: "#111111",
                       }}
                       align="left">
-                      <Typography>
+                      <Typography variant="inherit">
                         {new Date(+data.timeStamp * 1000).toLocaleDateString()}
                       </Typography>
                     </TableCell>

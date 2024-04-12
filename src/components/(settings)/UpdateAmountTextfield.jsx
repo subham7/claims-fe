@@ -93,6 +93,16 @@ const UpdateAmountTextfield = ({
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
 
   const submitHandler = async () => {
+    if (type === "signators") {
+      if (!amount <= Number(clubData?.adminAddresses?.length) && amount > 0) {
+        return;
+      }
+    } else {
+      if (!(prevAmount !== amount && amount > 0)) {
+        return;
+      }
+    }
+
     try {
       setLoading(true);
       const values = {

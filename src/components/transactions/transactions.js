@@ -5,7 +5,6 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useSelector } from "react-redux";
 import ExpandCircleDownIcon from "@mui/icons-material/ExpandCircleDown";
-import { Typography } from "@components/ui";
 import {
   TableBody,
   Table,
@@ -18,6 +17,7 @@ import {
   TablePagination,
   TableContainer,
   Paper,
+  Typography,
 } from "@mui/material";
 import { CHAIN_CONFIG } from "utils/constants";
 import ComponentHeader from "@components/common/ComponentHeader";
@@ -108,9 +108,7 @@ const Transactions = ({ networkId }) => {
             </div>
           ) : !loading && !transactions?.transfers?.length ? (
             <div className="tb-pad-2 f-d f-h-c f-v-c">
-              <Typography variant="subheading">
-                No Transactions to show
-              </Typography>
+              <Typography variant="inherit">No Transactions to show</Typography>
             </div>
           ) : (
             <TableContainer component={Paper}>
@@ -158,7 +156,7 @@ const Transactions = ({ networkId }) => {
                                     "/assets/images/fallbackUSDC.png";
                                 }}
                               />
-                              <Typography variant="info">
+                              <Typography variant="inherit">
                                 {txn.tokenInfo?.name}
                               </Typography>
                             </div>
@@ -172,7 +170,9 @@ const Transactions = ({ networkId }) => {
                             }}
                             align="left">
                             <div className="f-d f-v-c f-gap-8">
-                              <Typography variant="info" className="text-blue">
+                              <Typography
+                                variant="inherit"
+                                className="text-blue">
                                 <Tooltip title={txn.transactionHash}>
                                   <div
                                     className="f-d f-gap-8 f-v-c c-pointer"
@@ -181,7 +181,10 @@ const Transactions = ({ networkId }) => {
                                     }}>
                                     {txn.transactionHash?.substring(0, 10) +
                                       "... "}
-                                    <OpenInNewIcon className="c-pointer" />
+                                    <OpenInNewIcon
+                                      fontSize="14px"
+                                      className="c-pointer"
+                                    />
                                   </div>
                                 </Tooltip>
                               </Typography>
@@ -241,7 +244,7 @@ const Transactions = ({ networkId }) => {
                               background: "#111111",
                             }}
                             align="left">
-                            <Typography variant="info">
+                            <Typography variant="inherit">
                               {dayjs(txn?.executionDate).fromNow()}
                             </Typography>
                           </TableCell>
@@ -253,7 +256,7 @@ const Transactions = ({ networkId }) => {
                               background: "#111111",
                             }}
                             align="left">
-                            <Typography variant="info" className="text-blue">
+                            <Typography variant="inherit" className="text-blue">
                               <Tooltip title={txn?.from}>
                                 <a
                                   onClick={(e) => {
@@ -281,7 +284,7 @@ const Transactions = ({ networkId }) => {
                               background: "#111111",
                             }}
                             align="left">
-                            <Typography variant="body">
+                            <Typography variant="inherit">
                               {txn.value == null
                                 ? "---"
                                 : customToFixedAutoPrecision(
