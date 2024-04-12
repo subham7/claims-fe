@@ -359,6 +359,7 @@ const ERC721 = ({
               onIsW8BenSignedChange: handleIsW8BenSignedChange,
             }}
             mintProps={{
+              daoAddress,
               claimNFTHandler,
               clubData,
               count,
