@@ -9,6 +9,7 @@ import {
 import { CHAIN_CONFIG, ZERO_ADDRESS } from "utils/constants";
 import { getPublicClient } from "utils/viemConfig";
 import Web3 from "web3";
+import { factoryContractABI } from "abis/factoryContract";
 
 const useCommonContractMethods = (params) => {
   const walletClient = useWalletClient();
@@ -234,10 +235,10 @@ const useCommonContractMethods = (params) => {
   const getCreateFees = async () => {
     try {
       const createFees = await readContractFunction({
-        address: CHAIN_CONFIG[currentNetworkId].factoryContractAddress,
+        address: CHAIN_CONFIG[networkId].factoryContractAddress,
         abi: factoryContractABI,
         functionName: "createFees",
-        networkId: currentNetworkId,
+        networkId: networkId,
       });
 
       return Number(createFees) / 10 ** 18;
@@ -250,10 +251,10 @@ const useCommonContractMethods = (params) => {
   const getMultiplier = async () => {
     try {
       const multiplier = await readContractFunction({
-        address: CHAIN_CONFIG[currentNetworkId].factoryContractAddress,
+        address: CHAIN_CONFIG[networkId].factoryContractAddress,
         abi: factoryContractABI,
         functionName: "platformFeeMultiplier",
-        networkId: currentNetworkId,
+        networkId: networkId,
       });
 
       return Number(multiplier) / 100;
@@ -266,10 +267,10 @@ const useCommonContractMethods = (params) => {
   const getDepositFees = async (shouldMultiply) => {
     try {
       const createFees = await readContractFunction({
-        address: CHAIN_CONFIG[currentNetworkId].factoryContractAddress,
+        address: CHAIN_CONFIG[networkId].factoryContractAddress,
         abi: factoryContractABI,
         functionName: "depositFees",
-        networkId: currentNetworkId,
+        networkId: networkId,
       });
 
       if (shouldMultiply) {
