@@ -1,5 +1,5 @@
 import { Button, CircularProgress, Typography } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AiFillMinusCircle, AiFillPlusCircle } from "react-icons/ai";
 import { convertToWeiGovernance } from "utils/globalFunctions";
 import classes from "./Mint.module.scss";
@@ -7,6 +7,8 @@ import { CHAIN_CONFIG } from "utils/constants";
 import { useAccount } from "wagmi";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { switchNetworkHandler } from "utils/helper";
+import { getClubData } from "api/club";
+import { verifyWithZkMeServices } from "@zkmelabs/widget";
 
 const Mint = ({
   clubData,
@@ -29,10 +31,12 @@ const Mint = ({
   networkId,
   userBalance,
   routeNetworkId,
+  daoAddress,
 }) => {
   const { address: walletAddress } = useAccount();
   const { open } = useWeb3Modal();
   const [loading, setLoading] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
 
   const connectWalletHandler = async () => {
     try {
@@ -49,6 +53,10 @@ const Mint = ({
     .toFixed();
 
   const isButtonDisabled = () => {
+    if (!isVerified) {
+      return true;
+    }
+
     if (isSignable) {
       if (
         typeof isSigned !== "undefined" &&
@@ -100,6 +108,31 @@ const Mint = ({
       await claimNFTHandler();
     }
   };
+
+  const getKycSetting = async () => {
+    try {
+      const response = await getClubData(daoAddress);
+      if (response) {
+        if (response.kyc.isKycEnabled) {
+          const results = await verifyWithZkMeServices(
+            response.kyc.zkmeAppId,
+            walletAddress,
+          );
+          setIsVerified(results);
+        } else {
+          setIsVerified(true);
+        }
+        setLoading(false);
+      }
+    } catch (e) {
+      console.error(e);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getKycSetting();
+  }, []);
 
   return (
     <div className={classes.mintContainer}>
