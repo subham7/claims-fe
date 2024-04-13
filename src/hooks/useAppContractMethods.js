@@ -246,7 +246,7 @@ const useAppContractMethods = (params) => {
 
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
-        abi: factoryContractABI,
+        abi: networkId === "0xe708" ? factoryContractCCABI : factoryContractABI,
         functionName: "buyGovernanceTokenERC721DAO",
         args: [daoAddress, tokenUriOfNFT, numOfTokens, merkleProof],
         account: walletAddress,
@@ -276,7 +276,7 @@ const useAppContractMethods = (params) => {
 
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
-        abi: factoryContractABI,
+        abi: networkId === "0xe708" ? factoryContractCCABI : factoryContractABI,
         functionName: "buyGovernanceTokenERC20DAO",
         args: [daoAddress, numOfTokens, merkleProof],
         account: walletAddress,
