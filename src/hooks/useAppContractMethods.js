@@ -20,7 +20,7 @@ import { mendiTokenContract } from "abis/mendi/mendiToken";
 import { BigNumber } from "bignumber.js";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import useCommonContractMethods from "./useCommonContractMehods";
-import { factoryContractCCABI } from "abis/factoryContractcc";
+import { factoryContractCCABI } from "abis/factoryContractCC";
 
 const useAppContractMethods = (params) => {
   const walletClient = useWalletClient();
