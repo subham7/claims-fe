@@ -18,7 +18,10 @@ import {
 import { eigenContractABI } from "abis/eigenContract";
 import { mendiTokenContract } from "abis/mendi/mendiToken";
 import { BigNumber } from "bignumber.js";
-import { convertFromWeiGovernance } from "utils/globalFunctions";
+import {
+  convertFromWeiGovernance,
+  convertToWeiGovernance,
+} from "utils/globalFunctions";
 import useCommonContractMethods from "./useCommonContractMehods";
 import { factoryContractCCABI } from "abis/factoryContractCC";
 
@@ -236,7 +239,10 @@ const useAppContractMethods = (params) => {
     try {
       // Beacause only single chain so should Multiply is false
       const depositFees = await getDepositFees(false);
-      value = value + depositFees;
+      value = BigNumber(value)
+        .plus(BigNumber(convertToWeiGovernance(depositFees, 18)))
+        .integerValue()
+        .toString();
 
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
@@ -262,7 +268,11 @@ const useAppContractMethods = (params) => {
     try {
       // Beacause only single chain so should Multiply is false
       const depositFees = await getDepositFees(false);
-      value = value + depositFees;
+
+      value = BigNumber(value)
+        .plus(BigNumber(convertToWeiGovernance(depositFees, 18)))
+        .integerValue()
+        .toString();
 
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
@@ -270,7 +280,7 @@ const useAppContractMethods = (params) => {
         functionName: "buyGovernanceTokenERC20DAO",
         args: [daoAddress, numOfTokens, merkleProof],
         account: walletAddress,
-        value: value,
+        value,
         networkId,
         walletClient,
       });

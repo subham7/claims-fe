@@ -369,9 +369,9 @@ const ERC20 = ({
     //   if (!isW8BenSigned) return true;
     // }
 
-    if (!isVerified) {
-      return true;
-    }
+    // if (!isVerified) {
+    //   return true;
+    // }
 
     const isRemainingTimeInvalid =
       remainingDays < 0 || remainingTimeInSecs <= 0;
