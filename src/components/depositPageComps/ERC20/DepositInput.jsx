@@ -12,6 +12,7 @@ import { switchNetworkHandler } from "utils/helper";
 import { useAccount, useNetwork } from "wagmi";
 import classes from "../../claims/Claim.module.scss";
 import Image from "next/image";
+import DepositCardModal from "@components/modals/DepositCardModal/DepositCardModal";
 
 const ClaimInputShimmer = () => {
   return (
@@ -30,6 +31,7 @@ const DepositInput = ({
   approveERC20Handler,
   routeNetworkId,
 }) => {
+  const [showModal, setShowModal] = useState(false);
   const { address: walletAddress } = useAccount();
   const { open } = useWeb3Modal();
   const { chain } = useNetwork();
@@ -53,12 +55,15 @@ const DepositInput = ({
     if (tokenDetails?.isNativeToken === false) {
       if (Number(inputValue) <= allowanceValue) {
         await formik.handleSubmit();
+        // setShowModal(false);
       } else {
         await approveERC20Handler();
         await formik.handleSubmit();
+        // setShowModal(false);
       }
     } else {
       await formik.handleSubmit();
+      // setShowModal(false);
     }
   };
 
@@ -135,9 +140,12 @@ const DepositInput = ({
       {walletAddress && networkId === routeNetworkId ? (
         <button
           disabled={isDisabled}
-          onClick={onDepositClick}
+          onClick={() => {
+            setShowModal(true);
+          }}
+          // onClick={onDepositClick}
           className={classes.primaryButton}>
-          {depositBtnTxt()}
+          Confirm
         </button>
       ) : walletAddress && networkId !== routeNetworkId ? (
         <button
@@ -158,6 +166,16 @@ const DepositInput = ({
           Connect
         </button>
       )}
+
+      {showModal ? (
+        <DepositCardModal
+          submitHandler={onDepositClick}
+          text={depositBtnTxt()}
+          onClose={() => {
+            setShowModal(false);
+          }}
+        />
+      ) : null}
     </>
   );
 };
