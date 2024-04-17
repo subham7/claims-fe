@@ -29,7 +29,7 @@ const UserInfo = ({ name, wallet, amount }) => {
           Total amount
         </Typography>
         <Typography variant="inherit" fontWeight={800} fontSize={18}>
-          {amount} USDC
+          {amount}
         </Typography>
       </div>
     </div>

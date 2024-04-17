@@ -174,6 +174,10 @@ const DepositInput = ({
           onClose={() => {
             setShowModal(false);
           }}
+          wallet={walletAddress}
+          amount={formik.values.tokenInput}
+          networkId={networkId}
+          isNative={tokenDetails?.isNativeToken}
         />
       ) : null}
     </>
