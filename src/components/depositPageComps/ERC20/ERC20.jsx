@@ -343,9 +343,9 @@ const ERC20 = ({
     try {
       const response = await getClubData(daoAddress);
       if (response) {
-        if (response.kyc.isKycEnabled) {
+        if (response?.kyc?.isKycEnabled) {
           const results = await verifyWithZkMeServices(
-            response.kyc.zkmeAppId,
+            response?.kyc?.zkmeAppId,
             walletAddress,
           );
           setIsVerified(results);
