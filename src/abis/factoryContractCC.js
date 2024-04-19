@@ -942,23 +942,13 @@ export const factoryContractCCABI = [
       {
         components: [
           {
-            internalType: "address",
-            name: "tokenA",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "tokenB",
-            type: "address",
+            internalType: "address[]",
+            name: "tokens",
+            type: "address[]",
           },
           {
             internalType: "enum Helper.Operator",
             name: "operator",
-            type: "uint8",
-          },
-          {
-            internalType: "enum Helper.Comparator",
-            name: "comparator",
             type: "uint8",
           },
           {
@@ -967,9 +957,9 @@ export const factoryContractCCABI = [
             type: "uint256[]",
           },
         ],
-        internalType: "struct Helper.TokenGatingCondition[]",
+        internalType: "struct Helper.TokenGatingCondition",
         name: "",
-        type: "tuple[]",
+        type: "tuple",
       },
     ],
     stateMutability: "view",
@@ -1011,23 +1001,13 @@ export const factoryContractCCABI = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "_tokenA",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "_tokenB",
-        type: "address",
+        internalType: "address[]",
+        name: "_tokens",
+        type: "address[]",
       },
       {
         internalType: "enum Helper.Operator",
         name: "_operator",
-        type: "uint8",
-      },
-      {
-        internalType: "enum Helper.Comparator",
-        name: "_comparator",
         type: "uint8",
       },
       {

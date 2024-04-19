@@ -157,21 +157,14 @@ const useAppContractMethods = (params) => {
     try {
       let response = await readContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
-        abi: factoryContractABI,
+        abi: networkId === "0xe708" ? factoryContractCCABI : factoryContractABI,
         functionName: "getTokenGatingDetails",
         args: [daoAddress],
         // account: walletAddress,
         networkId: routeNetworkId ?? networkId,
       });
 
-      response = response?.map((item) => {
-        return {
-          ...item,
-          value: item.value.map((val) => Number(val)),
-        };
-      });
-
-      return response ?? [];
+      return response ?? {};
     } catch (error) {
       console.error(error);
     }
@@ -342,19 +335,14 @@ const useAppContractMethods = (params) => {
     }
   };
 
-  const setupTokenGating = async (
-    tokenA,
-    tokenB,
-    operator,
-    comparator,
-    value,
-  ) => {
+  const setupTokenGating = async ({ addresses, amounts, operator }) => {
     try {
+      debugger;
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
-        abi: factoryContractABI,
+        abi: networkId === "0xe708" ? factoryContractCCABI : factoryContractABI,
         functionName: "setupTokenGating",
-        args: [tokenA, tokenB, operator, comparator, value, daoAddress], // ["address", "address", 0, 0, ["1", "1"], "daoAddress"]
+        args: [addresses, operator, amounts, daoAddress],
         account: walletAddress,
         networkId,
         walletClient,
