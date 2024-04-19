@@ -2,6 +2,7 @@ import { Typography } from "@mui/material";
 import React from "react";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import classes from "../claims/Claim.module.scss";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const Eligibility = ({
   contractData,
@@ -10,6 +11,7 @@ const Eligibility = ({
   isDeposit = false,
   gatedTokenDetails,
   isWhitelist = false,
+  routeNetworkId,
 }) => {
   const getClaimInfo = (claimType, contractData, tokenDetails) => {
     switch (claimType) {
@@ -102,10 +104,38 @@ const Eligibility = ({
       <h3 className={classes.header}>
         Who can {isDeposit ? "join" : "claim"}?
       </h3>
-      <div>
-        <h4>{displayText}</h4>
-        <Typography variant="inherit">{description}</Typography>
-      </div>
+
+      {isTokenGated ? (
+        <div>
+          <Typography variant="inherit">
+            Match {gatedTokenDetails.operator === 1 ? "at least one of" : ""}{" "}
+            the following condtion(s)
+          </Typography>
+
+          <div className={classes.tokenList}>
+            {gatedTokenDetails.tokensData.map((item, index) => (
+              <div
+                key={index}
+                onClick={() => {
+                  window.open(
+                    `${CHAIN_CONFIG[routeNetworkId].blockExplorerUrl}/address/${item.address}`,
+                    "_blank",
+                  );
+                }}
+                className={classes.tokenContainer}>
+                <Typography variant="inherit">
+                  Hold {item.requiredAmount} {item.symbol}
+                </Typography>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div>
+          <h4>{displayText}</h4>
+          <Typography variant="inherit">{description}</Typography>
+        </div>
+      )}
     </div>
   );
 };

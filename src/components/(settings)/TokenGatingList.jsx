@@ -17,6 +17,13 @@ const TokenGatingList = ({ daoAddress, setLoading, setIsTokenGated }) => {
   const [showAddButton, setShowAddButton] = useState(true);
   const [showSaveButton, setShowSaveButton] = useState(false);
   const [tokenGatedDetails, setTokenGatedDetails] = useState([]);
+  const [operator, setOperator] = useState(0);
+  const [addNewTokenDetails, setAddNewTokenDetails] = useState([
+    {
+      address: "",
+      amount: 0,
+    },
+  ]);
   const [tokenGatingDetails, setTokenGatingDetails] = useState({
     address: "",
     amount: 0,
@@ -41,13 +48,72 @@ const TokenGatingList = ({ daoAddress, setLoading, setIsTokenGated }) => {
     dispatch(setAlertData(generateAlertData(message, severity)));
   };
 
+  const fetchGatedData = async (tokenData) => {
+    const promises = tokenData.tokens.map(async (address, index) => {
+      let decimal;
+
+      try {
+        decimal = await getDecimals(address);
+      } catch (error) {
+        decimal = null;
+      }
+
+      const value = tokenData.value[index].toString();
+      const convertedAmount = decimal
+        ? convertFromWeiGovernance(value, decimal)
+        : value.toString();
+
+      return {
+        address,
+        amount: convertedAmount.toString(),
+        decimal: decimal ?? null,
+      };
+    });
+
+    return Promise.all(promises);
+  };
+
+  const fetchData = async (tokensData) => {
+    const promises = tokensData.map(async (token) => {
+      let symbol, decimal;
+
+      try {
+        symbol = await getTokenSymbol(token.address);
+      } catch (error) {
+        console.log(error);
+      }
+
+      try {
+        decimal = await getDecimals(token.address);
+      } catch (error) {
+        decimal = null;
+      }
+
+      return {
+        ...token,
+        symbol,
+        decimal,
+        convertedAmount: decimal
+          ? convertToWeiGovernance(token.amount, decimal)
+          : token.amount,
+      };
+    });
+    return Promise.all(promises);
+  };
+
   const tokenGatingHandler = async () => {
     try {
       setLoading(true);
 
-      const symbol = await getTokenSymbol(tokenGatingDetails.address);
+      console.log("xxx", addNewTokenDetails, tokenGatedDetails);
 
-      if (!symbol) {
+      const data = await fetchData([
+        ...addNewTokenDetails,
+        ...tokenGatedDetails,
+      ]);
+      const invalidToken = data.find((token) => !token.symbol);
+
+      if (invalidToken) {
         setShowErrorText(true);
         setLoading(false);
         return;
@@ -55,30 +121,23 @@ const TokenGatingList = ({ daoAddress, setLoading, setIsTokenGated }) => {
         setShowErrorText(false);
       }
 
-      const decimals = await getDecimals(tokenGatingDetails.address);
+      const amounts = data.map((token) => token.convertedAmount);
+      const addresses = data.map((token) => token.address);
 
-      const convertedAmount = convertToWeiGovernance(
-        tokenGatingDetails.amount,
-        decimals,
-      );
-
-      await setupTokenGating(
-        tokenGatingDetails.address,
-        tokenGatingDetails.address,
-        0,
-        0,
-        [
-          decimals ? convertedAmount : tokenGatingDetails.amount,
-          decimals ? convertedAmount : tokenGatingDetails.amount,
-        ],
-      );
+      await setupTokenGating({
+        addresses: addresses,
+        amounts: amounts,
+        operator: operator,
+      });
       fetchTokenGatingDetails();
       setLoading(false);
       dispatchAlert("Token gated successfully", "success");
-      setTokenGatingDetails({
-        address: "",
-        amount: 0,
-      });
+      setAddNewTokenDetails([
+        {
+          address: "",
+          amount: 0,
+        },
+      ]);
       setShowAddButton(true);
       setShowSaveButton(false);
       setIsTokenGated(true);
@@ -98,6 +157,12 @@ const TokenGatingList = ({ daoAddress, setLoading, setIsTokenGated }) => {
       setLoading(true);
       await disableTokenGating();
       fetchTokenGatingDetails();
+      setAddNewTokenDetails([
+        {
+          address: "",
+          amount: 0,
+        },
+      ]);
       dispatchAlert("Token gating removed successfully", "success");
       setLoading(false);
       setIsTokenGated(false);
@@ -115,17 +180,9 @@ const TokenGatingList = ({ daoAddress, setLoading, setIsTokenGated }) => {
     try {
       const details = await getTokenGatingDetails();
 
-      const transformedDetails = [];
-      for (const detail of details) {
-        const decimal = await getDecimals(detail.tokenA);
-        transformedDetails.push({
-          tokenAAddress: detail.tokenA,
-          value: detail.value[0].toString(),
-          decimal,
-        });
-      }
-
-      setTokenGatedDetails(transformedDetails);
+      const data = await fetchGatedData(details);
+      console.log("xxx", data);
+      setTokenGatedDetails(data);
     } catch (error) {
       console.log(error);
     }
@@ -136,81 +193,78 @@ const TokenGatingList = ({ daoAddress, setLoading, setIsTokenGated }) => {
   }, [daoAddress]);
 
   return (
-    <div className={classes.treasurySignerContainer}>
-      {tokenGatedDetails?.length
-        ? tokenGatedDetails.map((item, index) => (
-            <div
-              key={index}
-              style={{ margin: "4px 0" }}
-              className={classes.copyTextContainer}>
-              <input
-                value={item.tokenAAddress}
-                placeholder="Contract address"
-                className={classNames(classes.input, classes.address)}
-                disabled
-              />
-              <input
-                type="number"
-                value={Number(
-                  item.decimal
-                    ? convertFromWeiGovernance(item.value, item.decimal)
-                    : item.value,
-                )}
-                placeholder="0"
-                disabled
-                className={classNames(classes.input, classes.percentage)}
-              />
-            </div>
-          ))
-        : null}
+    <div
+      style={{
+        display: "flex",
+      }}>
+      <div className={classes.treasurySignerContainer}>
+        {tokenGatedDetails?.length
+          ? tokenGatedDetails.map((item, index) => (
+              <div
+                key={index}
+                style={{ margin: "4px 0" }}
+                className={classes.copyTextContainer}>
+                <input
+                  value={item.address}
+                  placeholder="Contract address"
+                  className={classNames(classes.input, classes.address)}
+                  disabled
+                />
+                <input
+                  type="number"
+                  value={item.amount}
+                  placeholder="0"
+                  disabled
+                  className={classNames(classes.input, classes.percentage)}
+                />
+              </div>
+            ))
+          : null}
 
-      <div>
-        {!showAddButton || !tokenGatedDetails.length ? (
+        {addNewTokenDetails.map((data, key) => (
           <div
+            key={key}
             style={{ margin: "4px 0" }}
             className={classes.copyTextContainer}>
             <input
               onChange={(e) => {
-                setTokenGatingDetails({
-                  ...tokenGatingDetails,
-                  address: e.target.value,
-                });
+                const address = e.target.value;
+                const list = [...addNewTokenDetails];
+                list[key].address = address;
+                setAddNewTokenDetails(list);
               }}
+              value={addNewTokenDetails[key].address}
               disabled={!isAdmin}
-              value={tokenGatingDetails.address}
               placeholder="Contract address"
               className={classNames(classes.input, classes.address)}
             />
             <input
               type="number"
-              value={tokenGatingDetails.amount}
               onChange={(e) => {
-                setTokenGatingDetails({
-                  ...tokenGatingDetails,
-                  amount: e.target.value,
-                });
+                const amount = e.target.value;
+                const list = [...addNewTokenDetails];
+                list[key].amount = amount;
+                console.log("DDD", list);
+                setAddNewTokenDetails(list);
               }}
+              value={addNewTokenDetails[key].amount}
               placeholder="0"
               disabled={!isAdmin}
               className={classNames(classes.input, classes.percentage)}
             />
 
-            {tokenGatedDetails.length ? (
+            {addNewTokenDetails.length > 1 || tokenGatedDetails.length ? (
               <RxCross2
                 onClick={() => {
-                  setShowAddButton(true);
-                  setShowSaveButton(false);
-                  setShowErrorText(false);
-                  setTokenGatingDetails({
-                    amount: 0,
-                    address: "",
-                  });
+                  const list = [...addNewTokenDetails];
+                  list.splice(key, 1);
+                  setAddNewTokenDetails(list);
                 }}
                 className={classNames(classes.icon)}
               />
             ) : null}
           </div>
-        ) : null}
+        ))}
 
         {showErrorText && (
           <Typography
@@ -223,26 +277,54 @@ const TokenGatingList = ({ daoAddress, setLoading, setIsTokenGated }) => {
           </Typography>
         )}
 
-        {isAdmin && showAddButton && tokenGatedDetails.length ? (
+        {/* {isAdmin && showAddButton && tokenGatedDetails.length ? ( */}
+
+        {isAdmin ? (
           <div className={classes.copyTextContainer}>
             <button
               onClick={() => {
-                setShowAddButton(false);
-                setShowSaveButton(true);
+                setAddNewTokenDetails([
+                  ...addNewTokenDetails,
+                  {
+                    address: "",
+                    amount: "",
+                  },
+                ]);
               }}>
               Add +{" "}
             </button>
-            <button
-              onClick={removeTokenGatingHandler}
-              className={classes.remove}>
-              Remove Tokengating
+            <button className={classes.saveButton} onClick={tokenGatingHandler}>
+              Save
             </button>
+
+            {tokenGatedDetails.length >= 1 ? (
+              <button
+                onClick={removeTokenGatingHandler}
+                className={classes.remove}>
+                Remove Tokengating
+              </button>
+            ) : null}
           </div>
         ) : null}
+      </div>
 
-        {isAdmin && (showSaveButton || !tokenGatedDetails.length) ? (
-          <button onClick={tokenGatingHandler}>Save</button>
-        ) : null}
+      <div>
+        <select
+          disabled={!isAdmin}
+          onChange={(e) => {
+            setOperator(e.target.value);
+          }}
+          style={{
+            width: "100px",
+            marginTop: "4px",
+            marginLeft: "12px",
+          }}
+          className={classes.input}>
+          <option selected value={0}>
+            AND
+          </option>
+          <option value={1}>OR</option>
+        </select>
       </div>
     </div>
   );

@@ -47,8 +47,9 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
 
   const fetchTokenGatingDetails = async () => {
     const details = await getTokenGatingDetails();
+    console.log("xxx", details);
 
-    if (details && details.length) {
+    if (details && details?.tokens?.length) {
       setIsTokenGated(true);
     } else {
       setIsTokenGated(false);

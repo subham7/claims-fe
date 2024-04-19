@@ -250,6 +250,22 @@
     .whoCanClaimContainer {
       margin: 24px 0;
 
+      .tokenList{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 4px;
+        margin-top: 12px;
+
+        .tokenContainer{
+          padding:12px 40px;
+          font-weight: 600;
+          border-radius: 50px;
+          background-color: $dark-gray;
+          cursor: pointer;
+        }
+      }
+
       div {
         background-color: $background-primary;
         padding: 20px;

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Typography } from "@mui/material";
 import { BsCopy } from "react-icons/bs";
 import classes from "./Dashboard.module.scss";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setAlertData } from "redux/reducers/alert";
 import { generateAlertData } from "utils/globalFunctions";
 import { RiExternalLinkLine } from "react-icons/ri";
@@ -10,6 +10,10 @@ import { useRouter } from "next/router";
 
 const CopyLinkContainer = ({ daoAddress, routeNetworkId }) => {
   const [visibleLinkLength, setVisibleLinkLength] = useState(32);
+
+  const isAdmin = useSelector((state) => {
+    return state.gnosis.adminUser;
+  });
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -46,14 +50,17 @@ const CopyLinkContainer = ({ daoAddress, routeNetworkId }) => {
         <Typography fontSize={18} fontWeight={600} variant="inherit">
           Contribution link
         </Typography>
-        <div
-          onClick={() => {
-            router.push(`/join/${daoAddress}/${routeNetworkId}`);
-          }}
-          className={classes.editContainer}>
-          <RiExternalLinkLine />
-          <Typography variant="inherit">Preview & Edit</Typography>
-        </div>
+
+        {isAdmin ? (
+          <div
+            onClick={() => {
+              router.push(`/join/${daoAddress}/${routeNetworkId}`);
+            }}
+            className={classes.editContainer}>
+            <RiExternalLinkLine />
+            <Typography variant="inherit">Preview & Edit</Typography>
+          </div>
+        ) : null}
       </div>
 
       <div
