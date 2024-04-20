@@ -392,6 +392,7 @@ const ERC721 = ({
           isDeposit: true,
           isTokenGated: isTokenGated,
           isWhitelist: whitelistUserData?.setWhitelist,
+          routeNetworkId,
         }}
         members={members}
         isSuccessfull={claimSuccessfull}
