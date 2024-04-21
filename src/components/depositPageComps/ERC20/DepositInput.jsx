@@ -56,15 +56,15 @@ const DepositInput = ({
     if (tokenDetails?.isNativeToken === false) {
       if (Number(inputValue) <= allowanceValue) {
         await formik.handleSubmit();
-        // setShowModal(false);
+        setShowModal(false);
       } else {
         await approveERC20Handler();
         await formik.handleSubmit();
-        // setShowModal(false);
+        setShowModal(false);
       }
     } else {
       await formik.handleSubmit();
-      // setShowModal(false);
+      setShowModal(false);
     }
   };
 
@@ -146,7 +146,7 @@ const DepositInput = ({
           }}
           // onClick={onDepositClick}
           className={classes.primaryButton}>
-          Confirm
+          Deposit
         </button>
       ) : walletAddress && networkId !== routeNetworkId ? (
         <button

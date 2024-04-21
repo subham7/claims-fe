@@ -106,11 +106,14 @@ const Mint = ({
   const onMintClick = async () => {
     if (tokenDetails.isNativeToken === true) {
       await claimNFTHandler();
+      setShowModal(false);
     } else if (Number(inputValue) <= allowanceValue) {
       await claimNFTHandler();
+      setShowModal(false);
     } else if (Number(inputValue) >= allowanceValue) {
       await approveERC721Handler();
       await claimNFTHandler();
+      setShowModal(false);
     }
   };
 
@@ -183,7 +186,7 @@ const Mint = ({
               }}
               disabled={isButtonDisabled()}
               variant="contained">
-              Confirm
+              Mint
             </Button>
           ) : walletAddress && networkId !== routeNetworkId ? (
             <Button
