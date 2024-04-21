@@ -9,6 +9,7 @@ import {
 import { CHAIN_CONFIG, ZERO_ADDRESS } from "utils/constants";
 import { getPublicClient } from "utils/viemConfig";
 import Web3 from "web3";
+import { factoryContractCCABI } from "abis/factoryContractCC";
 
 const useCommonContractMethods = (params) => {
   const walletClient = useWalletClient();
@@ -231,6 +232,61 @@ const useCommonContractMethods = (params) => {
     }
   };
 
+  const getCreateFees = async () => {
+    try {
+      const createFees = await readContractFunction({
+        address: CHAIN_CONFIG[networkId].factoryContractAddress,
+        abi: factoryContractCCABI,
+        functionName: "createFees",
+        networkId: networkId,
+      });
+
+      return Number(createFees) / 10 ** 18;
+    } catch (e) {
+      console.error(e);
+      return 0;
+    }
+  };
+
+  const getMultiplier = async () => {
+    try {
+      const multiplier = await readContractFunction({
+        address: CHAIN_CONFIG[networkId].factoryContractAddress,
+        abi: factoryContractCCABI,
+        functionName: "platformFeeMultiplier",
+        networkId: networkId,
+      });
+
+      return Number(multiplier) / 100;
+    } catch (e) {
+      console.error(e);
+      return 0;
+    }
+  };
+
+  const getDepositFees = async (shouldMultiply) => {
+    try {
+      const createFees = await readContractFunction({
+        address: CHAIN_CONFIG[networkId].factoryContractAddress,
+        abi: factoryContractCCABI,
+        functionName: "depositFees",
+        networkId: networkId,
+      });
+
+      if (shouldMultiply) {
+        const multiplier = await getMultiplier();
+        if (multiplier) {
+          return (Number(createFees) / 10 ** 18) * multiplier;
+        }
+      }
+
+      return Number(createFees ?? 0) / 10 ** 18;
+    } catch (e) {
+      console.error(e);
+      return 0;
+    }
+  };
+
   return {
     getDecimals,
     getBalance,
@@ -239,6 +295,8 @@ const useCommonContractMethods = (params) => {
     approveDeposit,
     encode,
     checkCurrentAllowance,
+    getCreateFees,
+    getDepositFees,
   };
 };
 

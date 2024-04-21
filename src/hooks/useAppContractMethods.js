@@ -7,7 +7,7 @@ import { factoryContractABI } from "abis/factoryContract.js";
 import { getTransaction } from "utils/proposal";
 import { erc20DaoABI } from "abis/erc20Dao";
 import { erc721DaoABI } from "abis/erc721Dao";
-import { encodeFunctionData } from "viem";
+import { encodeFunctionData, parseEther } from "viem";
 import { CHAIN_CONFIG } from "utils/constants";
 import {
   createOrUpdateSafeTransaction,
@@ -18,11 +18,20 @@ import {
 import { eigenContractABI } from "abis/eigenContract";
 import { mendiTokenContract } from "abis/mendi/mendiToken";
 import { BigNumber } from "bignumber.js";
-import { convertFromWeiGovernance } from "utils/globalFunctions";
+import {
+  convertFromWeiGovernance,
+  convertToWeiGovernance,
+} from "utils/globalFunctions";
+import useCommonContractMethods from "./useCommonContractMehods";
+import { factoryContractCCABI } from "abis/factoryContractCC";
 
 const useAppContractMethods = (params) => {
   const walletClient = useWalletClient();
+
   const { daoAddress, routeNetworkId } = params ?? {};
+  const { getCreateFees, getDepositFees } = useCommonContractMethods({
+    routeNetworkId,
+  });
 
   const { address: walletAddress } = useAccount();
 
@@ -148,21 +157,14 @@ const useAppContractMethods = (params) => {
     try {
       let response = await readContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
-        abi: factoryContractABI,
+        abi: networkId === "0xe708" ? factoryContractCCABI : factoryContractABI,
         functionName: "getTokenGatingDetails",
         args: [daoAddress],
         // account: walletAddress,
         networkId: routeNetworkId ?? networkId,
       });
 
-      response = response?.map((item) => {
-        return {
-          ...item,
-          value: item.value.map((val) => Number(val)),
-        };
-      });
-
-      return response ?? [];
+      return response ?? {};
     } catch (error) {
       console.error(error);
     }
@@ -228,9 +230,16 @@ const useAppContractMethods = (params) => {
     value,
   ) => {
     try {
+      // Beacause only single chain so should Multiply is false
+      const depositFees = await getDepositFees(false);
+      value = BigNumber(value)
+        .plus(BigNumber(convertToWeiGovernance(depositFees, 18)))
+        .integerValue()
+        .toString();
+
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
-        abi: factoryContractABI,
+        abi: networkId === "0xe708" ? factoryContractCCABI : factoryContractABI,
         functionName: "buyGovernanceTokenERC721DAO",
         args: [daoAddress, tokenUriOfNFT, numOfTokens, merkleProof],
         account: walletAddress,
@@ -250,13 +259,21 @@ const useAppContractMethods = (params) => {
     value,
   ) => {
     try {
+      // Beacause only single chain so should Multiply is false
+      const depositFees = await getDepositFees(false);
+
+      value = BigNumber(value)
+        .plus(BigNumber(convertToWeiGovernance(depositFees, 18)))
+        .integerValue()
+        .toString();
+
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
-        abi: factoryContractABI,
+        abi: networkId === "0xe708" ? factoryContractCCABI : factoryContractABI,
         functionName: "buyGovernanceTokenERC20DAO",
         args: [daoAddress, numOfTokens, merkleProof],
         account: walletAddress,
-        value: value,
+        value,
         networkId,
         walletClient,
       });
@@ -318,19 +335,14 @@ const useAppContractMethods = (params) => {
     }
   };
 
-  const setupTokenGating = async (
-    tokenA,
-    tokenB,
-    operator,
-    comparator,
-    value,
-  ) => {
+  const setupTokenGating = async ({ addresses, amounts, operator }) => {
     try {
+      debugger;
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
-        abi: factoryContractABI,
+        abi: networkId === "0xe708" ? factoryContractCCABI : factoryContractABI,
         functionName: "setupTokenGating",
-        args: [tokenA, tokenB, operator, comparator, value, daoAddress], // ["address", "address", 0, 0, ["1", "1"], "daoAddress"]
+        args: [addresses, operator, amounts, daoAddress],
         account: walletAddress,
         networkId,
         walletClient,
@@ -407,35 +419,63 @@ const useAppContractMethods = (params) => {
     merkleRoot,
   }) => {
     try {
+      const fees = networkId === "0xe708" ? await getCreateFees() : 0;
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
-        abi: factoryContractABI,
+        abi: networkId === "0xe708" ? factoryContractCCABI : factoryContractABI,
         functionName: "createERC721DAO",
-        args: [
-          clubName,
-          clubSymbol,
-          metadataURL,
-          ownerFeePerDepositPercent,
-          depositClose,
-          quorum,
-          threshold,
-          safeThreshold,
-          depositTokenAddress,
-          // treasuryAddress,
-          addressList,
-          maxTokensPerUser,
-          distributeAmount,
-          pricePerToken,
-          isNftTransferable,
-          isNftTotalSupplyUnlimited,
-          isGovernanceActive,
-          allowWhiteList,
-          assetsStoredOnGnosis,
-          merkleRoot,
-        ],
+        args:
+          networkId === "0xe708"
+            ? [
+                clubName,
+                clubSymbol,
+                metadataURL,
+                2,
+                ownerFeePerDepositPercent,
+                depositClose,
+                quorum,
+                threshold,
+                safeThreshold,
+                [183],
+                treasuryAddress,
+                [depositTokenAddress],
+                addressList,
+                maxTokensPerUser,
+                distributeAmount,
+                pricePerToken,
+                isNftTransferable,
+                isNftTotalSupplyUnlimited,
+                isGovernanceActive,
+                allowWhiteList,
+                assetsStoredOnGnosis,
+                merkleRoot,
+              ]
+            : [
+                clubName,
+                clubSymbol,
+                metadataURL,
+                ownerFeePerDepositPercent,
+                depositClose,
+                quorum,
+                threshold,
+                safeThreshold,
+                depositTokenAddress,
+                // treasuryAddress,
+                addressList,
+                maxTokensPerUser,
+                distributeAmount,
+                pricePerToken,
+                isNftTransferable,
+                isNftTotalSupplyUnlimited,
+                isGovernanceActive,
+                allowWhiteList,
+                assetsStoredOnGnosis,
+                merkleRoot,
+              ],
         account: walletAddress,
         networkId,
         walletClient,
+        value: parseEther(fees.toString()),
       });
       return res;
     } catch (error) {
@@ -465,34 +505,61 @@ const useAppContractMethods = (params) => {
     merkleRoot,
   }) => {
     try {
+      const fees = networkId === "0xe708" ? await getCreateFees() : 0;
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
-        abi: factoryContractABI,
+        abi: networkId === "0xe708" ? factoryContractCCABI : factoryContractABI,
         functionName: "createERC20DAO",
-        args: [
-          clubName,
-          clubSymbol,
-          distributeAmount,
-          pricePerToken,
-          minDepositPerUser,
-          maxDepositPerUser,
-          ownerFeePerDepositPercent,
-          depositClose,
-          quorum,
-          threshold,
-          safeThreshold,
-          depositToken,
-          // treasuryAddress,
-          addressList,
-          isGovernanceActive,
-          isGtTransferable,
-          allowWhiteList,
-          assetsStoredOnGnosis,
-          merkleRoot,
-        ],
+        args:
+          networkId === "0xe708"
+            ? [
+                clubName,
+                clubSymbol,
+                2, // Comm layer id
+                distributeAmount,
+                pricePerToken,
+                minDepositPerUser,
+                maxDepositPerUser,
+                ownerFeePerDepositPercent,
+                depositClose,
+                quorum,
+                threshold,
+                safeThreshold,
+                [183],
+                treasuryAddress,
+                [depositToken],
+                addressList,
+                isGovernanceActive,
+                isGtTransferable,
+                allowWhiteList,
+                assetsStoredOnGnosis,
+                merkleRoot,
+              ]
+            : [
+                clubName,
+                clubSymbol,
+                distributeAmount,
+                pricePerToken,
+                minDepositPerUser,
+                maxDepositPerUser,
+                ownerFeePerDepositPercent,
+                depositClose,
+                quorum,
+                threshold,
+                safeThreshold,
+                depositToken,
+                // treasuryAddress,
+                addressList,
+                isGovernanceActive,
+                isGtTransferable,
+                allowWhiteList,
+                assetsStoredOnGnosis,
+                merkleRoot,
+              ],
         account: walletAddress,
         networkId,
         walletClient,
+        value: parseEther(fees.toString()),
       });
       return res;
     } catch (error) {

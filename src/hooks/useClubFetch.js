@@ -239,7 +239,6 @@ const useClubFetch = ({ daoAddress, routeNetworkId }) => {
         } else {
           dispatch(setMemberUser(true));
         }
-
         dispatch(setAdminUser(false));
       }
     } catch (error) {

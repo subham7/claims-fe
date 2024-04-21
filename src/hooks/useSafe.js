@@ -6,6 +6,10 @@ import { ZERO_ADDRESS } from "utils/constants";
 import { uploadNFT } from "api/assets";
 import { handleSignMessage, uploadFileToAWS } from "utils/helper";
 import { setAlertData } from "redux/reducers/alert";
+import {
+  DAO_INITIALIZED_TOPIC,
+  SAFE_SETUP_TOPIC,
+} from "utils/smartContractConstants";
 
 const useSafe = () => {
   const { createERC721DAO, createERC20DAO } = useAppContractMethods();
@@ -27,6 +31,7 @@ const useSafe = () => {
     // dispatch(setCreateDaoAuthorized(false));
 
     let daoAddress = null;
+    let safeAddress = null;
 
     try {
       // dispatch(setCreateSafeLoading(false));
@@ -47,10 +52,35 @@ const useSafe = () => {
         });
       }
 
-      daoAddress =
-        params.treasuryAddress === ZERO_ADDRESS
-          ? value.logs[2].address
-          : value.logs[0].address;
+      if (networkId === "0xe708") {
+        const createDaoTopic = value.logs.filter(
+          (log) => log.topics[0].toLowerCase() === DAO_INITIALIZED_TOPIC,
+        );
+
+        const gnosisTopic = value.logs.filter(
+          (log) => log.topics[0].toLowerCase() === SAFE_SETUP_TOPIC,
+        );
+
+        daoAddress =
+          params?.treasuryAddress === ZERO_ADDRESS
+            ? createDaoTopic[0].address
+            : value?.logs[0].address;
+
+        safeAddress =
+          params?.treasuryAddress === ZERO_ADDRESS
+            ? gnosisTopic[0].address
+            : params?.treasuryAddress;
+      } else {
+        daoAddress =
+          params.treasuryAddress === ZERO_ADDRESS
+            ? value.logs[2].address
+            : value.logs[0].address;
+
+        safeAddress =
+          params.treasuryAddress === ZERO_ADDRESS
+            ? value.logs[0].address
+            : params.treasuryAddress;
+      }
 
       const payload = {
         depositConfig: {
@@ -61,10 +91,7 @@ const useSafe = () => {
         name: params.clubName,
         daoAddress: daoAddress?.toLowerCase(),
         votingStrategy: "onePersonOneVote",
-        safeAddress:
-          params.treasuryAddress === ZERO_ADDRESS
-            ? value.logs[0].address
-            : params.treasuryAddress,
+        safeAddress: safeAddress,
         networkId,
         tokenType: clubTokenType === "NFT" ? "erc721" : "erc20NonTransferable",
       };
@@ -77,10 +104,7 @@ const useSafe = () => {
       try {
         dispatch(
           addClubData({
-            gnosisAddress:
-              params.treasuryAddress === ZERO_ADDRESS
-                ? value.logs[0].address
-                : params.treasuryAddress,
+            gnosisAddress: safeAddress,
             isGtTransferable: params.isGtTransferable,
             name: params.clubName,
             ownerAddress: addressList,

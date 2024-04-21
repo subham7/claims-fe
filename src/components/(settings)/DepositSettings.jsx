@@ -48,7 +48,7 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
   const fetchTokenGatingDetails = async () => {
     const details = await getTokenGatingDetails();
 
-    if (details && details.length) {
+    if (details && details?.tokens?.length) {
       setIsTokenGated(true);
     } else {
       setIsTokenGated(false);
@@ -109,6 +109,7 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
       ),
       isDisabled: !isTokenGated,
       showStatusTag: true,
+      isHidden: routeNetworkId !== "0xe708",
     },
     {
       heading: "Deadline",

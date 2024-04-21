@@ -45,6 +45,7 @@ const DepositInputComponents = ({
   approveERC20Handler,
   allowanceValue,
   routeNetworkId,
+  daoAddress,
 }) => {
   return (
     <>
@@ -56,6 +57,7 @@ const DepositInputComponents = ({
         isDisabled={isDepositDisabled}
         approveERC20Handler={approveERC20Handler}
         allowanceValue={allowanceValue}
+        daoAddress={daoAddress}
       />
       <DepositDetails />
     </>
@@ -442,6 +444,7 @@ const ERC20 = ({
             allowanceValue={allowanceValue}
             isDepositDisabled={isDepositDisabled()}
             tokenDetails={tokenDetails}
+            daoAddress={daoAddress}
             depositPreRequisitesProps={{
               uploadedDocInfo: uploadedDocInfo,
               daoAddress: daoAddress,
@@ -459,6 +462,7 @@ const ERC20 = ({
           isDeposit: true,
           isTokenGated: isTokenGated,
           isWhitelist: whitelistUserData?.setWhitelist,
+          routeNetworkId,
         }}
         members={members}
         loading={loading}
