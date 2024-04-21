@@ -337,7 +337,6 @@ const useAppContractMethods = (params) => {
 
   const setupTokenGating = async ({ addresses, amounts, operator }) => {
     try {
-      debugger;
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
         abi: networkId === "0xe708" ? factoryContractCCABI : factoryContractABI,
