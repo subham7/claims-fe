@@ -48,6 +48,7 @@ const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
           clubData={clubData}
         />
       ),
+      isHidden: routeNetworkId === "0xe708",
     },
     {
       key: "treasuryMultisig",
@@ -113,9 +114,23 @@ const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
 
   return (
     <div>
-      {settings.map(({ key, heading, description, content }) => (
-        <SettingItem key={key} heading={heading} description={description}>
+      {/* {settings.map(({ key, heading, description, content, isHidden }) => (
+        <SettingItem
+          isHidden={isHidden}
+          key={key}
+          heading={heading}
+          description={description}>
           {content}
+        </SettingItem>
+      ))} */}
+
+      {settings.map((item) => (
+        <SettingItem
+          key={item.key}
+          heading={item?.heading}
+          isHidden={item.isHidden}
+          description={item.description}>
+          {item.content}
         </SettingItem>
       ))}
 

@@ -68,7 +68,7 @@ const DepositCardModal = ({
 
         {networkId === "0xe708" ? (
           <AmountInfo
-            title="StationX Fee"
+            title="Platform Fee"
             amount={`${fees} ${CHAIN_CONFIG[networkId]?.nativeCurrency?.symbol}`}
             icon={<PiArrowElbowDownRightBold style={iconStyle} />}
           />
