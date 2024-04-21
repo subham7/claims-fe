@@ -138,14 +138,14 @@ const Join = ({ daoAddress, routeNetworkId }) => {
     if (operator === 0) {
       // AND condition: All tokens must meet the requirement
       return tokensData.every((token) =>
-        BigNumber(token.userBalance).isGreaterThan(
+        BigNumber(token.userBalance).isGreaterThanOrEqualTo(
           BigNumber(token.requiredAmount),
         ),
       );
     } else if (operator === 1) {
       // OR condition: At least one token must meet the requirement
       return tokensData.some((token) =>
-        BigNumber(token.userBalance).isGreaterThan(
+        BigNumber(token.userBalance).isGreaterThanOrEqualTo(
           BigNumber(token.requiredAmount),
         ),
       );
