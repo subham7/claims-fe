@@ -9,6 +9,7 @@ import { shortAddress } from "utils/helper";
 import { useSelector } from "react-redux";
 import { CHAIN_CONFIG } from "utils/constants";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
+import { Typography } from "@mui/material";
 
 const DepositCardModal = ({
   onClose,
@@ -73,6 +74,13 @@ const DepositCardModal = ({
             icon={<PiArrowElbowDownRightBold style={iconStyle} />}
           />
         ) : null}
+      </div>
+
+      <div className={classes.infoContainer}>
+        <Typography className={classes.info} variant="inherit">
+          This station is managed by the admin(s). Join the station onky if you
+          trust the admin(s) with your funds.
+        </Typography>
       </div>
 
       <button onClick={submitHandler} className={classes.confirmButton}>

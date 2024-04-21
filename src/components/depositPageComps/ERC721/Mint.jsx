@@ -230,7 +230,7 @@ const Mint = ({
           onClose={() => {
             setShowModal(false);
           }}
-          wallet={daoAddress}
+          wallet={clubData?.ownerAddress}
           amount={convertFromWeiGovernance(
             inputValue,
             tokenDetails?.tokenDecimal,

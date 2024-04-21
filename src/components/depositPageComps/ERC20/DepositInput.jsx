@@ -30,7 +30,7 @@ const DepositInput = ({
   allowanceValue,
   approveERC20Handler,
   routeNetworkId,
-  daoAddress,
+  ownerAddress,
 }) => {
   const [showModal, setShowModal] = useState(false);
   const { address: walletAddress } = useAccount();
@@ -175,7 +175,7 @@ const DepositInput = ({
           onClose={() => {
             setShowModal(false);
           }}
-          wallet={daoAddress}
+          wallet={ownerAddress}
           amount={formik.values.tokenInput}
           networkId={networkId}
           isNative={tokenDetails?.isNativeToken}

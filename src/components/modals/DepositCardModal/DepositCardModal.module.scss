@@ -47,11 +47,22 @@
   }
 }
 
+.infoContainer{
+  margin-top: 12px;
+  padding: 8px;
+  border-radius: 8px;
+  background: #ffb74d30;
+
+  .info{
+    color: #ffb74d;
+  }
+}
+
 .confirmButton{
-  
+
   width: 100%;
   padding: 12px 0;
-  margin-top: 20px;
+  margin-top: 12px;
   font-family: inherit;
   background-color: white;
   color: black;

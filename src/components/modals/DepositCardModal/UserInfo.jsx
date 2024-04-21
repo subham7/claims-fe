@@ -20,7 +20,7 @@ const UserInfo = ({ name, wallet, amount }) => {
           mt={0.5}
           fontWeight={700}
           color={"#707070"}>
-          {wallet}
+          Owner : {wallet}
         </Typography>
       </div>
 
