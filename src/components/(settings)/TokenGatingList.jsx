@@ -105,8 +105,6 @@ const TokenGatingList = ({ daoAddress, setLoading, setIsTokenGated }) => {
     try {
       setLoading(true);
 
-      console.log("xxx", addNewTokenDetails, tokenGatedDetails);
-
       const data = await fetchData([
         ...addNewTokenDetails,
         ...tokenGatedDetails,
@@ -181,7 +179,6 @@ const TokenGatingList = ({ daoAddress, setLoading, setIsTokenGated }) => {
       const details = await getTokenGatingDetails();
 
       const data = await fetchGatedData(details);
-      console.log("xxx", data);
       setTokenGatedDetails(data);
     } catch (error) {
       console.log(error);
@@ -244,7 +241,6 @@ const TokenGatingList = ({ daoAddress, setLoading, setIsTokenGated }) => {
                 const amount = e.target.value;
                 const list = [...addNewTokenDetails];
                 list[key].amount = amount;
-                console.log("DDD", list);
                 setAddNewTokenDetails(list);
               }}
               value={addNewTokenDetails[key].amount}

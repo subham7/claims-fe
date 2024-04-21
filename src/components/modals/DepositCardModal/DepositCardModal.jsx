@@ -26,11 +26,13 @@ const DepositCardModal = ({
   const { getDepositFees } = useCommonContractMethods();
 
   useEffect(() => {
-    (async () => {
-      const depositFees = await getDepositFees(false);
-      setFees(depositFees);
-    })();
-  }, []);
+    if (networkId === "0xe708") {
+      (async () => {
+        const depositFees = await getDepositFees(false);
+        setFees(depositFees);
+      })();
+    }
+  }, [networkId]);
 
   return (
     <Modal className={classes.modal}>
@@ -49,23 +51,28 @@ const DepositCardModal = ({
       <div className={classes.detailsContainer}>
         <AmountInfo
           title="Deposit"
-          amount={`${amount} ${
+          amount={`${Number(amount) - (adminFee ? adminFee : 0)} ${
             isNative ? CHAIN_CONFIG[networkId]?.nativeCurrency?.symbol : "USDC"
           }`}
           icon={<PiArrowElbowDownRightBold style={iconStyle} />}
         />
         <AmountInfo
-          title={`Admin Fee (${club?.ownerFeePerDepositPercent}%)`}
+          title={`Admin Fee (${
+            Number(club?.ownerFeePerDepositPercent) / 100
+          }%)`}
           amount={`${adminFee} ${
             isNative ? CHAIN_CONFIG[networkId]?.nativeCurrency?.symbol : "USDC"
           }`}
           icon={<PiArrowElbowDownRightBold style={iconStyle} />}
         />
-        <AmountInfo
-          title="StationX Fee"
-          amount={`${fees} ${CHAIN_CONFIG[networkId]?.nativeCurrency?.symbol}`}
-          icon={<PiArrowElbowDownRightBold style={iconStyle} />}
-        />
+
+        {networkId === "0xe708" ? (
+          <AmountInfo
+            title="StationX Fee"
+            amount={`${fees} ${CHAIN_CONFIG[networkId]?.nativeCurrency?.symbol}`}
+            icon={<PiArrowElbowDownRightBold style={iconStyle} />}
+          />
+        ) : null}
       </div>
 
       <button onClick={submitHandler} className={classes.confirmButton}>

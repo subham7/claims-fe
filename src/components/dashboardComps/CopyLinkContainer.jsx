@@ -33,7 +33,7 @@ const CopyLinkContainer = ({ daoAddress, routeNetworkId }) => {
     const updateVisibleLinkLength = () => {
       const windowWidth = window.innerWidth;
       if (windowWidth > 1500) {
-        setVisibleLinkLength(50);
+        setVisibleLinkLength(40);
       } else {
         setVisibleLinkLength(32);
       }

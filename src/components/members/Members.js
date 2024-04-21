@@ -37,6 +37,8 @@ import { CHAIN_CONFIG } from "utils/constants";
 import { getDefaultProfile } from "utils/lensHelper";
 import BackdropLoader from "@components/common/BackdropLoader";
 import ComponentHeader from "@components/common/ComponentHeader";
+import useAppContractMethods from "hooks/useAppContractMethods";
+import BigNumber from "bignumber.js";
 
 const Members = ({ daoAddress, routeNetworkId }) => {
   const { chain } = useNetwork();
@@ -64,6 +66,8 @@ const Members = ({ daoAddress, routeNetworkId }) => {
 
   const [membersData, setMembersData] = useState([]);
   const [memberProfiles, setMemberProfiles] = useState();
+  const [erc20TotalSupply, setErc20TotalSupply] = useState();
+  const [erc721TotalNftMinted, setErc721TotalNftMinted] = useState();
 
   const [tokenDetails, setTokenDetails] = useState({
     tokenDecimal: 0,
@@ -73,6 +77,9 @@ const Members = ({ daoAddress, routeNetworkId }) => {
 
   const [loading, setLoading] = useState(false);
   const [downloadLoading, setDownloadLoading] = useState(false);
+  const { getERC20TotalSupply, getNftOwnersCount } = useAppContractMethods({
+    daoAddress,
+  });
 
   const header = ["Address", "Contribution", "Ownership %", "Joined on"];
 
@@ -93,6 +100,7 @@ const Members = ({ daoAddress, routeNetworkId }) => {
   useEffect(() => {
     fetchTokenDetails();
   }, [clubData]);
+
   const handleAddressClick = (event, address) => {
     event.preventDefault();
     window.open(
@@ -239,6 +247,20 @@ const Members = ({ daoAddress, routeNetworkId }) => {
 
     return [header, ...rows].join("\n");
   };
+
+  const fetchTokenSupply = async () => {
+    if (tokenType === "erc20") {
+      const totalSupply = await getERC20TotalSupply();
+      setErc20TotalSupply(totalSupply?.bigNumberValue);
+    } else {
+      const totalNftMinted = await getNftOwnersCount();
+      setErc721TotalNftMinted(totalNftMinted?.bigNumberValue);
+    }
+  };
+
+  useEffect(() => {
+    if (daoAddress && networkId) fetchTokenSupply();
+  }, [tokenType, daoAddress, networkId]);
 
   return (
     <>
@@ -395,11 +417,23 @@ const Members = ({ daoAddress, routeNetworkId }) => {
                       }}
                       align="left">
                       <Typography variant="inherit">
-                        {tokenType === "erc20"
+                        {/* {tokenType === "erc20"
                           ? Number(
                               convertFromWeiGovernance(data?.gtAmount, 18),
                             ).toFixed(2)
-                          : data?.gtAmount}
+                          : data?.gtAmount} */}
+                        {tokenType === "erc20"
+                          ? BigNumber(data?.gtAmount)
+                              .dividedBy(erc20TotalSupply)
+                              .times(100)
+                              .integerValue()
+                              .toFixed() ?? 0
+                          : BigNumber(data?.gtAmount)
+                              .dividedBy(erc721TotalNftMinted)
+                              .times(100)
+                              .integerValue()
+                              .toFixed() ?? 0}
+                        %
                       </Typography>
                     </TableCell>
 

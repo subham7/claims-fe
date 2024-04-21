@@ -170,7 +170,6 @@ const Join = ({ daoAddress, routeNetworkId }) => {
         tokensData,
         tokenGatingDetails.operator,
       );
-      console.log("Eligibility Status:", eligibility);
       setIsEligibleForTokenGating(eligibility);
     } catch (error) {
       console.log(error);
@@ -206,10 +205,10 @@ const Join = ({ daoAddress, routeNetworkId }) => {
   }, [daoAddress, walletAddress, networkId]);
 
   useEffect(() => {
-    if (walletAddress && daoAddress) {
+    if (daoAddress) {
       fetchTokenGatingDetials();
     }
-  }, [walletAddress, daoAddress, networkId]);
+  }, [daoAddress, networkId]);
 
   useEffect(() => {
     if (daoAddress && clubData) {

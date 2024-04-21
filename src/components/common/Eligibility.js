@@ -58,30 +58,30 @@ const Eligibility = ({
 
   let gatedTokenText = "";
 
-  const getGatedTokenValue = (amount, decimal) => {
-    return decimal > 0 ? convertFromWeiGovernance(amount, decimal) : amount;
-  };
+  // const getGatedTokenValue = (amount, decimal) => {
+  //   return decimal > 0 ? convertFromWeiGovernance(amount, decimal) : amount;
+  // };
 
-  if (isTokenGated) {
-    const tokenAValue = getGatedTokenValue(
-      gatedTokenDetails?.tokenAAmt,
-      gatedTokenDetails?.tokenADecimal,
-    );
-    const tokenASymbol = gatedTokenDetails?.tokenASymbol;
+  // if (isTokenGated) {
+  //   const tokenAValue = getGatedTokenValue(
+  //     gatedTokenDetails?.tokenAAmt,
+  //     gatedTokenDetails?.tokenADecimal,
+  //   );
+  //   const tokenASymbol = gatedTokenDetails?.tokenASymbol;
 
-    if (gatedTokenDetails?.tokenASymbol === gatedTokenDetails?.tokenBSymbol) {
-      gatedTokenText = `Hold ${tokenAValue} ${tokenASymbol}`;
-    } else {
-      const tokenBValue = getGatedTokenValue(
-        gatedTokenDetails?.tokenBAmt,
-        gatedTokenDetails?.tokenBDecimal,
-      );
-      const tokenBSymbol = gatedTokenDetails?.tokenBSymbol;
-      const operator = gatedTokenDetails?.operator === 0 ? "AND" : "OR";
+  //   if (gatedTokenDetails?.tokenASymbol === gatedTokenDetails?.tokenBSymbol) {
+  //     gatedTokenText = `Hold ${tokenAValue} ${tokenASymbol}`;
+  //   } else {
+  //     const tokenBValue = getGatedTokenValue(
+  //       gatedTokenDetails?.tokenBAmt,
+  //       gatedTokenDetails?.tokenBDecimal,
+  //     );
+  //     const tokenBSymbol = gatedTokenDetails?.tokenBSymbol;
+  //     const operator = gatedTokenDetails?.operator === 0 ? "AND" : "OR";
 
-      gatedTokenText = `Hold ${tokenAValue} ${tokenASymbol} ${operator} ${tokenBValue} ${tokenBSymbol}`;
-    }
-  }
+  //     gatedTokenText = `Hold ${tokenAValue} ${tokenASymbol} ${operator} ${tokenBValue} ${tokenBSymbol}`;
+  //   }
+  // }
 
   const displayText = isDeposit
     ? isWhitelist
@@ -108,17 +108,17 @@ const Eligibility = ({
       {isTokenGated ? (
         <div>
           <Typography variant="inherit">
-            Match {gatedTokenDetails.operator === 1 ? "at least one of" : ""}{" "}
+            Match {gatedTokenDetails?.operator === 1 ? "at least one of" : ""}{" "}
             the following condtion(s)
           </Typography>
 
           <div className={classes.tokenList}>
-            {gatedTokenDetails.tokensData.map((item, index) => (
+            {gatedTokenDetails?.tokensData.map((item, index) => (
               <div
                 key={index}
                 onClick={() => {
                   window.open(
-                    `${CHAIN_CONFIG[routeNetworkId].blockExplorerUrl}/address/${item.address}`,
+                    `${CHAIN_CONFIG[routeNetworkId].blockExplorerUrl}/token/${item.address}`,
                     "_blank",
                   );
                 }}

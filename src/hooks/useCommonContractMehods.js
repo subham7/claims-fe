@@ -280,7 +280,7 @@ const useCommonContractMethods = (params) => {
         }
       }
 
-      return Number(createFees) / 10 ** 18;
+      return Number(createFees ?? 0) / 10 ** 18;
     } catch (e) {
       console.error(e);
       return 0;

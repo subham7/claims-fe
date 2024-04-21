@@ -116,6 +116,6 @@ export const getDefaultProfile = async (walletAddress) => {
 
     return data?.profiles?.items;
   } catch (error) {
-    throw new Error(error);
+    console.log(error);
   }
 };
