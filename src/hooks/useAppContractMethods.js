@@ -427,7 +427,7 @@ const useAppContractMethods = (params) => {
           networkId === "0xe708"
             ? [
                 clubName,
-                clubSymbol,
+                `x${clubSymbol}`,
                 metadataURL,
                 2,
                 ownerFeePerDepositPercent,
@@ -451,7 +451,7 @@ const useAppContractMethods = (params) => {
               ]
             : [
                 clubName,
-                clubSymbol,
+                `x${clubSymbol}`,
                 metadataURL,
                 ownerFeePerDepositPercent,
                 depositClose,
@@ -513,7 +513,7 @@ const useAppContractMethods = (params) => {
           networkId === "0xe708"
             ? [
                 clubName,
-                clubSymbol,
+                `x${clubSymbol}`,
                 2, // Comm layer id
                 distributeAmount,
                 pricePerToken,
@@ -536,7 +536,7 @@ const useAppContractMethods = (params) => {
               ]
             : [
                 clubName,
-                clubSymbol,
+                `x${clubSymbol}`,
                 distributeAmount,
                 pricePerToken,
                 minDepositPerUser,

@@ -78,7 +78,7 @@ const DepositCardModal = ({
 
       <div className={classes.infoContainer}>
         <Typography className={classes.info} variant="inherit">
-          This station is managed by the admin(s). Join the station onky if you
+          This station is managed by the admin(s). Join the station only if you
           trust the admin(s) with your funds.
         </Typography>
       </div>
