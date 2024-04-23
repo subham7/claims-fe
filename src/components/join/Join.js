@@ -55,6 +55,7 @@ const Join = ({ daoAddress, routeNetworkId }) => {
 
   const { getTokenGatingDetails, getNftOwnersCount } = useAppContractMethods({
     daoAddress,
+    routeNetworkId,
   });
 
   /**
@@ -84,7 +85,6 @@ const Join = ({ daoAddress, routeNetworkId }) => {
     try {
       setLoading(true);
       const nftMinted = await getNftOwnersCount();
-
       if (clubData?.depositCloseTime && Number(nftMinted?.actualValue) >= 0) {
         setDaoDetails({
           depositDeadline: clubData?.depositCloseTime,
