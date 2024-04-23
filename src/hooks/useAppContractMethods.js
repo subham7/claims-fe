@@ -213,8 +213,8 @@ const useAppContractMethods = (params) => {
         networkId: routeNetworkId ?? networkId,
       });
       return {
-        actualValue: response ?? 0,
-        bigNumberValue: BigNumber(response ?? 0),
+        actualValue: Number(response) ?? 0,
+        bigNumberValue: BigNumber(Number(response) ?? 0),
       };
     } catch (error) {
       console.error(error);
