@@ -8,6 +8,7 @@ const SettingItem = ({
   children,
   isHidden = false,
   isDisabled = false,
+  showStatusTag,
 }) => {
   return (
     <>
@@ -19,9 +20,12 @@ const SettingItem = ({
                 {heading}
               </Typography>
 
-              {isDisabled ? (
+              {showStatusTag && isDisabled ? (
                 <div className={classes.disabled}>Disabled</div>
-              ) : null}
+              ) : (
+                showStatusTag &&
+                !isDisabled && <div className={classes.enabled}>Enabled</div>
+              )}
             </div>
             <Typography className={classes.infoSubHeading} variant="inherit">
               {description}

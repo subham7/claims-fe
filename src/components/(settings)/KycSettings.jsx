@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import classes from "@components/(settings)/Settings.module.scss";
 import KycModal from "@components/modals/KycModal/KycModal";
 
-const KycSettings = ({ daoAddress, setLoading }) => {
+const KycSettings = ({ daoAddress, setLoading, setIsKycEnabledSettings }) => {
   const [showKycModal, setShowKycModal] = useState(false);
   return (
     <>
@@ -16,6 +16,7 @@ const KycSettings = ({ daoAddress, setLoading }) => {
 
       {showKycModal ? (
         <KycModal
+          setIsKycEnabledSettings={setIsKycEnabledSettings}
           daoAddress={daoAddress}
           setLoading={setLoading}
           onClose={() => {

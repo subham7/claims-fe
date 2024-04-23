@@ -56,6 +56,7 @@ const DepositInputComponents = ({
         isDisabled={isDepositDisabled}
         approveERC20Handler={approveERC20Handler}
         allowanceValue={allowanceValue}
+        ownerAddress={clubData?.ownerAddress}
       />
       <DepositDetails />
     </>
@@ -459,6 +460,7 @@ const ERC20 = ({
           isDeposit: true,
           isTokenGated: isTokenGated,
           isWhitelist: whitelistUserData?.setWhitelist,
+          routeNetworkId,
         }}
         members={members}
         loading={loading}
