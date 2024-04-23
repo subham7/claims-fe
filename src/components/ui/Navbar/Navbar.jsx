@@ -27,6 +27,8 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
     return state.club.clubData;
   });
 
+  console.log(clubData);
+
   const showNetworkModalHandler = () => {
     setShowModal(!showModal);
     if (router.pathname.includes("claim")) {
@@ -53,7 +55,7 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
 
         <div className={classes["wallet-div"]}>
           {router.pathname.includes("join") &&
-          clubData?.ownerAddress?.toLowerCase() === address?.toLowerCase() ? (
+          clubData?.adminAddresses?.includes(address?.toLowerCase()) ? (
             <div className={classes.switch}>
               <Typography
                 onClick={() => setShowEditDetails(true)}
