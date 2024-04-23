@@ -27,8 +27,6 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
     return state.club.clubData;
   });
 
-  console.log(clubData);
-
   const showNetworkModalHandler = () => {
     setShowModal(!showModal);
     if (router.pathname.includes("claim")) {
