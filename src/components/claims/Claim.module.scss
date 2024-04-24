@@ -350,14 +350,16 @@
 
 .nftContainer {
   position: relative;
-  height: 600px;
+  height: 650px;
+  width: 650px;
   border-radius: 20px;
   overflow: hidden;
   z-index: -1;
 
   @media (max-width: 768px) {
     object-fit: contain;
-    height: 400px;
+    height: 320px;
+    width: 320px;
     border-radius: 8px;
     margin-top: -80px;
   }
