@@ -57,7 +57,7 @@ const DepositDetails = () => {
             fontWeight={600}
             color={"white"}
             variant="inherit">
-            {shortAddress(ownerAddress)}
+            🐻 {shortAddress(ownerAddress)}
           </Typography>
         </div>
       </div>

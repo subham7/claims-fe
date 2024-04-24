@@ -44,9 +44,10 @@ const DepositorActivity = ({ member }) => {
           display: "flex",
           gap: "8px",
         }}>
-        <MetaMaskAvatar address={member?.userAddress} />
+        {/* <MetaMaskAvatar address={member?.userAddress} /> */}
+
         <Typography variant="inherit">
-          {ensName ? ensName : shortAddress(member?.userAddress)} joined this
+          🐻 {ensName ? ensName : shortAddress(member?.userAddress)} joined this
           station
         </Typography>
       </div>

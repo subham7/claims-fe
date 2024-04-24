@@ -74,7 +74,7 @@ export const baseLinks = [
     routeHeader: "staking",
     hideNetworks: ["0x89", "0xa86a"],
   },
-  { icon: "astronaut_icon", title: "Members", routeHeader: "members" },
+  { icon: "bear_icon", title: "Members", routeHeader: "members" },
   // { icon: "document_icon", title: "Documents", routeHeader: "documents" },
   { icon: "settings_icon", title: "Settings", routeHeader: "settings" },
 ];
