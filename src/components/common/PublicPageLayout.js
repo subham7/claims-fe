@@ -25,6 +25,7 @@ const PublicPageLayout = ({
   claimDescription,
   members,
   nftMinted,
+  routeNetworkId,
 }) => {
   return (
     <div className={classes.main}>
@@ -112,6 +113,7 @@ const PublicPageLayout = ({
           isDeposit={isDeposit}
           activityDetails={members}
           tokenDetails={tokenDetails}
+          routeNetworkId={routeNetworkId}
         />
 
         {isDeposit && (

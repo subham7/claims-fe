@@ -10,6 +10,7 @@ import { signMessageLibAbi } from "abis/gnosis-abis/signMessageLibAbi";
 import { simulateTxAccessorAbi } from "abis/gnosis-abis/simulateTxAccessorAbi";
 import { renzoStakingPoolABI } from "abis/renzo/renzoStakingPoolContract";
 import { renzoStakingPoolABILinea } from "abis/renzo/renzoStakingPoolLinea";
+import { THEME_CONFIG } from "theme/themeConfig";
 
 export const BLOCK_CONFIRMATIONS = 4;
 export const BLOCK_TIMEOUT = 240000;
@@ -56,6 +57,7 @@ export const CHAIN_CONFIG = {
       symbol: "MATIC",
       image: "/assets/networks/0x89.png",
     },
+    theme: THEME_CONFIG("0x89"),
     rpcUrls: ["https://polygon-rpc.com/"],
     appRpcUrl: `https://frosty-fittest-sponge.matic.quiknode.pro/2f493453b075c784ad12eb9094333497029cbe95/`,
     claimFactoryAddress: "0x47e6bFA71e490ADC8f0E33385aAdF85282E71002",
@@ -141,6 +143,7 @@ export const CHAIN_CONFIG = {
       symbol: "ETH",
       image: "/assets/icons/eth.png",
     },
+    theme: THEME_CONFIG("0x1"),
     rpcUrls: ["https://eth-rpc.gateway.pokt.network"],
     appRpcUrl: `https://mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
     factoryContractAddress: "0x3b0496DdFdC063E880630252Cabff2eEa6e8AA9e",
@@ -191,6 +194,7 @@ export const CHAIN_CONFIG = {
       symbol: "ETH",
       image: "/assets/icons/eth.png",
     },
+    theme: THEME_CONFIG("0x2105"),
     rpcUrls: ["https://mainnet.base.org"],
     appRpcUrl: `https://proportionate-dry-pine.base-mainnet.discover.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_BASE_API_KEY}/`,
     factoryContractAddress: "0xeb6FE72d1Df22D9936D4FA317D7948E643aF92CB",
@@ -234,6 +238,7 @@ export const CHAIN_CONFIG = {
     disburseContractAddress: "0x6d478Cb3bf01fCB71F9E4c9D06e2A26efCe27f9f",
     gnosisTxUrl: "https://safe-transaction-arbitrum.safe.global/",
     logoUri: "/assets/networks/0xa4b1.png",
+    theme: THEME_CONFIG("0xa4b1"),
   },
   "0xe708": {
     chainName: "Linea Mainnet",
@@ -245,6 +250,7 @@ export const CHAIN_CONFIG = {
       symbol: "ETH",
       image: "/assets/icons/eth.png",
     },
+    theme: THEME_CONFIG("0xe708"),
     rpcUrls: ["https://rpc.linea.build"],
     appRpcUrl: `https://linea-mainnet.infura.io/v3/334bd48aa6474a849109ef6f2c3d5e57`,
     factoryContractAddress: "0x17f251Afb0f1b47d47d50F2a5f2dcB72B12c06BC",
@@ -297,6 +303,7 @@ export const CHAIN_CONFIG = {
       decimals: 18,
       symbol: "BNB",
     },
+    theme: THEME_CONFIG("0x38"),
     rpcUrls: ["https://bsc.meowrpc.com"],
     appRpcUrl: `https://special-spring-sun.bsc.discover.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_API_KEY}/`,
     factoryContractAddress: "",
@@ -319,6 +326,7 @@ export const CHAIN_CONFIG = {
       decimals: 18,
       symbol: "MNT",
     },
+    theme: THEME_CONFIG("0x1388"),
     rpcUrls: ["https://rpc.mantle.xyz"],
     appRpcUrl: `https://mantle-mainnet.public.blastapi.io`,
     factoryContractAddress: "0x0F1B31723aB54D45aFd80D94542677881d524d8F",
@@ -363,6 +371,7 @@ export const CHAIN_CONFIG = {
       symbol: "ETH",
       image: "/assets/icons/eth.png",
     },
+    theme: THEME_CONFIG("0x82750"),
     rpcUrls: ["https://rpc.scroll.io"],
     appRpcUrl: `https://sparkling-young-spring.scroll-mainnet.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_SCROLL_API_KEY}/`,
     factoryContractAddress: "0x42a3a866dd9D40078f6009EFa03494ECc8EA5755",
@@ -397,6 +406,7 @@ export const CHAIN_CONFIG = {
       symbol: "ETH",
       image: "/assets/icons/eth.png",
     },
+    theme: THEME_CONFIG("0xa9"),
     rpcUrls: ["https://pacific-rpc.manta.network/http"],
     appRpcUrl: `https://pacific-rpc.manta.network/http`,
     stationSubgraphUrl: "",
@@ -447,6 +457,7 @@ export const CHAIN_CONFIG = {
       symbol: "ETH",
       image: "/assets/icons/eth.png",
     },
+    theme: THEME_CONFIG("0x138d5"),
     rpcUrls: ["https://artio.rpc.berachain.com"],
     appRpcUrl: `https://artio.rpc.berachain.com`,
     stationSubgraphUrl: "",
@@ -497,6 +508,7 @@ export const CHAIN_CONFIG = {
       symbol: "ETH",
       image: "/assets/icons/eth.png",
     },
+    theme: THEME_CONFIG("0x13e31"),
     rpcUrls: ["https://rpc.blast.io"],
     appRpcUrl: `https://rpc.blast.io`,
     stationSubgraphUrl: "",
@@ -521,6 +533,7 @@ export const CHAIN_CONFIG = {
       decimals: 18,
       symbol: "AVAX",
     },
+    theme: THEME_CONFIG("0xa86a"),
     rpcUrls: ["https://avalanche-mainnet.infura.io/"],
     appRpcUrl: `https://long-silent-slug.avalanche-mainnet.quiknode.pro/93921ef01877ec563a000c867071a109a881c419/ext/bc/C/rpc/`,
     claimFactoryAddress: "",
@@ -910,38 +923,9 @@ export const dropsNetworksChaindId = [
 
 export const stationNetworksChainId = [
   {
-    chainId: 137,
-    networkId: "0x89",
-  },
-  {
-    chainId: 1,
-    networkId: "0x1",
-  },
-  {
     chainId: 42161,
     networkId: "0xa4b1",
   },
-  {
-    chainId: 59144,
-    networkId: "0xe708",
-  },
-  {
-    chainId: 43114,
-    networkId: "0xa86a",
-  },
-  // {
-  //   chainId: 100,
-  //   networkId: "0x64",
-  // },
-  { chainId: 534352, networkId: "0x82750" },
 ];
 
-export const ALLOWED_NETWORKS_FOR_STATION = [
-  "0x89",
-  "0x1",
-  "0xa4b1",
-  "0xe708",
-  // "0x82750",
-  "0xa86a",
-  "0x82750",
-];
+export const ALLOWED_NETWORKS_FOR_STATION = ["0xa4b1"];

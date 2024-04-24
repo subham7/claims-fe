@@ -7,6 +7,7 @@ import { setAlertData } from "redux/reducers/alert";
 import { generateAlertData } from "utils/globalFunctions";
 import { RiExternalLinkLine } from "react-icons/ri";
 import { useRouter } from "next/router";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const CopyLinkContainer = ({ daoAddress, routeNetworkId }) => {
   const [visibleLinkLength, setVisibleLinkLength] = useState(32);
@@ -44,6 +45,8 @@ const CopyLinkContainer = ({ daoAddress, routeNetworkId }) => {
     return () => window.removeEventListener("resize", updateVisibleLinkLength);
   }, []);
 
+  const background = CHAIN_CONFIG[routeNetworkId]?.theme?.background;
+
   return (
     <div className={classes.copyContainer}>
       <div className={classes.headingContainer2}>
@@ -66,7 +69,7 @@ const CopyLinkContainer = ({ daoAddress, routeNetworkId }) => {
       <div
         onClick={copyHandler}
         className={classes.flexContainer}
-        style={{ cursor: "pointer" }}>
+        style={{ cursor: "pointer", background: background }}>
         <Typography className={classes.copyText} variant="inherit">
           {`${window.location.origin}/join/${daoAddress}/${routeNetworkId}`.substring(
             0,

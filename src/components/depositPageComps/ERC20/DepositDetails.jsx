@@ -3,8 +3,10 @@ import React from "react";
 import { useSelector } from "react-redux";
 import classes from "../../claims/Claim.module.scss";
 import { formatNumbers, shortAddress } from "utils/helper";
+import { CHAIN_CONFIG } from "utils/constants";
+import Image from "next/image";
 
-const DepositDetails = () => {
+const DepositDetails = ({ routeNetworkId }) => {
   const clubData = useSelector((state) => {
     return state.club.clubData;
   });
@@ -51,14 +53,32 @@ const DepositDetails = () => {
           <Typography fontSize={14} fontWeight={400} color={"#707070"}>
             Owner
           </Typography>
-          <Typography
-            fontSize={16}
-            mt={0.4}
-            fontWeight={600}
-            color={"white"}
-            variant="inherit">
-            {shortAddress(ownerAddress)}
-          </Typography>
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}>
+            <Image
+              src={
+                CHAIN_CONFIG[routeNetworkId]?.theme?.metamask_icon ??
+                "/assets/icons/avatar.png"
+              }
+              height={15}
+              width={15}
+              alt="Avatar"
+            />
+
+            <Typography
+              fontSize={16}
+              mt={0.4}
+              fontWeight={600}
+              color={"white"}
+              variant="inherit">
+              {shortAddress(ownerAddress)}
+            </Typography>
+          </div>
         </div>
       </div>
     </div>
