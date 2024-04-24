@@ -1,3 +1,5 @@
+import { CHAIN_CONFIG } from "utils/constants";
+
 export const proposalType = [
   {
     type: "Survey",
@@ -60,7 +62,7 @@ export const proposalDisplayOptions = [
   },
 ];
 
-export const baseLinks = [
+export const baseLinks = (routeNetworkId) => [
   { icon: "home_icon", title: "Dashboard", routeHeader: "dashboard" },
   { icon: "workflows_icon", title: "Activity", routeHeader: "proposals" },
   {
@@ -74,7 +76,11 @@ export const baseLinks = [
     routeHeader: "staking",
     hideNetworks: ["0x89", "0xa86a"],
   },
-  { icon: "bear_icon", title: "Members", routeHeader: "members" },
+  {
+    icon: CHAIN_CONFIG[routeNetworkId]?.theme?.members_icon,
+    title: "Members",
+    routeHeader: "members",
+  },
   // { icon: "document_icon", title: "Documents", routeHeader: "documents" },
   { icon: "settings_icon", title: "Settings", routeHeader: "settings" },
 ];

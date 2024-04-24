@@ -10,6 +10,7 @@ import { signMessageLibAbi } from "abis/gnosis-abis/signMessageLibAbi";
 import { simulateTxAccessorAbi } from "abis/gnosis-abis/simulateTxAccessorAbi";
 import { renzoStakingPoolABI } from "abis/renzo/renzoStakingPoolContract";
 import { renzoStakingPoolABILinea } from "abis/renzo/renzoStakingPoolLinea";
+import { THEME_CONFIG } from "theme/themeConfig";
 
 export const BLOCK_CONFIRMATIONS = 4;
 export const BLOCK_TIMEOUT = 240000;
@@ -234,6 +235,7 @@ export const CHAIN_CONFIG = {
     disburseContractAddress: "0x6d478Cb3bf01fCB71F9E4c9D06e2A26efCe27f9f",
     gnosisTxUrl: "https://safe-transaction-arbitrum.safe.global/",
     logoUri: "/assets/networks/0xa4b1.png",
+    theme: THEME_CONFIG("0xa4b1"),
   },
   "0xe708": {
     chainName: "Linea Mainnet",
@@ -910,38 +912,9 @@ export const dropsNetworksChaindId = [
 
 export const stationNetworksChainId = [
   {
-    chainId: 137,
-    networkId: "0x89",
-  },
-  {
-    chainId: 1,
-    networkId: "0x1",
-  },
-  {
     chainId: 42161,
     networkId: "0xa4b1",
   },
-  {
-    chainId: 59144,
-    networkId: "0xe708",
-  },
-  {
-    chainId: 43114,
-    networkId: "0xa86a",
-  },
-  // {
-  //   chainId: 100,
-  //   networkId: "0x64",
-  // },
-  { chainId: 534352, networkId: "0x82750" },
 ];
 
-export const ALLOWED_NETWORKS_FOR_STATION = [
-  "0x89",
-  "0x1",
-  "0xa4b1",
-  "0xe708",
-  // "0x82750",
-  "0xa86a",
-  "0x82750",
-];
+export const ALLOWED_NETWORKS_FOR_STATION = ["0xa4b1"];
