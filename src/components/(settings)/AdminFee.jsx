@@ -26,7 +26,9 @@ const AdminFee = ({ daoAddress, clubData, setLoading }) => {
   const { ownerAddress, ownerFeePerDepositPercent: prevAdminFee } = clubData;
 
   const checkMarkClass =
-    percentageValue > 0 && percentageValue <= 100
+    percentageValue > 0 &&
+    percentageValue <= 100 &&
+    +prevAdminFee / 100 !== percentageValue
       ? classes.active
       : classes.disabled;
 
@@ -35,6 +37,14 @@ const AdminFee = ({ daoAddress, clubData, setLoading }) => {
   };
 
   const adminFeeSubmitHandler = async () => {
+    if (!Number(percentageValue) > 0 && Number(percentageValue) <= 100) {
+      return;
+    }
+
+    if (+prevAdminFee / 100 === percentageValue) {
+      return;
+    }
+
     setLoading(true);
     try {
       await updateOwnerFee(percentageValue * 100);
@@ -61,7 +71,7 @@ const AdminFee = ({ daoAddress, clubData, setLoading }) => {
   };
 
   useEffect(() => {
-    if (prevAdminFee) setPercentageValue(prevAdminFee / 100);
+    if (prevAdminFee) setPercentageValue(Number(prevAdminFee / 100));
   }, [prevAdminFee]);
 
   useEffect(() => {
@@ -86,6 +96,7 @@ const AdminFee = ({ daoAddress, clubData, setLoading }) => {
         type="number"
         placeholder="0.00%"
         disabled={!canEdit}
+        onWheel={(e) => e.target.blur()}
         className={classNames(classes.input, classes.percentage)}
       />
 

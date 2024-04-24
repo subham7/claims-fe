@@ -359,6 +359,7 @@ const ERC721 = ({
               onIsW8BenSignedChange: handleIsW8BenSignedChange,
             }}
             mintProps={{
+              daoAddress,
               claimNFTHandler,
               clubData,
               count,
@@ -391,6 +392,7 @@ const ERC721 = ({
           isDeposit: true,
           isTokenGated: isTokenGated,
           isWhitelist: whitelistUserData?.setWhitelist,
+          routeNetworkId,
         }}
         members={members}
         isSuccessfull={claimSuccessfull}

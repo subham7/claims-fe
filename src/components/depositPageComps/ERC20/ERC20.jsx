@@ -33,6 +33,8 @@ import Image from "next/image";
 import { Typography } from "@mui/material";
 import classes from "@components/modals/StatusModal/StatusModal.module.scss";
 import { BigNumber } from "bignumber.js";
+import { getClubData } from "api/club";
+import { verifyWithZkMeServices } from "@zkmelabs/widget";
 
 const DepositInputComponents = ({
   formik,
@@ -54,6 +56,7 @@ const DepositInputComponents = ({
         isDisabled={isDepositDisabled}
         approveERC20Handler={approveERC20Handler}
         allowanceValue={allowanceValue}
+        ownerAddress={clubData?.ownerAddress}
       />
       <DepositDetails />
     </>
@@ -91,6 +94,7 @@ const ERC20 = ({
   const [uploadedDocInfo, setUploadedDocInfo] = useState({});
   const [isSigned, setIsSigned] = useState(false);
   const [isW8BenSigned, setIsW8BenSigned] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
 
   const clubData = useSelector((state) => {
     return state.club.clubData;
@@ -336,6 +340,27 @@ const ERC20 = ({
     }
   };
 
+  const getKycSetting = async () => {
+    try {
+      const response = await getClubData(daoAddress);
+      if (response) {
+        if (response?.kyc?.isKycEnabled) {
+          const results = await verifyWithZkMeServices(
+            response?.kyc?.zkmeAppId,
+            walletAddress,
+          );
+          setIsVerified(results);
+        } else {
+          setIsVerified(true);
+        }
+        setLoading(false);
+      }
+    } catch (e) {
+      console.error(e);
+      setLoading(false);
+    }
+  };
+
   const isDepositDisabled = () => {
     // if (
     //   typeof isSigned !== "undefined" &&
@@ -344,6 +369,10 @@ const ERC20 = ({
     //   if (!isSigned) return true;
     //   if (!isW8BenSigned) return true;
     // }
+
+    if (!isVerified) {
+      return true;
+    }
 
     const isRemainingTimeInvalid =
       remainingDays < 0 || remainingTimeInSecs <= 0;
@@ -372,6 +401,7 @@ const ERC20 = ({
 
   useEffect(() => {
     fetchTokenDetails();
+    getKycSetting();
   }, [networkId, walletAddress]);
 
   useEffect(() => {
@@ -430,6 +460,7 @@ const ERC20 = ({
           isDeposit: true,
           isTokenGated: isTokenGated,
           isWhitelist: whitelistUserData?.setWhitelist,
+          routeNetworkId,
         }}
         members={members}
         loading={loading}

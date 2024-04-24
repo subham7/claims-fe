@@ -36,7 +36,7 @@ import { NFT_STORAGE_TOKEN } from "api/token";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 
 const Create = () => {
-  const steps = ["Add basic info", "Configure token", "Set controls"];
+  const steps = ["Basic info", "Contribution rules", "Treasury"];
   const dispatch = useDispatch();
   const uploadInputRef = useRef(null);
   const { chain } = useNetwork();

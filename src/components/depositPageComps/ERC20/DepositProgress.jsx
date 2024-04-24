@@ -41,7 +41,7 @@ const DepositProgress = ({ clubData, nftMinted = 0 }) => {
 
         {tokenType === "erc721" ? (
           <Typography variant="inherit">
-            {formatNumbers(Number(distributionAmountFormatted?.formattedValue))}{" "}
+            {formatNumbers(Number(distributionAmountFormatted?.actualValue))}{" "}
             total
           </Typography>
         ) : (
@@ -57,7 +57,7 @@ const DepositProgress = ({ clubData, nftMinted = 0 }) => {
         value={
           tokenType === "erc721"
             ? (Number(nftMinted) * 100) /
-              Number(distributionAmountFormatted?.formattedValue)
+              Number(distributionAmountFormatted?.actualValue)
             : totalAmountRaisedFormatted?.bigNumberValue
                 .times(100)
                 .dividedBy(raiseAmountFormatted?.bigNumberValue)

@@ -12,6 +12,7 @@ import ERC20 from "@components/depositPageComps/ERC20/ERC20";
 import BackdropLoader from "@components/common/BackdropLoader";
 import ERC721 from "@components/depositPageComps/ERC721/ERC721";
 import { CHAIN_CONFIG } from "utils/constants";
+import BigNumber from "bignumber.js";
 // import Modal from "@components/common/Modal/Modal";
 // import classes from "../modals/StatusModal/StatusModal.module.scss";
 // import { Typography } from "@mui/material";
@@ -34,17 +35,7 @@ const Join = ({ daoAddress, routeNetworkId }) => {
   const [isSignable, setIsSignable] = useState(false);
   const [allowanceValue, setAllowanceValue] = useState(0);
   const [isMetamaskPresent, setIsMetamaskPresent] = useState(true);
-
-  const [gatedTokenDetails, setGatedTokenDetails] = useState({
-    tokenASymbol: "",
-    tokenBSymbol: "",
-    tokenADecimal: 0,
-    tokenBDecimal: 0,
-    tokenAAmt: 0,
-    tokenBAmt: 0,
-    operator: 0,
-    comparator: 0,
-  });
+  const [gatedTokenDetails, setGatedTokenDetails] = useState(null);
   const [clubInfo, setClubInfo] = useState();
 
   const { address: walletAddress } = useAccount();
@@ -64,6 +55,7 @@ const Join = ({ daoAddress, routeNetworkId }) => {
 
   const { getTokenGatingDetails, getNftOwnersCount } = useAppContractMethods({
     daoAddress,
+    routeNetworkId,
   });
 
   /**
@@ -93,7 +85,6 @@ const Join = ({ daoAddress, routeNetworkId }) => {
     try {
       setLoading(true);
       const nftMinted = await getNftOwnersCount();
-
       if (clubData?.depositCloseTime && Number(nftMinted?.actualValue) >= 0) {
         setDaoDetails({
           depositDeadline: clubData?.depositCloseTime,
@@ -107,74 +98,83 @@ const Join = ({ daoAddress, routeNetworkId }) => {
     }
   };
 
-  const fetchTokenGatingDetials = async () => {
-    try {
-      setLoading(true);
-      const tokenGatingDetails = await getTokenGatingDetails();
+  const fetchTokenBalances = async (tokenGatingDetails) => {
+    const promises = tokenGatingDetails.tokens.map(async (token, index) => {
+      let decimal, symbol;
 
-      if (tokenGatingDetails) {
-        const tokenASymbol = await getTokenSymbol(
-          tokenGatingDetails[0]?.tokenA,
-        );
-        const tokenBSymbol = await getTokenSymbol(
-          tokenGatingDetails[0]?.tokenB,
-        );
+      const balance = await getBalance(token);
+      const value = tokenGatingDetails.value[index];
 
-        const tokenADecimal = await getDecimals(tokenGatingDetails[0]?.tokenA);
-
-        const tokenBDecimal = await getDecimals(tokenGatingDetails[0]?.tokenB);
-
-        setGatedTokenDetails({
-          tokenASymbol: tokenASymbol,
-          tokenBSymbol: tokenBSymbol,
-          tokenADecimal: tokenADecimal ? tokenADecimal : 0,
-          tokenBDecimal: tokenBDecimal ? tokenBDecimal : 0,
-          tokenAAmt: tokenGatingDetails[0]?.value[0],
-          tokenBAmt: tokenGatingDetails[0]?.value[1],
-          operator: tokenGatingDetails[0]?.operator,
-          comparator: tokenGatingDetails[0]?.comparator,
-        });
-
-        if (tokenGatingDetails?.length) {
-          setIsTokenGated(true);
-
-          const balanceOfTokenAInUserWallet = await getBalance(
-            tokenGatingDetails[0].tokenA,
-          );
-          const balanceOfTokenBInUserWallet = await getBalance(
-            tokenGatingDetails[0].tokenB,
-          );
-
-          if (tokenGatingDetails[0].operator == 0) {
-            if (
-              +balanceOfTokenAInUserWallet >=
-                +tokenGatingDetails[0]?.value[0] &&
-              +balanceOfTokenBInUserWallet >= +tokenGatingDetails[0]?.value[1]
-            ) {
-              setIsEligibleForTokenGating(true);
-            } else {
-              setIsEligibleForTokenGating(false);
-            }
-          } else if (tokenGatingDetails[0].operator == 1) {
-            if (
-              +balanceOfTokenAInUserWallet >=
-                +tokenGatingDetails[0]?.value[0] ||
-              +balanceOfTokenBInUserWallet >= +tokenGatingDetails[0]?.value[1]
-            ) {
-              setIsEligibleForTokenGating(true);
-            } else {
-              setIsEligibleForTokenGating(false);
-            }
-          }
-          setLoading(false);
-        }
+      try {
+        symbol = await getTokenSymbol(token);
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.error(error);
-      setLoading(false);
-    }
+
+      try {
+        decimal = await getDecimals(token);
+      } catch (error) {
+        decimal = null;
+      }
+
+      const convertedBalance = decimal
+        ? convertFromWeiGovernance(balance, decimal)
+        : balance;
+      const convertedValue = decimal
+        ? convertFromWeiGovernance(value, decimal)
+        : value;
+
+      return {
+        address: token,
+        symbol,
+        userBalance: convertedBalance.toString(),
+        requiredAmount: convertedValue.toString(),
+      };
+    });
+    return Promise.all(promises);
   };
 
+  const evaluateEligibility = (tokensData, operator) => {
+    if (operator === 0) {
+      // AND condition: All tokens must meet the requirement
+      return tokensData.every((token) =>
+        BigNumber(token.userBalance).isGreaterThanOrEqualTo(
+          BigNumber(token.requiredAmount),
+        ),
+      );
+    } else if (operator === 1) {
+      // OR condition: At least one token must meet the requirement
+      return tokensData.some((token) =>
+        BigNumber(token.userBalance).isGreaterThanOrEqualTo(
+          BigNumber(token.requiredAmount),
+        ),
+      );
+    }
+    return false; // Default to false if operator is neither 0 nor 1
+  };
+
+  const fetchTokenGatingDetials = async () => {
+    try {
+      const tokenGatingDetails = await getTokenGatingDetails();
+
+      if (tokenGatingDetails.tokens.length) {
+        setIsTokenGated(true);
+      }
+
+      const tokensData = await fetchTokenBalances(tokenGatingDetails);
+      setGatedTokenDetails({
+        operator: tokenGatingDetails.operator,
+        tokensData,
+      });
+      const eligibility = evaluateEligibility(
+        tokensData,
+        tokenGatingDetails.operator,
+      );
+      setIsEligibleForTokenGating(eligibility);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const fetchCurrentAllowance = async () => {
     try {
       const currentAllowance = await checkCurrentAllowance(
@@ -205,10 +205,10 @@ const Join = ({ daoAddress, routeNetworkId }) => {
   }, [daoAddress, walletAddress, networkId]);
 
   useEffect(() => {
-    if (walletAddress && daoAddress) {
+    if (daoAddress) {
       fetchTokenGatingDetials();
     }
-  }, [walletAddress, daoAddress, networkId]);
+  }, [daoAddress, networkId]);
 
   useEffect(() => {
     if (daoAddress && clubData) {

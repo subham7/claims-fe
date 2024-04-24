@@ -5,7 +5,6 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useSelector } from "react-redux";
 import ExpandCircleDownIcon from "@mui/icons-material/ExpandCircleDown";
-import { Typography } from "@components/ui";
 import {
   TableBody,
   Table,
@@ -18,6 +17,7 @@ import {
   TablePagination,
   TableContainer,
   Paper,
+  Typography,
 } from "@mui/material";
 import { CHAIN_CONFIG } from "utils/constants";
 import ComponentHeader from "@components/common/ComponentHeader";
@@ -28,12 +28,12 @@ dayjs.extend(relativeTime);
 
 const Transactions = ({ networkId }) => {
   const tableHeaders = [
-    "Token",
-    "Txn Hash",
-    "Tag",
-    "Age",
+    "Asset",
+    "Tx",
+    "Type",
+    "Timestamp",
     "From/To",
-    "Tokens ",
+    "Amount ",
   ];
 
   const gnosisAddress = useSelector((state) => {
@@ -108,16 +108,23 @@ const Transactions = ({ networkId }) => {
             </div>
           ) : !loading && !transactions?.transfers?.length ? (
             <div className="tb-pad-2 f-d f-h-c f-v-c">
-              <Typography variant="subheading">
-                No Transactions to show
-              </Typography>
+              <Typography variant="inherit">No Transactions to show</Typography>
             </div>
           ) : (
             <TableContainer component={Paper}>
               <Table>
                 <TableHead>
                   {tableHeaders.map((data, key) => (
-                    <TableCell align="left" variant="tableHeading" key={key}>
+                    <TableCell
+                      sx={{
+                        fontFamily: "inherit",
+                        fontSize: "16px",
+                        color: "#707070",
+                        background: "#111111",
+                      }}
+                      align="left"
+                      variant="tableHeading"
+                      key={key}>
                       {data}
                     </TableCell>
                   ))}
@@ -127,7 +134,13 @@ const Transactions = ({ networkId }) => {
                     return (
                       <>
                         <TableRow key={txn.transactionHash}>
-                          <TableCell align="left">
+                          <TableCell
+                            sx={{
+                              fontFamily: "inherit",
+                              fontSize: "16px",
+                              background: "#111111",
+                            }}
+                            align="left">
                             <div className="f-d f-v-c f-gap-8">
                               <img
                                 style={{
@@ -143,15 +156,23 @@ const Transactions = ({ networkId }) => {
                                     "/assets/images/fallbackUSDC.png";
                                 }}
                               />
-                              <Typography variant="info">
+                              <Typography variant="inherit">
                                 {txn.tokenInfo?.name}
                               </Typography>
                             </div>
                           </TableCell>
 
-                          <TableCell align="left">
+                          <TableCell
+                            sx={{
+                              fontFamily: "inherit",
+                              fontSize: "16px",
+                              background: "#111111",
+                            }}
+                            align="left">
                             <div className="f-d f-v-c f-gap-8">
-                              <Typography variant="info" className="text-blue">
+                              <Typography
+                                variant="inherit"
+                                className="text-blue">
                                 <Tooltip title={txn.transactionHash}>
                                   <div
                                     className="f-d f-gap-8 f-v-c c-pointer"
@@ -160,14 +181,23 @@ const Transactions = ({ networkId }) => {
                                     }}>
                                     {txn.transactionHash?.substring(0, 10) +
                                       "... "}
-                                    <OpenInNewIcon className="c-pointer" />
+                                    <OpenInNewIcon
+                                      fontSize="14px"
+                                      className="c-pointer"
+                                    />
                                   </div>
                                 </Tooltip>
                               </Typography>
                             </div>
                           </TableCell>
 
-                          <TableCell align="left">
+                          <TableCell
+                            sx={{
+                              fontFamily: "inherit",
+                              fontSize: "16px",
+                              background: "#111111",
+                            }}
+                            align="left">
                             {txn.to === gnosisAddress && (
                               <Chip
                                 icon={
@@ -207,14 +237,26 @@ const Transactions = ({ networkId }) => {
                             )}
                           </TableCell>
 
-                          <TableCell align="left">
-                            <Typography variant="info">
+                          <TableCell
+                            sx={{
+                              fontFamily: "inherit",
+                              fontSize: "16px",
+                              background: "#111111",
+                            }}
+                            align="left">
+                            <Typography variant="inherit">
                               {dayjs(txn?.executionDate).fromNow()}
                             </Typography>
                           </TableCell>
 
-                          <TableCell align="left">
-                            <Typography variant="info" className="text-blue">
+                          <TableCell
+                            sx={{
+                              fontFamily: "inherit",
+                              fontSize: "16px",
+                              background: "#111111",
+                            }}
+                            align="left">
+                            <Typography variant="inherit" className="text-blue">
                               <Tooltip title={txn?.from}>
                                 <a
                                   onClick={(e) => {
@@ -235,8 +277,14 @@ const Transactions = ({ networkId }) => {
                             </Typography>
                           </TableCell>
 
-                          <TableCell align="left">
-                            <Typography variant="body">
+                          <TableCell
+                            sx={{
+                              fontFamily: "inherit",
+                              fontSize: "16px",
+                              background: "#111111",
+                            }}
+                            align="left">
+                            <Typography variant="inherit">
                               {txn.value == null
                                 ? "---"
                                 : customToFixedAutoPrecision(

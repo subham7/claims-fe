@@ -5,6 +5,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { TextField } from "@components/ui";
@@ -16,6 +17,7 @@ import { ERC20Step2Styles } from "./CreateClubStyles";
 import { CHAIN_CONFIG } from "utils/constants";
 import { getPriceRate } from "api/assets";
 import { useEffect, useState } from "react";
+import { MdInfo } from "react-icons/md";
 
 const PriceRateDiv = ({ currentUSDCRate, value }) => {
   return (
@@ -259,10 +261,17 @@ export default function ERC20Step2(props) {
 
         <Card>
           <div className="f-d f-v-c f-h-sb">
-            <div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <Typography fontWeight={600} variant="body" className="text-blue">
-                Deadline
+                Contribution deadline
               </Typography>
+              <Tooltip
+                placement="bottom"
+                title="Date on which you want to close the deposits. you can extend this date later on from the dashboard.">
+                <div>
+                  <MdInfo size={14} style={{ cursor: "pointer" }} />
+                </div>
+              </Tooltip>
             </div>
 
             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -281,10 +290,17 @@ export default function ERC20Step2(props) {
 
         <Card>
           <div className="f-d f-v-c f-h-sb">
-            <div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <Typography fontWeight={600} variant="body" className="text-blue">
-                Set price per station token
+                How many shares do you want to issue per contribution?
               </Typography>
+              <Tooltip
+                placement="bottom"
+                title="Members receive shares as per their contribution to the station. These shares represent an onchain captable of members’ ownership inside the station.">
+                <div>
+                  <MdInfo size={14} style={{ cursor: "pointer" }} />
+                </div>
+              </Tooltip>
             </div>
             <div className="w-50">
               <TextField

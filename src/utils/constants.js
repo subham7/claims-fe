@@ -246,13 +246,13 @@ export const CHAIN_CONFIG = {
       image: "/assets/icons/eth.png",
     },
     rpcUrls: ["https://rpc.linea.build"],
-    appRpcUrl: `https://linea-mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
-    factoryContractAddress: "0xd3AfdA70B888388a1d5e8737Ba8b533fFE352e92",
+    appRpcUrl: `https://linea-mainnet.infura.io/v3/334bd48aa6474a849109ef6f2c3d5e57`,
+    factoryContractAddress: "0x17f251Afb0f1b47d47d50F2a5f2dcB72B12c06BC",
     claimFactoryAddress: "0x50702Fd9086BAbDB0A3A576bFe22D4dD47b09937",
     claimsSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-linea/0.0.1/gn",
     stationSubgraphUrl:
-      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-linea/0.0.1/gn",
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-linea-cc/prod/gn",
     covalentNetworkName: "linea-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0x176211869cA2b568f2A7D4EE941E073a821EE1ff",
