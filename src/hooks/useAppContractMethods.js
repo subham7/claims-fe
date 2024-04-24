@@ -156,8 +156,11 @@ const useAppContractMethods = (params) => {
   const getTokenGatingDetails = async () => {
     try {
       let response = await readContractFunction({
-        address: CHAIN_CONFIG[networkId].factoryContractAddress,
-        abi: networkId === "0xe708" ? factoryContractCCABI : factoryContractABI,
+        address: CHAIN_CONFIG[routeNetworkId].factoryContractAddress,
+        abi:
+          routeNetworkId === "0xe708"
+            ? factoryContractCCABI
+            : factoryContractABI,
         functionName: "getTokenGatingDetails",
         args: [daoAddress],
         // account: walletAddress,
