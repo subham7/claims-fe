@@ -426,11 +426,11 @@ const Members = ({ daoAddress, routeNetworkId }) => {
                           ? BigNumber(data?.gtAmount)
                               .dividedBy(erc20TotalSupply)
                               .times(100)
-                              .toFixed(3) ?? 0
+                              .toFixed(4) ?? 0
                           : BigNumber(data?.gtAmount)
                               .dividedBy(erc721TotalNftMinted)
                               .times(100)
-                              .toFixed(3) ?? 0}
+                              .toFixed(4) ?? 0}
                         %
                       </Typography>
                     </TableCell>

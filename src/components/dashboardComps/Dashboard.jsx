@@ -99,15 +99,13 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
             percentageShare = BigNumber(myBalance)
               .dividedBy(totalSupply?.bigNumberValue)
               .times(100)
-              .integerValue()
-              .toFixed();
+              .toFixed(4);
           } else if (tokenType === "erc721") {
             const totalNftMinted = await getNftOwnersCount();
             percentageShare = BigNumber(myBalance)
               .dividedBy(totalNftMinted?.bigNumberValue)
               .times(100)
-              .integerValue()
-              .toFixed();
+              .toFixed(4);
           }
           setMyShare(percentageShare ? Number(percentageShare) : 0);
         }
