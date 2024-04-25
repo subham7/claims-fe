@@ -47,7 +47,6 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
   };
 
   const fetchTokenGatingDetails = async () => {
-    debugger;
     const details = await getTokenGatingDetails();
 
     if (details && details?.tokens?.length) {

@@ -204,20 +204,22 @@ const Members = ({ daoAddress, routeNetworkId }) => {
     },
     validationSchema: MembersValidationSchema,
     onSubmit: async (values) => {
-      setDownloadLoading(true);
-      const membersData = await getAllEntities(
-        CHAIN_CONFIG[networkId]?.stationSubgraphUrl,
-        daoAddress,
-        "users",
-        dayjs(values?.startDate).unix(),
-        dayjs(values?.endDate).unix(),
-      );
-      const csvData = await convertDataToCSV(membersData); // Convert the membersData array to CSV format
+      try {
+        setDownloadLoading(true);
+        const membersData = await getAllEntities(
+          CHAIN_CONFIG[networkId]?.stationSubgraphUrl,
+          daoAddress,
+          "users",
+        );
+        const csvData = await convertDataToCSV(membersData); // Convert the membersData array to CSV format
 
-      const blob = new Blob([csvData], { type: "text/csv;charset=utf-8" });
-      saveAs(blob, "members.csv");
-      // Trigger the download with the file-saver library
-      setDownloadLoading(false);
+        const blob = new Blob([csvData], { type: "text/csv;charset=utf-8" });
+        saveAs(blob, "members.csv");
+        // Trigger the download with the file-saver library
+        setDownloadLoading(false);
+      } catch (error) {
+        setDownloadLoading(false);
+      }
     },
   });
 
