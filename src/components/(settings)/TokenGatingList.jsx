@@ -13,9 +13,12 @@ import { setAlertData } from "redux/reducers/alert";
 import { useDispatch, useSelector } from "react-redux";
 import { Typography } from "@mui/material";
 
-const TokenGatingList = ({ daoAddress, setLoading, setIsTokenGated }) => {
-  const [showAddButton, setShowAddButton] = useState(true);
-  const [showSaveButton, setShowSaveButton] = useState(false);
+const TokenGatingList = ({
+  daoAddress,
+  setLoading,
+  setIsTokenGated,
+  routeNetworkId,
+}) => {
   const [tokenGatedDetails, setTokenGatedDetails] = useState([]);
   const [operator, setOperator] = useState(0);
   const [addNewTokenDetails, setAddNewTokenDetails] = useState([
@@ -24,10 +27,6 @@ const TokenGatingList = ({ daoAddress, setLoading, setIsTokenGated }) => {
       amount: 0,
     },
   ]);
-  const [tokenGatingDetails, setTokenGatingDetails] = useState({
-    address: "",
-    amount: 0,
-  });
   const [showErrorText, setShowErrorText] = useState(false);
 
   const isAdmin = useSelector((state) => {
@@ -37,6 +36,7 @@ const TokenGatingList = ({ daoAddress, setLoading, setIsTokenGated }) => {
   const { setupTokenGating, getTokenGatingDetails, disableTokenGating } =
     useAppContractMethods({
       daoAddress,
+      routeNetworkId,
     });
   const { getDecimals, getTokenSymbol } = useCommonContractMethods({
     daoAddress,
@@ -136,8 +136,6 @@ const TokenGatingList = ({ daoAddress, setLoading, setIsTokenGated }) => {
           amount: 0,
         },
       ]);
-      setShowAddButton(true);
-      setShowSaveButton(false);
       setIsTokenGated(true);
     } catch (error) {
       console.error(error);
@@ -218,49 +216,50 @@ const TokenGatingList = ({ daoAddress, setLoading, setIsTokenGated }) => {
             ))
           : null}
 
-        {addNewTokenDetails.map((data, key) => (
-          <div
-            key={key}
-            style={{ margin: "4px 0" }}
-            className={classes.copyTextContainer}>
-            <input
-              onChange={(e) => {
-                const address = e.target.value;
-                const list = [...addNewTokenDetails];
-                list[key].address = address;
-                setAddNewTokenDetails(list);
-              }}
-              value={addNewTokenDetails[key].address}
-              disabled={!isAdmin}
-              placeholder="Contract address"
-              className={classNames(classes.input, classes.address)}
-            />
-            <input
-              type="number"
-              onChange={(e) => {
-                const amount = e.target.value;
-                const list = [...addNewTokenDetails];
-                list[key].amount = amount;
-                setAddNewTokenDetails(list);
-              }}
-              value={addNewTokenDetails[key].amount}
-              placeholder="0"
-              disabled={!isAdmin}
-              className={classNames(classes.input, classes.percentage)}
-            />
-
-            {addNewTokenDetails.length > 1 || tokenGatedDetails.length ? (
-              <RxCross2
-                onClick={() => {
+        {isAdmin &&
+          addNewTokenDetails.map((data, key) => (
+            <div
+              key={key}
+              style={{ margin: "4px 0" }}
+              className={classes.copyTextContainer}>
+              <input
+                onChange={(e) => {
+                  const address = e.target.value;
                   const list = [...addNewTokenDetails];
-                  list.splice(key, 1);
+                  list[key].address = address;
                   setAddNewTokenDetails(list);
                 }}
-                className={classNames(classes.icon)}
+                value={addNewTokenDetails[key].address}
+                disabled={!isAdmin}
+                placeholder="Contract address"
+                className={classNames(classes.input, classes.address)}
               />
-            ) : null}
-          </div>
-        ))}
+              <input
+                type="number"
+                onChange={(e) => {
+                  const amount = e.target.value;
+                  const list = [...addNewTokenDetails];
+                  list[key].amount = amount;
+                  setAddNewTokenDetails(list);
+                }}
+                value={addNewTokenDetails[key].amount}
+                placeholder="0"
+                disabled={!isAdmin}
+                className={classNames(classes.input, classes.percentage)}
+              />
+
+              {addNewTokenDetails.length > 1 || tokenGatedDetails.length ? (
+                <RxCross2
+                  onClick={() => {
+                    const list = [...addNewTokenDetails];
+                    list.splice(key, 1);
+                    setAddNewTokenDetails(list);
+                  }}
+                  className={classNames(classes.icon)}
+                />
+              ) : null}
+            </div>
+          ))}
 
         {showErrorText && (
           <Typography
