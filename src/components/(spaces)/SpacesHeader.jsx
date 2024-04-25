@@ -54,8 +54,8 @@ const SpacesHeader = () => {
 
           <div className={classes.infoContainer}>
             <Typography variant="inherit" className={classes.details}>
-              Get exposure to strategies and opportunities in the Linea
-              ecosystem - curated at StationX.
+              Get exposure to best Linea Ecosystem Projects curated by Linea and
+              StationX For Ecosystem Investment Partners & LXP holders.
             </Typography>
 
             <div className={classes.spaceDetails}>

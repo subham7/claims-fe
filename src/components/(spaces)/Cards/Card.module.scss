@@ -1,8 +1,11 @@
 @import "../../../../styles/variables.scss";
 
 .card{
-    width: 300px;
+    width: 320px;
     border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
 
     .bannerImage{
         border-radius: 10px 0 0;

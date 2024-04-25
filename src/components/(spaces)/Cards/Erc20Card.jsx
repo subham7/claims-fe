@@ -8,8 +8,8 @@ const Erc20Card = ({ imageUrl, stationName, raiseAmount, depositToken }) => {
     <div className={classes.card}>
       <Image
         src={imageUrl}
-        height={150}
-        width={300}
+        height={170}
+        width={320}
         alt={stationName}
         className={classes.bannerImage}
       />

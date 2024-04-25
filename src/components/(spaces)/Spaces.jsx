@@ -10,21 +10,27 @@ import Erc721Card from "./Cards/Erc721Card";
 const dummyData = [
   {
     depositToken: "USDC",
-    imageUrl: "/assets/images/defaultSpaceBanner.png",
-    raiseAmount: "230,090",
-    stationName: "X Tribe",
+    imageUrl: "/assets/spaces/stationXBanner.png",
+    raiseAmount: "200,000",
+    stationName: "StationX",
   },
   {
-    depositToken: "ETH",
-    imageUrl: "/assets/images/dummyBanner2.png",
-    raiseAmount: "900",
-    stationName: "$FROG on Linea",
+    depositToken: "USDC",
+    imageUrl: "/assets/spaces/memefiBanner.png",
+    raiseAmount: "100,000",
+    stationName: "MemeFi",
   },
   {
-    depositToken: "ETH",
-    imageUrl: "/assets/images/dummyBanner3.png",
-    raiseAmount: "200",
-    stationName: "Linea Restakers",
+    depositToken: "USDC",
+    imageUrl: "/assets/spaces/zerolendBanner.png",
+    raiseAmount: "200,000",
+    stationName: "ZeroLend",
+  },
+  {
+    depositToken: "USDC",
+    imageUrl: "/assets/spaces/logxBanner.png",
+    raiseAmount: "50,000",
+    stationName: "LogX",
   },
 ];
 
