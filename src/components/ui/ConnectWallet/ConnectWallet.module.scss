@@ -1,0 +1,79 @@
+@import "../../../../styles/variables.scss";
+
+.section{
+    display: flex;
+    padding: 80px 40px 0;
+    background-color: $background-color-dark;
+    min-height: 100vh;
+    flex-direction: column;
+    justify-content: space-between;
+    color: white;
+
+    .connectWalletSection{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-top: 80px;
+
+        .firstDiv{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            
+            .heading{
+                font-size: 52px;
+                font-weight: 900;
+                font-family: "avenir";
+                line-height: 60px;
+                text-align: center;
+            }
+
+            .subHeading{
+                font-size: 16px;
+                color: $light-gray;
+                margin-top: 20px;
+            }
+
+            .connectWalletButton{
+                padding: 16px 40px;
+                border-radius: 50px;
+                font-family: inherit;
+                font-weight: 600;
+                font-size: 16px;
+                margin-top: 28px;
+                cursor: pointer;
+            }
+        }
+
+        .stationsInfo{
+            display: flex;
+            width: 100%;
+            justify-content: space-around;
+            padding: 48px 0;
+            margin-top: 80px;
+            border-top: 0.1px solid $divider-color;
+            border-bottom: 0.1px solid $divider-color;
+
+
+            .info{
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                .value{
+                    font-size: 20px;
+                    font-family: inherit;
+                    font-weight: 700;
+                }
+
+                .title{
+                    font-size: 14px;
+                    color: $gray;
+                    font-family: inherit;
+
+                }
+            }
+        }
+    }
+}

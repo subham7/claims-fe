@@ -70,8 +70,10 @@ createWeb3Modal({
   wagmiConfig,
   projectId,
   chains,
+  themeMode: "dark",
   themeVariables: {
-    "--w3m-accent": "#2d55ff",
+    "--w3m-accent": "#1e1e1e",
+    "--w3m-font-family": "inherit",
   },
   includeWalletIds: [
     "c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96",

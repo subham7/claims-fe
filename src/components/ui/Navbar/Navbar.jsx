@@ -76,7 +76,7 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
               </Typography>
             </div>
           )}
-          <w3m-account-button balance="hide" />
+          <w3m-button balance="hide" />
           {address && (
             <Image
               onClick={() => router.push(`/profile/${address}`)}
