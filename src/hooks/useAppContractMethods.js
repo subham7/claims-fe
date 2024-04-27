@@ -655,9 +655,18 @@ const useAppContractMethods = (params) => {
           await createOrUpdateSafeTransaction({
             safeSdk,
             executionId,
-            transaction,
-            approvalTransaction,
-            stakeETHTransaction,
+            transaction:
+              executionId === 6 || executionId === 7
+                ? transaction
+                : approvalTransaction
+                ? tx.dataDecoded.parameters[0].valueDecoded[0]
+                : tx,
+            approvalTransaction: approvalTransaction
+              ? tx.dataDecoded.parameters[0].valueDecoded[1]
+              : undefined,
+            stakeETHTransaction: approvalTransaction
+              ? tx.dataDecoded.parameters[0].valueDecoded[2]
+              : undefined,
             nonce: tx.nonce,
             executionStatus: proposalStatus,
           });
