@@ -795,31 +795,31 @@ export const DEFI_PROPOSALS_ETH_POOLS = ({
       ),
       tags: [],
     },
-    {
-      name: "Renzo X Zerolend",
-      logo: "/assets/icons/zerolend.png",
-      APY: "3.4",
-      staked: renzoZerolLendStaked,
-      token: "ETH",
-      executionIds: {
-        Stake: 53,
-        Unstake: 54,
-      },
-      availableOnNetworkIds: ["0xe708"],
-      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.zeroETHAddress
-        ? CHAIN_CONFIG[networkId].zeroETHAddress
-        : "",
-      isUnstakeDisabled: true,
-      risk: "Low",
-      info: (
-        <span>
-          This strategy swaps ETH for ezETH and then stake ezETH in Zerolend to
-          get z0ETH (an LST by Zerolend). All of it in a single transaction. You
-          earn 3.4% native yield on holding z0ETH by AAVE.
-        </span>
-      ),
-      tags: ["🐚 ZERO POINTS", "⭐ ezPOINTS", "🏆 EIGEN POINTS"],
-    },
+    // {
+    //   name: "Renzo X Zerolend",
+    //   logo: "/assets/icons/zerolend.png",
+    //   APY: "3.4",
+    //   staked: renzoZerolLendStaked,
+    //   token: "ETH",
+    //   executionIds: {
+    //     Stake: 53,
+    //     Unstake: 54,
+    //   },
+    //   availableOnNetworkIds: ["0xe708"],
+    //   unstakeTokenAddress: CHAIN_CONFIG[networkId]?.zeroETHAddress
+    //     ? CHAIN_CONFIG[networkId].zeroETHAddress
+    //     : "",
+    //   isUnstakeDisabled: true,
+    //   risk: "Low",
+    //   info: (
+    //     <span>
+    //       This strategy swaps ETH for ezETH and then stake ezETH in Zerolend to
+    //       get z0ETH (an LST by Zerolend). All of it in a single transaction. You
+    //       earn 3.4% native yield on holding z0ETH by AAVE.
+    //     </span>
+    //   ),
+    //   tags: ["🐚 ZERO POINTS", "⭐ ezPOINTS", "🏆 EIGEN POINTS"],
+    // },
   ];
 };
 

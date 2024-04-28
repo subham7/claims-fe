@@ -664,9 +664,11 @@ const useAppContractMethods = (params) => {
             approvalTransaction: approvalTransaction
               ? tx.dataDecoded.parameters[0].valueDecoded[1]
               : undefined,
-            stakeETHTransaction: approvalTransaction
-              ? tx.dataDecoded.parameters[0].valueDecoded[2]
-              : undefined,
+            stakeETHTransaction:
+              approvalTransaction &&
+              tx.dataDecoded.parameters[0].valueDecoded[2]
+                ? tx.dataDecoded.parameters[0].valueDecoded[2]
+                : undefined,
             nonce: tx.nonce,
             executionStatus: proposalStatus,
           });
