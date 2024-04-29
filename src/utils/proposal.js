@@ -48,6 +48,7 @@ import { mendiTokenContract } from "abis/mendi/mendiToken";
 import { BigNumber } from "bignumber.js";
 import { zeroLendStakingPoolABI } from "abis/zerolend/zerolendStakingPool";
 import { zeroLendEthStakingPool } from "abis/zerolend/zeroLendEthPool";
+import dayjs from "dayjs";
 
 export const fetchProposals = async (daoAddress, type) => {
   let proposalData;
@@ -827,7 +828,7 @@ const renzoEthStakeEncoded = ({
         .dividedBy(100)
         .toString();
 
-      const deadline = Math.floor(new Date().getTime() / 1000) + 1200; // 20 mins ahead of current time
+      const deadline = dayjs().add(10, "year").unix();
 
       return renzoStakingPoolContract.methods
         .depositETH(convertToWeiGovernance(minimumOutAmount, 18), deadline)
