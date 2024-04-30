@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import ProposalActionForm from "./ProposalActionForm";
 import { createProposal } from "../../api/proposal";
 import { useDispatch, useSelector } from "react-redux";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { getProposalCommands } from "utils/proposalData";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { getProposalValidationSchema } from "@components/createClubComps/ValidationSchemas";
@@ -66,8 +66,8 @@ const CreateProposalDialog = ({ daoAddress, routeNetworkId }) => {
   let { executionId } = router.query;
 
   const { address: walletAddress } = useAccount();
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;

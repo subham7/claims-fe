@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import Web3 from "web3";
 import { readContractFunction, writeContractFunction } from "utils/helper";
 import { createProposalTxHash } from "../api/proposal";
-import { useAccount, useNetwork, useWalletClient } from "wagmi";
+import { useAccount, useChainId, useWalletClient } from "wagmi";
 import { factoryContractABI } from "abis/factoryContract.js";
 import { getTransaction } from "utils/proposal";
 import { erc20DaoABI } from "abis/erc20Dao";
@@ -35,8 +35,8 @@ const useAppContractMethods = (params) => {
 
   const { address: walletAddress } = useAccount();
 
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
 
   const isAssetsStoredOnGnosis = useSelector((state) => {
     return state.club.clubData.assetsStoredOnGnosis;

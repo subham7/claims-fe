@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addNftsOwnedByDao } from "redux/reducers/club";
 import { customToFixedAutoPrecision, handleSignMessage } from "utils/helper";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import AssetsTable from "./AssetsTable";
 import classes from "./Dashboard.module.scss";
 import DashboardActivities from "./DashboardActivities";
@@ -33,9 +33,9 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
     return state.club.clubData.gnosisAddress;
   });
 
-  const { chain } = useNetwork();
+  const chain = useChainId();
   const dispatch = useDispatch();
-  const networkId = "0x" + chain?.id.toString(16);
+  const networkId = "0x" + chain?.toString(16);
   const { address: walletAddress } = useAccount();
 
   const router = useRouter();

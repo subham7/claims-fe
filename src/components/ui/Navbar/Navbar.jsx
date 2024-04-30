@@ -3,15 +3,12 @@ import classes from "./Navbar.module.scss";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import NetworkSwitcher from "@components/modals/NetworkSwitcher/NetworkSwitcher";
-import {
-  CHAIN_CONFIG,
-  dropsNetworksChaindId,
-  stationNetworksChainId,
-} from "utils/constants";
-import { useAccount, useNetwork } from "wagmi";
+import { dropsNetworksChaindId, stationNetworksChainId } from "utils/constants";
+import { useAccount, useChainId } from "wagmi";
 import { Typography } from "@mui/material";
 import EditDetails from "@components/settingsComps/modals/EditDetails";
 import { useSelector } from "react-redux";
+import { useWalletInfo } from "@web3modal/wagmi/react";
 
 const Navbar = ({ daoAddress, routeNetworkId }) => {
   const [showEditDetails, setShowEditDetails] = useState(false);
@@ -20,8 +17,9 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
 
   const router = useRouter();
   const { address } = useAccount();
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const { walletInfo } = useWalletInfo();
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
 
   const clubData = useSelector((state) => {
     return state.club.clubData;
@@ -62,7 +60,7 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
               </Typography>
             </div>
           ) : null}
-          {address && (
+          {/* {address && (
             <div onClick={showNetworkModalHandler} className={classes.switch}>
               <Image
                 src={CHAIN_CONFIG[networkId]?.logoUri}
@@ -75,8 +73,9 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
                 {CHAIN_CONFIG[networkId]?.shortName}
               </Typography>
             </div>
-          )}
-          <w3m-account-button balance="hide" />
+          )} */}
+          <w3m-network-button />
+          <w3m-button label="Connect" />
           {address && (
             <Image
               onClick={() => router.push(`/profile/${address}`)}

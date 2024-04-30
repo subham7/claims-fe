@@ -36,7 +36,7 @@ import ProposalVotes from "@components/proposalComps/ProposalVotes";
 import { getSafeSdk, handleSignMessage } from "utils/helper";
 import { retrieveNftListing } from "api/assets";
 import SafeAppsSDK from "@safe-global/safe-apps-sdk";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import {
   createRejectSafeTx,
   executeRejectTx,
@@ -59,8 +59,8 @@ const ProposalDetail = ({ pid, daoAddress, routeNetworkId }) => {
   const router = useRouter();
 
   const { address: walletAddress } = useAccount();
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
   const dispatch = useDispatch();
 
   const sdk = new SafeAppsSDK({

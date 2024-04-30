@@ -1,5 +1,5 @@
 import { readContractFunction, writeContractFunction } from "utils/helper";
-import { useAccount, useNetwork, useWalletClient } from "wagmi";
+import { useAccount, useChainId, useWalletClient } from "wagmi";
 import { claimContractABI } from "abis/claimContract.js";
 import { claimFactoryABI } from "abis/claimFactory.js";
 import { CHAIN_CONFIG } from "utils/constants";
@@ -8,8 +8,8 @@ import { disburseContractABI } from "abis/disburseContract";
 const useDropsContractMethods = () => {
   const walletClient = useWalletClient();
   const { address: walletAddress } = useAccount();
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
 
   const claimFactoryAddress = CHAIN_CONFIG[networkId].claimFactoryAddress;
 

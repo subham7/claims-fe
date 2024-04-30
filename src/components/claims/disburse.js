@@ -4,7 +4,7 @@ import { Grid, Backdrop, CircularProgress } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import { disburseFormValidation } from "../createClubComps/ValidationSchemas";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { getTokensList, getTokensListOfManta } from "api/token";
 import { getUserTokenData, isValidAddress } from "utils/helper";
 import { CHAIN_CONFIG } from "utils/constants";
@@ -27,8 +27,8 @@ const useStyles = makeStyles({
 const CreateDisburse = () => {
   const classes = useStyles();
   const { address: walletAddress } = useAccount();
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
   const router = useRouter();
   const dispatch = useDispatch();
 

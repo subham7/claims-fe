@@ -9,12 +9,12 @@ import { ProposalCardStyles } from "@components/proposalComps/ProposalCardStyles
 import useCommonContractMethods from "hooks/useCommonContractMehods.js";
 import { proposalData } from "utils/proposalData.js";
 import { isNative, shortAddress } from "utils/helper.js";
-import { useNetwork } from "wagmi";
+import { useChainId } from "wagmi";
 import { extractTokenDetails } from "utils/proposalHelper.js";
 
 const ProposalCard = ({ proposal, daoAddress, routeNetworkId }) => {
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
   const classes = ProposalCardStyles();
 
   const tokenType = useSelector((state) => {
