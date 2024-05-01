@@ -27,6 +27,7 @@ import CreateClubModal from "@components/modals/CreateClubModal/CreateClubModal"
 import BackdropLoader from "@components/common/BackdropLoader";
 import DashboardActionContainer from "./dashboardActions/DashboardActionContainer";
 import { BigNumber } from "bignumber.js";
+import LineaCreateModal from "@components/modals/LineaCreateModal/LineaCreateModal";
 
 const Dashboard = ({ daoAddress, routeNetworkId }) => {
   const gnosisAddress = useSelector((state) => {
@@ -406,7 +407,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
         />
       )}
 
-      {(create || join) && showTwitterModal && (
+      {(create || join) && showTwitterModal && routeNetworkId !== "0xe708" && (
         <StatusModal
           onClose={() => setShowTwitterModal(false)}
           heading={`Successfully ${
@@ -422,6 +423,10 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
             );
           }}
         />
+      )}
+
+      {create && showTwitterModal && routeNetworkId === "0xe708" && (
+        <LineaCreateModal onClose={() => setShowTwitterModal(false)} />
       )}
 
       {showCreateClubModal ? (
