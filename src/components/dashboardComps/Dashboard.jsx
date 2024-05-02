@@ -28,6 +28,7 @@ import BackdropLoader from "@components/common/BackdropLoader";
 import DashboardActionContainer from "./dashboardActions/DashboardActionContainer";
 import { BigNumber } from "bignumber.js";
 import LineaCreateModal from "@components/modals/LineaCreateModal/LineaCreateModal";
+import LineaCampaignModal from "@components/modals/LineaCreateModal/LineaCampaignModal";
 
 const Dashboard = ({ daoAddress, routeNetworkId }) => {
   const gnosisAddress = useSelector((state) => {
@@ -60,6 +61,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
   const [showTwitterModal, setShowTwitterModal] = useState(true);
   const [showCreateClubModal, setShowCreateClubModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showLineaCampaignModal, setShowLineaCampaignModal] = useState(false);
 
   const { getBalance } = useCommonContractMethods({ routeNetworkId });
   const { getERC20TotalSupply, getNftOwnersCount } = useAppContractMethods({
@@ -282,7 +284,11 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
           <ComponentHeader
             title={clubData?.name}
             subtext={`$${clubData?.symbol}`}
-            showButton={false}
+            showButton={routeNetworkId === "0xe708" ? true : false}
+            buttonText="Join Campaign"
+            onClickHandler={() => {
+              setShowLineaCampaignModal(true);
+            }}
           />
         </div>
 
@@ -434,6 +440,14 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
       ) : null}
 
       <BackdropLoader isOpen={loading} />
+
+      {showLineaCampaignModal ? (
+        <LineaCampaignModal
+          onClose={() => {
+            setShowLineaCampaignModal(false);
+          }}
+        />
+      ) : null}
     </div>
   );
 };
