@@ -63,7 +63,7 @@ const UpdateAmountTextfield = ({
   setLoading,
   handleActionComplete,
 }) => {
-  const { signMessage } = useSignMessage();
+  const { signMessageAsync } = useSignMessage();
   const [canEdit, setCanEdit] = useState(false);
   const [amount, setAmount] = useState(prevAmount);
   const inputRef = useRef(null);
@@ -159,7 +159,7 @@ const UpdateAmountTextfield = ({
 
       const { signature } = await handleSignMessage(
         JSON.stringify(payload),
-        signMessage,
+        signMessageAsync,
       );
 
       const request = await createProposal(isGovernanceActive, {

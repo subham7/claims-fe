@@ -33,7 +33,7 @@ const StakingModal = ({
   onStakingComplete,
   unstakeTokenAddress = "",
 }) => {
-  const { signMessage } = useSignMessage();
+  const { signMessageAsync } = useSignMessage();
   const [tokenData, setTokenData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isFetchingValue, setIsFetchingValue] = useState(false);
@@ -172,7 +172,7 @@ const StakingModal = ({
 
         const { signature } = await handleSignMessage(
           JSON.stringify(payload),
-          signMessage,
+          signMessageAsync,
         );
 
         const request = await createProposal(isGovernanceActive, {

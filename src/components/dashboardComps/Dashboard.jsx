@@ -29,7 +29,7 @@ import DashboardActionContainer from "./dashboardActions/DashboardActionContaine
 import { BigNumber } from "bignumber.js";
 
 const Dashboard = ({ daoAddress, routeNetworkId }) => {
-  const { signMessage } = useSignMessage();
+  const { signMessageAsync } = useSignMessage();
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
@@ -210,7 +210,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
 
       const { signature } = await handleSignMessage(
         JSON.stringify(payload),
-        signMessage,
+        signMessageAsync,
       );
 
       const res = await createStation({ ...payload, signature });

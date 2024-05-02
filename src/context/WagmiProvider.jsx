@@ -21,8 +21,6 @@ createWeb3Modal({
   projectId,
   allowUnsupportedChain: false,
   defaultChain: polygon,
-  enableAnalytics: true, // Optional - defaults to your Cloud configuration
-  enableOnramp: true, // Optional - false as default
   themeVariables: {
     "--w3m-accent": "#1e1e1e",
     "--w3m-font-family": "inherit",

@@ -494,7 +494,7 @@ export function customToFixedAutoPrecision(num) {
       tempNum *= 10;
       decimalPlaces++;
     }
-    return num.toFixed(decimalPlaces);
+    return num?.toFixed(decimalPlaces);
   } catch (err) {
     console.error(err);
     return "0.00";

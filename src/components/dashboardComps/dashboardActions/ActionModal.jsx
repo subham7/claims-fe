@@ -38,7 +38,7 @@ const ActionModal = ({
   networkId,
   onActionComplete,
 }) => {
-  const { signMessage } = useSignMessage();
+  const { signMessageAsync } = useSignMessage();
   const [tokenData, setTokenData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [validationSchema, setValidationSchema] = useState();
@@ -142,7 +142,7 @@ const ActionModal = ({
 
         const { signature } = await handleSignMessage(
           JSON.stringify(payload),
-          signMessage,
+          signMessageAsync,
         );
 
         const request = await createProposal(isGovernanceActive, {

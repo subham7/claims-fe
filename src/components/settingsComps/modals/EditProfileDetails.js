@@ -84,7 +84,7 @@ const EditProfileDetails = ({
   userData,
   getUserProfileData,
 }) => {
-  const { signMessage } = useSignMessage();
+  const { signMessageAsync } = useSignMessage();
   const theme = useTheme();
   const classes = useStyles(theme);
   const dispatch = useDispatch();
@@ -109,7 +109,7 @@ const EditProfileDetails = ({
     try {
       const { signature } = await handleSignMessage(
         JSON.stringify(data),
-        signMessage,
+        signMessageAsync,
       );
 
       const response = await createOrUpdateUser({ ...data, signature });

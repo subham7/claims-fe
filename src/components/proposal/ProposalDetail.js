@@ -55,7 +55,7 @@ import { setAlertData } from "redux/reducers/alert";
 import { CHAIN_CONFIG } from "utils/constants";
 
 const ProposalDetail = ({ pid, daoAddress, routeNetworkId }) => {
-  const { signMessage } = useSignMessage();
+  const { signMessageAsync } = useSignMessage();
   const classes = ProposalDetailStyles();
   const router = useRouter();
 
@@ -263,7 +263,7 @@ Cast your vote before ${new Date(
     };
     const { signature } = await handleSignMessage(
       JSON.stringify(payload),
-      signMessage,
+      signMessageAsync,
     );
     try {
       const result = await castVote({ ...payload, signature });

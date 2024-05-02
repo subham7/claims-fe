@@ -10,7 +10,7 @@ import { setAlertData } from "redux/reducers/alert";
 import { generateAlertData } from "utils/globalFunctions";
 
 const EnableKYC = ({ daoAddress, setLoading }) => {
-  const { signMessage } = useSignMessage();
+  const { signMessageAsync } = useSignMessage();
   const [apiKey, setApiKey] = useState("");
   const [appId, setAppId] = useState("");
   const [isEnabledOld, setIsEnabledOld] = useState(false);
@@ -39,7 +39,7 @@ const EnableKYC = ({ daoAddress, setLoading }) => {
 
       const { signature } = await handleSignMessage(
         JSON.stringify(payload),
-        signMessage,
+        signMessageAsync,
       );
 
       if (isEnabledOld !== isEnabled && isEnabled) {

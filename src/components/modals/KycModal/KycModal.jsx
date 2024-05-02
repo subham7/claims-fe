@@ -15,7 +15,7 @@ const KycModal = ({
   setLoading,
   setIsKycEnabledSettings,
 }) => {
-  const { signMessage } = useSignMessage();
+  const { signMessageAsync } = useSignMessage();
   const [apiKey, setApiKey] = useState("");
   const [appId, setAppId] = useState("");
   const [appIdOld, setAppIdOld] = useState(false);
@@ -71,7 +71,7 @@ const KycModal = ({
 
       const { signature } = await handleSignMessage(
         JSON.stringify(payload),
-        signMessage,
+        signMessageAsync,
       );
 
       const response = await createKYC({

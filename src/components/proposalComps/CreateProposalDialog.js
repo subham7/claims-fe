@@ -58,7 +58,7 @@ const useStyles = makeStyles({
 });
 
 const CreateProposalDialog = ({ daoAddress, routeNetworkId }) => {
-  const { signMessage } = useSignMessage();
+  const { signMessageAsync } = useSignMessage();
   const classes = useStyles();
   const router = useRouter();
   const [nftData, setNftData] = useState([]);

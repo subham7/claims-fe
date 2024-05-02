@@ -21,7 +21,7 @@ const TreasurySigner = ({
   setLoading,
   handleActionComplete,
 }) => {
-  const { signMessage } = useSignMessage();
+  const { signMessageAsync } = useSignMessage();
   const [newArr, setNewArr] = useState([]);
   const [showEditButton, setShowEditButton] = useState(true);
   const [showAddDeleteButtons, setShowAddDeleteButtons] = useState(false);
@@ -122,7 +122,7 @@ const TreasurySigner = ({
 
       const { signature } = await handleSignMessage(
         JSON.stringify(payload),
-        signMessage,
+        signMessageAsync,
       );
 
       const request = await createProposal(isGovernanceActive, {

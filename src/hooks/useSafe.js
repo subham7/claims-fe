@@ -13,7 +13,7 @@ import {
 import { useSignMessage } from "wagmi";
 
 const useSafe = () => {
-  const { signMessage } = useSignMessage();
+  const { signMessageAsync } = useSignMessage();
   const { createERC721DAO, createERC20DAO } = useAppContractMethods();
   const router = useRouter();
 
@@ -100,7 +100,7 @@ const useSafe = () => {
 
       const { signature } = await handleSignMessage(
         JSON.stringify(payload),
-        signMessage,
+        signMessageAsync,
       );
 
       try {
