@@ -5,7 +5,7 @@ import { IoMdCheckmark } from "react-icons/io";
 import classNames from "classnames";
 import { useSelector } from "react-redux";
 import { getProposalCommands } from "utils/proposalData";
-import { useAccount } from "wagmi";
+import { useAccount, useSignMessage } from "wagmi";
 
 import dayjs from "dayjs";
 import { createProposal } from "api/proposal";
@@ -63,6 +63,7 @@ const UpdateAmountTextfield = ({
   setLoading,
   handleActionComplete,
 }) => {
+  const { signMessage } = useSignMessage();
   const [canEdit, setCanEdit] = useState(false);
   const [amount, setAmount] = useState(prevAmount);
   const inputRef = useRef(null);
@@ -157,8 +158,8 @@ const UpdateAmountTextfield = ({
       };
 
       const { signature } = await handleSignMessage(
-        walletAddress,
         JSON.stringify(payload),
+        signMessage,
       );
 
       const request = await createProposal(isGovernanceActive, {

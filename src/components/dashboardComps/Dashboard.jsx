@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addNftsOwnedByDao } from "redux/reducers/club";
 import { customToFixedAutoPrecision, handleSignMessage } from "utils/helper";
-import { useAccount, useChainId } from "wagmi";
+import { useAccount, useChainId, useSignMessage } from "wagmi";
 import AssetsTable from "./AssetsTable";
 import classes from "./Dashboard.module.scss";
 import DashboardActivities from "./DashboardActivities";
@@ -29,6 +29,7 @@ import DashboardActionContainer from "./dashboardActions/DashboardActionContaine
 import { BigNumber } from "bignumber.js";
 
 const Dashboard = ({ daoAddress, routeNetworkId }) => {
+  const { signMessage } = useSignMessage();
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
@@ -208,8 +209,8 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
       };
 
       const { signature } = await handleSignMessage(
-        walletAddress,
         JSON.stringify(payload),
+        signMessage,
       );
 
       const res = await createStation({ ...payload, signature });

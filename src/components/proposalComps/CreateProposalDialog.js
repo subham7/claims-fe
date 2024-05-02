@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import ProposalActionForm from "./ProposalActionForm";
 import { createProposal } from "../../api/proposal";
 import { useDispatch, useSelector } from "react-redux";
-import { useAccount, useChainId } from "wagmi";
+import { useAccount, useChainId, useSignMessage } from "wagmi";
 import { getProposalCommands } from "utils/proposalData";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { getProposalValidationSchema } from "@components/createClubComps/ValidationSchemas";
@@ -58,6 +58,7 @@ const useStyles = makeStyles({
 });
 
 const CreateProposalDialog = ({ daoAddress, routeNetworkId }) => {
+  const { signMessage } = useSignMessage();
   const classes = useStyles();
   const router = useRouter();
   const [nftData, setNftData] = useState([]);
@@ -249,8 +250,8 @@ const CreateProposalDialog = ({ daoAddress, routeNetworkId }) => {
           networkId: networkId,
         };
         const { signature } = await handleSignMessage(
-          walletAddress,
           JSON.stringify(payload),
+          signMessage,
         );
         const createRequest = createProposal(isGovernanceActive, {
           ...payload,

@@ -10,8 +10,10 @@ import {
   DAO_INITIALIZED_TOPIC,
   SAFE_SETUP_TOPIC,
 } from "utils/smartContractConstants";
+import { useSignMessage } from "wagmi";
 
 const useSafe = () => {
+  const { signMessage } = useSignMessage();
   const { createERC721DAO, createERC20DAO } = useAppContractMethods();
   const router = useRouter();
 
@@ -97,8 +99,8 @@ const useSafe = () => {
       };
 
       const { signature } = await handleSignMessage(
-        addressList[0],
         JSON.stringify(payload),
+        signMessage,
       );
 
       try {

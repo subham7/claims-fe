@@ -25,7 +25,7 @@ import {
 import dayjs from "dayjs";
 import { getPublicClient } from "utils/viemConfig";
 import { createProposal } from "api/proposal";
-import { useAccount } from "wagmi";
+import { useAccount, useSignMessage } from "wagmi";
 import BackdropLoader from "@components/common/BackdropLoader";
 import { actionModalValidation } from "@components/createClubComps/ValidationSchemas";
 import { MdInfo } from "react-icons/md";
@@ -38,6 +38,7 @@ const ActionModal = ({
   networkId,
   onActionComplete,
 }) => {
+  const { signMessage } = useSignMessage();
   const [tokenData, setTokenData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [validationSchema, setValidationSchema] = useState();
@@ -140,8 +141,8 @@ const ActionModal = ({
         };
 
         const { signature } = await handleSignMessage(
-          walletAddress,
           JSON.stringify(payload),
+          signMessage,
         );
 
         const request = await createProposal(isGovernanceActive, {

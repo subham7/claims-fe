@@ -5,7 +5,7 @@ import classes from "./KycModal.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { setAlertData } from "redux/reducers/alert";
 import { generateAlertData } from "utils/globalFunctions";
-import { useAccount } from "wagmi";
+import { useSignMessage } from "wagmi";
 import { handleSignMessage } from "utils/helper";
 import { createKYC, getClubData } from "api/club";
 
@@ -15,6 +15,7 @@ const KycModal = ({
   setLoading,
   setIsKycEnabledSettings,
 }) => {
+  const { signMessage } = useSignMessage();
   const [apiKey, setApiKey] = useState("");
   const [appId, setAppId] = useState("");
   const [appIdOld, setAppIdOld] = useState(false);
@@ -23,7 +24,6 @@ const KycModal = ({
   const [isEnabledOld, setIsEnabledOld] = useState(false);
 
   const dispatch = useDispatch();
-  const { address: walletAddress } = useAccount();
 
   const isAdmin = useSelector((state) => {
     return state.gnosis.adminUser;
@@ -70,8 +70,8 @@ const KycModal = ({
       }
 
       const { signature } = await handleSignMessage(
-        walletAddress,
         JSON.stringify(payload),
+        signMessage,
       );
 
       const response = await createKYC({

@@ -396,13 +396,11 @@ export const processAmount = (amount) => {
   return amount;
 };
 
-export const handleSignMessage = async (userAddress, data) => {
+export const handleSignMessage = async (data, signMessage) => {
   try {
-    const web3 = await web3InstanceEthereum();
-    // const web3 = await web3InstanceCustomRPC();
-
-    const signature = await web3?.eth.personal.sign(data, userAddress, "");
-
+    const signature = await signMessage({
+      message: data,
+    });
     return { data, signature };
   } catch (err) {
     throw new Error("User denied message signature.");

@@ -7,7 +7,7 @@ import { useFormik } from "formik";
 import { createProposal } from "api/proposal";
 import { useSelector } from "react-redux";
 import { getUserTokenData, handleSignMessage } from "utils/helper";
-import { useAccount, useChainId } from "wagmi";
+import { useAccount, useChainId, useSignMessage } from "wagmi";
 import { getPublicClient } from "utils/viemConfig";
 import { getProposalCommands } from "utils/proposalData";
 import { getTokensList } from "api/token";
@@ -33,6 +33,7 @@ const StakingModal = ({
   onStakingComplete,
   unstakeTokenAddress = "",
 }) => {
+  const { signMessage } = useSignMessage();
   const [tokenData, setTokenData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isFetchingValue, setIsFetchingValue] = useState(false);
@@ -170,8 +171,8 @@ const StakingModal = ({
         };
 
         const { signature } = await handleSignMessage(
-          walletAddress,
           JSON.stringify(payload),
+          signMessage,
         );
 
         const request = await createProposal(isGovernanceActive, {

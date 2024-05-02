@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import classes from "@components/(settings)/Settings.module.scss";
 import { FormControlLabel, Switch, Typography } from "@mui/material";
-import { useAccount } from "wagmi";
+import { useSignMessage } from "wagmi";
 import { handleSignMessage } from "utils/helper";
 import { useSelector } from "react-redux";
 import { createKYC, getClubData, updateKYC } from "api/club";
@@ -10,12 +10,12 @@ import { setAlertData } from "redux/reducers/alert";
 import { generateAlertData } from "utils/globalFunctions";
 
 const EnableKYC = ({ daoAddress, setLoading }) => {
+  const { signMessage } = useSignMessage();
   const [apiKey, setApiKey] = useState("");
   const [appId, setAppId] = useState("");
   const [isEnabledOld, setIsEnabledOld] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
   const dispatch = useDispatch();
-  const { address: walletAddress } = useAccount();
 
   const isAdmin = useSelector((state) => {
     return state.gnosis.adminUser;
@@ -38,8 +38,8 @@ const EnableKYC = ({ daoAddress, setLoading }) => {
         : { daoAddress, isActive: false };
 
       const { signature } = await handleSignMessage(
-        walletAddress,
         JSON.stringify(payload),
+        signMessage,
       );
 
       if (isEnabledOld !== isEnabled && isEnabled) {
