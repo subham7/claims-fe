@@ -4,6 +4,7 @@ import StakingCard from "./StakingCard";
 import classes from "./Staking.module.scss";
 import {
   DEFI_PROPOSALS_ETH_POOLS,
+  DEFI_PROPOSALS_PAIR_POOLS,
   DEFI_PROPOSALS_USDC_POOLS,
 } from "utils/proposalConstants";
 import { useNetwork } from "wagmi";
@@ -13,6 +14,7 @@ import { useSelector } from "react-redux";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import StakingTabs from "./StakingTabs";
+import StakingPoolCard from "./StakingPoolCard";
 
 const StakingList = ({ daoAddress, routeNeworkId }) => {
   const { chain } = useNetwork();
@@ -205,6 +207,14 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
   useEffect(() => {
     if (gnosisAddress) fetchBalances();
   }, [gnosisAddress, networkId]);
+
+  console.log(
+    "xxx",
+    tabType,
+    DEFI_PROPOSALS_PAIR_POOLS(networkId).filter((item) =>
+      item.availableOnNetworkIds.includes(networkId),
+    ),
+  );
   return (
     <div className={classes.container}>
       <Typography fontSize={24} fontWeight={600} variant="inherit">
@@ -253,7 +263,7 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
                 />
               ))}
           </>
-        ) : (
+        ) : tabType === "USDC" ? (
           <>
             {DEFI_PROPOSALS_USDC_POOLS({
               zeroLendUSDCStaked: Number(unstakeZeroLendUSDCToken),
@@ -279,6 +289,33 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
                 />
               ))}
           </>
+        ) : (
+          tabType === "PAIR" && (
+            <>
+              {DEFI_PROPOSALS_PAIR_POOLS({
+                networkId,
+              })
+                .filter((item) =>
+                  item.availableOnNetworkIds.includes(networkId),
+                )
+                .map((item) => (
+                  <StakingPoolCard
+                    apy={item.APY}
+                    daoAddress={daoAddress}
+                    executionIds={item.executionIds}
+                    image={item.logo}
+                    info={item.info}
+                    isUnstakeDisabled={item.isUnstakeDisabled}
+                    name={item.name}
+                    risk={item.risk}
+                    stakedToken1Details={item.stakedToken1}
+                    stakedToken2Details={item.stakedToken2}
+                    tags={item.tags}
+                    key={item.name}
+                  />
+                ))}
+            </>
+          )
         )}
       </div>
     </div>

@@ -59,6 +59,8 @@ export const proposalData = ({
     updatedMinimumDepositAmount,
     updatedMaximumDepositAmount,
     safeThreshold,
+    stakeToken1Amount,
+    stakeToken2Amount,
   } = data ?? {};
 
   switch (executionId) {
@@ -198,6 +200,11 @@ export const proposalData = ({
     case 55:
       return {
         "Deposit Amount :": `${depositAmount} USDC`,
+      };
+    case 63:
+      return {
+        "Staked ezETH": stakeToken1Amount,
+        "Staked ETH": stakeToken2Amount,
       };
     default:
       return {};
@@ -1970,6 +1977,8 @@ export const proposalDetailsData = ({
     updatedMinimumDepositAmount,
     updatedMaximumDepositAmount,
     safeThreshold,
+    stakeToken1Amount,
+    stakeToken2Amount,
   } = data ?? {};
   let responseData = {
     title: proposalActionCommands[executionId],
@@ -2195,6 +2204,14 @@ export const proposalDetailsData = ({
 
       return responseData;
 
+    case 63:
+      responseData.data = {
+        "Staked ezETH": stakeToken1Amount,
+        "Staked ETH": stakeToken2Amount,
+      };
+
+      return responseData;
+
     default:
       return {};
   }
@@ -2221,6 +2238,7 @@ export const createOrUpdateSafeTransaction = async ({
   stakeETHTransaction,
   nonce,
   executionStatus,
+  approvalTransaction2,
 }) => {
   let safeTransaction;
   let rejectionTransaction;
@@ -2238,6 +2256,8 @@ export const createOrUpdateSafeTransaction = async ({
         stakeETHTransaction,
         transaction,
         nonce,
+        executionId,
+        approvalTransaction2,
       }),
     });
     if (executionStatus === "cancel") {
