@@ -13,7 +13,7 @@ import {
 import { addDocumentList, addLegalDocLink } from "redux/reducers/legal";
 import { PdfFile } from "./pdfGenerator";
 import LegalEntityModal from "@components/modals/LegalEntityModal";
-import { web3InstanceEthereum } from "utils/helper";
+import { useSignMessage } from "wagmi";
 import { editMembersFormData } from "api/deposit";
 
 const DocumentPDF = dynamic(() => import("./pdfGenerator"), {
@@ -46,6 +46,7 @@ const useStyles = makeStyles({
 });
 
 const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
+  const { signMessageAsync } = useSignMessage();
   const classes = useStyles();
   const [signedAcc, setSignedAcc] = useState("");
   const [signDoc, setSignDoc] = useState(false);
@@ -75,15 +76,8 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
   });
 
   // signDocument
-  const signDocumentHandler = async () => {
+  const signDocumentHandler = async (signMessage) => {
     try {
-      const web3 = await web3InstanceEthereum();
-      // const web3 = await web3InstanceCustomRPC();
-
-      // current account
-      const accounts = await web3.eth.getAccounts();
-      const currentAccount = accounts[0];
-
       let originalMessage;
 
       if (isAdmin) {
@@ -114,10 +108,9 @@ const SignDoc = ({ daoAddress, isAdmin, networkId }) => {
       }
 
       // Signed message
-      const signedMessage = await web3.eth.personal.sign(
-        originalMessage,
-        currentAccount,
-        "test password!", // configure your own password here.
+      const signedMessage = await signMessage(
+        { message: originalMessage },
+        // "test password!", // configure your own password here.
       );
 
       setSignedAcc(currentAccount);

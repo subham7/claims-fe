@@ -54,23 +54,6 @@ export const getSafeSdk = async (
   }
 };
 
-export const getIncreaseGasPrice = async (networkId = "0x89") => {
-  const web3 = await web3InstanceCustomRPC(networkId);
-
-  // if (!sessionStorage.getItem("gasPrice" + networkId)) {
-  const gasPrice = await web3.eth.getGasPrice();
-
-  let increasedGasPrice;
-
-  if (networkId === "0x89") {
-    increasedGasPrice = +gasPrice + 30000000000;
-  } else {
-    increasedGasPrice = +gasPrice + 1000000;
-  }
-
-  return increasedGasPrice;
-};
-
 export const web3InstanceEthereum = async () => {
   const web3 = new Web3(window.ethereum);
   return web3;

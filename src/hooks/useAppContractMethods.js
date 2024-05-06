@@ -684,7 +684,6 @@ const useAppContractMethods = (params) => {
         return tx;
       }
     } else {
-      // const options = { gasPrice: await getIncreaseGasPrice(networkId) };
       const executeTxResponse = await safeSdk.executeTransaction(tx);
       const receipt =
         executeTxResponse.transactionResponse &&

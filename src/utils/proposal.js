@@ -1,7 +1,7 @@
 import { getProposalByDaoAddress } from "../api/proposal";
 import { createCancelProposal, getProposalTxHash } from "api/proposal";
 import Web3 from "web3";
-import { getIncreaseGasPrice, getSafeSdk } from "./helper";
+import { getSafeSdk } from "./helper";
 import { factoryContractABI } from "abis/factoryContract.js";
 import { erc721DaoABI } from "abis/erc721Dao";
 import { erc20DaoABI } from "abis/erc20Dao";
@@ -141,11 +141,7 @@ export const executeRejectTx = async ({
       proposalTxHash.data[0].txHash,
     );
 
-    const options = {
-      gasPrice: await getIncreaseGasPrice(),
-    };
-
-    await safeSdk.executeTransaction(safetx, options);
+    await safeSdk.executeTransaction(safetx);
 
     return true;
   } catch (e) {
