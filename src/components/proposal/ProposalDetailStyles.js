@@ -121,6 +121,6 @@ export const ProposalDetailStyles = makeStyles((theme) => ({
   },
   verticalScroll: {
     overflowY: "scroll",
-    height: "200px",
+    maxHeight: "200px",
   },
 }));
