@@ -15,6 +15,8 @@ import { convertFromWeiGovernance } from "utils/globalFunctions";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import StakingTabs from "./StakingTabs";
 import StakingPoolCard from "./StakingPoolCard";
+import { fetchProposals } from "utils/proposal";
+import { getPriceRate } from "api/assets";
 
 const StakingList = ({ daoAddress, routeNeworkId }) => {
   const { chain } = useNetwork();
@@ -39,6 +41,9 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
   const [unstakeZeroLendUSDCToken, setUnstakeZeroLendUSDCToken] = useState(0);
   const [unstakeZeroLendNativeETHToken, setUnstakeZeroLendNativeETHToken] =
     useState(0);
+  const [nileToken1Staked, setNileToken1Staked] = useState(0);
+  const [nileToken2Staked, setNileToken2Staked] = useState(0);
+  const [nileTotalPooled, setNileTotalPooled] = useState(0);
 
   const { getBalance, getDecimals } = useCommonContractMethods({
     routeNeworkId,
@@ -200,6 +205,41 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
     setUnstakeZeroLendNativeETHToken(zeroLendNativeETHBalance);
   };
 
+  // temporary solution - @remove later
+  const fetchProposalsList = async () => {
+    let totalStakedToken1 = 0,
+      totalStakedToken2 = 0;
+
+    const data = await fetchProposals(daoAddress, "all");
+
+    data
+      .filter(
+        (item) =>
+          item?.commands[0]?.executionId === 63 && item?.status === "executed",
+      )
+      .map((item) => {
+        totalStakedToken1 += Number(item?.commands[0]?.stakeToken1Amount);
+        totalStakedToken2 += Number(item?.commands[0]?.stakeToken2Amount);
+      });
+    setNileToken1Staked(totalStakedToken1.toFixed(6));
+    setNileToken2Staked(totalStakedToken2.toFixed(6));
+
+    const ezETHData = await getPriceRate("ezeth");
+    const ethData = await getPriceRate("eth");
+    const ezETHToUSD = ezETHData.data?.data?.rates?.USDC;
+    const ethToUSD = ethData?.data?.data?.rates?.USDC;
+
+    const totalEzETHValue = totalStakedToken1 * Number(ezETHToUSD);
+    const totalEthValue = totalStakedToken2 * Number(ethToUSD);
+
+    const totalPoolValue = totalEthValue + totalEzETHValue;
+    setNileTotalPooled(totalPoolValue);
+  };
+
+  useEffect(() => {
+    fetchProposalsList();
+  }, [daoAddress]);
+
   useEffect(() => {
     if (gnosisAddress) fetchEigenToken();
   }, [gnosisAddress]);
@@ -208,13 +248,6 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
     if (gnosisAddress) fetchBalances();
   }, [gnosisAddress, networkId]);
 
-  console.log(
-    "xxx",
-    tabType,
-    DEFI_PROPOSALS_PAIR_POOLS(networkId).filter((item) =>
-      item.availableOnNetworkIds.includes(networkId),
-    ),
-  );
   return (
     <div className={classes.container}>
       <Typography fontSize={24} fontWeight={600} variant="inherit">
@@ -294,6 +327,8 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
             <>
               {DEFI_PROPOSALS_PAIR_POOLS({
                 networkId,
+                nileToken1Staked,
+                nileToken2Staked,
               })
                 .filter((item) =>
                   item.availableOnNetworkIds.includes(networkId),
@@ -312,6 +347,7 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
                     stakedToken2Details={item.stakedToken2}
                     tags={item.tags}
                     key={item.name}
+                    pooledValue={nileTotalPooled}
                   />
                 ))}
             </>

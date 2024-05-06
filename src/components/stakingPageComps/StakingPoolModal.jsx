@@ -120,9 +120,7 @@ const StakingPoolModal = ({
         };
         const payload = {
           clubId: daoAddress,
-          name: `${name} - ${
-            type === "Stake" ? "Add Liquidity" : "Remove Liquidity"
-          }`,
+          name: `${name} - ${type}`,
           createdBy: walletAddress,
           votingDuration: dayjs().add(100, "year").unix(),
           votingOptions: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
@@ -143,11 +141,7 @@ const StakingPoolModal = ({
           ...payload,
           description: values.note
             ? values.note
-            : `${type === "Stake" ? "Add liquidity" : "Remove Liquidity"} ${
-                values.token1Amount
-              } ${token1Details?.tokenName} & ${values.token2Amount} ${
-                token2Details?.tokenName
-              }`,
+            : `${type} ${values.token1Amount} ${token1Details?.tokenName} & ${values.token2Amount} ${token2Details?.tokenName}`,
           signature,
         });
         onClose();
@@ -194,7 +188,7 @@ const StakingPoolModal = ({
           fontSize={18}
           fontWeight={600}
           variant="inherit">
-          {type === "Stake" ? "Add Liquidity" : "Remove Liquidity"}
+          {type}
         </Typography>
 
         <div className={classes.nameContainer}>
@@ -206,7 +200,7 @@ const StakingPoolModal = ({
 
         <div className={classes.stakeContainer}>
           <Typography fontSize={16} fontWeight={500} variant="inherit">
-            You {type === "Stake" ? "Add Liquidity" : "Remove Liquidity"}
+            You {type}
           </Typography>
 
           <div className={classes.inputContainer}>
@@ -414,7 +408,7 @@ const StakingPoolModal = ({
             type="submit"
             onClick={formik.handleSubmit}
             className={classes.stake}>
-            {type === "Stake" ? "Add Liquidity" : "Remove Liquidity"}
+            {type}
           </button>
         </div>
         <BackdropLoader isOpen={loading} />

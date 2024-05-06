@@ -21,6 +21,7 @@ const StakingPoolCard = ({
   risk,
   isUnstakeDisabled,
   daoAddress,
+  pooledValue = 0,
 }) => {
   const [showStakingModal, setShowStakingModal] = useState(false);
   const [showUnstakingModal, setShowUnstakingModal] = useState(false);
@@ -124,7 +125,7 @@ const StakingPoolCard = ({
 
           <div>
             <Typography fontWeight={600} variant="inherit">
-              ${Number(stakedToken1Details.stakedAmount).toFixed(4)}{" "}
+              ${pooledValue.toFixed(5)}
             </Typography>
             <Typography
               className={classes.smallFont}
@@ -169,7 +170,7 @@ const StakingPoolCard = ({
             onClick={() => {
               setShowUnstakingModal(true);
             }}>
-            Remove Liquidity
+            Unstake
           </button>
           <button
             className={!isAdmin && classes.disabled}
@@ -177,7 +178,7 @@ const StakingPoolCard = ({
             onClick={() => {
               setShowStakingModal(true);
             }}>
-            Add Liquidity
+            Stake
           </button>
         </div>
       </div>
