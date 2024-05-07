@@ -311,6 +311,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
             daoAddress={daoAddress}
             gnosisAddress={gnosisAddress}
             networkId={networkId}
+            tokenType={tokenType}
           />
         )}
 
