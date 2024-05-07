@@ -56,6 +56,31 @@
       }
     }
 
+    .poolTokensInfoContainer{
+      display: flex;
+      align-items: center;
+      border-radius: 8px;
+      border: 1px solid $divider-color;
+      margin-bottom: 20px;
+
+      .poolTokensInfo{
+        flex: 0.5;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 16px;
+      }
+
+      .poolTokensInfo2{
+        flex: 0.5;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 16px;
+        border-left: 1px solid $divider-color;
+      }
+    }
+
     .buttonContainer {
       display: flex;
       gap: 20px;
@@ -116,6 +141,13 @@
       margin: 4px 0;
       align-items: center;
       gap: 8px;
+
+      .tokenName{ 
+        min-width: 80px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
 
       .input {
         background-color: inherit;

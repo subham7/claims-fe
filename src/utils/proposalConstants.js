@@ -56,6 +56,7 @@ export const proposalActionCommands = {
   60: "Update minimum deposit amount per user",
   61: "Update maximum deposit amount per user",
   62: "Update signing threshold",
+  63: "Stake ezETH & ETH on Nile exchange",
 };
 
 export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
@@ -879,6 +880,53 @@ export const DEFI_PROPOSALS_USDC_POOLS = ({
         </span>
       ),
       tags: ["🐚 ZERO POINTS"],
+    },
+  ];
+};
+
+export const DEFI_PROPOSALS_PAIR_POOLS = ({
+  networkId,
+  nileToken1Staked = 0,
+  nileToken2Staked = 0,
+}) => {
+  return [
+    {
+      name: "The Nile (ezETH - ETH)",
+      logo: "/assets/icons/nile.png",
+      APY: "27",
+      stakedToken1: {
+        tokenName: "ezETH",
+        stakedAmount: nileToken1Staked,
+        tokenAddress: CHAIN_CONFIG[networkId]?.renzoEzETHAddress,
+        tokenLogo: "/assets/icons/ezETH.png",
+        tokenDecimal: 18,
+      },
+      stakedToken2: {
+        tokenName: "ETH",
+        stakedAmount: nileToken2Staked,
+        tokenAddress: CHAIN_CONFIG[networkId]?.nativeToken,
+        tokenLogo: "/assets/icons/eth.png",
+        tokenDecimal: 18,
+      },
+      executionIds: {
+        Stake: 63,
+        Unstake: 64,
+      },
+      availableOnNetworkIds: ["0xe708"],
+      // unstakeTokenAddress: CHAIN_CONFIG[networkId]?.mendiTokenAddress
+      //   ? CHAIN_CONFIG[networkId].mendiTokenAddress
+      //   : "",
+      isUnstakeDisabled: true,
+      risk: "Low",
+      info: (
+        <span>
+          This strategy provides liquidity on Correlated ezETH-ETH pool on Nile
+          Exchange. And also stake the LP token you recieve from providing
+          liquidity to earn more rewards and everything is done in one single
+          transaction.
+        </span>
+      ),
+      tags: [],
     },
   ];
 };
