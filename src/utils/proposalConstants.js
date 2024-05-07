@@ -467,9 +467,37 @@ export const DEFI_PROPOSALS_ETH_POOLS = ({
   aaveScrollStaked,
   renzoZerolLendStaked,
   zeroLendNativeETHStaked,
+  clipEthStaked,
   networkId,
 }) => {
   return [
+    {
+      name: "Clip Finance",
+      logo: "/assets/images/clipFinanceLogo.png",
+      APY: "17.32",
+      staked: clipEthStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 24,
+        Unstake: 25,
+      },
+      availableOnNetworkIds: ["0xe708"],
+      // unstakeTokenAddress: CHAIN_CONFIG[networkId]?.stargateUnstakingAddresses
+      //   ? CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0]
+      //   : "",
+      risk: "Low",
+      info: (
+        <span>
+          This strategy stake ETH for sETH. You earn 3.5% native yield on
+          holding the sETH from Stargate Finance.
+          <br />
+          <br />
+          This is a new protocol, deposit at your own risk.
+        </span>
+      ),
+      tags: ["⭐ LXP-L", "🐚 ezPoints"],
+    },
+
     {
       name: "Stargate Finance",
       logo: "/assets/icons/stargate.png",
@@ -538,6 +566,7 @@ export const DEFI_PROPOSALS_ETH_POOLS = ({
       availableOnNetworkIds: ["0x1"],
       isUnstakeDisabled: true,
       risk: "Low",
+      isUnstakeDisabled: true,
 
       info: (
         <span>

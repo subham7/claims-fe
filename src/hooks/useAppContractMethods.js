@@ -705,16 +705,20 @@ const useAppContractMethods = (params) => {
               transaction:
                 executionId === 6 || executionId === 7
                   ? transaction
-                  : approvalTransaction
+                  : approvalTransaction && stakeETHTransaction
+                  ? tx.dataDecoded.parameters[0].valueDecoded[2]
+                  : approvalTransaction && !stakeETHTransaction
                   ? tx.dataDecoded.parameters[0].valueDecoded[1]
                   : tx,
-              approvalTransaction: approvalTransaction
-                ? tx.dataDecoded.parameters[0].valueDecoded[0]
-                : undefined,
+              approvalTransaction:
+                approvalTransaction && stakeETHTransaction
+                  ? tx.dataDecoded.parameters[0].valueDecoded[1]
+                  : approvalTransaction && !stakeETHTransaction
+                  ? tx.dataDecoded.parameters[0].valueDecoded[0]
+                  : undefined,
               stakeETHTransaction:
-                approvalTransaction &&
-                tx.dataDecoded.parameters[0].valueDecoded[2]
-                  ? tx.dataDecoded.parameters[0].valueDecoded[2]
+                approvalTransaction && stakeETHTransaction
+                  ? tx.dataDecoded.parameters[0].valueDecoded[0]
                   : undefined,
               nonce: tx.nonce,
               executionStatus: proposalStatus,
