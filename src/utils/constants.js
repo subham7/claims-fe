@@ -58,7 +58,7 @@ export const CHAIN_CONFIG = {
       image: "/assets/networks/0x89.png",
     },
     rpcUrls: ["https://polygon-rpc.com/"],
-    appRpcUrl: `https://frosty-fittest-sponge.matic.quiknode.pro/2f493453b075c784ad12eb9094333497029cbe95/`,
+    appRpcUrl: `https://wiser-capable-brook.matic.quiknode.pro/beed5a6d0a1701b83886684b9d741db680653ffe/`,
     claimFactoryAddress: "0x47e6bFA71e490ADC8f0E33385aAdF85282E71002",
     factoryContractAddress: "0x726D3e4fBD321c4cD88769C16f5BAFfaC98D95Ad",
     stationSubgraphUrl:
@@ -193,7 +193,7 @@ export const CHAIN_CONFIG = {
       image: "/assets/icons/eth.png",
     },
     rpcUrls: ["https://mainnet.base.org"],
-    appRpcUrl: `https://proportionate-dry-pine.base-mainnet.discover.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_BASE_API_KEY}/`,
+    appRpcUrl: `https://bitter-boldest-wildflower.base-mainnet.quiknode.pro/8a49dc99b84ffbba1daacc7b97d80f8a4f21681d/`,
     factoryContractAddress: "0xeb6FE72d1Df22D9936D4FA317D7948E643aF92CB",
     claimFactoryAddress: "0x50702Fd9086BAbDB0A3A576bFe22D4dD47b09937",
     claimsSubgraphUrl:
@@ -220,7 +220,7 @@ export const CHAIN_CONFIG = {
       image: "/assets/icons/eth.png",
     },
     rpcUrls: ["https://arb1.arbitrum.io/rpc"],
-    appRpcUrl: `https://nameless-lingering-slug.arbitrum-mainnet.quiknode.pro/4fe4d99e7b0909d4f1913740227511bb977fc33a/`,
+    appRpcUrl: `https://snowy-wild-sponge.arbitrum-mainnet.quiknode.pro/b98f662572b97a6bd6530aa54f9860a5244d7b2d/`,
     factoryContractAddress: "0x7213172eAad75D3d94Bc09ff4E0008f7FF66b041",
     claimFactoryAddress: "0x28F06a3415A741367303Db36a6646C354cCE1340",
     airdropContractAddress: "0x63d5BaeA805Af5768105F38aE12f933f29c674a9",
@@ -303,7 +303,7 @@ export const CHAIN_CONFIG = {
       symbol: "BNB",
     },
     rpcUrls: ["https://bsc.meowrpc.com"],
-    appRpcUrl: `https://special-spring-sun.bsc.discover.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_API_KEY}/`,
+    appRpcUrl: `https://delicate-orbital-sunset.bsc.quiknode.pro/e0773be7bcd4c69a6fc5429550dbcb571397b044/`,
     factoryContractAddress: "",
     claimFactoryAddress: "0x80e1429430cfB717187BD37eb5Bd0076d77dcE85",
     claimsSubgraphUrl:
@@ -527,7 +527,7 @@ export const CHAIN_CONFIG = {
       symbol: "AVAX",
     },
     rpcUrls: ["https://avalanche-mainnet.infura.io/"],
-    appRpcUrl: `https://long-silent-slug.avalanche-mainnet.quiknode.pro/93921ef01877ec563a000c867071a109a881c419/ext/bc/C/rpc/`,
+    appRpcUrl: `https://broken-wild-ensemble.avalanche-mainnet.quiknode.pro/8cf2091ea8c0db99f7bd6c2e9394918ccb9ab923/ext/bc/C/rpc/`,
     claimFactoryAddress: "",
     factoryContractAddress: "0xA242fb1dc2Baf4ca49371f11940cF8bF4DC909c3",
     stationSubgraphUrl:
