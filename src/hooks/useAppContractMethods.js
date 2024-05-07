@@ -25,6 +25,7 @@ import {
 import useCommonContractMethods from "./useCommonContractMehods";
 import { factoryContractCCABI } from "abis/factoryContractCC";
 import { ezETH_ETH_ProxyABI } from "abis/nile/ezETh_ETH_ProxyABI";
+import { clipFinanceEthPoolABI } from "abis/clip-finance/ethPoolAbi";
 
 const useAppContractMethods = (params) => {
   const walletClient = useWalletClient();
@@ -761,6 +762,22 @@ const useAppContractMethods = (params) => {
     }
   };
 
+  const fetchClipFinanceETHExchangeRate = async () => {
+    try {
+      const res = await readContractFunction({
+        address: CHAIN_CONFIG[networkId].clipFinanceETHPoolAddress,
+        abi: clipFinanceEthPoolABI,
+        functionName: "getPricePerFullShare",
+        account: walletAddress,
+        networkId,
+      });
+      return convertFromWeiGovernance(res, 18);
+    } catch (error) {
+      console.error(error);
+      return 0;
+    }
+  };
+
   return {
     createERC20DAO,
     createERC721DAO,
@@ -783,6 +800,7 @@ const useAppContractMethods = (params) => {
     fetchMendiUsdcExhcangeRate,
     updateMinMaxDeposit,
     fetchRatioOfNileEzETH_ETHPool,
+    fetchClipFinanceETHExchangeRate,
   };
 };
 

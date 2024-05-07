@@ -544,6 +544,19 @@ const convertETHtoWETH = ({ web3Call, networkId }) => {
   return wethContract?.methods?.deposit().encodeABI();
 };
 
+const convertWETHtoETHClip = ({
+  web3Call,
+  networkId,
+  depositedAmountInWeth,
+}) => {
+  const wethContract = new web3Call.eth.Contract(
+    wethABI,
+    CHAIN_CONFIG[networkId].WETHAddress,
+  );
+
+  return wethContract?.methods?.withdraw(depositedAmountInWeth).encodeABI();
+};
+
 const clipFinanceDepositEncoded = ({ web3Call, networkId, depositAmount }) => {
   const poolContract = new web3Call.eth.Contract(
     clipFinanceEthPoolABI,
@@ -551,6 +564,27 @@ const clipFinanceDepositEncoded = ({ web3Call, networkId, depositAmount }) => {
   );
 
   return poolContract?.methods?.deposit(depositAmount).encodeABI();
+};
+
+const clipFinanceWithdrawEncoded = async ({
+  web3Call,
+  networkId,
+  depositAmountInWeth,
+}) => {
+  const poolContract = new web3Call.eth.Contract(
+    clipFinanceEthPoolABI,
+    CHAIN_CONFIG[networkId]?.clipFinanceETHPoolAddress,
+  );
+
+  const tokenRate = await poolContract?.methods?.getPricePerFullShare().call();
+
+  const clipShares = BigNumber(depositAmountInWeth)
+    .dividedBy(BigNumber(tokenRate))
+    .toString();
+
+  console.log("xxx", clipShares);
+
+  return poolContract?.methods?.withdraw(clipShares).encodeABI();
 };
 
 const approveDepositWithEncodeABI = (
@@ -2035,41 +2069,30 @@ export const getTransaction = async ({
       return { stakeETHTransaction, approvalTransaction, transaction };
 
     case 25:
-      const sharesToWithdraw = await calculateSharesToWithdraw({
-        gnosisAddress,
-        networkId,
-        web3Call,
-        withdrawAmount,
-      });
-
-      const { data, depositFee } = await clipFinanceSharesPoolWithdraw({
-        networkId,
-        sharesToWithdraw,
-        web3Call,
-      });
-
+      // withdraw
       approvalTransaction = {
-        to: Web3.utils.toChecksumAddress(
-          CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
-        ),
-        data: approveDepositWithEncodeABI(
-          CHAIN_CONFIG[networkId].clipFinanceSharesTokenAddressLinea,
-          CHAIN_CONFIG[networkId].clipFinanceSharesPoolAddressLinea,
-          withdrawAmount,
+        to: Web3.utils.toChecksumAddress(CHAIN_CONFIG[networkId].WETHAddress),
+        data: await clipFinanceWithdrawEncoded({
           web3Call,
-        ),
+          networkId,
+          depositAmountInWeth: unstakeAmount,
+        }),
         value: "0",
       };
 
       transaction = {
         to: Web3.utils.toChecksumAddress(
-          CHAIN_CONFIG[networkId]?.clipFinanceSharesPoolAddressLinea,
+          CHAIN_CONFIG[networkId]?.clipFinanceETHPoolAddress,
         ),
-        data: data,
-        value: depositFee,
+        data: convertWETHtoETHClip({
+          web3Call,
+          networkId,
+          depositedAmountInWeth: unstakeAmount,
+        }),
+        value: "0",
       };
 
-      return { transaction, approvalTransaction };
+      return { stakeETHTransaction, approvalTransaction, transaction };
 
     case 26:
       //this txn will be diff for stader, lido, ankr, etc
@@ -2855,6 +2878,7 @@ export const getTokenTypeByExecutionId = (commands) => {
     case 50:
     case 56:
     case 58:
+    case 25:
       return commands[0]?.unstakeToken;
     case 21:
     case 22:
@@ -2877,8 +2901,7 @@ export const getTokenTypeByExecutionId = (commands) => {
     case 55:
     case 57:
       return commands[0]?.depositToken;
-    case 25:
-      return commands[0]?.withdrawToken;
+
     default:
       return "";
   }

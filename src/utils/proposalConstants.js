@@ -482,9 +482,9 @@ export const DEFI_PROPOSALS_ETH_POOLS = ({
         Unstake: 25,
       },
       availableOnNetworkIds: ["0xe708"],
-      // unstakeTokenAddress: CHAIN_CONFIG[networkId]?.stargateUnstakingAddresses
-      //   ? CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0]
-      //   : "",
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.clipFinanceETHPoolAddress
+        ? CHAIN_CONFIG[networkId].clipFinanceETHPoolAddress
+        : "",
       risk: "Low",
       info: (
         <span>
