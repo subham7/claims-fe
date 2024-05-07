@@ -26,6 +26,7 @@ export const OMIT_DAOS = [
   "0x1ae43fb8283e45ae90d5bd9249cc7227fd6ecc73",
 ];
 export const REFERRAL_ADDRESS = "0xe5ff122f1dc6deceef651bb324f8e8136375d1a6";
+export const MAX_APPROVAL_NUMBER = "11579208923731619";
 
 export const supportedChainsDrops = [
   "0x89",
@@ -287,6 +288,10 @@ export const CHAIN_CONFIG = {
     zeroUSDCAddress: "0x2E207ecA8B6Bf77a6ac82763EEEd2A94de4f081d",
     zeroETHLendStakingPoolAddresS: "0x5d50bE703836C330Fc2d147a631CDd7bb8D7171c",
     zeroWETHAddress: "0xB4FFEf15daf4C02787bC5332580b838cE39805f5",
+    nileEzETH_ETH_PoolAddress: "0xaaa45c8f5ef92a000a121d102f4e89278a711faa",
+    nileEzETH_ETH_LPTokenAddress: "0xA9A1Fb9F6664A0B6BFB1F52724fd7b23842248C5",
+    nileEzETH_ETH_LP_StakePoolAddress:
+      "0x01fb6b2fa528fe9fc5ff3ab092203953aa8a32ff",
   },
   "0x38": {
     chainName: "BNB Smart Chain",

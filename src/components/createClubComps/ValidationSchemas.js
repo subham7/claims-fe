@@ -818,3 +818,18 @@ export const actionModalValidation = ({
         : yup.string().notRequired(),
   });
 };
+
+export const stakingPoolValidation = ({ token1Balance, token2Balance }) => {
+  return yup.object({
+    token1Amount: yup
+      .number()
+      .required("Amount is required")
+      .moreThan(0, "Amount should be greater than 0")
+      .max(token1Balance, "You don't have enough ETH."),
+    token2Amount: yup
+      .number()
+      .required("Amount is required")
+      .moreThan(0, "Amount should be greater than 0")
+      .max(token2Balance, "You don't have enough ETH."),
+  });
+};
