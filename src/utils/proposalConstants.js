@@ -488,11 +488,8 @@ export const DEFI_PROPOSALS_ETH_POOLS = ({
       risk: "Low",
       info: (
         <span>
-          This strategy stake ETH for sETH. You earn 3.5% native yield on
-          holding the sETH from Stargate Finance.
-          <br />
-          <br />
-          This is a new protocol, deposit at your own risk.
+          This strategy stake ETH for mendi-wETH. You earn 17.5% native yield on
+          holding the mendi-ETH from Clip Finance.
         </span>
       ),
       tags: ["⭐ LXP-L", "🐚 ezPoints"],
