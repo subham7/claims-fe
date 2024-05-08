@@ -554,7 +554,11 @@ const convertWETHtoETHClip = ({
     CHAIN_CONFIG[networkId].WETHAddress,
   );
 
-  return wethContract?.methods?.withdraw(depositedAmountInWeth).encodeABI();
+  const maskedDepositedAmount =
+    depositedAmountInWeth.substring(0, depositedAmountInWeth.length - 4) +
+    "0000";
+
+  return wethContract?.methods?.withdraw(maskedDepositedAmount).encodeABI();
 };
 
 const clipFinanceDepositEncoded = ({ web3Call, networkId, depositAmount }) => {
@@ -582,9 +586,9 @@ const clipFinanceWithdrawEncoded = async ({
     .dividedBy(BigNumber(tokenRate))
     .toString();
 
-  console.log("xxx", clipShares);
+  const convertedClipShares = convertToWeiGovernance(clipShares, 18);
 
-  return poolContract?.methods?.withdraw(clipShares).encodeABI();
+  return poolContract?.methods?.withdraw(convertedClipShares).encodeABI();
 };
 
 const approveDepositWithEncodeABI = (
@@ -2068,10 +2072,13 @@ export const getTransaction = async ({
 
       return { stakeETHTransaction, approvalTransaction, transaction };
 
-    case 25:
+    case 65:
       // withdraw
+
       approvalTransaction = {
-        to: Web3.utils.toChecksumAddress(CHAIN_CONFIG[networkId].WETHAddress),
+        to: Web3.utils.toChecksumAddress(
+          CHAIN_CONFIG[networkId].clipFinanceETHPoolAddress,
+        ),
         data: await clipFinanceWithdrawEncoded({
           web3Call,
           networkId,
@@ -2081,9 +2088,7 @@ export const getTransaction = async ({
       };
 
       transaction = {
-        to: Web3.utils.toChecksumAddress(
-          CHAIN_CONFIG[networkId]?.clipFinanceETHPoolAddress,
-        ),
+        to: Web3.utils.toChecksumAddress(CHAIN_CONFIG[networkId]?.WETHAddress),
         data: convertWETHtoETHClip({
           web3Call,
           networkId,
@@ -2092,7 +2097,7 @@ export const getTransaction = async ({
         value: "0",
       };
 
-      return { stakeETHTransaction, approvalTransaction, transaction };
+      return { approvalTransaction, transaction };
 
     case 26:
       //this txn will be diff for stader, lido, ankr, etc
@@ -2878,7 +2883,7 @@ export const getTokenTypeByExecutionId = (commands) => {
     case 50:
     case 56:
     case 58:
-    case 25:
+    case 65:
       return commands[0]?.unstakeToken;
     case 21:
     case 22:

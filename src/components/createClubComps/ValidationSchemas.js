@@ -780,7 +780,7 @@ export const stakingValidation = ({ amount, isRocketPool, isMantlePool }) => {
             ? "Rocket Pool accepts a minimum of 0.01 ETH as deposits"
             : isMantlePool
             ? "Mantle Pool accepts a minimum of 0.02 ETH as deposits"
-            : "0"
+            : "Amount should be greater than 0"
         } `,
       )
       .max(amount, "You don't have enough ETH."),

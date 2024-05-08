@@ -37,7 +37,7 @@ export const proposalActionCommands = {
   22: "Send tokens to all members",
   23: "Send tokens pro rata basis",
   24: "Deposit tokens with clip-finance",
-  25: "Withdraw tokens with clip-finance",
+  65: "Withdraw tokens with clip-finance",
   26: "Stake eth through eigen layer",
   27: "Remove stake from eigen layer",
   47: "Stake tokens through layer-bank",
@@ -479,7 +479,7 @@ export const DEFI_PROPOSALS_ETH_POOLS = ({
       token: "ETH",
       executionIds: {
         Stake: 24,
-        Unstake: 25,
+        Unstake: 65,
       },
       availableOnNetworkIds: ["0xe708"],
       unstakeTokenAddress: CHAIN_CONFIG[networkId]?.clipFinanceETHPoolAddress
