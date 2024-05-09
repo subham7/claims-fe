@@ -301,6 +301,8 @@ export const CHAIN_CONFIG = {
     appRpcUrl: `https://delicate-orbital-sunset.bsc.quiknode.pro/e0773be7bcd4c69a6fc5429550dbcb571397b044/`,
     factoryContractAddress: "0x55812C4E0F4d1BA456AfcD0cbA297292112Be1E5",
     usdcAddress: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+    stationSubgraphUrl:
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-bsc-cc/prod/gn",
     claimFactoryAddress: "0x80e1429430cfB717187BD37eb5Bd0076d77dcE85",
     claimsSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-bsc/prod/gn",
