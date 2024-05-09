@@ -298,8 +298,9 @@ export const CHAIN_CONFIG = {
       symbol: "BNB",
     },
     rpcUrls: ["https://bsc.meowrpc.com"],
-    appRpcUrl: `https://special-spring-sun.bsc.discover.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_API_KEY}/`,
-    factoryContractAddress: "",
+    appRpcUrl: `https://delicate-orbital-sunset.bsc.quiknode.pro/e0773be7bcd4c69a6fc5429550dbcb571397b044/`,
+    factoryContractAddress: "0x55812C4E0F4d1BA456AfcD0cbA297292112Be1E5",
+    usdcAddress: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
     claimFactoryAddress: "0x80e1429430cfB717187BD37eb5Bd0076d77dcE85",
     claimsSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-bsc/prod/gn",
@@ -929,11 +930,8 @@ export const stationNetworksChainId = [
     chainId: 43114,
     networkId: "0xa86a",
   },
-  // {
-  //   chainId: 100,
-  //   networkId: "0x64",
-  // },
   { chainId: 534352, networkId: "0x82750" },
+  { chainId: 56, networkId: "0x38" },
 ];
 
 export const ALLOWED_NETWORKS_FOR_STATION = [
@@ -941,7 +939,7 @@ export const ALLOWED_NETWORKS_FOR_STATION = [
   "0x1",
   "0xa4b1",
   "0xe708",
-  // "0x82750",
   "0xa86a",
   "0x82750",
+  "0x38",
 ];
