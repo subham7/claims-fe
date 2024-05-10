@@ -19,7 +19,7 @@ import { fetchProposals } from "utils/proposal";
 import { getPriceRate } from "api/assets";
 import BigNumber from "bignumber.js";
 
-const StakingList = ({ daoAddress, routeNeworkId }) => {
+const StakingList = ({ daoAddress, routeNetworkId }) => {
   const { chain } = useNetwork();
   const networkId = "0x" + chain?.id.toString(16);
 
@@ -49,7 +49,7 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
     useState(0);
 
   const { getBalance, getDecimals } = useCommonContractMethods({
-    routeNeworkId,
+    routeNetworkId,
   });
   const { fetchEigenTokenBalance, fetchClipFinanceETHExchangeRate } =
     useAppContractMethods({ daoAddress });
@@ -295,7 +295,7 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
               networkId,
             })
               .filter((item) =>
-                item.availableOnNetworkIds.includes(routeNeworkId),
+                item.availableOnNetworkIds.includes(routeNetworkId),
               )
               .map((item) => (
                 <StakingCard
@@ -323,7 +323,7 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
               networkId,
             })
               .filter((item) =>
-                item.availableOnNetworkIds.includes(routeNeworkId),
+                item.availableOnNetworkIds.includes(routeNetworkId),
               )
               .map((item) => (
                 <StakingCard
@@ -352,7 +352,7 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
                 nileToken2Staked,
               })
                 .filter((item) =>
-                  item.availableOnNetworkIds.includes(routeNeworkId),
+                  item.availableOnNetworkIds.includes(routeNetworkId),
                 )
                 .map((item) => (
                   <StakingPoolCard
