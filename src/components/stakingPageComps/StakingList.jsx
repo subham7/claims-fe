@@ -294,7 +294,9 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
               clipEthStaked: Number(unstakeClipFinanceEthToken),
               networkId,
             })
-              .filter((item) => item.availableOnNetworkIds.includes(networkId))
+              .filter((item) =>
+                item.availableOnNetworkIds.includes(routeNeworkId),
+              )
               .map((item) => (
                 <StakingCard
                   apy={item.APY}
@@ -320,7 +322,9 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
               mendiStaked: Number(unstakeMendiUsdcToken),
               networkId,
             })
-              .filter((item) => item.availableOnNetworkIds.includes(networkId))
+              .filter((item) =>
+                item.availableOnNetworkIds.includes(routeNeworkId),
+              )
               .map((item) => (
                 <StakingCard
                   apy={item.APY}
@@ -348,7 +352,7 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
                 nileToken2Staked,
               })
                 .filter((item) =>
-                  item.availableOnNetworkIds.includes(networkId),
+                  item.availableOnNetworkIds.includes(routeNeworkId),
                 )
                 .map((item) => (
                   <StakingPoolCard
