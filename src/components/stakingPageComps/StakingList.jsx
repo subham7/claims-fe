@@ -17,6 +17,7 @@ import StakingTabs from "./StakingTabs";
 import StakingPoolCard from "./StakingPoolCard";
 import { fetchProposals } from "utils/proposal";
 import { getPriceRate } from "api/assets";
+import BigNumber from "bignumber.js";
 
 const StakingList = ({ daoAddress, routeNeworkId }) => {
   const { chain } = useNetwork();
@@ -44,11 +45,14 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
   const [nileToken1Staked, setNileToken1Staked] = useState(0);
   const [nileToken2Staked, setNileToken2Staked] = useState(0);
   const [nileTotalPooled, setNileTotalPooled] = useState(0);
+  const [unstakeClipFinanceEthToken, setUnstakeClipFinanceEthToken] =
+    useState(0);
 
   const { getBalance, getDecimals } = useCommonContractMethods({
     routeNeworkId,
   });
-  const { fetchEigenTokenBalance } = useAppContractMethods({ daoAddress });
+  const { fetchEigenTokenBalance, fetchClipFinanceETHExchangeRate } =
+    useAppContractMethods({ daoAddress });
 
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
@@ -136,6 +140,7 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
       zeroLendEthBalance = 0,
       zeroLendUSDCBalance = 0,
       zeroLendNativeETHBalance = 0,
+      clipFinanceEthBalance = 0,
       mendiUSDCBalance = 0;
     // mendiExchangeRate = 0;
 
@@ -149,6 +154,7 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
         zeroLendEthBalance,
         zeroLendUSDCBalance,
         zeroLendNativeETHBalance,
+        clipFinanceEthBalance,
       ] = await Promise.all([
         fetchTokenBalance(
           CHAIN_CONFIG[networkId].stargateUnstakingAddresses[0],
@@ -167,7 +173,17 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
         fetchTokenBalance(CHAIN_CONFIG[networkId].zeroUSDCAddress),
 
         fetchTokenBalance(CHAIN_CONFIG[networkId].zeroWETHAddress),
+
+        fetchTokenBalance(CHAIN_CONFIG[networkId].clipFinanceETHPoolAddress),
       ]);
+      const clipFinanceExchangeRate = await fetchClipFinanceETHExchangeRate();
+      console.log("xxx", clipFinanceExchangeRate);
+
+      const stakedEthClipFinanceBalance = BigNumber(clipFinanceExchangeRate)
+        .times(BigNumber(clipFinanceEthBalance))
+        .toString();
+
+      setUnstakeClipFinanceEthToken(stakedEthClipFinanceBalance);
     } else if (networkId === "0x1") {
       renzoEzEthBalance = await fetchTokenBalance(
         CHAIN_CONFIG[networkId].renzoEzETHAddress,
@@ -275,6 +291,7 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
               aaveScrollStaked: Number(unstakeAaveScrollToken),
               renzoZerolLendStaked: Number(unstakeZeroLendToken),
               zeroLendNativeETHStaked: Number(unstakeZeroLendNativeETHToken),
+              clipEthStaked: Number(unstakeClipFinanceEthToken),
               networkId,
             })
               .filter((item) => item.availableOnNetworkIds.includes(networkId))

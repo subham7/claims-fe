@@ -37,7 +37,7 @@ export const proposalActionCommands = {
   22: "Send tokens to all members",
   23: "Send tokens pro rata basis",
   24: "Deposit tokens with clip-finance",
-  25: "Withdraw tokens with clip-finance",
+  65: "Withdraw tokens with clip-finance",
   26: "Stake eth through eigen layer",
   27: "Remove stake from eigen layer",
   47: "Stake tokens through layer-bank",
@@ -467,9 +467,34 @@ export const DEFI_PROPOSALS_ETH_POOLS = ({
   aaveScrollStaked,
   renzoZerolLendStaked,
   zeroLendNativeETHStaked,
+  clipEthStaked,
   networkId,
 }) => {
   return [
+    {
+      name: "Clip Finance",
+      logo: "/assets/images/clipFinanceLogo.png",
+      APY: "17.32",
+      staked: clipEthStaked,
+      token: "ETH",
+      executionIds: {
+        Stake: 24,
+        Unstake: 65,
+      },
+      availableOnNetworkIds: ["0xe708"],
+      unstakeTokenAddress: CHAIN_CONFIG[networkId]?.clipFinanceETHPoolAddress
+        ? CHAIN_CONFIG[networkId].clipFinanceETHPoolAddress
+        : "",
+      risk: "Low",
+      info: (
+        <span>
+          This strategy stake ETH for mendi-wETH. You earn 17.5% native yield on
+          holding the mendi-ETH from Clip Finance.
+        </span>
+      ),
+      tags: ["⭐ LXP-L", "🐚 ezPoints"],
+    },
+
     {
       name: "Stargate Finance",
       logo: "/assets/icons/stargate.png",
@@ -538,6 +563,7 @@ export const DEFI_PROPOSALS_ETH_POOLS = ({
       availableOnNetworkIds: ["0x1"],
       isUnstakeDisabled: true,
       risk: "Low",
+      isUnstakeDisabled: true,
 
       info: (
         <span>
