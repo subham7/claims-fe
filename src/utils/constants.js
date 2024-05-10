@@ -292,6 +292,8 @@ export const CHAIN_CONFIG = {
     nileEzETH_ETH_LPTokenAddress: "0xA9A1Fb9F6664A0B6BFB1F52724fd7b23842248C5",
     nileEzETH_ETH_LP_StakePoolAddress:
       "0x01fb6b2fa528fe9fc5ff3ab092203953aa8a32ff",
+    WETHAddress: "0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f",
+    clipFinanceETHPoolAddress: "0x7c825e560Ae6d6643115096B4B61e8f8d6a19749",
   },
   "0x38": {
     chainName: "BNB Smart Chain",
