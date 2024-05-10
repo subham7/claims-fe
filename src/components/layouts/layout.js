@@ -34,7 +34,7 @@ export default function Layout(props) {
       <div>
         <Navbar daoAddress={daoAddress} routeNetworkId={routeNetworkId} />
         {showSidebar && (
-          <Sidebar daoAddress={daoAddress} networkId={networkId} />
+          <Sidebar daoAddress={daoAddress} networkId={routeNetworkId} />
         )}
       </div>
 

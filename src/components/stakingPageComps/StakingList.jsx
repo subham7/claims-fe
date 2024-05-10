@@ -177,7 +177,6 @@ const StakingList = ({ daoAddress, routeNeworkId }) => {
         fetchTokenBalance(CHAIN_CONFIG[networkId].clipFinanceETHPoolAddress),
       ]);
       const clipFinanceExchangeRate = await fetchClipFinanceETHExchangeRate();
-      console.log("xxx", clipFinanceExchangeRate);
 
       const stakedEthClipFinanceBalance = BigNumber(clipFinanceExchangeRate)
         .times(BigNumber(clipFinanceEthBalance))
