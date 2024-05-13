@@ -1,7 +1,7 @@
 import Web3 from "web3";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 
-import { QUERY_ALL_MEMBERS } from "api/graphql/stationQueries";
+import { QUERY_PAGINATED_MEMBERS } from "api/graphql/stationQueries";
 import { subgraphQuery } from "./subgraphs";
 import {
   ALLOWED_NETWORKS_FOR_STATION,
@@ -144,20 +144,14 @@ export const showWrongNetworkModal = (networkId, routeNetworkId, isClaims) => {
   }
 };
 
-export const getAllEntities = async (
-  SUBGRAPH_URL,
-  daoAddress,
-  entity,
-  startDate,
-  endDate,
-) => {
+export const getAllEntities = async (SUBGRAPH_URL, daoAddress, entity) => {
   try {
     let allEntities = [];
     let skip = 0;
     let continueFetching = true;
 
     while (continueFetching) {
-      let query = QUERY_ALL_MEMBERS(daoAddress, 100, skip, startDate, endDate);
+      let query = QUERY_PAGINATED_MEMBERS(daoAddress, 100, skip);
       let result = await subgraphQuery(SUBGRAPH_URL, query);
 
       allEntities = [...allEntities, ...result[entity]];

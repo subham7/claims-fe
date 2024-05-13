@@ -28,6 +28,14 @@ const StakingTabs = ({ tabType, onChange }) => {
           value="USDC"
           label="USDC Pools"
         />
+        <Tab
+          sx={{
+            fontFamily: "inherit",
+            textTransform: "none",
+          }}
+          value="PAIR"
+          label="PAIR - Pools"
+        />
       </Tabs>
     </div>
   );

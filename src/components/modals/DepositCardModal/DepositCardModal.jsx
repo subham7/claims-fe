@@ -22,6 +22,7 @@ const DepositCardModal = ({
   isNative,
 }) => {
   const [fees, setFees] = useState(0);
+  const [isChecked, setIsChecked] = useState(false);
   const iconStyle = { fontWeight: 800, marginRight: "4px" };
   const club = useSelector((state) => state.club.clubData);
   const adminFee = (club.ownerFeePerDepositPercent * amount) / 10000;
@@ -84,7 +85,23 @@ const DepositCardModal = ({
         </Typography>
       </div>
 
-      <button onClick={submitHandler} className={classes.confirmButton}>
+      <div className={classes.checkBox}>
+        <input
+          checked={isChecked}
+          onChange={() => {
+            setIsChecked(!isChecked);
+          }}
+          type="checkbox"
+        />
+        <Typography variant="inherit">
+          Yes, I trust the owner of this station to manage my funds
+        </Typography>
+      </div>
+
+      <button
+        disabled={!isChecked}
+        onClick={submitHandler}
+        className={classes.confirmButton}>
         {text}
       </button>
     </Modal>

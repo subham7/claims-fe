@@ -25,6 +25,8 @@ import {
 import useCommonContractMethods from "./useCommonContractMehods";
 import { factoryContractCCABI } from "abis/factoryContractCC";
 import { CC_NETWORKS } from "utils/networkConstants";
+import { ezETH_ETH_ProxyABI } from "abis/nile/ezETh_ETH_ProxyABI";
+import { clipFinanceEthPoolABI } from "abis/clip-finance/ethPoolAbi";
 
 const useAppContractMethods = (params) => {
   const walletClient = useWalletClient();
@@ -404,6 +406,23 @@ const useAppContractMethods = (params) => {
     }
   };
 
+  const fetchRatioOfNileEzETH_ETHPool = async () => {
+    try {
+      const res = await readContractFunction({
+        address: CHAIN_CONFIG[networkId].nileEzETH_ETH_LPTokenAddress,
+        abi: ezETH_ETH_ProxyABI,
+        functionName: "getReserves",
+        networkId,
+      });
+
+      const ratio = BigNumber(res[1]).dividedBy(BigNumber(res[0]));
+      return ratio;
+    } catch (error) {
+      console.log(error);
+      return 0;
+    }
+  };
+
   const createERC721DAO = async ({
     clubName,
     clubSymbol,
@@ -604,24 +623,28 @@ const useAppContractMethods = (params) => {
       CHAIN_CONFIG[networkId]?.gnosisTxUrl,
     );
 
-    const { transaction, approvalTransaction, stakeETHTransaction } =
-      await getTransaction({
-        proposalData,
-        daoAddress,
-        walletAddress,
-        factoryContractAddress,
-        approvalData,
-        safeThreshold,
-        transactionData,
-        airdropContractAddress,
-        tokenData,
-        gnosisAddress,
-        parameters,
-        isAssetsStoredOnGnosis,
-        networkId,
-        membersArray,
-        airDropAmountArray,
-      });
+    const {
+      transaction,
+      approvalTransaction,
+      stakeETHTransaction,
+      approvalTransaction2,
+    } = await getTransaction({
+      proposalData,
+      daoAddress,
+      walletAddress,
+      factoryContractAddress,
+      approvalData,
+      safeThreshold,
+      transactionData,
+      airdropContractAddress,
+      tokenData,
+      gnosisAddress,
+      parameters,
+      isAssetsStoredOnGnosis,
+      networkId,
+      membersArray,
+      airDropAmountArray,
+    });
     const txHash = await getTransactionHash(pid);
     const tx = txHash ? await safeService.getTransaction(txHash) : null;
 
@@ -637,6 +660,7 @@ const useAppContractMethods = (params) => {
             stakeETHTransaction,
             nonce,
             proposalStatus,
+            approvalTransaction2,
           });
 
         const payload = { proposalId: pid, txHash: safeTxHash };
@@ -659,26 +683,66 @@ const useAppContractMethods = (params) => {
         });
         return proposeTxn;
       } else {
-        const { safeTransaction, rejectionTransaction, safeTxHash } =
-          await createOrUpdateSafeTransaction({
-            safeSdk,
-            executionId,
-            transaction,
-            approvalTransaction,
-            stakeETHTransaction,
-            nonce: tx.nonce,
-            executionStatus: proposalStatus,
-          });
+        if (executionId === 63) {
+          const { safeTransaction, rejectionTransaction, safeTxHash } =
+            await createOrUpdateSafeTransaction({
+              safeSdk,
+              executionId,
+              approvalTransaction: tx.dataDecoded.parameters[0].valueDecoded[0],
+              transaction: tx.dataDecoded.parameters[0].valueDecoded[1],
+              approvalTransaction2:
+                tx.dataDecoded.parameters[0].valueDecoded[2],
+              stakeETHTransaction: tx.dataDecoded.parameters[0].valueDecoded[3],
+              nonce: tx.nonce,
+              executionStatus: proposalStatus,
+            });
 
-        await signAndConfirmTransaction({
-          safeSdk,
-          safeService,
-          safeTransaction,
-          rejectionTransaction,
-          executionStatus: proposalStatus,
-          safeTxHash,
-        });
-        return tx;
+          await signAndConfirmTransaction({
+            safeSdk,
+            safeService,
+            safeTransaction,
+            rejectionTransaction,
+            executionStatus: proposalStatus,
+            safeTxHash,
+          });
+          return tx;
+        } else {
+          const { safeTransaction, rejectionTransaction, safeTxHash } =
+            await createOrUpdateSafeTransaction({
+              safeSdk,
+              executionId,
+              transaction:
+                executionId === 6 || executionId === 7
+                  ? transaction
+                  : approvalTransaction && stakeETHTransaction
+                  ? tx.dataDecoded.parameters[0].valueDecoded[2]
+                  : approvalTransaction && !stakeETHTransaction
+                  ? tx.dataDecoded.parameters[0].valueDecoded[1]
+                  : tx,
+              approvalTransaction:
+                approvalTransaction && stakeETHTransaction
+                  ? tx.dataDecoded.parameters[0].valueDecoded[1]
+                  : approvalTransaction && !stakeETHTransaction
+                  ? tx.dataDecoded.parameters[0].valueDecoded[0]
+                  : undefined,
+              stakeETHTransaction:
+                approvalTransaction && stakeETHTransaction
+                  ? tx.dataDecoded.parameters[0].valueDecoded[0]
+                  : undefined,
+              nonce: tx.nonce,
+              executionStatus: proposalStatus,
+            });
+
+          await signAndConfirmTransaction({
+            safeSdk,
+            safeService,
+            safeTransaction,
+            rejectionTransaction,
+            executionStatus: proposalStatus,
+            safeTxHash,
+          });
+          return tx;
+        }
       }
     } else {
       // const options = { gasPrice: await getIncreaseGasPrice(networkId) };
@@ -706,6 +770,22 @@ const useAppContractMethods = (params) => {
     }
   };
 
+  const fetchClipFinanceETHExchangeRate = async () => {
+    try {
+      const res = await readContractFunction({
+        address: CHAIN_CONFIG[networkId].clipFinanceETHPoolAddress,
+        abi: clipFinanceEthPoolABI,
+        functionName: "getPricePerFullShare",
+        account: walletAddress,
+        networkId,
+      });
+      return convertFromWeiGovernance(res, 18);
+    } catch (error) {
+      console.error(error);
+      return 0;
+    }
+  };
+
   return {
     createERC20DAO,
     createERC721DAO,
@@ -727,6 +807,8 @@ const useAppContractMethods = (params) => {
     fetchEigenTokenBalance,
     fetchMendiUsdcExhcangeRate,
     updateMinMaxDeposit,
+    fetchRatioOfNileEzETH_ETHPool,
+    fetchClipFinanceETHExchangeRate,
   };
 };
 

@@ -22,6 +22,7 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
 
   const { getTokenGatingDetails } = useAppContractMethods({
     daoAddress,
+    routeNetworkId,
   });
 
   const clubData = useSelector((state) => {
@@ -105,6 +106,7 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
           setIsTokenGated={setIsTokenGated}
           setLoading={setLoading}
           daoAddress={daoAddress}
+          routeNetworkId={routeNetworkId}
         />
       ),
       isDisabled: !isTokenGated,

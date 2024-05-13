@@ -3,7 +3,7 @@ import { ZkMeWidget } from "@zkmelabs/widget";
 import { useAccount, useWalletClient } from "wagmi";
 import { getKYCToken } from "api/club";
 
-const ZkMe = ({ daoAddress }) => {
+const ZkMe = ({ daoAddress, routeNetworkId, zkMeAppId }) => {
   const { address } = useAccount();
   const walletClient = useWalletClient();
 
@@ -24,9 +24,9 @@ const ZkMe = ({ daoAddress }) => {
   };
 
   const zkMeWidget = new ZkMeWidget(
-    "M2024031204490984947737391718575",
+    zkMeAppId,
     "StationX",
-    "0x89",
+    routeNetworkId,
     provider,
   );
 
