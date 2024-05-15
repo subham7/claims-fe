@@ -199,7 +199,7 @@ export const CHAIN_CONFIG = {
     claimsSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-base/prod/gn",
     stationSubgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/subham7/stnx-be-base",
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-base-native/prod/gn",
     covalentNetworkName: "base-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
@@ -941,6 +941,7 @@ export const stationNetworksChainId = [
   },
   { chainId: 534352, networkId: "0x82750" },
   { chainId: 56, networkId: "0x38" },
+  { chainId: 8453, networkId: "0x2105" },
 ];
 
 export const ALLOWED_NETWORKS_FOR_STATION = [
@@ -951,4 +952,5 @@ export const ALLOWED_NETWORKS_FOR_STATION = [
   "0xa86a",
   "0x82750",
   "0x38",
+  "0x2105",
 ];
