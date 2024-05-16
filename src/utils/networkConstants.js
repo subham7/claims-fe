@@ -1,0 +1,1 @@
+export const CC_NETWORKS = ["0xe708", "0x38", "0x2105"];

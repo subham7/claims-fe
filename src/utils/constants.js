@@ -199,7 +199,7 @@ export const CHAIN_CONFIG = {
     claimsSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-base/prod/gn",
     stationSubgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/subham7/stnx-be-base",
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-base-native/prod/gn",
     covalentNetworkName: "base-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
@@ -306,7 +306,11 @@ export const CHAIN_CONFIG = {
     },
     rpcUrls: ["https://bsc.meowrpc.com"],
     appRpcUrl: `https://delicate-orbital-sunset.bsc.quiknode.pro/e0773be7bcd4c69a6fc5429550dbcb571397b044/`,
-    factoryContractAddress: "",
+    factoryContractAddress: "0x8a1D0Be1fe8b1D7A5C3051Da5d6b3A2690E12CAC",
+    airdropContractAddress: "0xc72aDc4F927384Aff6cA479900e788ba4eFa9aB7",
+    usdcAddress: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+    stationSubgraphUrl:
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-bsc-cc/prod/gn",
     claimFactoryAddress: "0x80e1429430cfB717187BD37eb5Bd0076d77dcE85",
     claimsSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-bsc/prod/gn",
@@ -936,11 +940,9 @@ export const stationNetworksChainId = [
     chainId: 43114,
     networkId: "0xa86a",
   },
-  // {
-  //   chainId: 100,
-  //   networkId: "0x64",
-  // },
   { chainId: 534352, networkId: "0x82750" },
+  { chainId: 56, networkId: "0x38" },
+  { chainId: 8453, networkId: "0x2105" },
 ];
 
 export const ALLOWED_NETWORKS_FOR_STATION = [
@@ -948,7 +950,8 @@ export const ALLOWED_NETWORKS_FOR_STATION = [
   "0x1",
   "0xa4b1",
   "0xe708",
-  // "0x82750",
   "0xa86a",
   "0x82750",
+  "0x38",
+  "0x2105",
 ];
