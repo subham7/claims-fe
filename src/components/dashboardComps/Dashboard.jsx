@@ -31,6 +31,7 @@ import LineaCreateModal from "@components/modals/LineaCreateModal/LineaCreateMod
 import LineaCampaignModal from "@components/modals/LineaCreateModal/LineaCampaignModal";
 import { IoMdHelp } from "react-icons/io";
 import LineaHelperSteps from "./lineaHelperSteps/LineaHelperSteps";
+import InviteMemberModal from "@components/modals/LineaCreateModal/InviteMemberModal";
 
 const Dashboard = ({ daoAddress, routeNetworkId }) => {
   const gnosisAddress = useSelector((state) => {
@@ -65,6 +66,9 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
   const [loading, setLoading] = useState(false);
   const [showLineaCampaignModal, setShowLineaCampaignModal] = useState(false);
   const [showHelperSteps, setShowHelperSteps] = useState(false);
+
+  // Linea modals
+  const [showInviteMembersModal, setShowInviteMembersModal] = useState(false);
 
   const { getBalance } = useCommonContractMethods({ routeNetworkId });
   const { getERC20TotalSupply, getNftOwnersCount } = useAppContractMethods({
@@ -463,8 +467,17 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
 
       {showHelperSteps ? (
         <LineaHelperSteps
+          setShowInviteMembersModal={setShowInviteMembersModal}
           onClose={() => {
             setShowHelperSteps(false);
+          }}
+        />
+      ) : null}
+
+      {showInviteMembersModal ? (
+        <InviteMemberModal
+          onClose={() => {
+            setShowInviteMembersModal(false);
           }}
         />
       ) : null}

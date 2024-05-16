@@ -10,8 +10,18 @@
 
     .campaignModal{
         width: 700px;
-        height: 580px;
+        max-height: 580px;
         overflow-y: scroll;
+
+        .heading{
+            font-size: "20px";
+            font-weight: 600;
+            margin-bottom: "8px";
+        }
+
+        .subtext{
+            margin-top: 8px;
+        }
     }
 }
 
