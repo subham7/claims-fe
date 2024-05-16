@@ -9,7 +9,7 @@ import useLockBodyScroll from "hooks/useLockBodyScroll";
 const LineaCampaignModal = ({ onClose }) => {
   useLockBodyScroll(true);
   return (
-    <Modal className={classes.modal}>
+    <Modal onClose={onClose} className={classes.modal}>
       <div className={classes.campaignModal}>
         <div
           style={{
