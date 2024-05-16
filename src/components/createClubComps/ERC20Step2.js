@@ -292,11 +292,9 @@ export default function ERC20Step2(props) {
           <div className="f-d f-v-c f-h-sb">
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <Typography fontWeight={600} variant="body" className="text-blue">
-                How many shares do you want to issue per contribution?
+                LP token price
               </Typography>
-              <Tooltip
-                placement="bottom"
-                title="Members receive shares as per their contribution to the station. These shares represent an onchain captable of members’ ownership inside the station.">
+              <Tooltip placement="bottom" title="Price of your station's token">
                 <div>
                   <MdInfo size={14} style={{ cursor: "pointer" }} />
                 </div>
