@@ -235,7 +235,9 @@ const Members = ({ daoAddress, routeNetworkId }) => {
             item.depositAmount,
             clubData?.depositTokenDecimal,
           ),
-          convertFromWeiGovernance(item.gtAmount, 18),
+          tokenType === "erc20"
+            ? convertFromWeiGovernance(item.gtAmount, 18)
+            : Number(item.gtAmount),
           `${date} ${time}`,
         ].join(",");
       }),
