@@ -59,6 +59,7 @@ const LineaCampaignModal = ({ onClose }) => {
           }}
           width="700"
           height="400"
+          frameBorder="0"
           src="https://www.youtube.com/embed/ixCXd8f9RUw"
           title="Staking on DeFi Protocols via StationX"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
