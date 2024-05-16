@@ -29,6 +29,8 @@ import DashboardActionContainer from "./dashboardActions/DashboardActionContaine
 import { BigNumber } from "bignumber.js";
 import LineaCreateModal from "@components/modals/LineaCreateModal/LineaCreateModal";
 import LineaCampaignModal from "@components/modals/LineaCreateModal/LineaCampaignModal";
+import { IoMdHelp } from "react-icons/io";
+import LineaHelperSteps from "./lineaHelperSteps/LineaHelperSteps";
 
 const Dashboard = ({ daoAddress, routeNetworkId }) => {
   const gnosisAddress = useSelector((state) => {
@@ -62,6 +64,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
   const [showCreateClubModal, setShowCreateClubModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showLineaCampaignModal, setShowLineaCampaignModal] = useState(false);
+  const [showHelperSteps, setShowHelperSteps] = useState(false);
 
   const { getBalance } = useCommonContractMethods({ routeNetworkId });
   const { getERC20TotalSupply, getNftOwnersCount } = useAppContractMethods({
@@ -446,6 +449,22 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
         <LineaCampaignModal
           onClose={() => {
             setShowLineaCampaignModal(false);
+          }}
+        />
+      ) : null}
+
+      <div
+        onClick={() => {
+          setShowHelperSteps(!showHelperSteps);
+        }}
+        className={classes.helpContainer}>
+        <IoMdHelp />
+      </div>
+
+      {showHelperSteps ? (
+        <LineaHelperSteps
+          onClose={() => {
+            setShowHelperSteps(false);
           }}
         />
       ) : null}

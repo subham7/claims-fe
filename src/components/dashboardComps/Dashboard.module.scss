@@ -5,6 +5,22 @@
   height: 85vh;
   gap: 24px;
 
+  .helpContainer{
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    color: #282828;
+    padding: 12px;
+    border-radius: 12px;
+    position: fixed;
+    bottom: 12px;
+    right: 12px;
+    z-index: 300;
+  }
+
   .leftContainer {
     flex: 0.65;
 
