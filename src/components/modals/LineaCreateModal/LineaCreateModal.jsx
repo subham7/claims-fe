@@ -28,7 +28,7 @@ const LineaCreateModal = ({ onClose }) => {
             <IoClose
               onClick={onClose}
               cursor={"pointer"}
-              color="#707070"
+              color="#fffff"
               size={20}
             />
           </div>
@@ -37,41 +37,42 @@ const LineaCreateModal = ({ onClose }) => {
             variant="inherit"
             mb={1.4}
             fontSize={16}
-            color={"#707070"}>
-            Congratulations! This station is eligible for rewards. To celebrate
-            our launch on Linea, we&apos;re enabling users to participate in
-            “The Surge” and earn rewards directly into their stations.
+            color={"whitesmoke"}>
+            Create your DeFi squad & start earning LXPs.
           </Typography>
 
           <Typography
             variant="inherit"
             fontSize={16}
-            color={"#707070"}
-            mb={0.2}>
-            1. Deposit at least 100 USDC or 0.01 ETH into your station from the
-            contribution link.
+            color={"whitesmoke"}
+            mb={1}>
+            1. Add atleast $100 into your Station via your deposit link to start
+            earning LXPs.
           </Typography>
           <Typography
             variant="inherit"
             fontSize={16}
-            color={"#707070"}
-            mb={0.2}>
-            2. Start earning LXP-Ls by holding funds inside the station.
+            color={"whitesmoke"}
+            mb={1}>
+            2. You can also share your Station’s link with your frens &
+            community and turn it into a Defi Squad. More members & treasury
+            size earns you higher LXPs.
           </Typography>
           <Typography
             variant="inherit"
             fontSize={16}
-            color={"#707070"}
-            mb={0.2}>
-            3. Go to featured pools and stake funds into integrated DeFi
-            protocols to earn multiplier on your hourly rewards.
+            color={"whitesmoke"}
+            mb={1}>
+            3. Stake your Station’s treasury across multiple DeFi protocols to
+            start earning yield on your treasury along with points from top
+            Linea protocols.
           </Typography>
 
           <Typography
             variant="inherit"
-            mt={1.4}
+            mt={2}
             fontSize={16}
-            color={"#707070"}>
+            color={"whitesmoke"}>
             ⚡️ The bigger the share of TVL and activity inside the station,
             higher the rewards.
           </Typography>

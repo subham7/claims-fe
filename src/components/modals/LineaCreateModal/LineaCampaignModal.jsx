@@ -16,52 +16,53 @@ const LineaCampaignModal = ({ onClose }) => {
             display: "flex",
             justifyContent: "space-between",
           }}>
-          {/* <Typography variant="inherit" fontSize={20} fontWeight={900} mb={1}>
-            Welcome astronauts to StationX!
-          </Typography> */}
-          <Typography variant="inherit" fontSize={20} fontWeight={900} mb={1}>
+          <Typography variant="inherit" fontSize={26} fontWeight={900} mb={1}>
             Linea Surge 🤝 StationX
           </Typography>
           <IoClose onClick={onClose} cursor={"pointer"} size={20} />
         </div>
-        {/* <Typography variant="inherit" fontSize={16} fontWeight={500} mb={4}>
-          StationX is a capital coordination protocol - pool funds, manage
-          members & deploy capital.
-        </Typography> */}
 
-        {/* <Typography variant="inherit" fontSize={20} fontWeight={900} mb={1}>
-          Linea Surge 🤝 StationX
-        </Typography> */}
         <Typography variant="inherit" fontSize={16} fontWeight={500} mb={4}>
           Pool capital with your frens & community, deploy it across trusted
           DeFi protocols & start earning yield & rewards!
         </Typography>
 
         <Typography variant="inherit" fontSize={16} fontWeight={500} mb={2}>
-          Invite people into your station by sharing the contribution link.
+          1. Invite people into your station by sharing the contribution link.
         </Typography>
         <Image
           src={"/assets/campaign/copyLinea.png"}
-          width={600}
-          height={320}
+          width={700}
+          height={360}
           alt="Copy"
         />
 
         <Typography variant="inherit" mb={2} mt={2}>
-          See your treasury, members & ownership information on the dashboard
+          2. See your treasury, members & ownership information on the dashboard
         </Typography>
         <Image
           src={"/assets/campaign/dashboard.png"}
-          width={600}
-          height={250}
+          width={700}
+          height={300}
           alt="Copy"
         />
 
         <Typography variant="inherit" mt={2}>
-          Stake on DeFi protocols directly via your Station dashboard. Create
+          3. Stake on DeFi protocols directly via your Station dashboard. Create
           your own DeFi strategy to maximise returns & rewards across 7+
           protocols.
         </Typography>
+
+        <iframe
+          style={{
+            marginTop: "20px",
+          }}
+          width="700"
+          height="400"
+          src="https://www.youtube.com/embed/ixCXd8f9RUw"
+          title="Staking on DeFi Protocols via StationX"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen></iframe>
       </div>
     </Modal>
   );
