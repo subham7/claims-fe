@@ -5,7 +5,7 @@ import { IoClose } from "react-icons/io5";
 import Image from "next/image";
 import useLockBodyScroll from "hooks/useLockBodyScroll";
 
-const InviteMemberModal = ({ onClose }) => {
+const EditDeadlineMdoal = ({ onClose }) => {
   useLockBodyScroll(true);
 
   return (
@@ -22,25 +22,42 @@ const InviteMemberModal = ({ onClose }) => {
               fontWeight: 600,
               marginBottom: "8px",
             }}>
-            How do I invite members into my station?
+            Increase or decrease contribution deadline
           </p>
           <IoClose onClick={onClose} cursor={"pointer"} size={20} />
         </div>
-        <Image
-          src={"/assets/campaign/inviteMember.png"}
-          width={700}
-          height={200}
-          alt="Copy"
-        />
+
+        <p
+          style={{
+            marginBottom: "20px",
+            color: "#707070",
+          }}
+          className={classes.subtext}>
+          Contribution deadline represents the date beyond which people can not
+          join your Station.
+        </p>
 
         <p className={classes.subtext}>
-          To invite members to deposit, simply copy the link & share it with
-          your depositors. You can find this section on the right side on the
-          dashboard home page.
+          1. To change deposit deadline, go to settings, click ‘Deposits’ tab.
+        </p>
+
+        <Image
+          src={"/assets/campaign/editDeadline.png"}
+          width={700}
+          height={230}
+          alt="editDeadline"
+        />
+
+        <p
+          style={{
+            margin: "20px 0",
+          }}
+          className={classes.subtext}>
+          2. Set the new deadline for deposits as per your timezone.
         </p>
       </div>
     </Modal>
   );
 };
 
-export default InviteMemberModal;
+export default EditDeadlineMdoal;

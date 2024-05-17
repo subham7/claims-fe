@@ -5,7 +5,7 @@ import { IoClose } from "react-icons/io5";
 import Image from "next/image";
 import useLockBodyScroll from "hooks/useLockBodyScroll";
 
-const InviteMemberModal = ({ onClose }) => {
+const CustomiseContributionModal = ({ onClose }) => {
   useLockBodyScroll(true);
 
   return (
@@ -22,25 +22,46 @@ const InviteMemberModal = ({ onClose }) => {
               fontWeight: 600,
               marginBottom: "8px",
             }}>
-            How do I invite members into my station?
+            Customise Station’s contribution page
           </p>
           <IoClose onClick={onClose} cursor={"pointer"} size={20} />
         </div>
+
+        <p className={classes.subtext}>
+          1. Click on “Preview & Edit” (top right on Station’s home)
+        </p>
+
         <Image
-          src={"/assets/campaign/inviteMember.png"}
+          src={"/assets/campaign/previewEdit.png"}
           width={700}
           height={200}
-          alt="Copy"
+          alt="preview"
         />
 
         <p className={classes.subtext}>
-          To invite members to deposit, simply copy the link & share it with
-          your depositors. You can find this section on the right side on the
-          dashboard home page.
+          2. When you are on the contribution page, click on “Edit”
         </p>
+
+        <Image
+          src={"/assets/campaign/editPage.png"}
+          width={700}
+          height={130}
+          alt="edit"
+        />
+
+        <p className={classes.subtext}>
+          3. Add description, banner & social links for your Station here
+        </p>
+
+        <Image
+          src={"/assets/campaign/editForm.png"}
+          width={700}
+          height={850}
+          alt="edit"
+        />
       </div>
     </Modal>
   );
 };
 
-export default InviteMemberModal;
+export default CustomiseContributionModal;

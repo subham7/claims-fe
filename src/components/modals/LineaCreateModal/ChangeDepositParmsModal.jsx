@@ -5,7 +5,7 @@ import { IoClose } from "react-icons/io5";
 import Image from "next/image";
 import useLockBodyScroll from "hooks/useLockBodyScroll";
 
-const InviteMemberModal = ({ onClose }) => {
+const ChangeDepositParamsModal = ({ onClose }) => {
   useLockBodyScroll(true);
 
   return (
@@ -22,25 +22,38 @@ const InviteMemberModal = ({ onClose }) => {
               fontWeight: 600,
               marginBottom: "8px",
             }}>
-            How do I invite members into my station?
+            Change deposit parameters
           </p>
           <IoClose onClick={onClose} cursor={"pointer"} size={20} />
         </div>
-        <Image
-          src={"/assets/campaign/inviteMember.png"}
-          width={700}
-          height={200}
-          alt="Copy"
-        />
 
         <p className={classes.subtext}>
-          To invite members to deposit, simply copy the link & share it with
-          your depositors. You can find this section on the right side on the
-          dashboard home page.
+          1. To modify deposit parameters, go to Settings → Deposit tab
+        </p>
+
+        <Image
+          src={"/assets/campaign/depositParams.png"}
+          width={600}
+          height={600}
+          alt="depositParams"
+        />
+
+        <p
+          style={{
+            margin: "20px 0",
+          }}
+          className={classes.subtext}>
+          2. You’ll find the options to modify:
+          <br /> - Station’s token price <br /> - Total Fundraise <br /> -
+          Min/Max deposits
+        </p>
+
+        <p className={classes.subtext}>
+          Sign (multiple signs in case of higher threshold) & execute the action
         </p>
       </div>
     </Modal>
   );
 };
 
-export default InviteMemberModal;
+export default ChangeDepositParamsModal;

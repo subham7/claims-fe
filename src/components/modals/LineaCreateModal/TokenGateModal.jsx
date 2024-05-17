@@ -5,7 +5,7 @@ import { IoClose } from "react-icons/io5";
 import Image from "next/image";
 import useLockBodyScroll from "hooks/useLockBodyScroll";
 
-const InviteMemberModal = ({ onClose }) => {
+const TokenGateModal = ({ onClose }) => {
   useLockBodyScroll(true);
 
   return (
@@ -22,25 +22,37 @@ const InviteMemberModal = ({ onClose }) => {
               fontWeight: 600,
               marginBottom: "8px",
             }}>
-            How do I invite members into my station?
+            Tokengate deposits of the station
           </p>
           <IoClose onClick={onClose} cursor={"pointer"} size={20} />
         </div>
+
+        <p className={classes.subtext}>
+          1. Go to deposits tab on settings → ‘Tokengating’
+        </p>
+
+        <p className={classes.subtext}>
+          2. Simply add in the contract address of the token/NFT you want to
+          gate with, enter the minimum no. of tokens to be held & hit “save”.
+        </p>
+
         <Image
-          src={"/assets/campaign/inviteMember.png"}
+          style={{
+            marginTop: "20px",
+          }}
+          src={"/assets/campaign/editTokengate.png"}
           width={700}
-          height={200}
-          alt="Copy"
+          height={280}
+          alt="tokengate"
         />
 
         <p className={classes.subtext}>
-          To invite members to deposit, simply copy the link & share it with
-          your depositors. You can find this section on the right side on the
-          dashboard home page.
+          3. Use the AND/OR conditions to configure rules between multiple
+          tokens
         </p>
       </div>
     </Modal>
   );
 };
 
-export default InviteMemberModal;
+export default TokenGateModal;

@@ -5,7 +5,7 @@ import { IoClose } from "react-icons/io5";
 import Image from "next/image";
 import useLockBodyScroll from "hooks/useLockBodyScroll";
 
-const InviteMemberModal = ({ onClose }) => {
+const TreasuryModal = ({ onClose }) => {
   useLockBodyScroll(true);
 
   return (
@@ -22,25 +22,42 @@ const InviteMemberModal = ({ onClose }) => {
               fontWeight: 600,
               marginBottom: "8px",
             }}>
-            How do I invite members into my station?
+            Where are funds held? - Station’s treasury address
           </p>
           <IoClose onClick={onClose} cursor={"pointer"} size={20} />
         </div>
+
+        <p className={classes.subtext}>
+          1. Treasury address can be found on Settings page.
+        </p>
+
+        <p className={classes.subtext}>
+          2. All deposits or assets are stored in underlying SAFE of the
+          Station.
+        </p>
         <Image
-          src={"/assets/campaign/inviteMember.png"}
+          src={"/assets/campaign/editTreasury.png"}
           width={700}
-          height={200}
-          alt="Copy"
+          height={330}
+          alt="treasury"
         />
 
         <p className={classes.subtext}>
-          To invite members to deposit, simply copy the link & share it with
-          your depositors. You can find this section on the right side on the
-          dashboard home page.
+          3. Cases where individuals want to do direct transfer, they should
+          send funds to the SAFE address on Stations native chain
+        </p>
+
+        <p
+          style={{
+            color: "#707070",
+            marginTop: "20px",
+          }}
+          className={classes.subtext}>
+          Note : Treasuries can also be accessed directly from SAFE’s interface.
         </p>
       </div>
     </Modal>
   );
 };
 
-export default InviteMemberModal;
+export default TreasuryModal;

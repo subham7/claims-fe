@@ -1,10 +1,24 @@
 export const lineaHelperStepsData = ({
   setShowInviteMembersModal,
+  setShowCustomiseContributionModal,
+  setShowAdminFeeModal,
+  setShowTreasuryModal,
+  setShowTokenGateModal,
+  setShowWhitelistModal,
+  setShowDistributeModal,
+  setShowSendModal,
+  setShowDeadlineModal,
+  setShowKYCModal,
+  setShowEditSignerModal,
+  setShowCreateSurveyModal,
+  setShowMintGTModal,
+  setShowDepositParamsModal,
+  setShowStakeDefiModal,
   onClose,
 }) => {
   return [
     {
-      title: "How do I invite members into my station?",
+      title: "Invite members/contributors in my Station",
       onClick: () => {
         setShowInviteMembersModal(true);
         onClose();
@@ -14,79 +28,142 @@ export const lineaHelperStepsData = ({
       },
     },
     {
-      title: "How do I personalise my contribution page?",
-      onClick: () => {},
+      title: "Customise Station’s contribution page",
+      onClick: () => {
+        setShowCustomiseContributionModal(true);
+        onClose();
+      },
+      onclose: () => {
+        setShowCustomiseContributionModal(false);
+      },
+    },
+    {
+      title: "Implement upfront fees on deposits",
+      onClick: () => {
+        setShowAdminFeeModal(true);
+        onClose();
+      },
+      onclose: () => {
+        setShowAdminFeeModal(false);
+      },
+    },
+    {
+      title: "Where are funds held - Station’s treasury address.",
+      onClick: () => {
+        setShowTreasuryModal(true);
+        onClose();
+      },
+      onclose: () => {
+        setShowTreasuryModal(false);
+      },
+    },
+    {
+      title: "Add/remove admins",
+      onClick: () => {
+        setShowEditSignerModal(true);
+        onClose();
+      },
+      onclose: () => {
+        setShowEditSignerModal(false);
+      },
+    },
+    {
+      title: "Manage KYC of members",
+      onClick: () => {
+        setShowKYCModal(true);
+        onClose();
+      },
+      onclose: () => {
+        setShowKYCModal(false);
+      },
+    },
+    {
+      title: "Increase or decrease contribution deadline",
+      onClick: () => {
+        setShowDeadlineModal(true);
+        onClose();
+      },
+      onclose: () => {
+        setShowDeadlineModal(false);
+      },
+    },
+    {
+      title: "Change deposit parameters",
+      onClick: () => {
+        setShowDepositParamsModal(true);
+        onClose();
+      },
       onclose: () => {},
     },
     {
-      title: "How do I charge an admin fee from my depositors?",
-      onClick: () => {},
-      onclose: () => {},
+      title: "How to Stake/unstake in a DeFi Protocol?",
+      onClick: () => {
+        setShowStakeDefiModal(true);
+        onClose();
+      },
+      onclose: () => {
+        setShowStakeDefiModal(false);
+      },
     },
     {
-      title:
-        "What’s my treasury address? How do I send funds to my Station’s treasury directly?",
-      onClick: () => {},
-      onclose: () => {},
+      title: "Create a poll inside the Station",
+      onClick: () => {
+        setShowCreateSurveyModal(true);
+        onClose();
+      },
+      onclose: () => {
+        setShowCreateSurveyModal(false);
+      },
     },
     {
-      title: "How do I add / modify signers in my Station?",
-      onClick: () => {},
-      onclose: () => {},
+      title: "Mint station’s LP tokens to an address",
+      onClick: () => {
+        setShowMintGTModal(true);
+        onClose();
+      },
+      onclose: () => {
+        setShowMintGTModal(false);
+      },
     },
     {
-      title: "How do I enable / Disable KYC for my Station?",
-      onClick: () => {},
-      onclose: () => {},
+      title: "How do I send funds from the station?",
+      onClick: () => {
+        setShowSendModal(true);
+        onClose();
+      },
+      onclose: () => {
+        setShowSendModal(false);
+      },
     },
     {
-      title: "How do I change the Deposit deadline?",
-      onClick: () => {},
-      onclose: () => {},
+      title: "How do I distribute tokens to members?",
+      onClick: () => {
+        setShowDistributeModal(true);
+        onClose();
+      },
+      onclose: () => {
+        setShowDistributeModal(false);
+      },
     },
     {
-      title:
-        "How do I modify raise settings (token price, min/max deposit amount & total fundraise)?",
-      onClick: () => {},
-      onclose: () => {},
+      title: "Whitelist who can deposit",
+      onClick: () => {
+        setShowWhitelistModal(true);
+        onClose();
+      },
+      onclose: () => {
+        setShowWhitelistModal(false);
+      },
     },
     {
-      title: "How do I stake/unstake in a DeFi Protocol?",
-      onClick: () => {},
-      onclose: () => {},
-    },
-    {
-      title: "How do I create a poll inside my Station?",
-      onClick: () => {},
-      onclose: () => {},
-    },
-    {
-      title:
-        "How do I mint additional share tokens to a member / new individual?",
-      onClick: () => {},
-      onclose: () => {},
-    },
-    {
-      title: "How do I send funds from my treasury to an address?",
-      onClick: () => {},
-      onclose: () => {},
-    },
-    {
-      title:
-        "How do I send distribute tokens to my station members pro-rata their share in the pool?",
-      onClick: () => {},
-      onclose: () => {},
-    },
-    {
-      title: "How do I whitelist contributors for my station?",
-      onClick: () => {},
-      onclose: () => {},
-    },
-    {
-      title:
-        "How do I gate contributions to my station using existing token(s)/NFT(s)?",
-      onClick: () => {},
-      onclose: () => {},
+      title: "Tokengate deposits of the station",
+      onClick: () => {
+        setShowTokenGateModal(true);
+        onClose();
+      },
+      onclose: () => {
+        setShowTokenGateModal(false);
+      },
     },
   ];
 };

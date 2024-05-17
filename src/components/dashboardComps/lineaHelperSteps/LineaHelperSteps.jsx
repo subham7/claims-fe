@@ -4,7 +4,24 @@ import Backdrop from "@components/common/Backdrop/Backdrop";
 import { lineaHelperStepsData } from "data/lineaHelperStepsData";
 import useLockBodyScroll from "hooks/useLockBodyScroll";
 
-const LineaHelperSteps = ({ onClose, setShowInviteMembersModal }) => {
+const LineaHelperSteps = ({
+  onClose,
+  setShowInviteMembersModal,
+  setShowCustomiseContributionModal,
+  setShowAdminFeeModal,
+  setShowTreasuryModal,
+  setShowTokenGateModal,
+  setShowWhitelistModal,
+  setShowSendModal,
+  setShowDistributeModal,
+  setShowDeadlineModal,
+  setShowKYCModal,
+  setShowEditSignerModal,
+  setShowCreateSurveyModal,
+  setShowMintGTModal,
+  setShowDepositParamsModal,
+  setShowStakeDefiModal,
+}) => {
   useLockBodyScroll(true);
 
   return (
@@ -17,6 +34,20 @@ const LineaHelperSteps = ({ onClose, setShowInviteMembersModal }) => {
           {lineaHelperStepsData({
             onClose,
             setShowInviteMembersModal,
+            setShowCustomiseContributionModal,
+            setShowAdminFeeModal,
+            setShowTreasuryModal,
+            setShowTokenGateModal,
+            setShowWhitelistModal,
+            setShowDistributeModal,
+            setShowDeadlineModal,
+            setShowKYCModal,
+            setShowSendModal,
+            setShowEditSignerModal,
+            setShowCreateSurveyModal,
+            setShowMintGTModal,
+            setShowDepositParamsModal,
+            setShowStakeDefiModal,
           }).map((item) => (
             <div key={item.title}>
               <p onClick={item.onClick} className={classes.featureItem}>

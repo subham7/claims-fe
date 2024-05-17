@@ -32,6 +32,20 @@ import LineaCampaignModal from "@components/modals/LineaCreateModal/LineaCampaig
 import { IoMdHelp } from "react-icons/io";
 import LineaHelperSteps from "./lineaHelperSteps/LineaHelperSteps";
 import InviteMemberModal from "@components/modals/LineaCreateModal/InviteMemberModal";
+import CustomiseContributionModal from "@components/modals/LineaCreateModal/CustomiseContributionModal";
+import AdminFeeModal from "@components/modals/LineaCreateModal/AdminFeeModal";
+import TreasuryModal from "@components/modals/LineaCreateModal/TreasuryModal";
+import TokenGateModal from "@components/modals/LineaCreateModal/TokenGateModal";
+import WhiteListModal from "@components/modals/LineaCreateModal/WhiteListDepositModal";
+import SendModal from "@components/modals/LineaCreateModal/SendModal";
+import DistributeModal from "@components/modals/LineaCreateModal/DistributeModal";
+import EditKYCModal from "@components/modals/LineaCreateModal/EditKYCModal";
+import EditDeadlineMdoal from "@components/modals/LineaCreateModal/EditDeadlineModal";
+import AddRemoveAdminModal from "@components/modals/LineaCreateModal/AddRemoveAdminModal";
+import CreateSurveyModal from "@components/modals/LineaCreateModal/CreateSurveryModal";
+import MintGTModal from "@components/modals/LineaCreateModal/MintGTModal";
+import StakeDefiModal from "@components/modals/LineaCreateModal/StakeDefiModal";
+import ChangeDepositParamsModal from "@components/modals/LineaCreateModal/ChangeDepositParmsModal";
 
 const Dashboard = ({ daoAddress, routeNetworkId }) => {
   const gnosisAddress = useSelector((state) => {
@@ -69,6 +83,21 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
 
   // Linea modals
   const [showInviteMembersModal, setShowInviteMembersModal] = useState(false);
+  const [showCustomiseContributionModal, setShowCustomiseContributionModal] =
+    useState(false);
+  const [showAdminFeeModal, setShowAdminFeeModal] = useState(false);
+  const [showTreasuryModal, setShowTreasuryModal] = useState(false);
+  const [showTokenGateModal, setShowTokenGateModal] = useState(false);
+  const [showWhitelistModal, setShowWhitelistModal] = useState(false);
+  const [showSendModal, setShowSendModal] = useState(false);
+  const [showDistributeModal, setShowDistributeModal] = useState(false);
+  const [showKYCModal, setShowKYCModal] = useState(false);
+  const [showDeadlineModal, setShowDeadlineModal] = useState(false);
+  const [showEditSignerModal, setShowEditSignerModal] = useState(false);
+  const [showCreateSurveyModal, setShowCreateSurveyModal] = useState(false);
+  const [showMintGTModal, setShowMintGTModal] = useState(false);
+  const [showStakeDefiModal, setShowStakeDefiModal] = useState(false);
+  const [showDepositParamsModal, setShowDepositParamsModal] = useState(false);
 
   const { getBalance } = useCommonContractMethods({ routeNetworkId });
   const { getERC20TotalSupply, getNftOwnersCount } = useAppContractMethods({
@@ -468,6 +497,20 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
       {showHelperSteps ? (
         <LineaHelperSteps
           setShowInviteMembersModal={setShowInviteMembersModal}
+          setShowCustomiseContributionModal={setShowCustomiseContributionModal}
+          setShowAdminFeeModal={setShowAdminFeeModal}
+          setShowTreasuryModal={setShowTreasuryModal}
+          setShowTokenGateModal={setShowTokenGateModal}
+          setShowWhitelistModal={setShowWhitelistModal}
+          setShowDistributeModal={setShowDistributeModal}
+          setShowSendModal={setShowSendModal}
+          setShowDeadlineModal={setShowDeadlineModal}
+          setShowKYCModal={setShowKYCModal}
+          setShowEditSignerModal={setShowEditSignerModal}
+          setShowCreateSurveyModal={setShowCreateSurveyModal}
+          setShowMintGTModal={setShowMintGTModal}
+          setShowDepositParamsModal={setShowDepositParamsModal}
+          setShowStakeDefiModal={setShowStakeDefiModal}
           onClose={() => {
             setShowHelperSteps(false);
           }}
@@ -478,6 +521,118 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
         <InviteMemberModal
           onClose={() => {
             setShowInviteMembersModal(false);
+          }}
+        />
+      ) : null}
+
+      {showCustomiseContributionModal ? (
+        <CustomiseContributionModal
+          onClose={() => {
+            setShowCustomiseContributionModal(false);
+          }}
+        />
+      ) : null}
+
+      {showAdminFeeModal ? (
+        <AdminFeeModal
+          onClose={() => {
+            setShowAdminFeeModal(false);
+          }}
+        />
+      ) : null}
+
+      {showTreasuryModal ? (
+        <TreasuryModal
+          onClose={() => {
+            setShowTreasuryModal(false);
+          }}
+        />
+      ) : null}
+
+      {showTokenGateModal ? (
+        <TokenGateModal
+          onClose={() => {
+            setShowTokenGateModal(false);
+          }}
+        />
+      ) : null}
+
+      {showWhitelistModal ? (
+        <WhiteListModal
+          onClose={() => {
+            setShowWhitelistModal(false);
+          }}
+        />
+      ) : null}
+
+      {showSendModal ? (
+        <SendModal
+          onClose={() => {
+            setShowSendModal(false);
+          }}
+        />
+      ) : null}
+
+      {showDistributeModal ? (
+        <DistributeModal
+          onClose={() => {
+            setShowDistributeModal(false);
+          }}
+        />
+      ) : null}
+
+      {showKYCModal ? (
+        <EditKYCModal
+          onClose={() => {
+            setShowKYCModal(false);
+          }}
+        />
+      ) : null}
+
+      {showDeadlineModal ? (
+        <EditDeadlineMdoal
+          onClose={() => {
+            setShowDeadlineModal(false);
+          }}
+        />
+      ) : null}
+
+      {showEditSignerModal ? (
+        <AddRemoveAdminModal
+          onClose={() => {
+            setShowEditSignerModal(false);
+          }}
+        />
+      ) : null}
+
+      {showCreateSurveyModal ? (
+        <CreateSurveyModal
+          onClose={() => {
+            setShowCreateSurveyModal(false);
+          }}
+        />
+      ) : null}
+
+      {showMintGTModal ? (
+        <MintGTModal
+          onClose={() => {
+            setShowMintGTModal(false);
+          }}
+        />
+      ) : null}
+
+      {showStakeDefiModal ? (
+        <StakeDefiModal
+          onClose={() => {
+            setShowStakeDefiModal(false);
+          }}
+        />
+      ) : null}
+
+      {showDepositParamsModal ? (
+        <ChangeDepositParamsModal
+          onClose={() => {
+            setShowDepositParamsModal(false);
           }}
         />
       ) : null}
