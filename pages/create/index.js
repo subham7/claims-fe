@@ -73,13 +73,20 @@ const Create = () => {
         if (
           formikStep1.values.clubTokenType === "Non Transferable ERC20 Token"
         ) {
-          return <ERC20Step2 formik={formikERC20Step2} networkId={networkId} />;
+          return (
+            <ERC20Step2
+              formik={formikERC20Step2}
+              networkId={networkId}
+              tokenSymbol={formikStep1.values.clubSymbol}
+            />
+          );
         } else {
           return (
             <NFTStep2
               formik={formikERC721Step2}
               uploadInputRef={uploadInputRef}
               networkId={networkId}
+              tokenSymbol={formikStep1.values.clubSymbol}
             />
           );
         }
