@@ -292,7 +292,7 @@ export default function ERC20Step2(props) {
           <div className="f-d f-v-c f-h-sb">
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <Typography fontWeight={600} variant="body" className="text-blue">
-                Price per token {props.tokenSymbol}
+                Price per token
               </Typography>
               <Tooltip
                 placement="bottom"
