@@ -46,17 +46,17 @@ const LineaCreateModal = ({ onClose }) => {
             fontSize={16}
             color={"whitesmoke"}
             mb={1}>
-            1. Add atleast $100 into your Station via your deposit link to start
-            earning LXPs.
+            1. Add atleast $100 into your Station via your contribution link to
+            start earning LXPs.
           </Typography>
           <Typography
             variant="inherit"
             fontSize={16}
             color={"whitesmoke"}
             mb={1}>
-            2. You can also share your Station’s link with your frens &
-            community and turn it into a Defi Squad. More members & treasury
-            size earns you higher LXPs.
+            2. You can also share your Station’s contribution link with your
+            frens & community and turn it into a Defi Squad. More members &
+            treasury size earns you higher LXPs.
           </Typography>
           <Typography
             variant="inherit"

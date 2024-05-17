@@ -307,7 +307,7 @@ export const CHAIN_CONFIG = {
     rpcUrls: ["https://bsc.meowrpc.com"],
     appRpcUrl: `https://delicate-orbital-sunset.bsc.quiknode.pro/e0773be7bcd4c69a6fc5429550dbcb571397b044/`,
     factoryContractAddress: "0x8a1D0Be1fe8b1D7A5C3051Da5d6b3A2690E12CAC",
-    airdropContractAddress: "0xF68fA5022C10819B886aD3aD564411394cE23126",
+    airdropContractAddress: "0xc72aDc4F927384Aff6cA479900e788ba4eFa9aB7",
     usdcAddress: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
     stationSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-bsc-cc/prod/gn",
