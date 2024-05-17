@@ -292,7 +292,7 @@ export default function ERC20Step2(props) {
           <div className="f-d f-v-c f-h-sb">
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <Typography fontWeight={600} variant="body" className="text-blue">
-                How many shares do you want to issue per contribution?
+                Price per token {props.tokenSymbol}
               </Typography>
               <Tooltip
                 placement="bottom"
@@ -320,6 +320,13 @@ export default function ERC20Step2(props) {
                   props.formik.errors.pricePerToken
                 }
                 InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Typography variant="inherit" fontSize={16}>
+                        1 ${props.tokenSymbol.toUpperCase()} ={" "}
+                      </Typography>
+                    </InputAdornment>
+                  ),
                   endAdornment: (
                     <InputAdornment position="end" sx={{ color: "#dcdcdc" }}>
                       {CHAIN_CONFIG[props.networkId].usdcAddress ===
@@ -342,6 +349,7 @@ export default function ERC20Step2(props) {
                 />
               )}
             </div>
+            {/* </div> */}
           </div>
         </Card>
         <br />
