@@ -375,19 +375,19 @@ export const CHAIN_CONFIG = {
       image: "/assets/icons/eth.png",
     },
     rpcUrls: ["https://rpc.scroll.io"],
-    appRpcUrl: `https://sparkling-young-spring.scroll-mainnet.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_SCROLL_API_KEY}/`,
-    factoryContractAddress: "0x42a3a866dd9D40078f6009EFa03494ECc8EA5755",
+    appRpcUrl: `https://delicate-chaotic-dream.scroll-mainnet.quiknode.pro/14d4911b0589e5e03f6527ea874ad980849f2156/`,
+    factoryContractAddress: "0xE4D8Aac495adafFF1cF59fB1A6b91f0E4c21C26e",
     //change this
     claimFactoryAddress: "0x563993D2c56628cfBBdec3FC3B3fb94744BbA9A6",
     //change this
     claimsSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-scroll/prod/gn",
     stationSubgraphUrl:
-      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-scroll/prod/gn",
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-scroll-cc/prod/gn",
     covalentNetworkName: "scroll-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
-    airdropContractAddress: "0xA0113FF935416ad6E2F0DD689329Ec13Fc062389",
+    airdropContractAddress: "0xa65A4497526F07c3a92281695774F4D04e9c131A",
     blockExplorerUrl: "https://blockscout.scroll.io/",
     disburseContractAddress: "0x3DA9Fb55Ab77b10F99C1C1f52C150280dbd5a611",
     logoUri: "/assets/networks/0x82750.png",
