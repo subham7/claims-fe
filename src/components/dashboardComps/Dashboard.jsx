@@ -1,5 +1,5 @@
 import ComponentHeader from "@components/common/ComponentHeader";
-import { Tab, Tabs } from "@mui/material";
+import { Tab, Tabs, Typography } from "@mui/material";
 import { getAssetsOfWallet, getNFTsByWallet } from "api/assets";
 import { getProposalByDaoAddress } from "api/proposal";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
@@ -29,7 +29,6 @@ import DashboardActionContainer from "./dashboardActions/DashboardActionContaine
 import { BigNumber } from "bignumber.js";
 import LineaCreateModal from "@components/modals/LineaCreateModal/LineaCreateModal";
 import LineaCampaignModal from "@components/modals/LineaCreateModal/LineaCampaignModal";
-import { IoMdHelp } from "react-icons/io";
 import LineaHelperSteps from "./lineaHelperSteps/LineaHelperSteps";
 import InviteMemberModal from "@components/modals/LineaCreateModal/InviteMemberModal";
 import CustomiseContributionModal from "@components/modals/LineaCreateModal/CustomiseContributionModal";
@@ -46,6 +45,8 @@ import CreateSurveyModal from "@components/modals/LineaCreateModal/CreateSurvery
 import MintGTModal from "@components/modals/LineaCreateModal/MintGTModal";
 import StakeDefiModal from "@components/modals/LineaCreateModal/StakeDefiModal";
 import ChangeDepositParamsModal from "@components/modals/LineaCreateModal/ChangeDepositParmsModal";
+import { BiSupport } from "react-icons/bi";
+import { IoIosArrowDropdownCircle } from "react-icons/io";
 
 const Dashboard = ({ daoAddress, routeNetworkId }) => {
   const gnosisAddress = useSelector((state) => {
@@ -491,7 +492,10 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
           setShowHelperSteps(!showHelperSteps);
         }}
         className={classes.helpContainer}>
-        <IoMdHelp />
+        {showHelperSteps ? <IoIosArrowDropdownCircle /> : <BiSupport />}
+        <Typography variant="inherit" fontWeight={700} pt={0.1}>
+          FAQ
+        </Typography>
       </div>
 
       {showHelperSteps ? (
