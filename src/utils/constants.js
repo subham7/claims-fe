@@ -941,7 +941,6 @@ export const stationNetworksChainId = [
 export const ALLOWED_NETWORKS_FOR_STATION = [
   "0x89",
   "0x1",
-  "0xa4b1",
   "0xe708",
   "0xa86a",
   "0x82750",
