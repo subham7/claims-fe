@@ -19,7 +19,7 @@ import { fetchProposals } from "utils/proposal";
 import { getPriceRate } from "api/assets";
 import BigNumber from "bignumber.js";
 
-const StakingList = ({ daoAddress, routeNeworkId }) => {
+const StakingList = ({ daoAddress, routeNetworkId }) => {
   const chain = useChainId();
   const networkId = "0x" + chain?.toString(16);
 
