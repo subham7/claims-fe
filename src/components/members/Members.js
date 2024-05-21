@@ -198,9 +198,9 @@ const Members = ({ daoAddress, routeNetworkId }) => {
   const formik = useFormik({
     initialValues: {
       startDate: deployedTime
-        ? dayjs(deployedTime * 1000)
-        : dayjs(Date.now() - 86400000),
-      endDate: dayjs(Date.now()),
+        ? dayjs(deployedTime * 1000).locale("en")
+        : dayjs(Date.now() - 86400000).locale("en"),
+      endDate: dayjs(Date.now()).locale("en"),
     },
     validationSchema: MembersValidationSchema,
     onSubmit: async (values) => {
