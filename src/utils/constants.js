@@ -377,9 +377,7 @@ export const CHAIN_CONFIG = {
     rpcUrls: ["https://rpc.scroll.io"],
     appRpcUrl: `https://delicate-chaotic-dream.scroll-mainnet.quiknode.pro/14d4911b0589e5e03f6527ea874ad980849f2156/`,
     factoryContractAddress: "0xE4D8Aac495adafFF1cF59fB1A6b91f0E4c21C26e",
-    //change this
     claimFactoryAddress: "0x563993D2c56628cfBBdec3FC3B3fb94744BbA9A6",
-    //change this
     claimsSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-scroll/prod/gn",
     stationSubgraphUrl:
