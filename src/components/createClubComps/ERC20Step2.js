@@ -289,7 +289,12 @@ export default function ERC20Step2(props) {
         <br />
 
         <Card>
-          <div className="f-d f-v-c f-h-sb">
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <Typography fontWeight={600} variant="body" className="text-blue">
                 Price per token

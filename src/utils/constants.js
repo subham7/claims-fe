@@ -13,6 +13,7 @@ import { renzoStakingPoolABILinea } from "abis/renzo/renzoStakingPoolLinea";
 import {
   arbitrum,
   avalanche,
+  base,
   bsc,
   linea,
   mainnet,
@@ -934,6 +935,7 @@ export const stationNetworksChainId = [
   polygon,
   scroll,
   bsc,
+  base,
 ];
 
 export const ALLOWED_NETWORKS_FOR_STATION = [
