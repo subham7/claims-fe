@@ -91,13 +91,20 @@ const SelectActionDialog = ({ open, onClose, daoAddress, networkId }) => {
     return PROPOSAL_MENU_ITEMS().filter((item) => item.section === filterVal)
       .length > 0 ? (
       PROPOSAL_MENU_ITEMS(isGovernanceActive, tokenType)
-        .filter(
-          (item) =>
+        .filter((item) => {
+          if (
+            item.value === "Distribute tokens to members" &&
+            tokenType === "erc721"
+          ) {
+            return false;
+          }
+          return (
             item.section === filterVal &&
             item.availableOnNetworkIds.includes(networkId) &&
             (!item.condition ||
-              (typeof item.condition === "function" && item.condition())),
-        )
+              (typeof item.condition === "function" && item.condition()))
+          );
+        })
         .map((item, index) => {
           return (
             <div

@@ -59,6 +59,8 @@ export const proposalData = ({
     updatedMinimumDepositAmount,
     updatedMaximumDepositAmount,
     safeThreshold,
+    stakeToken1Amount,
+    stakeToken2Amount,
   } = data ?? {};
 
   switch (executionId) {
@@ -146,6 +148,7 @@ export const proposalData = ({
     case 50:
     case 56:
     case 58:
+    case 65:
       return {
         "Unstake token": symbol,
         "Unstake amount": convertFromWeiGovernance(unstakeAmount, decimals),
@@ -160,13 +163,13 @@ export const proposalData = ({
         )} $${symbol}`,
       };
 
-    case 25:
-      return {
-        "Withdraw Amount :": `${convertFromWeiGovernance(
-          withdrawAmount,
-          decimals,
-        )} $${symbol}`,
-      };
+    // case 25:
+    //   return {
+    //     "Withdraw Amount :": `${convertFromWeiGovernance(
+    //       withdrawAmount,
+    //       decimals,
+    //     )} $${symbol}`,
+    //   };
 
     case 60:
       return {
@@ -198,6 +201,11 @@ export const proposalData = ({
     case 55:
       return {
         "Deposit Amount :": `${depositAmount} USDC`,
+      };
+    case 63:
+      return {
+        "Staked ezETH": stakeToken1Amount,
+        "Staked ETH": stakeToken2Amount,
       };
     default:
       return {};
@@ -1827,6 +1835,7 @@ export const getProposalCommands = async ({
     case 50:
     case 56:
     case 58:
+    case 65:
       tokenDecimal = tokenData?.find(
         (token) =>
           token.address.toLowerCase() ===
@@ -1834,7 +1843,10 @@ export const getProposalCommands = async ({
       )?.decimals;
       return {
         unstakeToken: values.unstakeTokenAddress,
-        unstakeAmount: convertToWeiGovernance(values.stakeAmount, tokenDecimal),
+        unstakeAmount: convertToWeiGovernance(
+          values.stakeAmount,
+          tokenDecimal ?? 18,
+        ),
       };
     case 20:
       return {
@@ -1970,6 +1982,8 @@ export const proposalDetailsData = ({
     updatedMinimumDepositAmount,
     updatedMaximumDepositAmount,
     safeThreshold,
+    stakeToken1Amount,
+    stakeToken2Amount,
   } = data ?? {};
   let responseData = {
     title: proposalActionCommands[executionId],
@@ -2107,6 +2121,13 @@ export const proposalDetailsData = ({
         "Unstake amount": convertFromWeiGovernance(unstakeAmount, 8),
       };
       return responseData;
+
+    case 65:
+      responseData.data = {
+        "Unstake token": symbol,
+        "Unstake amount": convertFromWeiGovernance(unstakeAmount, 18),
+      };
+      return responseData;
     case 20:
       responseData.data = { "New nft supply": nftSupply };
       return responseData;
@@ -2144,15 +2165,15 @@ export const proposalDetailsData = ({
 
       return responseData;
 
-    case 25:
-      responseData.data = {
-        "Withdraw Amount": `${convertFromWeiGovernance(
-          withdrawAmount,
-          decimals,
-        )} ${symbol}`,
-      };
+    // case 25:
+    //   responseData.data = {
+    //     "Withdraw Amount": `${convertFromWeiGovernance(
+    //       withdrawAmount,
+    //       decimals,
+    //     )} ${symbol}`,
+    //   };
 
-      return responseData;
+    //   return responseData;
 
     case 60:
       responseData.data = {
@@ -2195,6 +2216,14 @@ export const proposalDetailsData = ({
 
       return responseData;
 
+    case 63:
+      responseData.data = {
+        "Staked ezETH": stakeToken1Amount,
+        "Staked ETH": stakeToken2Amount,
+      };
+
+      return responseData;
+
     default:
       return {};
   }
@@ -2221,6 +2250,7 @@ export const createOrUpdateSafeTransaction = async ({
   stakeETHTransaction,
   nonce,
   executionStatus,
+  approvalTransaction2,
 }) => {
   let safeTransaction;
   let rejectionTransaction;
@@ -2238,6 +2268,8 @@ export const createOrUpdateSafeTransaction = async ({
         stakeETHTransaction,
         transaction,
         nonce,
+        executionId,
+        approvalTransaction2,
       }),
     });
     if (executionStatus === "cancel") {

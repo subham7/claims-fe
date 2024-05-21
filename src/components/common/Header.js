@@ -33,6 +33,7 @@ const Header = ({
   routeNetworkId = "0x89",
   daoAddress,
 }) => {
+  const [zkMeAppId, setZkMeAppId] = useState("");
   const [open, setOpen] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -65,6 +66,7 @@ const Header = ({
       if (response) {
         setKycEnabled(response.kyc.isKycEnabled);
         if (response.kyc.isKycEnabled) {
+          setZkMeAppId(response.kyc.zkmeAppId);
           const results = await verifyWithZkMeServices(
             response.kyc.zkmeAppId,
             address,
@@ -128,7 +130,13 @@ const Header = ({
       {(networkId === "0x89" || networkId === "0xa4b1") &&
         !tokenDetails?.isNativeToken && <SwapInfo networkId={networkId} />}
 
-      {open ? <ZkMe daoAddress={daoAddress} /> : null}
+      {open ? (
+        <ZkMe
+          daoAddress={daoAddress}
+          zkMeAppId={zkMeAppId}
+          routeNetworkId={routeNetworkId}
+        />
+      ) : null}
       {/* {loading || isVerified ? null : (
         <Button
           onClick={() => setOpen(!open)}

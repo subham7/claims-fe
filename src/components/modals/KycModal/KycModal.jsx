@@ -174,7 +174,7 @@ const KycModal = ({
           </div>
           <div>
             <Typography variant="inherit" fontSize={14} fontWeight={500}>
-              Add ZkMe API Key
+              Add zkMe API Key
             </Typography>
             <input
               disabled={!isAdmin || !isEnabled}

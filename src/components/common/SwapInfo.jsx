@@ -20,7 +20,7 @@ const SwapInfo = ({ networkId }) => {
   return (
     <div className={classes.infoContainer}>
       <AiFillInfoCircle size={20} />
-      This club accepts {networkInfo.depositType || "N/A"} as deposits
+      This club only accepts {networkInfo.depositType || "N/A"} as deposits
       <br />
       <Button
         style={{

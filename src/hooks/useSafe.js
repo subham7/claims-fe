@@ -11,6 +11,7 @@ import {
   SAFE_SETUP_TOPIC,
 } from "utils/smartContractConstants";
 import { useSignMessage } from "wagmi";
+import { CC_NETWORKS } from "utils/networkConstants";
 
 const useSafe = () => {
   const { signMessageAsync } = useSignMessage();
@@ -54,7 +55,7 @@ const useSafe = () => {
         });
       }
 
-      if (networkId === "0xe708") {
+      if (CC_NETWORKS.includes(networkId)) {
         const createDaoTopic = value.logs.filter(
           (log) => log.topics[0].toLowerCase() === DAO_INITIALIZED_TOPIC,
         );
