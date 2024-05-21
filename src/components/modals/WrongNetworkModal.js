@@ -3,8 +3,9 @@ import { makeStyles, useTheme } from "@mui/styles";
 import Image from "next/image";
 import React from "react";
 import { CHAIN_CONFIG } from "utils/constants";
-import { requestEthereumChain } from "utils/helper";
 import img from "../../../public/assets/images/wrongNetwork.png";
+import { switchChain } from "@wagmi/core";
+import { config } from "config";
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -51,30 +52,9 @@ const WrongNetworkModal = ({ chainId = "0x89" }) => {
   const classes = useStyles(theme);
 
   const switchNetworkHandler = async () => {
-    if (typeof window !== "undefined") {
-      if (window.ethereum.networkVersion !== chainId) {
-        try {
-          await requestEthereumChain("wallet_switchEthereumChain", [
-            { chainId: chainId },
-          ]);
-        } catch (err) {
-          // This error code indicates that the chain has not been added to MetaMask
-          if (err.code === 4902 && CHAIN_CONFIG[chainId]) {
-            const chainConfig = CHAIN_CONFIG[chainId];
-            await window.ethereum.request({
-              method: "wallet_addEthereumChain",
-              params: [
-                {
-                  chainId,
-                  chainName: chainConfig.chainName,
-                  rpcUrls: chainConfig.rpcUrls,
-                },
-              ],
-            });
-          }
-        }
-      }
-    }
+    await switchChain(config, {
+      chainId: CHAIN_CONFIG[chainId].chainId,
+    });
   };
 
   return (

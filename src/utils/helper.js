@@ -127,6 +127,14 @@ export const showWrongNetworkModal = (networkId, routeNetworkId, isClaims) => {
     if (!isClaims && !ALLOWED_NETWORKS_FOR_STATION.includes(networkId)) {
       return true;
     }
+
+    if (
+      !isClaims &&
+      ALLOWED_NETWORKS_FOR_STATION.includes(networkId) &&
+      routeNetworkId !== networkId
+    ) {
+      return true;
+    }
   } else {
     return false;
   }
@@ -209,6 +217,9 @@ export const getUserTokenData = async (
 };
 
 export const requestEthereumChain = async (method, params) => {
+  const connector = await getConnections(config)[0].connector.getProvider();
+  console.log("Xxx", connector);
+
   return await window.ethereum.request({ method, params });
 };
 
