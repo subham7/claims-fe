@@ -1,8 +1,6 @@
 import Web3 from "web3";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
-
-import { getConnections } from "@wagmi/core";
-
+import { getConnections, switchChain } from "@wagmi/core";
 import { QUERY_PAGINATED_MEMBERS } from "api/graphql/stationQueries";
 import { subgraphQuery } from "./subgraphs";
 import {
@@ -454,35 +452,10 @@ export const isNative = (depositTokenAddress, networkId) => {
 
 export const switchNetworkHandler = async (networkId, setLoading) => {
   setLoading(true);
-  if (typeof window !== "undefined") {
-    if (window?.ethereum?.networkVersion !== networkId) {
-      try {
-        await requestEthereumChain("wallet_switchEthereumChain", [
-          { chainId: networkId },
-        ]);
-        setLoading(false);
-      } catch (err) {
-        if (err.code === 4902 && CHAIN_CONFIG[networkId]) {
-          const chainConfig = CHAIN_CONFIG[networkId];
-          await window.ethereum.request({
-            method: "wallet_addEthereumChain",
-            params: [
-              {
-                chainId: networkId,
-                chainName: chainConfig.chainName,
-                rpcUrls: chainConfig.rpcUrls,
-                nativeCurrency: chainConfig?.nativeCurrency,
-                blockExplorerUrls: [chainConfig?.blockExplorerUrl],
-              },
-            ],
-          });
-          setLoading(false);
-        } else {
-          setLoading(false);
-        }
-      }
-    }
-  }
+  await switchChain(config, {
+    chainId: CHAIN_CONFIG[networkId].chainId,
+  });
+  setLoading(false);
 };
 
 export function customToFixedAutoPrecision(num) {
