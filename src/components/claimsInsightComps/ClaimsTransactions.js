@@ -12,7 +12,7 @@ import React, { useEffect, useState } from "react";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
 import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 import { FiExternalLink } from "react-icons/fi";
-import { useNetwork } from "wagmi";
+import { useChainId } from "wagmi";
 
 import {
   queryAllDropsTransactionsFromSubgraph,
@@ -34,8 +34,8 @@ const ClaimsTransactions = ({
   const [isWalletSelected, setIsWalletSelected] = useState(true);
   const [isAllTransactionSelected, setIsAllTransactionSelected] =
     useState(false);
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
 
   const theme = useTheme();
   const classes = ClaimsInsightStyles(theme);

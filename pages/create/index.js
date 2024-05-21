@@ -30,7 +30,7 @@ import { NFTStorage } from "nft.storage";
 import { convertToWeiGovernance } from "../../src/utils/globalFunctions";
 import useSafe from "../../src/hooks/useSafe";
 import Layout from "../../src/components/layouts/layout";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import { NFT_STORAGE_TOKEN } from "api/token";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
@@ -39,8 +39,8 @@ const Create = () => {
   const steps = ["Basic info", "Contribution rules", "Treasury"];
   const dispatch = useDispatch();
   const uploadInputRef = useRef(null);
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
 
   const { address: walletAddress } = useAccount();
   const { getDecimals } = useCommonContractMethods({
@@ -290,7 +290,7 @@ const Create = () => {
     },
   });
 
-  <Button onClick={handlePrev}>Prev</Button>;
+  // <Button onClick={handlePrev}>Prev</Button>;
 
   const handleSubmit = () => {
     switch (activeStep) {

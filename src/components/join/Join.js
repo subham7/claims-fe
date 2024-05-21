@@ -4,7 +4,7 @@ import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { useSelector } from "react-redux";
 import { fetchClubByDaoAddress, getClubInfo } from "api/club";
 import { getWhitelistMerkleProof } from "api/whitelist";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import { queryAllMembersFromSubgraph } from "utils/stationsSubgraphHelper";
@@ -39,8 +39,8 @@ const Join = ({ daoAddress, routeNetworkId }) => {
   const [clubInfo, setClubInfo] = useState();
 
   const { address: walletAddress } = useAccount();
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
 
   const TOKEN_TYPE = useSelector((state) => {
     return state.club.clubData.tokenType;

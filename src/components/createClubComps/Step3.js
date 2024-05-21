@@ -19,7 +19,7 @@ import Web3 from "web3";
 import { useEffect } from "react";
 import { getSafeSdk } from "../../utils/helper";
 import { useState } from "react";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { CHAIN_CONFIG } from "utils/constants";
 
 export default function Step3(props) {
@@ -29,8 +29,8 @@ export default function Step3(props) {
   const [ownerAddresses, setOwnerAddresses] = useState();
   const [allSafeAddresses, setAllSafeAddresses] = useState();
 
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
 
   const fetchOwners = async (gnosisAddress) => {
     try {
