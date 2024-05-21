@@ -1,6 +1,8 @@
 import Web3 from "web3";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
 
+import { getConnections } from "@wagmi/core";
+
 import { QUERY_PAGINATED_MEMBERS } from "api/graphql/stationQueries";
 import { subgraphQuery } from "./subgraphs";
 import {
@@ -15,6 +17,7 @@ import { getPublicClient } from "utils/viemConfig";
 import { uploadToAWS } from "api/club";
 import { baseLinks } from "data/dashboard";
 import SafeApiKit from "@safe-global/api-kit";
+import { config } from "config";
 
 export const getSafeSdk = async (
   gnosisAddress,
@@ -55,7 +58,9 @@ export const getSafeSdk = async (
 };
 
 export const web3InstanceEthereum = async () => {
-  const web3 = new Web3(window.ethereum);
+  const connector = await getConnections(config)[0].connector.getProvider();
+
+  const web3 = new Web3(connector);
   return web3;
 };
 

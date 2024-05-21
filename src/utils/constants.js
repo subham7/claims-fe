@@ -10,8 +10,15 @@ import { signMessageLibAbi } from "abis/gnosis-abis/signMessageLibAbi";
 import { simulateTxAccessorAbi } from "abis/gnosis-abis/simulateTxAccessorAbi";
 import { renzoStakingPoolABI } from "abis/renzo/renzoStakingPoolContract";
 import { renzoStakingPoolABILinea } from "abis/renzo/renzoStakingPoolLinea";
-
-
+import {
+  arbitrum,
+  avalanche,
+  bsc,
+  linea,
+  mainnet,
+  polygon,
+  scroll,
+} from "viem/chains";
 
 export const BLOCK_CONFIRMATIONS = 4;
 export const BLOCK_TIMEOUT = 240000;
@@ -920,29 +927,13 @@ export const dropsNetworksChaindId = [
 ];
 
 export const stationNetworksChainId = [
-  {
-    chainId: 137,
-    networkId: "0x89",
-  },
-  {
-    chainId: 1,
-    networkId: "0x1",
-  },
-  {
-    chainId: 42161,
-    networkId: "0xa4b1",
-  },
-  {
-    chainId: 59144,
-    networkId: "0xe708",
-  },
-  {
-    chainId: 43114,
-    networkId: "0xa86a",
-  },
-  { chainId: 534352, networkId: "0x82750" },
-  { chainId: 56, networkId: "0x38" },
-  { chainId: 8453, networkId: "0x2105" },
+  arbitrum,
+  avalanche,
+  linea,
+  mainnet,
+  polygon,
+  scroll,
+  bsc,
 ];
 
 export const ALLOWED_NETWORKS_FOR_STATION = [

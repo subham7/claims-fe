@@ -119,8 +119,6 @@ const App = () => {
   const { open } = useWeb3Modal();
   const { walletInfo } = useWalletInfo();
 
-  console.log("Xxx", walletInfo);
-
   const showStationsHandler = async () => {
     if (isMainLink) {
       window.open("https://tally.so/r/nG64GQ", "_blank");
