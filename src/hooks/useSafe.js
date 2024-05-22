@@ -10,6 +10,7 @@ import {
   DAO_INITIALIZED_TOPIC,
   SAFE_SETUP_TOPIC,
 } from "utils/smartContractConstants";
+import { CC_NETWORKS } from "utils/networkConstants";
 
 const useSafe = () => {
   const { createERC721DAO, createERC20DAO } = useAppContractMethods();
@@ -52,7 +53,7 @@ const useSafe = () => {
         });
       }
 
-      if (networkId === "0xe708") {
+      if (CC_NETWORKS.includes(networkId)) {
         const createDaoTopic = value.logs.filter(
           (log) => log.topics[0].toLowerCase() === DAO_INITIALIZED_TOPIC,
         );

@@ -64,7 +64,6 @@ const getTokenAddressByExecutionId = (
     case 24:
       return depositToken;
     case 15:
-    case 25:
       return withdrawToken;
     case 17:
       return stakeToken;
@@ -73,6 +72,7 @@ const getTokenAddressByExecutionId = (
     case 50:
     case 56:
     case 58:
+    case 65:
       return unstakeToken;
     case 19:
       return swapToken;

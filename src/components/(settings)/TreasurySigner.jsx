@@ -30,7 +30,7 @@ const TreasurySigner = ({
   const [showErrorText, setShowErrorText] = useState(false);
   const [type, setType] = useState(null);
 
-  const { adminAddresses } = clubData;
+  const { adminAddresses, currentSafeThreshold } = clubData;
   const { address: walletAddress } = useAccount();
 
   const tokenType = useSelector((state) => {
@@ -75,7 +75,12 @@ const TreasurySigner = ({
       const values = {
         ownerAddress:
           type === "add" ? newArr[newArr.length - 1] : newArr[clickedIndex],
-        safeThreshold: type !== "add" ? 1 : 1,
+        safeThreshold:
+          type !== "add"
+            ? Number(currentSafeThreshold) > 1
+              ? Number(currentSafeThreshold) - 1
+              : Number(currentSafeThreshold)
+            : Number(currentSafeThreshold) + 1,
         actionCommand: type === "add" ? 6 : 7,
         title: type === "add" ? "Add signer" : "Remove sginer",
         note: `${

@@ -780,7 +780,7 @@ export const stakingValidation = ({ amount, isRocketPool, isMantlePool }) => {
             ? "Rocket Pool accepts a minimum of 0.01 ETH as deposits"
             : isMantlePool
             ? "Mantle Pool accepts a minimum of 0.02 ETH as deposits"
-            : "0"
+            : "Amount should be greater than 0"
         } `,
       )
       .max(amount, "You don't have enough ETH."),
@@ -816,5 +816,20 @@ export const actionModalValidation = ({
             .moreThan(0, "Fee(s) percentage should be greater than 0")
             .max(100, "Fee(s) percentage should be less than or equal to 100")
         : yup.string().notRequired(),
+  });
+};
+
+export const stakingPoolValidation = ({ token1Balance, token2Balance }) => {
+  return yup.object({
+    token1Amount: yup
+      .number()
+      .required("Amount is required")
+      .moreThan(0, "Amount should be greater than 0")
+      .max(token1Balance, "You don't have enough ETH."),
+    token2Amount: yup
+      .number()
+      .required("Amount is required")
+      .moreThan(0, "Amount should be greater than 0")
+      .max(token2Balance, "You don't have enough ETH."),
   });
 };

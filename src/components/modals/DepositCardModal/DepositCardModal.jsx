@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import { CHAIN_CONFIG } from "utils/constants";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { Typography } from "@mui/material";
+import { CC_NETWORKS } from "utils/networkConstants";
 
 const DepositCardModal = ({
   onClose,
@@ -21,13 +22,14 @@ const DepositCardModal = ({
   isNative,
 }) => {
   const [fees, setFees] = useState(0);
+  const [isChecked, setIsChecked] = useState(false);
   const iconStyle = { fontWeight: 800, marginRight: "4px" };
   const club = useSelector((state) => state.club.clubData);
   const adminFee = (club.ownerFeePerDepositPercent * amount) / 10000;
   const { getDepositFees } = useCommonContractMethods();
 
   useEffect(() => {
-    if (networkId === "0xe708") {
+    if (CC_NETWORKS.includes(networkId)) {
       (async () => {
         const depositFees = await getDepositFees(false);
         setFees(depositFees);
@@ -67,7 +69,7 @@ const DepositCardModal = ({
           icon={<PiArrowElbowDownRightBold style={iconStyle} />}
         />
 
-        {networkId === "0xe708" ? (
+        {CC_NETWORKS.includes(networkId) ? (
           <AmountInfo
             title="Platform Fee"
             amount={`${fees} ${CHAIN_CONFIG[networkId]?.nativeCurrency?.symbol}`}
@@ -83,7 +85,23 @@ const DepositCardModal = ({
         </Typography>
       </div>
 
-      <button onClick={submitHandler} className={classes.confirmButton}>
+      <div className={classes.checkBox}>
+        <input
+          checked={isChecked}
+          onChange={() => {
+            setIsChecked(!isChecked);
+          }}
+          type="checkbox"
+        />
+        <Typography variant="inherit">
+          Yes, I trust the owner of this station to manage my funds
+        </Typography>
+      </div>
+
+      <button
+        disabled={!isChecked}
+        onClick={submitHandler}
+        className={classes.confirmButton}>
         {text}
       </button>
     </Modal>

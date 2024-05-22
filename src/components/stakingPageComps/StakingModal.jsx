@@ -254,6 +254,7 @@ const StakingModal = ({
               id="stakeAmount"
               value={formik.values.stakeAmount}
               onChange={formik.handleChange}
+              onWheel={(e) => e.target.blur()}
               error={
                 formik.touched.stakeAmount && Boolean(formik.errors.stakeAmount)
               }

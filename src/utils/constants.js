@@ -26,6 +26,7 @@ export const OMIT_DAOS = [
   "0x1ae43fb8283e45ae90d5bd9249cc7227fd6ecc73",
 ];
 export const REFERRAL_ADDRESS = "0xe5ff122f1dc6deceef651bb324f8e8136375d1a6";
+export const MAX_APPROVAL_NUMBER = "11579208923731619";
 
 export const supportedChainsDrops = [
   "0x89",
@@ -57,7 +58,7 @@ export const CHAIN_CONFIG = {
       image: "/assets/networks/0x89.png",
     },
     rpcUrls: ["https://polygon-rpc.com/"],
-    appRpcUrl: `https://frosty-fittest-sponge.matic.quiknode.pro/2f493453b075c784ad12eb9094333497029cbe95/`,
+    appRpcUrl: `https://wiser-capable-brook.matic.quiknode.pro/beed5a6d0a1701b83886684b9d741db680653ffe/`,
     claimFactoryAddress: "0x47e6bFA71e490ADC8f0E33385aAdF85282E71002",
     factoryContractAddress: "0x726D3e4fBD321c4cD88769C16f5BAFfaC98D95Ad",
     stationSubgraphUrl:
@@ -192,13 +193,13 @@ export const CHAIN_CONFIG = {
       image: "/assets/icons/eth.png",
     },
     rpcUrls: ["https://mainnet.base.org"],
-    appRpcUrl: `https://proportionate-dry-pine.base-mainnet.discover.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_BASE_API_KEY}/`,
+    appRpcUrl: `https://bitter-boldest-wildflower.base-mainnet.quiknode.pro/8a49dc99b84ffbba1daacc7b97d80f8a4f21681d/`,
     factoryContractAddress: "0xeb6FE72d1Df22D9936D4FA317D7948E643aF92CB",
     claimFactoryAddress: "0x50702Fd9086BAbDB0A3A576bFe22D4dD47b09937",
     claimsSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-base/prod/gn",
     stationSubgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/subham7/stnx-be-base",
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-base-native/prod/gn",
     covalentNetworkName: "base-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
@@ -219,7 +220,7 @@ export const CHAIN_CONFIG = {
       image: "/assets/icons/eth.png",
     },
     rpcUrls: ["https://arb1.arbitrum.io/rpc"],
-    appRpcUrl: `https://nameless-lingering-slug.arbitrum-mainnet.quiknode.pro/4fe4d99e7b0909d4f1913740227511bb977fc33a/`,
+    appRpcUrl: `https://snowy-wild-sponge.arbitrum-mainnet.quiknode.pro/b98f662572b97a6bd6530aa54f9860a5244d7b2d/`,
     factoryContractAddress: "0x7213172eAad75D3d94Bc09ff4E0008f7FF66b041",
     claimFactoryAddress: "0x28F06a3415A741367303Db36a6646C354cCE1340",
     airdropContractAddress: "0x63d5BaeA805Af5768105F38aE12f933f29c674a9",
@@ -287,6 +288,12 @@ export const CHAIN_CONFIG = {
     zeroUSDCAddress: "0x2E207ecA8B6Bf77a6ac82763EEEd2A94de4f081d",
     zeroETHLendStakingPoolAddresS: "0x5d50bE703836C330Fc2d147a631CDd7bb8D7171c",
     zeroWETHAddress: "0xB4FFEf15daf4C02787bC5332580b838cE39805f5",
+    nileEzETH_ETH_PoolAddress: "0xaaa45c8f5ef92a000a121d102f4e89278a711faa",
+    nileEzETH_ETH_LPTokenAddress: "0xA9A1Fb9F6664A0B6BFB1F52724fd7b23842248C5",
+    nileEzETH_ETH_LP_StakePoolAddress:
+      "0x01fb6b2fa528fe9fc5ff3ab092203953aa8a32ff",
+    WETHAddress: "0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f",
+    clipFinanceETHPoolAddress: "0x7c825e560Ae6d6643115096B4B61e8f8d6a19749",
   },
   "0x38": {
     chainName: "BNB Smart Chain",
@@ -298,8 +305,12 @@ export const CHAIN_CONFIG = {
       symbol: "BNB",
     },
     rpcUrls: ["https://bsc.meowrpc.com"],
-    appRpcUrl: `https://special-spring-sun.bsc.discover.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_API_KEY}/`,
-    factoryContractAddress: "",
+    appRpcUrl: `https://delicate-orbital-sunset.bsc.quiknode.pro/e0773be7bcd4c69a6fc5429550dbcb571397b044/`,
+    factoryContractAddress: "0x8a1D0Be1fe8b1D7A5C3051Da5d6b3A2690E12CAC",
+    airdropContractAddress: "0xc72aDc4F927384Aff6cA479900e788ba4eFa9aB7",
+    usdcAddress: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+    stationSubgraphUrl:
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-bsc-cc/prod/gn",
     claimFactoryAddress: "0x80e1429430cfB717187BD37eb5Bd0076d77dcE85",
     claimsSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-bsc/prod/gn",
@@ -364,19 +375,17 @@ export const CHAIN_CONFIG = {
       image: "/assets/icons/eth.png",
     },
     rpcUrls: ["https://rpc.scroll.io"],
-    appRpcUrl: `https://sparkling-young-spring.scroll-mainnet.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_SCROLL_API_KEY}/`,
-    factoryContractAddress: "0x42a3a866dd9D40078f6009EFa03494ECc8EA5755",
-    //change this
+    appRpcUrl: `https://delicate-chaotic-dream.scroll-mainnet.quiknode.pro/14d4911b0589e5e03f6527ea874ad980849f2156/`,
+    factoryContractAddress: "0xE4D8Aac495adafFF1cF59fB1A6b91f0E4c21C26e",
     claimFactoryAddress: "0x563993D2c56628cfBBdec3FC3B3fb94744BbA9A6",
-    //change this
     claimsSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-scroll/prod/gn",
     stationSubgraphUrl:
-      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-scroll/prod/gn",
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-scroll-cc/prod/gn",
     covalentNetworkName: "scroll-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
-    airdropContractAddress: "0xA0113FF935416ad6E2F0DD689329Ec13Fc062389",
+    airdropContractAddress: "0xa65A4497526F07c3a92281695774F4D04e9c131A",
     blockExplorerUrl: "https://blockscout.scroll.io/",
     disburseContractAddress: "0x3DA9Fb55Ab77b10F99C1C1f52C150280dbd5a611",
     logoUri: "/assets/networks/0x82750.png",
@@ -522,7 +531,7 @@ export const CHAIN_CONFIG = {
       symbol: "AVAX",
     },
     rpcUrls: ["https://avalanche-mainnet.infura.io/"],
-    appRpcUrl: `https://long-silent-slug.avalanche-mainnet.quiknode.pro/93921ef01877ec563a000c867071a109a881c419/ext/bc/C/rpc/`,
+    appRpcUrl: `https://broken-wild-ensemble.avalanche-mainnet.quiknode.pro/8cf2091ea8c0db99f7bd6c2e9394918ccb9ab923/ext/bc/C/rpc/`,
     claimFactoryAddress: "",
     factoryContractAddress: "0xA242fb1dc2Baf4ca49371f11940cF8bF4DC909c3",
     stationSubgraphUrl:
@@ -918,10 +927,6 @@ export const stationNetworksChainId = [
     networkId: "0x1",
   },
   {
-    chainId: 42161,
-    networkId: "0xa4b1",
-  },
-  {
     chainId: 59144,
     networkId: "0xe708",
   },
@@ -929,19 +934,17 @@ export const stationNetworksChainId = [
     chainId: 43114,
     networkId: "0xa86a",
   },
-  // {
-  //   chainId: 100,
-  //   networkId: "0x64",
-  // },
   { chainId: 534352, networkId: "0x82750" },
+  { chainId: 56, networkId: "0x38" },
+  { chainId: 8453, networkId: "0x2105" },
 ];
 
 export const ALLOWED_NETWORKS_FOR_STATION = [
   "0x89",
   "0x1",
-  "0xa4b1",
   "0xe708",
-  // "0x82750",
   "0xa86a",
   "0x82750",
+  "0x38",
+  "0x2105",
 ];

@@ -252,33 +252,31 @@ const CreateProposalDialog = ({ daoAddress, routeNetworkId }) => {
           walletAddress,
           JSON.stringify(payload),
         );
-        const createRequest = createProposal(isGovernanceActive, {
+        const response = await createProposal(isGovernanceActive, {
           ...payload,
           description: values.proposalDescription,
           signature,
         });
-        createRequest.then(async (result) => {
-          if (result.status !== 201) {
-            setLoaderOpen(false);
-            dispatch(
-              setAlertData({
-                open: true,
-                message: "Proposal creation failed!",
-                severity: "error",
-              }),
-            );
-          } else {
-            dispatch(
-              setAlertData({
-                open: true,
-                message: "Proposal created successfully!",
-                severity: "success",
-              }),
-            );
-            setLoaderOpen(false);
-            router.back();
-          }
-        });
+        if (response.status !== 201) {
+          setLoaderOpen(false);
+          dispatch(
+            setAlertData({
+              open: true,
+              message: "Proposal creation failed!",
+              severity: "error",
+            }),
+          );
+        } else {
+          dispatch(
+            setAlertData({
+              open: true,
+              message: "Proposal created successfully!",
+              severity: "success",
+            }),
+          );
+          setLoaderOpen(false);
+          router.back();
+        }
       } catch (error) {
         setLoaderOpen(false);
         dispatch(
