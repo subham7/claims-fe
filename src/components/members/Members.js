@@ -191,7 +191,7 @@ const Members = ({ daoAddress, routeNetworkId }) => {
     startDate: yup.date().required("Start date is required"),
     endDate: yup
       .date()
-      .max(dayjs(Date.now()), "Date-time must be less than now.")
+      .max(dayjs(Date.now()).locale("en"), "Date-time must be less than now.")
       .required("End date is required"),
   });
 
@@ -310,7 +310,7 @@ const Members = ({ daoAddress, routeNetworkId }) => {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   value={formik.values.endDate}
-                  maxDateTime={dayjs(Date.now())}
+                  maxDateTime={dayjs(Date.now()).locale("en")}
                   onChange={(value) => {
                     formik.setFieldValue("endDate", value);
                   }}

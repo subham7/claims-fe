@@ -148,7 +148,7 @@ const CreateProposalDialog = ({ daoAddress, routeNetworkId }) => {
     initialValues: {
       tokenType: tokenType,
       typeOfProposal: executionId === "survey" ? "survey" : "action",
-      proposalDeadline: dayjs(Date.now() + 3600 * 1000 * 24),
+      proposalDeadline: dayjs(Date.now() + 3600 * 1000 * 24).locale("en"),
       proposalTitle: "",
       proposalDescription: "",
       blockNum: "",

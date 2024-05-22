@@ -62,7 +62,7 @@ const CommonProposalForm = ({ proposal }) => {
               marginTop: "0.5rem",
             }}
             value={proposal.values.proposalDeadline}
-            minDateTime={dayjs(Date.now())}
+            minDateTime={dayjs(Date.now()).locale("en")}
             onChange={(value) => {
               proposal.setFieldValue("proposalDeadline", value);
             }}
