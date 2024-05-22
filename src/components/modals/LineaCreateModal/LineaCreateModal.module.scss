@@ -1,27 +1,45 @@
-.modal{
-    background-color: #111111;
-    
-    .lineaModal{
-        width: 800px;
-        display: flex;
-        gap: 24px;
-        border-radius: 12px;
+.modal {
+  background-color: #111111;
+
+  .lineaModal {
+    width: 800px;
+    display: flex;
+    gap: 24px;
+    border-radius: 12px;
+  }
+
+  .campaignModal {
+    width: 700px;
+    max-height: 580px;
+    overflow-y: scroll;
+
+    .heading {
+      font-size: "20px";
+      font-weight: 600;
+      margin-bottom: "8px";
     }
 
-    .campaignModal{
-        width: 700px;
-        max-height: 580px;
-        overflow-y: scroll;
-
-        .heading{
-            font-size: "20px";
-            font-weight: 600;
-            margin-bottom: "8px";
-        }
-
-        .subtext{
-            margin-top: 8px;
-        }
+    .subtext {
+      margin-top: 8px;
     }
+  }
+
+  .activateLXPModal {
+    a {
+      color: #6f9dff;
+    }
+    width: 1200px;
+    max-height: 700px;
+    overflow-y: scroll;
+
+    .heading {
+      font-size: "20px";
+      font-weight: 600;
+      margin-bottom: "8px";
+    }
+
+    .subtext {
+      margin-top: 8px;
+    }
+  }
 }
-

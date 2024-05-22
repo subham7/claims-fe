@@ -47,6 +47,7 @@ import StakeDefiModal from "@components/modals/LineaCreateModal/StakeDefiModal";
 import ChangeDepositParamsModal from "@components/modals/LineaCreateModal/ChangeDepositParmsModal";
 import { BiSupport } from "react-icons/bi";
 import { IoIosArrowDropdownCircle } from "react-icons/io";
+import ActivateLXPLModal from "@components/modals/LineaCreateModal/ActivateLXPLModal";
 
 const Dashboard = ({ daoAddress, routeNetworkId }) => {
   const { signMessageAsync } = useSignMessage();
@@ -100,6 +101,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
   const [showMintGTModal, setShowMintGTModal] = useState(false);
   const [showStakeDefiModal, setShowStakeDefiModal] = useState(false);
   const [showDepositParamsModal, setShowDepositParamsModal] = useState(false);
+  const [showActivateLXPLModal, setShowActivateLXPLModal] = useState(false);
 
   const { getBalance } = useCommonContractMethods({ routeNetworkId });
   const { getERC20TotalSupply, getNftOwnersCount } = useAppContractMethods({
@@ -327,6 +329,8 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
             onClickHandler={() => {
               setShowLineaCampaignModal(true);
             }}
+            showLXPButton={true}
+            LXPButtonOnClickHandler={() => setShowActivateLXPLModal(true)}
           />
         </div>
 
@@ -484,6 +488,15 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
         <LineaCampaignModal
           onClose={() => {
             setShowLineaCampaignModal(false);
+          }}
+        />
+      ) : null}
+
+      {showActivateLXPLModal ? (
+        <ActivateLXPLModal
+          safeAddress={gnosisAddress}
+          onClose={() => {
+            setShowActivateLXPLModal(false);
           }}
         />
       ) : null}
