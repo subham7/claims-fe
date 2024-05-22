@@ -86,7 +86,9 @@ const LineaCreateModal = ({ onClose, onClick }) => {
         </div>
         <div className={classes.infoContainer}>
           <AiFillInfoCircle size={20} />
-          <Typography fontSize={18}>Activate LXP-L Rewards </Typography>
+          <Typography fontSize={17} fontWeight={500}>
+            Click here to activate LXP-L rewards on your station{" "}
+          </Typography>
           <Button
             style={{
               marginLeft: "5px",
@@ -96,7 +98,7 @@ const LineaCreateModal = ({ onClose, onClick }) => {
             }}
             variant="contained"
             onClick={onClick}>
-            Learn more
+            Activate LXP-L{" "}
           </Button>
         </div>
       </div>

@@ -36,7 +36,7 @@ export default function Layout(props) {
       {networkId === "0xe708" && (
         <div>
           <LineaSurgeBar />
-          <div style={{ height: "50px" }}></div>
+          <div style={{ height: "40px" }}></div>
         </div>
       )}
 
