@@ -114,7 +114,7 @@ const Create = () => {
   const formikERC20Step2 = useFormik({
     initialValues: {
       depositToken: "",
-      depositClose: dayjs(Date.now() + 3600 * 1000 * 24),
+      depositClose: dayjs(Date.now() + 3600 * 1000 * 24).locale("en"),
       minDepositPerUser: "",
       maxDepositPerUser: "",
       totalRaiseAmount: "",
@@ -135,7 +135,7 @@ const Create = () => {
       maxTokensPerUser: "",
       isNftTotalSupplylimited: false,
       totalTokenSupply: "",
-      depositClose: dayjs(Date.now() + 3600 * 1000 * 24),
+      depositClose: dayjs(Date.now() + 3600 * 1000 * 24).locale("en"),
     },
 
     validationSchema: ERC721Step2ValidationSchema,

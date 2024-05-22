@@ -277,7 +277,7 @@ export default function ERC20Step2(props) {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
                 value={props.formik.values.depositClose}
-                minDateTime={dayjs(Date.now())}
+                minDateTime={dayjs(Date.now()).locale("en")}
                 onChange={(value) => {
                   props.formik.setFieldValue("depositClose", value);
                 }}

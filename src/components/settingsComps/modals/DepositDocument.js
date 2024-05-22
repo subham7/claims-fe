@@ -29,7 +29,7 @@ const DepositDocument = ({ updateDocumentLink, onClose, loading }) => {
 
   const formik = useFormik({
     initialValues: {
-      depositTime: dayjs(Date.now() + 300000),
+      depositTime: dayjs(Date.now() + 300000).locale("en"),
     },
     validationSchema: yup.object({
       depositTime: yup.date().required("Deposit time is required"),
