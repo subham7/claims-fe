@@ -67,14 +67,14 @@ const ActivateLXPLModal = ({ onClose, safeAddress }) => {
         </Typography>
         <Image
           style={{ display: "block", margin: "0 auto" }}
-          src={"/assets/campaign/ActivateLXPModal/image_1.png"}
+          src={"/assets/campaign/ActivateLXPModal/image_1.webp"}
           width={900}
           height={300}
           alt="Copy"
         />
         <Image
           style={{ display: "block", margin: "0 auto" }}
-          src={"/assets/campaign/ActivateLXPModal/image_2.png"}
+          src={"/assets/campaign/ActivateLXPModal/image_2.webp"}
           width={900}
           height={900}
           alt="Copy"
@@ -87,7 +87,7 @@ const ActivateLXPLModal = ({ onClose, safeAddress }) => {
         </List>
         <Image
           style={{ display: "block", margin: "0 auto" }}
-          src={"/assets/campaign/ActivateLXPModal/image_3.png"}
+          src={"/assets/campaign/ActivateLXPModal/image_3.webp"}
           width={900}
           height={1200}
           alt="Copy"
@@ -104,21 +104,21 @@ const ActivateLXPLModal = ({ onClose, safeAddress }) => {
         </Typography>
         <Image
           style={{ display: "block", margin: "0 auto" }}
-          src={"/assets/campaign/ActivateLXPModal/image_4.png"}
+          src={"/assets/campaign/ActivateLXPModal/image_4.webp"}
           width={900}
           height={60}
           alt="Copy"
         />
         <Image
           style={{ display: "block", margin: "0 auto" }}
-          src={"/assets/campaign/ActivateLXPModal/image_5.png"}
+          src={"/assets/campaign/ActivateLXPModal/image_5.webp"}
           width={900}
           height={550}
           alt="Copy"
         />
         <Image
           style={{ display: "block", margin: "0 auto" }}
-          src={"/assets/campaign/ActivateLXPModal/image_6.png"}
+          src={"/assets/campaign/ActivateLXPModal/image_6.webp"}
           width={900}
           height={700}
           alt="Copy"
@@ -132,7 +132,7 @@ const ActivateLXPLModal = ({ onClose, safeAddress }) => {
         </Typography>
         <Image
           style={{ display: "block", margin: "0 auto" }}
-          src={"/assets/campaign/ActivateLXPModal/image_7.png"}
+          src={"/assets/campaign/ActivateLXPModal/image_7.webp"}
           width={900}
           height={800}
           alt="Copy"
@@ -151,7 +151,7 @@ const ActivateLXPLModal = ({ onClose, safeAddress }) => {
         </Typography>
         <Image
           style={{ display: "block", margin: "0 auto" }}
-          src={"/assets/campaign/ActivateLXPModal/image_8.png"}
+          src={"/assets/campaign/ActivateLXPModal/image_8.webp"}
           width={900}
           height={900}
           alt="Copy"
@@ -168,7 +168,7 @@ const ActivateLXPLModal = ({ onClose, safeAddress }) => {
         </Typography>
         <Image
           style={{ display: "block", margin: "0 auto" }}
-          src={"/assets/campaign/ActivateLXPModal/image_9.png"}
+          src={"/assets/campaign/ActivateLXPModal/image_9.webp"}
           width={900}
           height={450}
           alt="Copy"
