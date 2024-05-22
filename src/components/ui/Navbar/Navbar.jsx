@@ -1,27 +1,28 @@
 import Image from "next/image";
 import classes from "./Navbar.module.scss";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NetworkSwitcher from "@components/modals/NetworkSwitcher/NetworkSwitcher";
-import {
-  CHAIN_CONFIG,
-  dropsNetworksChaindId,
-  stationNetworksChainId,
-} from "utils/constants";
-import { useAccount, useNetwork } from "wagmi";
+import { dropsNetworksChaindId, stationNetworksChainId } from "utils/constants";
+import { useAccount, useChainId } from "wagmi";
 import { Typography } from "@mui/material";
 import EditDetails from "@components/settingsComps/modals/EditDetails";
 import { useSelector } from "react-redux";
+import { useWalletInfo } from "@web3modal/wagmi/react";
+import { getConnections } from "@wagmi/core";
+import { config } from "config";
 
 const Navbar = ({ daoAddress, routeNetworkId }) => {
   const [showEditDetails, setShowEditDetails] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [networksSupported, setNetworkSupported] = useState();
+  const [walletIcon, setWalletIcon] = useState("");
 
   const router = useRouter();
   const { address } = useAccount();
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const { walletInfo } = useWalletInfo();
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
 
   const clubData = useSelector((state) => {
     return state.club.clubData;
@@ -35,6 +36,15 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
       setNetworkSupported(stationNetworksChainId);
     }
   };
+
+  const fetchCurrentWalletIcon = () => {
+    const connector = getConnections(config)[0]?.connector;
+    setWalletIcon(connector?.icon);
+  };
+
+  useEffect(() => {
+    if (address && networkId) fetchCurrentWalletIcon();
+  }, [networkId, address]);
 
   return (
     <>
@@ -62,21 +72,20 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
               </Typography>
             </div>
           ) : null}
-          {address && (
-            <div onClick={showNetworkModalHandler} className={classes.switch}>
+
+          <w3m-network-button />
+          <div className={classes.connectedWallet}>
+            {walletIcon && address && (
               <Image
-                src={CHAIN_CONFIG[networkId]?.logoUri}
+                className={classes.wallet}
+                src={walletIcon}
                 height={20}
                 width={20}
-                alt={CHAIN_CONFIG[networkId]?.shortName}
-                className={classes.networkImg}
+                alt="wallet"
               />
-              <Typography variant="inherit">
-                {CHAIN_CONFIG[networkId]?.shortName}
-              </Typography>
-            </div>
-          )}
-          <w3m-account-button balance="hide" />
+            )}
+            <w3m-button label="Connect" />
+          </div>
           {address && (
             <Image
               onClick={() => router.push(`/profile/${address}`)}

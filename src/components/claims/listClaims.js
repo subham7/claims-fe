@@ -5,7 +5,7 @@ import claimsBanner from "../../../public/assets/images/claimsBanner.png";
 import { makeStyles } from "@mui/styles";
 import { useRouter } from "next/router";
 import ClaimsCard from "components/claimsPageComps/ClaimsCard";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { Button, Typography } from "@mui/material";
 import { queryDropsListFromSubgraph } from "utils/dropsSubgraphHelper";
 
@@ -83,8 +83,8 @@ const ListClaims = () => {
   const classes = useStyles();
   const router = useRouter();
   const [claimData, setClaimData] = useState([]);
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
 
   const createClaim = () => {
     router.push("/claims/create");

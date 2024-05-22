@@ -492,7 +492,7 @@ export const DEFI_PROPOSALS_ETH_POOLS = ({
           holding the mendi-ETH from Clip Finance.
         </span>
       ),
-      tags: ["⭐ LXP-L", "🐚 ezPoints"],
+      tags: ["⭐ LXP-L"],
     },
 
     {
@@ -519,6 +519,7 @@ export const DEFI_PROPOSALS_ETH_POOLS = ({
           This is a new protocol, deposit at your own risk.
         </span>
       ),
+      tags: ["⭐ LXP-L"],
     },
 
     {
@@ -537,7 +538,6 @@ export const DEFI_PROPOSALS_ETH_POOLS = ({
         : "",
       isUnstakeDisabled: true,
       risk: "Low",
-
       info: (
         <span>
           This strategy earns Eigen Points by staking ETH on Stader to get ETHx
@@ -715,7 +715,7 @@ export const DEFI_PROPOSALS_ETH_POOLS = ({
           accrued on your Stations treasury address.
         </span>
       ),
-      // tags: ["🏆 EIGEN POINTS", "⭐ STARS", "🏆 exPoints"],
+      tags: ["🏆 EIGEN POINTS", "⭐ LXP-L", "🏆 ezPoints"],
     },
 
     {
@@ -796,7 +796,7 @@ export const DEFI_PROPOSALS_ETH_POOLS = ({
           earn 12.4% APY holding z0USDC by Zerolend.
         </span>
       ),
-      tags: ["🐚 ZERO POINTS"],
+      tags: ["🐚 ZERO POINTS", "⭐ LXP-L"],
     },
     {
       name: "Aave",
@@ -881,7 +881,7 @@ export const DEFI_PROPOSALS_USDC_POOLS = ({
           This is a new protocol, deposit at your own risk.
         </span>
       ),
-      tags: [],
+      tags: ["⭐ LXP-L"],
     },
     {
       name: "Zerolend",
@@ -952,7 +952,7 @@ export const DEFI_PROPOSALS_PAIR_POOLS = ({
           transaction.
         </span>
       ),
-      tags: [],
+      tags: ["⭐ LXP-L"],
     },
   ];
 };

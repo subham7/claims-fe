@@ -1,6 +1,6 @@
 import { erc20TokenABI } from "abis/usdcTokenContract.js";
 import { convertToWeiGovernance } from "utils/globalFunctions";
-import { useAccount, useNetwork, useWalletClient } from "wagmi";
+import { useAccount, useChainId, useWalletClient } from "wagmi";
 import {
   isNative,
   readContractFunction,
@@ -14,8 +14,8 @@ import { factoryContractCCABI } from "abis/factoryContractCC";
 const useCommonContractMethods = (params) => {
   const walletClient = useWalletClient();
   const { address: walletAddress } = useAccount();
-  const { chain } = useNetwork();
-  const networkId = params?.routeNetworkId ?? "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = params?.routeNetworkId ?? "0x" + chain?.toString(16);
 
   const getTokenSymbol = async (contractAddress) => {
     try {

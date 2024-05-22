@@ -36,7 +36,7 @@ import ProposalVotes from "@components/proposalComps/ProposalVotes";
 import { getSafeSdk, handleSignMessage } from "utils/helper";
 import { retrieveNftListing } from "api/assets";
 import SafeAppsSDK from "@safe-global/safe-apps-sdk";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useChainId, useSignMessage } from "wagmi";
 import {
   createRejectSafeTx,
   executeRejectTx,
@@ -55,12 +55,13 @@ import { setAlertData } from "redux/reducers/alert";
 import { CHAIN_CONFIG } from "utils/constants";
 
 const ProposalDetail = ({ pid, daoAddress, routeNetworkId }) => {
+  const { signMessageAsync } = useSignMessage();
   const classes = ProposalDetailStyles();
   const router = useRouter();
 
   const { address: walletAddress } = useAccount();
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
   const dispatch = useDispatch();
 
   const sdk = new SafeAppsSDK({
@@ -261,8 +262,8 @@ Cast your vote before ${new Date(
       daoAddress: daoAddress,
     };
     const { signature } = await handleSignMessage(
-      walletAddress,
       JSON.stringify(payload),
+      signMessageAsync,
     );
     try {
       const result = await castVote({ ...payload, signature });

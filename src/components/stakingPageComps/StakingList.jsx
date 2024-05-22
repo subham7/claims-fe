@@ -7,7 +7,7 @@ import {
   DEFI_PROPOSALS_PAIR_POOLS,
   DEFI_PROPOSALS_USDC_POOLS,
 } from "utils/proposalConstants";
-import { useNetwork } from "wagmi";
+import { useChainId } from "wagmi";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { CHAIN_CONFIG } from "utils/constants";
 import { useSelector } from "react-redux";
@@ -20,8 +20,8 @@ import { getPriceRate } from "api/assets";
 import BigNumber from "bignumber.js";
 
 const StakingList = ({ daoAddress, routeNetworkId }) => {
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
 
   const [tabType, setTabType] = useState("ETH");
   const [unstakeTokenBalance, setUnstakeTokenBalance] = useState(0);

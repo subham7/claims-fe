@@ -6,7 +6,7 @@ import classNames from "classnames";
 import { RxCross2 } from "react-icons/rx";
 import { getProposalCommands } from "utils/proposalData";
 import { fetchLatestBlockNumber } from "utils/globalFunctions";
-import { useAccount } from "wagmi";
+import { useAccount, useSignMessage } from "wagmi";
 import dayjs from "dayjs";
 import { handleSignMessage } from "utils/helper";
 import { createProposal } from "api/proposal";
@@ -21,6 +21,7 @@ const TreasurySigner = ({
   setLoading,
   handleActionComplete,
 }) => {
+  const { signMessageAsync } = useSignMessage();
   const [newArr, setNewArr] = useState([]);
   const [showEditButton, setShowEditButton] = useState(true);
   const [showAddDeleteButtons, setShowAddDeleteButtons] = useState(false);
@@ -120,8 +121,8 @@ const TreasurySigner = ({
       };
 
       const { signature } = await handleSignMessage(
-        walletAddress,
         JSON.stringify(payload),
+        signMessageAsync,
       );
 
       const request = await createProposal(isGovernanceActive, {

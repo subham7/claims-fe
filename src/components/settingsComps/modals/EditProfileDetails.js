@@ -19,6 +19,7 @@ import { createOrUpdateUser } from "api/club";
 import { handleSignMessage, uploadFileToAWS } from "utils/helper";
 import { setAlertData } from "redux/reducers/alert";
 import { useDispatch } from "react-redux";
+import { useSignMessage } from "wagmi";
 
 const useStyles = makeStyles((theme) => ({
   modalStyle: {
@@ -83,6 +84,7 @@ const EditProfileDetails = ({
   userData,
   getUserProfileData,
 }) => {
+  const { signMessageAsync } = useSignMessage();
   const theme = useTheme();
   const classes = useStyles(theme);
   const dispatch = useDispatch();
@@ -106,8 +108,8 @@ const EditProfileDetails = ({
   const sendRequest = async (data) => {
     try {
       const { signature } = await handleSignMessage(
-        wallet,
         JSON.stringify(data),
+        signMessageAsync,
       );
 
       const response = await createOrUpdateUser({ ...data, signature });

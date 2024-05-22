@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from "react";
 import { AnnouncementContext } from "./AnnouncementContext";
 import CloseIcon from "@mui/icons-material/Close";
 import { useRouter } from "next/router";
-import { useNetwork } from "wagmi";
+import { useChainId } from "wagmi";
 
 const AnnouncementBar = () => {
   const { showAnnouncement, closeAnnouncement, openAnnouncement } =
@@ -10,8 +10,8 @@ const AnnouncementBar = () => {
   const router = useRouter();
 
   const [daoAddress] = router?.query?.slug ?? [];
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
 
   useEffect(() => {
     if (
