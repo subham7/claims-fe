@@ -9,8 +9,6 @@ const ComponentHeader = ({
   showButton = false,
   buttonText = "",
   onClickHandler = () => {},
-  showLXPButton = false,
-  LXPButtonOnClickHandler = () => {},
 }) => {
   return (
     <div className={classes.headerContainer}>
@@ -23,22 +21,12 @@ const ComponentHeader = ({
         </Typography>
       </div>
       {showButton && (
-        <div>
-          {showLXPButton && (
-            <Button
-              onClick={LXPButtonOnClickHandler}
-              className={classes.lxpButton}
-              variant="contained">
-              {"Activate LXP-L"}
-            </Button>
-          )}
-          <Button
-            onClick={onClickHandler}
-            className={classes.button}
-            variant="contained">
-            {buttonText}
-          </Button>
-        </div>
+        <Button
+          onClick={onClickHandler}
+          className={classes.button}
+          variant="contained">
+          {buttonText}
+        </Button>
       )}
     </div>
   );

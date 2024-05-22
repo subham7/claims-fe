@@ -320,17 +320,32 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
   return (
     <div className={classes.main}>
       <div className={classes.leftContainer}>
+        {/* {routeNetworkId === "0xe708" && (
+          <div className={classes.joinCampaignBar}>
+            <Typography variant="inherit" fontSize={18} fontWeight={550}>
+              Join the Linea Surge and run stations on StationX to get LXP-L
+              points.{" "}
+              <a
+                href={`https://stnx.notion.site/Participate-in-SurgeOnLinea-a659cb8412a24233971a2f7b247643f7?pvs=25https://stnx.notion.site/Participate-in-SurgeOnLinea-a659cb8412a24233971a2f7b247643f7?pvs=25`}
+                target="_blank"
+                rel="noopener noreferrer">
+                Learn more.
+              </a>
+            </Typography>
+
+            <div></div>
+          </div>
+        )} */}
+
         <div className={classes.headerContainer}>
           <ComponentHeader
             title={clubData?.name}
             subtext={`$${clubData?.symbol}`}
             showButton={routeNetworkId === "0xe708" ? true : false}
-            buttonText="Join Campaign"
+            buttonText="Activate LXP-L"
             onClickHandler={() => {
-              setShowLineaCampaignModal(true);
+              setShowActivateLXPLModal(true);
             }}
-            showLXPButton={true}
-            LXPButtonOnClickHandler={() => setShowActivateLXPLModal(true)}
           />
         </div>
 

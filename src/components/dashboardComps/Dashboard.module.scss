@@ -5,7 +5,7 @@
   height: 85vh;
   gap: 24px;
 
-  .helpContainer{
+  .helpContainer {
     display: flex;
     gap: 4px;
     cursor: pointer;
@@ -102,7 +102,7 @@
 
       .treasuryContainer {
         background: transparent
-          linear-gradient(238deg, #2E55FF 0%, #FF279C 100%) 0% 0% no-repeat
+          linear-gradient(238deg, #2e55ff 0%, #ff279c 100%) 0% 0% no-repeat
           padding-box;
       }
 
@@ -287,19 +287,19 @@
     color: $inactive-text;
   }
 
-  .copyContainer{
+  .copyContainer {
     background-color: $background-primary;
     border-radius: 12px;
     padding: 20px;
 
-    .headingContainer2{
+    .headingContainer2 {
       display: flex;
       justify-content: space-between;
       align-items: center;
       color: white;
     }
 
-    .editContainer{
+    .editContainer {
       display: flex;
       align-items: center;
       gap: 4px;
@@ -307,13 +307,12 @@
       color: white;
       font-weight: 500;
       font-size: 14px;
-      padding:8px 12px;
+      padding: 8px 12px;
       border-radius: 8px;
       cursor: pointer;
     }
 
-
-    .flexContainer{
+    .flexContainer {
       display: flex;
       justify-content: space-between;
       // background-color: $dark-gray;
@@ -322,28 +321,23 @@
       align-items: center;
       margin-top: 12px;
       margin-bottom: 4px;
-      background: transparent
-      linear-gradient(238deg, #2E55FF 0%, #FF279C 100%) 0% 0% no-repeat
-      padding-box;
+      background: transparent linear-gradient(238deg, #2e55ff 0%, #ff279c 100%)
+        0% 0% no-repeat padding-box;
 
-      .copyText{
+      .copyText {
         overflow: hidden;
         font-size: 14px;
-        font-weight:600;
+        font-weight: 600;
       }
 
-      .copyButtonContainer{
+      .copyButtonContainer {
         padding: 10px;
-        background-color: #EFEFEF20;
+        background-color: #efefef20;
         border-radius: 50px;
         display: flex;
         align-items: center;
         justify-content: center;
-        
       }
     }
-
-  
   }
-
 }

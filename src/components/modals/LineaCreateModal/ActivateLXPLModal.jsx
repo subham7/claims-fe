@@ -29,7 +29,7 @@ const ActivateLXPLModal = ({ onClose, safeAddress }) => {
 
         <Typography variant="inherit" fontSize={16} fontWeight={500} mb={2}>
           <Typography variant="inherit" fontSize={20} fontWeight={550}>
-            Step 1.
+            Step 1. Open your station&apos;s treasury (SAFE multisig)
           </Typography>
           <List>
             <ListItem style={{ listStyleType: "circle" }}>
@@ -53,14 +53,7 @@ const ActivateLXPLModal = ({ onClose, safeAddress }) => {
                   rel="noopener noreferrer">
                   treasury
                 </a>{" "}
-                on a separate tab - your{" "}
-                <a
-                  href={`https://safe.linea.build/home?safe=linea:${safeAddress}`}
-                  target="_blank"
-                  rel="noopener noreferrer">
-                  treasury link
-                </a>{" "}
-                & address {safeAddress}
+                on a separate tab - address : <b>{safeAddress}</b>
               </p>
             </ListItem>
           </List>
@@ -68,7 +61,7 @@ const ActivateLXPLModal = ({ onClose, safeAddress }) => {
 
         <Typography variant="inherit" mb={2} mt={2}>
           <Typography variant="inherit" fontSize={20} fontWeight={550}>
-            Step 2.
+            Step 2. Connect your SAFE multisig to Linea Surge
           </Typography>
 
           <List>
@@ -109,7 +102,7 @@ const ActivateLXPLModal = ({ onClose, safeAddress }) => {
 
         <Typography variant="inherit" mt={2}>
           <Typography variant="inherit" fontSize={20} fontWeight={550}>
-            Step 3.
+            Step 3. Connect your SAFE multisig to Linea Surge (on SAFE dApp)
           </Typography>
           <List>
             <ListItem>
@@ -146,7 +139,7 @@ const ActivateLXPLModal = ({ onClose, safeAddress }) => {
 
         <Typography variant="inherit" mt={2}>
           <Typography variant="inherit" fontSize={20} fontWeight={550}>
-            Step 4.
+            Step 4. Initiate signature
           </Typography>
           <List>
             <ListItem>
@@ -165,7 +158,7 @@ const ActivateLXPLModal = ({ onClose, safeAddress }) => {
 
         <Typography variant="inherit" mt={2}>
           <Typography variant="inherit" fontSize={20} fontWeight={550}>
-            Step 5.
+            Step 5. Sign on SAFE
           </Typography>
           <List>
             <ListItem>
@@ -188,7 +181,7 @@ const ActivateLXPLModal = ({ onClose, safeAddress }) => {
 
         <Typography variant="inherit" mt={2}>
           <Typography variant="inherit" fontSize={20} fontWeight={550}>
-            Step 6.
+            Step 6. Activate and start earning LXP-L
           </Typography>
           <List>
             <ListItem>

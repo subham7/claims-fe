@@ -34,26 +34,6 @@
   }
 }
 
-.lxpButton {
-  border: 10px solid;
-  border-image-slice: 1;
-  border-width: 5px;
-  width: 150px;
-  border-image-source: linear-gradient(to left, #2e55ff, #ff279c);
-  padding: 10px;
-  text-transform: capitalize;
-  font-family: inherit;
-  font-weight: 600;
-  background: white;
-  color: black;
-  border-radius: 8px;
-  // z-index: -1;
-
-  &:hover {
-    background-color: whitesmoke;
-  }
-}
-
 .tableListContainer {
   border: 0.5px solid $border-color;
   border-radius: 10px;

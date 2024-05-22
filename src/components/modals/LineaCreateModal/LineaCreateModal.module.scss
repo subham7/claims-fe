@@ -43,3 +43,23 @@
     }
   }
 }
+
+.joinCampaignBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  width: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  padding: 5px 12px;
+  background: transparent linear-gradient(238deg, #2e55ff 0%, #ff279c 100%) 0%
+    0% no-repeat padding-box;
+
+  a {
+    color: #bfceef;
+  }
+}
