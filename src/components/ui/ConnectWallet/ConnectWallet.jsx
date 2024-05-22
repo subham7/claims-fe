@@ -1,17 +1,32 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import classes from "./ConnectWallet.module.scss";
-import { Typography } from "@mui/material";
+import { Skeleton, Typography } from "@mui/material";
 import Footer from "../Footer/Footer";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { getAnalyticsOfStationX } from "api/analytics";
+import { formatNumbers } from "utils/helper";
 
 const ConnectWallet = () => {
+  const [analyticsData, setAnalyticsData] = useState();
+  const [loading, setLoading] = useState(false);
   const { open } = useWeb3Modal();
 
   const connectWalletHandler = async () => {
     await open();
   };
+
+  const fetchAnalytics = async () => {
+    setLoading(true);
+    const data = await getAnalyticsOfStationX();
+    setAnalyticsData(data.data);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchAnalytics();
+  }, []);
 
   return (
     <div className={classes.section}>
@@ -35,19 +50,37 @@ const ConnectWallet = () => {
 
         <div className={classes.stationsInfo}>
           <div className={classes.info}>
-            <Typography className={classes.value}>31,291</Typography>
+            <Typography className={classes.value}>
+              {loading ? (
+                <Skeleton width={100} />
+              ) : (
+                formatNumbers(analyticsData?.totalStations?.total)
+              )}
+            </Typography>
             <Typography className={classes.title}>
               Total stations deployed
             </Typography>
           </div>
           <div className={classes.info}>
-            <Typography className={classes.value}>$4,025,857.23</Typography>
+            <Typography className={classes.value}>
+              {loading ? (
+                <Skeleton width={200} />
+              ) : (
+                `$${formatNumbers(analyticsData?.totalAmountRaised?.total)}`
+              )}
+            </Typography>
             <Typography className={classes.title}>
               Total volume of capital raised via stations
             </Typography>
           </div>
           <div className={classes.info}>
-            <Typography className={classes.value}>10,203</Typography>
+            <Typography className={classes.value}>
+              {loading ? (
+                <Skeleton width={100} />
+              ) : (
+                formatNumbers(analyticsData?.totalUniqueUsers?.total)
+              )}
+            </Typography>
             <Typography className={classes.title}>
               Total unique members
             </Typography>
