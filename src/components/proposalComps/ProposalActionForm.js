@@ -1,6 +1,6 @@
 import { Stack } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { useNetwork } from "wagmi";
+import { useChainId } from "wagmi";
 import { csvToObjectForMintGT } from "utils/helper";
 import React, { useRef, useState } from "react";
 import { useSelector } from "react-redux";
@@ -20,8 +20,8 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
   const hiddenFileInput = useRef(null);
   const [file, setFile] = useState("");
   const [loadingCsv, setLoadingCsv] = useState(false);
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
 
   const classes = useStyles();
 

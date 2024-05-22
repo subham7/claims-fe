@@ -1,6 +1,6 @@
 import Web3 from "web3";
 import Safe, { Web3Adapter } from "@safe-global/protocol-kit";
-
+import { getConnections, switchChain } from "@wagmi/core";
 import { QUERY_PAGINATED_MEMBERS } from "api/graphql/stationQueries";
 import { subgraphQuery } from "./subgraphs";
 import {
@@ -15,6 +15,7 @@ import { getPublicClient } from "utils/viemConfig";
 import { uploadToAWS } from "api/club";
 import { baseLinks } from "data/dashboard";
 import SafeApiKit from "@safe-global/api-kit";
+import { config } from "config";
 
 export const getSafeSdk = async (
   gnosisAddress,
@@ -54,25 +55,10 @@ export const getSafeSdk = async (
   }
 };
 
-export const getIncreaseGasPrice = async (networkId = "0x89") => {
-  const web3 = await web3InstanceCustomRPC(networkId);
-
-  // if (!sessionStorage.getItem("gasPrice" + networkId)) {
-  const gasPrice = await web3.eth.getGasPrice();
-
-  let increasedGasPrice;
-
-  if (networkId === "0x89") {
-    increasedGasPrice = +gasPrice + 30000000000;
-  } else {
-    increasedGasPrice = +gasPrice + 1000000;
-  }
-
-  return increasedGasPrice;
-};
-
 export const web3InstanceEthereum = async () => {
-  const web3 = new Web3(window.ethereum);
+  const connector = await getConnections(config)[0].connector.getProvider();
+
+  const web3 = new Web3(connector);
   return web3;
 };
 
@@ -137,6 +123,14 @@ export const showWrongNetworkModal = (networkId, routeNetworkId, isClaims) => {
       return true;
     }
     if (!isClaims && !ALLOWED_NETWORKS_FOR_STATION.includes(networkId)) {
+      return true;
+    }
+
+    if (
+      !isClaims &&
+      ALLOWED_NETWORKS_FOR_STATION.includes(networkId) &&
+      routeNetworkId !== networkId
+    ) {
       return true;
     }
   } else {
@@ -221,6 +215,9 @@ export const getUserTokenData = async (
 };
 
 export const requestEthereumChain = async (method, params) => {
+  const connector = await getConnections(config)[0].connector.getProvider();
+  console.log("Xxx", connector);
+
   return await window.ethereum.request({ method, params });
 };
 
@@ -396,13 +393,11 @@ export const processAmount = (amount) => {
   return amount;
 };
 
-export const handleSignMessage = async (userAddress, data) => {
+export const handleSignMessage = async (data, signMessage) => {
   try {
-    const web3 = await web3InstanceEthereum();
-    // const web3 = await web3InstanceCustomRPC();
-
-    const signature = await web3?.eth.personal.sign(data, userAddress, "");
-
+    const signature = await signMessage({
+      message: data,
+    });
     return { data, signature };
   } catch (err) {
     throw new Error("User denied message signature.");
@@ -457,35 +452,10 @@ export const isNative = (depositTokenAddress, networkId) => {
 
 export const switchNetworkHandler = async (networkId, setLoading) => {
   setLoading(true);
-  if (typeof window !== "undefined") {
-    if (window?.ethereum?.networkVersion !== networkId) {
-      try {
-        await requestEthereumChain("wallet_switchEthereumChain", [
-          { chainId: networkId },
-        ]);
-        setLoading(false);
-      } catch (err) {
-        if (err.code === 4902 && CHAIN_CONFIG[networkId]) {
-          const chainConfig = CHAIN_CONFIG[networkId];
-          await window.ethereum.request({
-            method: "wallet_addEthereumChain",
-            params: [
-              {
-                chainId: networkId,
-                chainName: chainConfig.chainName,
-                rpcUrls: chainConfig.rpcUrls,
-                nativeCurrency: chainConfig?.nativeCurrency,
-                blockExplorerUrls: [chainConfig?.blockExplorerUrl],
-              },
-            ],
-          });
-          setLoading(false);
-        } else {
-          setLoading(false);
-        }
-      }
-    }
-  }
+  await switchChain(config, {
+    chainId: CHAIN_CONFIG[networkId].chainId,
+  });
+  setLoading(false);
 };
 
 export function customToFixedAutoPrecision(num) {
@@ -496,7 +466,7 @@ export function customToFixedAutoPrecision(num) {
       tempNum *= 10;
       decimalPlaces++;
     }
-    return num.toFixed(decimalPlaces);
+    return num?.toFixed(decimalPlaces);
   } catch (err) {
     console.error(err);
     return "0.00";

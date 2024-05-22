@@ -7,21 +7,22 @@ import {
 } from "../redux/reducers/club";
 import { setAdminUser, setMemberUser } from "../redux/reducers/gnosis";
 import { convertToFullNumber, getSafeSdk } from "../utils/helper";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { useRouter } from "next/router";
 import useAppContractMethods from "./useAppContractMethods";
 import { queryStationDataFromSubgraph } from "utils/stationsSubgraphHelper";
 import { BigNumber } from "bignumber.js";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import useCommonContractMethods from "./useCommonContractMehods";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const useClubFetch = ({ daoAddress, routeNetworkId }) => {
   const dispatch = useDispatch();
 
   const router = useRouter();
   const { address: walletAddress } = useAccount();
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
 
   const reduxClubData = useSelector((state) => {
     return state.club.clubData;
@@ -210,6 +211,8 @@ const useClubFetch = ({ daoAddress, routeNetworkId }) => {
       const { safeSdk } = await getSafeSdk(
         reduxClubData.gnosisAddress,
         walletAddress,
+        CHAIN_CONFIG[networkId]?.gnosisTxUrl,
+        networkId,
       );
 
       const safeThreshold = await safeSdk.getThreshold();

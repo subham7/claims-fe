@@ -7,7 +7,7 @@ import { useFormik } from "formik";
 import { createProposal } from "api/proposal";
 import { useSelector } from "react-redux";
 import { getUserTokenData, handleSignMessage } from "utils/helper";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useChainId, useSignMessage } from "wagmi";
 import { getPublicClient } from "utils/viemConfig";
 import { getProposalCommands } from "utils/proposalData";
 import { getTokensList } from "api/token";
@@ -33,6 +33,7 @@ const StakingModal = ({
   onStakingComplete,
   unstakeTokenAddress = "",
 }) => {
+  const { signMessageAsync } = useSignMessage();
   const [tokenData, setTokenData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isFetchingValue, setIsFetchingValue] = useState(false);
@@ -62,8 +63,8 @@ const StakingModal = ({
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
 
   const { address: walletAddress } = useAccount();
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
 
   const fetchLatestBlockNumber = async () => {
     const publicClient = getPublicClient(networkId);
@@ -170,8 +171,8 @@ const StakingModal = ({
         };
 
         const { signature } = await handleSignMessage(
-          walletAddress,
           JSON.stringify(payload),
+          signMessageAsync,
         );
 
         const request = await createProposal(isGovernanceActive, {

@@ -6,12 +6,13 @@ import NewCard from "../src/components/cards/card";
 import Layout from "../src/components/layouts/layout";
 import { BsFillPlayFill } from "react-icons/bs";
 import VideoModal from "../src/components/modals/VideoModal";
-import { useNetwork } from "wagmi";
+import { useChainId } from "wagmi";
 import {
   ALLOWED_NETWORKS_FOR_STATION,
   stationNetworksChainId,
 } from "utils/constants";
 import NetworkSwitcher from "@components/modals/NetworkSwitcher/NetworkSwitcher";
+import { useWeb3Modal, useWalletInfo } from "@web3modal/wagmi/react";
 
 const useStyles = makeStyles({
   container: {
@@ -112,15 +113,17 @@ const App = () => {
   const [isMainLink, setIsMainLink] = useState(false);
   const [showNetworkModal, setShowNetworkModal] = useState(false);
 
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
   const router = useRouter();
+  const { open } = useWeb3Modal();
+  const { walletInfo } = useWalletInfo();
 
   const showStationsHandler = async () => {
     if (isMainLink) {
       window.open("https://tally.so/r/nG64GQ", "_blank");
     } else if (!ALLOWED_NETWORKS_FOR_STATION.includes(networkId)) {
-      setShowNetworkModal(true);
+      await open({ view: "Networks" });
     } else {
       router.push("/stations");
     }

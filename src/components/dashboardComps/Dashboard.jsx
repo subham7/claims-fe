@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addNftsOwnedByDao } from "redux/reducers/club";
 import { customToFixedAutoPrecision, handleSignMessage } from "utils/helper";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useChainId, useSignMessage } from "wagmi";
 import AssetsTable from "./AssetsTable";
 import classes from "./Dashboard.module.scss";
 import DashboardActivities from "./DashboardActivities";
@@ -31,13 +31,14 @@ import LineaCreateModal from "@components/modals/LineaCreateModal/LineaCreateMod
 import LineaCampaignModal from "@components/modals/LineaCreateModal/LineaCampaignModal";
 
 const Dashboard = ({ daoAddress, routeNetworkId }) => {
+  const { signMessageAsync } = useSignMessage();
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
 
-  const { chain } = useNetwork();
+  const chain = useChainId();
   const dispatch = useDispatch();
-  const networkId = "0x" + chain?.id.toString(16);
+  const networkId = "0x" + chain?.toString(16);
   const { address: walletAddress } = useAccount();
 
   const router = useRouter();
@@ -211,8 +212,8 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
       };
 
       const { signature } = await handleSignMessage(
-        walletAddress,
         JSON.stringify(payload),
+        signMessageAsync,
       );
 
       const res = await createStation({ ...payload, signature });

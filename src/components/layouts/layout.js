@@ -1,5 +1,5 @@
 import { Box, CssBaseline } from "@mui/material";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import useClubFetch from "hooks/useClubFetch";
 import { makeStyles } from "@mui/styles";
 import Navbar from "@components/ui/Navbar/Navbar";
@@ -24,9 +24,9 @@ export default function Layout(props) {
   const { showSidebar = true, daoAddress, networkId: routeNetworkId } = props;
   useClubFetch({ daoAddress, routeNetworkId: routeNetworkId });
   const { address: walletAddress } = useAccount();
-  const { chain } = useNetwork();
+  const chain = useChainId();
 
-  const networkId = "0x" + chain?.id.toString(16);
+  const networkId = "0x" + chain?.toString(16);
   const classes = useStyles();
   const router = useRouter();
 
@@ -34,8 +34,8 @@ export default function Layout(props) {
     <>
       <div>
         <Navbar daoAddress={daoAddress} routeNetworkId={routeNetworkId} />
-        {showSidebar && walletAddress && (
-          <Sidebar daoAddress={daoAddress} networkId={networkId} />
+        {showSidebar && (
+          <Sidebar daoAddress={daoAddress} networkId={routeNetworkId} />
         )}
       </div>
 
