@@ -27,7 +27,7 @@ const ComponentHeader = ({
           {showLXPButton && (
             <Button
               onClick={LXPButtonOnClickHandler}
-              className={classes.button}
+              className={classes.lxpButton}
               variant="contained">
               {"Activate LXP-L"}
             </Button>

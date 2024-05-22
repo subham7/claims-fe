@@ -17,7 +17,7 @@ const ActivateLXPLModal = ({ onClose, safeAddress }) => {
             justifyContent: "space-between",
           }}>
           <Typography variant="inherit" fontSize={26} fontWeight={900} mb={1}>
-            Activate LXP-L
+            Activate LXP-L Rewards
           </Typography>
           <IoClose onClick={onClose} cursor={"pointer"} size={20} />
         </div>
@@ -28,77 +28,94 @@ const ActivateLXPLModal = ({ onClose, safeAddress }) => {
         </Typography>
 
         <Typography variant="inherit" fontSize={16} fontWeight={500} mb={2}>
-          Step 1.
+          <Typography variant="inherit" fontSize={20} fontWeight={550}>
+            Step 1.
+          </Typography>
           <List>
             <ListItem style={{ listStyleType: "circle" }}>
               <p>
-                Click here{" "}
+                Click{" "}
                 <a
                   href="https://referrals.linea.build/?refCode=Z6CulbxWRz"
                   target="_blank"
                   rel="noopener noreferrer">
-                  (https://referrals.linea.build/?refCode=Z6CulbxWRz)
+                  here
                 </a>{" "}
-                to start the registration process - Open your treasury (Dynamic
-                link to this station’s safe) on a separate tab - your treasury
-                link{" "}
+                to start the registration process
+              </p>
+            </ListItem>
+            <ListItem>
+              <p>
+                Open your{" "}
                 <a
                   href={`https://safe.linea.build/home?safe=linea:${safeAddress}`}
                   target="_blank"
                   rel="noopener noreferrer">
-                  (https://safe.linea.build/home?safe=linea:${safeAddress})
-                </a>
+                  treasury
+                </a>{" "}
+                on a separate tab - your{" "}
+                <a
+                  href={`https://safe.linea.build/home?safe=linea:${safeAddress}`}
+                  target="_blank"
+                  rel="noopener noreferrer">
+                  treasury link
+                </a>{" "}
+                & address {safeAddress}
               </p>
-            </ListItem>
-            <ListItem>
-              Open your treasury (Dynamic link to this station’s safe) on a
-              separate tab - your treasury link (safe.linea.build link)
             </ListItem>
           </List>
         </Typography>
 
         <Typography variant="inherit" mb={2} mt={2}>
-          Step 2.
+          <Typography variant="inherit" fontSize={20} fontWeight={550}>
+            Step 2.
+          </Typography>
+
           <List>
             <ListItem>
-              Click on connect wallet on top right corner & click on safe
+              Click on <b>&nbsp; connect wallet &nbsp;</b> on top right corner &
+              click on <b>&nbsp;safe&nbsp;</b>
             </ListItem>
           </List>
         </Typography>
         <Image
           style={{ display: "block", margin: "0 auto" }}
           src={"/assets/campaign/ActivateLXPModal/image_1.webp"}
-          width={900}
-          height={300}
+          width={750}
+          height={250}
           alt="Copy"
         />
         <Image
           style={{ display: "block", margin: "0 auto" }}
           src={"/assets/campaign/ActivateLXPModal/image_2.webp"}
-          width={900}
-          height={900}
+          width={500}
+          height={500}
           alt="Copy"
         />
         <List>
           <ListItem>
-            You will be prompted with a connection screen - find the &apos;copy
-            link&apos; & go to the tab where your safe is open.{" "}
+            You will be prompted with a connection screen - find the{" "}
+            <b>&nbsp; &apos;copy link&apos; &nbsp;</b> & go to the tab where
+            your safe is open.{" "}
           </ListItem>
         </List>
         <Image
           style={{ display: "block", margin: "0 auto" }}
           src={"/assets/campaign/ActivateLXPModal/image_3.webp"}
-          width={900}
-          height={1200}
+          width={450}
+          height={600}
           alt="Copy"
         />
 
         <Typography variant="inherit" mt={2}>
-          Step 3.
+          <Typography variant="inherit" fontSize={20} fontWeight={550}>
+            Step 3.
+          </Typography>
           <List>
             <ListItem>
-              On the SAFE UI, click on the wallet connect icon & paste the
-              phrase that you just copied & Approve
+              On the SAFE UI, click on the{" "}
+              <b>&nbsp; wallet connect icon &nbsp;</b> & paste the phrase that
+              you just copied & <b>&nbsp; Approve &nbsp;</b>
             </ListItem>
           </List>
         </Typography>
@@ -109,68 +126,82 @@ const ActivateLXPLModal = ({ onClose, safeAddress }) => {
           height={60}
           alt="Copy"
         />
-        <Image
-          style={{ display: "block", margin: "0 auto" }}
-          src={"/assets/campaign/ActivateLXPModal/image_5.webp"}
-          width={900}
-          height={550}
-          alt="Copy"
-        />
-        <Image
-          style={{ display: "block", margin: "0 auto" }}
-          src={"/assets/campaign/ActivateLXPModal/image_6.webp"}
-          width={900}
-          height={700}
-          alt="Copy"
-        />
+        <br />
+        <div className="f-d">
+          <Image
+            style={{ display: "block", margin: "0 auto" }}
+            src={"/assets/campaign/ActivateLXPModal/image_5.webp"}
+            width={550}
+            height={400}
+            alt="Copy"
+          />
+          <Image
+            style={{ display: "block", margin: "0 auto" }}
+            src={"/assets/campaign/ActivateLXPModal/image_6.webp"}
+            width={550}
+            height={400}
+            alt="Copy"
+          />
+        </div>
 
         <Typography variant="inherit" mt={2}>
-          Step 4.
+          <Typography variant="inherit" fontSize={20} fontWeight={550}>
+            Step 4.
+          </Typography>
           <List>
-            <ListItem>Go back to the Linea Surge tab & click on sign </ListItem>
+            <ListItem>
+              Go back to the Linea Surge tab & click on{" "}
+              <b>&nbsp; Sign &nbsp;</b>{" "}
+            </ListItem>
           </List>
         </Typography>
         <Image
           style={{ display: "block", margin: "0 auto" }}
           src={"/assets/campaign/ActivateLXPModal/image_7.webp"}
-          width={900}
-          height={800}
+          width={500}
+          height={420}
           alt="Copy"
         />
 
         <Typography variant="inherit" mt={2}>
-          Step 5.
+          <Typography variant="inherit" fontSize={20} fontWeight={550}>
+            Step 5.
+          </Typography>
           <List>
             <ListItem>
-              An off-chain sign request will be generated on the SAFE tab - go
-              ahead & sign it (if you have multiple signers, make sure to sign
-              instantaneously as the request might get timed out and you have to
-              start the process from the start)
+              <p>
+                An off-chain sign request will be generated on the SAFE tab - go
+                ahead & <b>&nbsp; sign &nbsp;</b> it (if you have multiple
+                signers, make sure to sign instantaneously as the request might
+                get timed out and you have to start the process from the start)
+              </p>
             </ListItem>
           </List>
         </Typography>
         <Image
           style={{ display: "block", margin: "0 auto" }}
           src={"/assets/campaign/ActivateLXPModal/image_8.webp"}
-          width={900}
-          height={900}
+          width={700}
+          height={700}
           alt="Copy"
         />
 
         <Typography variant="inherit" mt={2}>
-          Step 6.
+          <Typography variant="inherit" fontSize={20} fontWeight={550}>
+            Step 6.
+          </Typography>
           <List>
             <ListItem>
-              After signing, click on Activate & you&apos;re all set to start
-              earning LXP-Ls{" "}
+              After signing, click on <b>&nbsp; Activate &nbsp;</b> &
+              you&apos;re all set to start earning LXP-Ls{" "}
             </ListItem>
           </List>
         </Typography>
         <Image
           style={{ display: "block", margin: "0 auto" }}
           src={"/assets/campaign/ActivateLXPModal/image_9.webp"}
-          width={900}
-          height={450}
+          width={800}
+          height={400}
           alt="Copy"
         />
         <Typography variant="inherit" mt={2}>
