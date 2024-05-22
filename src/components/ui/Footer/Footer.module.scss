@@ -1,0 +1,39 @@
+@import "../../../../styles/variables.scss";
+
+.footer{
+    display: flex;
+    width: 100%;
+    padding:40px 0px;
+    align-items: center;
+    justify-content: space-between;
+
+    .logoContainer{
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        cursor: pointer;
+
+
+        .powered{
+            color: $gray;
+            font-size: 12px;
+            font-family: inherit;
+        }
+    }
+
+    .linksContainer{
+        display: flex;
+        gap: 16px;
+        font-size: 14px;
+        align-items: center;
+
+        .socialsContainer{
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            cursor: pointer;
+        }
+    }
+
+   
+}
