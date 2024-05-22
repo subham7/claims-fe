@@ -40,6 +40,7 @@ export const proposalActionCommands = {
   65: "Withdraw tokens with clip-finance",
   26: "Stake eth through eigen layer",
   27: "Remove stake from eigen layer",
+  37: "Stake ETH on Renzo Protocol",
   47: "Stake tokens through layer-bank",
   48: "Unstake tokens through layer-bank",
   49: "Stake tokens through mendi-finance",

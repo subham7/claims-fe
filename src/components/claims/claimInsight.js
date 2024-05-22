@@ -11,7 +11,7 @@ import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "utils/globalFunctions";
-import { useNetwork } from "wagmi";
+import { useChainId } from "wagmi";
 import useDropsContractMethods from "hooks/useDropsContractMethods";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { queryDropDetailsFromSubgraph } from "utils/dropsSubgraphHelper";
@@ -33,8 +33,8 @@ const ClaimInsight = ({ claimAddress, routeNetworkId }) => {
 
   const theme = useTheme();
   const classes = ClaimsInsightStyles(theme);
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
   const dispatch = useDispatch();
 
   const { addMoreTokens, rollbackTokens, modifyStartAndEndTime } =

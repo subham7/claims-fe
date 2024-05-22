@@ -6,7 +6,7 @@ import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { proposalDetailsData } from "utils/proposalData";
 import { isNative } from "utils/helper";
-import { useNetwork } from "wagmi";
+import { useChainId } from "wagmi";
 import { extractContractDetails } from "utils/proposalHelper";
 
 const useStyles = makeStyles({
@@ -22,8 +22,8 @@ const useStyles = makeStyles({
 });
 
 const ProposalExecutionInfo = ({ proposalData, routeNetworkId }) => {
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
   const classes = useStyles();
 
   const { getDecimals, getTokenSymbol } = useCommonContractMethods({

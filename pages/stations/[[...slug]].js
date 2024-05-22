@@ -10,7 +10,7 @@ import {
   queryStationDataFromSubgraph,
   queryStationListFromSubgraph,
 } from "utils/stationsSubgraphHelper";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { makeStyles } from "@mui/styles";
 import { getReferralCode } from "api/invite/invite";
 import { OMIT_DAOS } from "utils/constants";
@@ -118,8 +118,9 @@ const useStyles = makeStyles({
 const StationsPage = () => {
   const classes = useStyles();
   const { address: walletAddress } = useAccount();
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  // const chain = useChainId();
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
   const dispatch = useDispatch();
   const [clubListData, setClubListData] = useState([]);
   const [isUserWhitelisted, setIsUserWhitelisted] = useState(null);

@@ -31,7 +31,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import * as yup from "yup";
 import { saveAs } from "file-saver";
-import { useNetwork } from "wagmi";
+import { useChainId } from "wagmi";
 import { queryPaginatedMembersFromSubgraph } from "utils/stationsSubgraphHelper";
 import { CHAIN_CONFIG } from "utils/constants";
 import { getDefaultProfile } from "utils/lensHelper";
@@ -41,8 +41,8 @@ import useAppContractMethods from "hooks/useAppContractMethods";
 import BigNumber from "bignumber.js";
 
 const Members = ({ daoAddress, routeNetworkId }) => {
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
@@ -191,16 +191,16 @@ const Members = ({ daoAddress, routeNetworkId }) => {
     startDate: yup.date().required("Start date is required"),
     endDate: yup
       .date()
-      .max(dayjs(Date.now()), "Date-time must be less than now.")
+      .max(dayjs(Date.now()).locale("en"), "Date-time must be less than now.")
       .required("End date is required"),
   });
 
   const formik = useFormik({
     initialValues: {
       startDate: deployedTime
-        ? dayjs(deployedTime * 1000)
-        : dayjs(Date.now() - 86400000),
-      endDate: dayjs(Date.now()),
+        ? dayjs(deployedTime * 1000).locale("en")
+        : dayjs(Date.now() - 86400000).locale("en"),
+      endDate: dayjs(Date.now()).locale("en"),
     },
     validationSchema: MembersValidationSchema,
     onSubmit: async (values) => {
@@ -310,7 +310,7 @@ const Members = ({ daoAddress, routeNetworkId }) => {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   value={formik.values.endDate}
-                  maxDateTime={dayjs(Date.now())}
+                  maxDateTime={dayjs(Date.now()).locale("en")}
                   onChange={(value) => {
                     formik.setFieldValue("endDate", value);
                   }}

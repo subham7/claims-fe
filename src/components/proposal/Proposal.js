@@ -11,7 +11,7 @@ import Web3 from "web3";
 import { getProposalByDaoAddress, getProposalTxHash } from "api/proposal";
 import { getSafeSdk } from "utils/helper";
 import { CHAIN_CONFIG } from "utils/constants";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import BackdropLoader from "@components/common/BackdropLoader";
 import SelectActionDialog from "@components/proposalComps/SelectActionDialog";
 import ComponentHeader from "@components/common/ComponentHeader";
@@ -56,9 +56,9 @@ const useStyles = makeStyles({
 
 const Proposal = ({ daoAddress, routeNetworkId }) => {
   const router = useRouter();
-  const { chain } = useNetwork();
+  const chain = useChainId();
   const { address: walletAddress } = useAccount();
-  const networkId = "0x" + chain?.id.toString(16);
+  const networkId = "0x" + chain?.toString(16);
   const classes = useStyles();
 
   const [selectedListItem, setSelectedListItem] = useState(

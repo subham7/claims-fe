@@ -277,7 +277,7 @@ export default function ERC20Step2(props) {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
                 value={props.formik.values.depositClose}
-                minDateTime={dayjs(Date.now())}
+                minDateTime={dayjs(Date.now()).locale("en")}
                 onChange={(value) => {
                   props.formik.setFieldValue("depositClose", value);
                 }}
@@ -289,7 +289,12 @@ export default function ERC20Step2(props) {
         <br />
 
         <Card>
-          <div className="f-d f-v-c f-h-sb">
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <Typography fontWeight={600} variant="body" className="text-blue">
                 Price per token
