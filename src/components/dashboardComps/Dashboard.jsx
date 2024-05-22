@@ -212,6 +212,11 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
     setAssetType(newValue);
   };
 
+  const handleOnClickLearnMore = () => {
+    setShowTwitterModal(false);
+    setShowActivateLXPLModal(true);
+  };
+
   const currentEOAWalletChangeHandler = (e) => {
     setCurrentEOAWallet({
       walletAddress: e.target.value.walletAddress,
@@ -490,7 +495,10 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
       )}
 
       {create && showTwitterModal && routeNetworkId === "0xe708" && (
-        <LineaCreateModal onClose={() => setShowTwitterModal(false)} />
+        <LineaCreateModal
+          onClose={() => setShowTwitterModal(false)}
+          onClick={() => handleOnClickLearnMore()}
+        />
       )}
 
       {showCreateClubModal ? (

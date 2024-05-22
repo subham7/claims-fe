@@ -1,5 +1,20 @@
+@import "../../../../styles/variables.scss";
+
 .modal {
   background-color: #111111;
+
+  .infoContainer {
+    height: 50px;
+    background: $border-color;
+    padding: 12px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    font-size: 14px;
+    justify-content: center;
+  }
 
   .lineaModal {
     width: 800px;
