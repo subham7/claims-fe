@@ -712,7 +712,10 @@ const useAppContractMethods = (params) => {
               safeSdk,
               executionId,
               transaction:
-                executionId === 6 || executionId === 7
+                executionId === 6 ||
+                executionId === 7 ||
+                executionId === 4 ||
+                executionId === 62
                   ? transaction
                   : approvalTransaction && stakeETHTransaction
                   ? tx.dataDecoded.parameters[0].valueDecoded[2]
