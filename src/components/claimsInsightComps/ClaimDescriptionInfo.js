@@ -5,7 +5,7 @@ import { BsArrowLeftShort, BsLink45Deg } from "react-icons/bs";
 import { AiOutlineEdit } from "react-icons/ai";
 import { FiExternalLink } from "react-icons/fi";
 import { ClaimsInsightStyles } from "./claimsInsightStyles";
-import { useNetwork } from "wagmi";
+import { useChainId } from "wagmi";
 import EditDetails from "@components/settingsComps/modals/EditDetails";
 import { useTheme } from "@mui/styles";
 
@@ -22,8 +22,8 @@ const ClaimDescriptionInfo = ({
   const [claimEnabled, setClaimEnabled] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
 
   const handleClose = (event, reason) => {
     if (reason !== "backdropClick" && reason !== "escapeKeyDown") {

@@ -23,9 +23,14 @@
     text-transform: capitalize;
     font-family: inherit;
     font-weight: 600;
-    background-color: white;
+    background: white;
     color: black;
-    border-radius: 12px;
+    border-radius: 8px;
+    // z-index: -1;
+
+    &:hover {
+      background-color: whitesmoke;
+    }
   }
 }
 

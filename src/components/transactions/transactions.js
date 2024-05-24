@@ -245,7 +245,7 @@ const Transactions = ({ networkId }) => {
                             }}
                             align="left">
                             <Typography variant="inherit">
-                              {dayjs(txn?.executionDate).fromNow()}
+                              {dayjs(txn?.executionDate).locale("en").fromNow()}
                             </Typography>
                           </TableCell>
 

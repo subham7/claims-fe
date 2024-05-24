@@ -214,6 +214,13 @@ export default function NFTStep2(props) {
                 props.formik.errors.pricePerToken
               }
               InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Typography variant="inherit" fontSize={16}>
+                      1 ${props.tokenSymbol.toUpperCase()} ={" "}
+                    </Typography>
+                  </InputAdornment>
+                ),
                 endAdornment: (
                   <InputAdornment position="end" sx={{ color: "#dcdcdc" }}>
                     {CHAIN_CONFIG[props.networkId].usdcAddress ===
@@ -330,7 +337,7 @@ export default function NFTStep2(props) {
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateTimePicker
               value={props.formik.values.depositClose}
-              minDateTime={dayjs(Date.now())}
+              minDateTime={dayjs(Date.now()).locale("en")}
               onChange={(value) => {
                 props.formik.setFieldValue("depositClose", value);
               }}

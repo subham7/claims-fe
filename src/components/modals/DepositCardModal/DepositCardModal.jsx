@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import { CHAIN_CONFIG } from "utils/constants";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { Typography } from "@mui/material";
+import { CC_NETWORKS } from "utils/networkConstants";
 
 const DepositCardModal = ({
   onClose,
@@ -28,7 +29,7 @@ const DepositCardModal = ({
   const { getDepositFees } = useCommonContractMethods();
 
   useEffect(() => {
-    if (networkId === "0xe708") {
+    if (CC_NETWORKS.includes(networkId)) {
       (async () => {
         const depositFees = await getDepositFees(false);
         setFees(depositFees);
@@ -68,7 +69,7 @@ const DepositCardModal = ({
           icon={<PiArrowElbowDownRightBold style={iconStyle} />}
         />
 
-        {networkId === "0xe708" ? (
+        {CC_NETWORKS.includes(networkId) ? (
           <AmountInfo
             title="Platform Fee"
             amount={`${fees} ${CHAIN_CONFIG[networkId]?.nativeCurrency?.symbol}`}

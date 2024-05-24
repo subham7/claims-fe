@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import Web3 from "web3";
 import { readContractFunction, writeContractFunction } from "utils/helper";
 import { createProposalTxHash } from "../api/proposal";
-import { useAccount, useNetwork, useWalletClient } from "wagmi";
+import { useAccount, useChainId, useWalletClient } from "wagmi";
 import { factoryContractABI } from "abis/factoryContract.js";
 import { getTransaction } from "utils/proposal";
 import { erc20DaoABI } from "abis/erc20Dao";
@@ -24,6 +24,7 @@ import {
 } from "utils/globalFunctions";
 import useCommonContractMethods from "./useCommonContractMehods";
 import { factoryContractCCABI } from "abis/factoryContractCC";
+import { CC_NETWORKS } from "utils/networkConstants";
 import { ezETH_ETH_ProxyABI } from "abis/nile/ezETh_ETH_ProxyABI";
 import { clipFinanceEthPoolABI } from "abis/clip-finance/ethPoolAbi";
 
@@ -37,8 +38,8 @@ const useAppContractMethods = (params) => {
 
   const { address: walletAddress } = useAccount();
 
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
 
   const isAssetsStoredOnGnosis = useSelector((state) => {
     return state.club.clubData.assetsStoredOnGnosis;
@@ -159,10 +160,9 @@ const useAppContractMethods = (params) => {
     try {
       let response = await readContractFunction({
         address: CHAIN_CONFIG[routeNetworkId].factoryContractAddress,
-        abi:
-          routeNetworkId === "0xe708"
-            ? factoryContractCCABI
-            : factoryContractABI,
+        abi: CC_NETWORKS.includes(routeNetworkId)
+          ? factoryContractCCABI
+          : factoryContractABI,
         functionName: "getTokenGatingDetails",
         args: [daoAddress],
         // account: walletAddress,
@@ -244,7 +244,9 @@ const useAppContractMethods = (params) => {
 
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
-        abi: networkId === "0xe708" ? factoryContractCCABI : factoryContractABI,
+        abi: CC_NETWORKS.includes(networkId)
+          ? factoryContractCCABI
+          : factoryContractABI,
         functionName: "buyGovernanceTokenERC721DAO",
         args: [daoAddress, tokenUriOfNFT, numOfTokens, merkleProof],
         account: walletAddress,
@@ -274,7 +276,9 @@ const useAppContractMethods = (params) => {
 
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
-        abi: networkId === "0xe708" ? factoryContractCCABI : factoryContractABI,
+        abi: CC_NETWORKS.includes(networkId)
+          ? factoryContractCCABI
+          : factoryContractABI,
         functionName: "buyGovernanceTokenERC20DAO",
         args: [daoAddress, numOfTokens, merkleProof],
         account: walletAddress,
@@ -344,7 +348,9 @@ const useAppContractMethods = (params) => {
     try {
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
-        abi: networkId === "0xe708" ? factoryContractCCABI : factoryContractABI,
+        abi: CC_NETWORKS.includes(networkId)
+          ? factoryContractCCABI
+          : factoryContractABI,
         functionName: "setupTokenGating",
         args: [addresses, operator, amounts, daoAddress],
         account: walletAddress,
@@ -440,59 +446,60 @@ const useAppContractMethods = (params) => {
     merkleRoot,
   }) => {
     try {
-      const fees = networkId === "0xe708" ? await getCreateFees() : 0;
+      const fees = CC_NETWORKS.includes(networkId) ? await getCreateFees() : 0;
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
-        abi: networkId === "0xe708" ? factoryContractCCABI : factoryContractABI,
+        abi: CC_NETWORKS.includes(networkId)
+          ? factoryContractCCABI
+          : factoryContractABI,
         functionName: "createERC721DAO",
-        args:
-          networkId === "0xe708"
-            ? [
-                clubName,
-                `x${clubSymbol}`,
-                metadataURL,
-                2,
-                ownerFeePerDepositPercent,
-                depositClose,
-                quorum,
-                threshold,
-                safeThreshold,
-                [183],
-                treasuryAddress,
-                [depositTokenAddress],
-                addressList,
-                maxTokensPerUser,
-                distributeAmount,
-                pricePerToken,
-                isNftTransferable,
-                isNftTotalSupplyUnlimited,
-                isGovernanceActive,
-                allowWhiteList,
-                assetsStoredOnGnosis,
-                merkleRoot,
-              ]
-            : [
-                clubName,
-                `x${clubSymbol}`,
-                metadataURL,
-                ownerFeePerDepositPercent,
-                depositClose,
-                quorum,
-                threshold,
-                safeThreshold,
-                depositTokenAddress,
-                // treasuryAddress,
-                addressList,
-                maxTokensPerUser,
-                distributeAmount,
-                pricePerToken,
-                isNftTransferable,
-                isNftTotalSupplyUnlimited,
-                isGovernanceActive,
-                allowWhiteList,
-                assetsStoredOnGnosis,
-                merkleRoot,
-              ],
+        args: CC_NETWORKS.includes(networkId)
+          ? [
+              clubName,
+              `x${clubSymbol}`,
+              metadataURL,
+              2,
+              ownerFeePerDepositPercent,
+              depositClose,
+              quorum,
+              threshold,
+              safeThreshold,
+              [183],
+              treasuryAddress,
+              [depositTokenAddress],
+              addressList,
+              maxTokensPerUser,
+              distributeAmount,
+              pricePerToken,
+              isNftTransferable,
+              isNftTotalSupplyUnlimited,
+              isGovernanceActive,
+              allowWhiteList,
+              assetsStoredOnGnosis,
+              merkleRoot,
+            ]
+          : [
+              clubName,
+              `x${clubSymbol}`,
+              metadataURL,
+              ownerFeePerDepositPercent,
+              depositClose,
+              quorum,
+              threshold,
+              safeThreshold,
+              depositTokenAddress,
+              // treasuryAddress,
+              addressList,
+              maxTokensPerUser,
+              distributeAmount,
+              pricePerToken,
+              isNftTransferable,
+              isNftTotalSupplyUnlimited,
+              isGovernanceActive,
+              allowWhiteList,
+              assetsStoredOnGnosis,
+              merkleRoot,
+            ],
         account: walletAddress,
         networkId,
         walletClient,
@@ -526,57 +533,58 @@ const useAppContractMethods = (params) => {
     merkleRoot,
   }) => {
     try {
-      const fees = networkId === "0xe708" ? await getCreateFees() : 0;
+      const fees = CC_NETWORKS.includes(networkId) ? await getCreateFees() : 0;
       const res = await writeContractFunction({
         address: CHAIN_CONFIG[networkId].factoryContractAddress,
-        abi: networkId === "0xe708" ? factoryContractCCABI : factoryContractABI,
+        abi: CC_NETWORKS.includes(networkId)
+          ? factoryContractCCABI
+          : factoryContractABI,
         functionName: "createERC20DAO",
-        args:
-          networkId === "0xe708"
-            ? [
-                clubName,
-                `x${clubSymbol}`,
-                2, // Comm layer id
-                distributeAmount,
-                pricePerToken,
-                minDepositPerUser,
-                maxDepositPerUser,
-                ownerFeePerDepositPercent,
-                depositClose,
-                quorum,
-                threshold,
-                safeThreshold,
-                [183],
-                treasuryAddress,
-                [depositToken],
-                addressList,
-                isGovernanceActive,
-                isGtTransferable,
-                allowWhiteList,
-                assetsStoredOnGnosis,
-                merkleRoot,
-              ]
-            : [
-                clubName,
-                `x${clubSymbol}`,
-                distributeAmount,
-                pricePerToken,
-                minDepositPerUser,
-                maxDepositPerUser,
-                ownerFeePerDepositPercent,
-                depositClose,
-                quorum,
-                threshold,
-                safeThreshold,
-                depositToken,
-                // treasuryAddress,
-                addressList,
-                isGovernanceActive,
-                isGtTransferable,
-                allowWhiteList,
-                assetsStoredOnGnosis,
-                merkleRoot,
-              ],
+        args: CC_NETWORKS.includes(networkId)
+          ? [
+              clubName,
+              `x${clubSymbol}`,
+              2, // Comm layer id
+              distributeAmount,
+              pricePerToken,
+              minDepositPerUser,
+              maxDepositPerUser,
+              ownerFeePerDepositPercent,
+              depositClose,
+              quorum,
+              threshold,
+              safeThreshold,
+              [183],
+              treasuryAddress,
+              [depositToken],
+              addressList,
+              isGovernanceActive,
+              isGtTransferable,
+              allowWhiteList,
+              assetsStoredOnGnosis,
+              merkleRoot,
+            ]
+          : [
+              clubName,
+              `x${clubSymbol}`,
+              distributeAmount,
+              pricePerToken,
+              minDepositPerUser,
+              maxDepositPerUser,
+              ownerFeePerDepositPercent,
+              depositClose,
+              quorum,
+              threshold,
+              safeThreshold,
+              depositToken,
+              // treasuryAddress,
+              addressList,
+              isGovernanceActive,
+              isGtTransferable,
+              allowWhiteList,
+              assetsStoredOnGnosis,
+              merkleRoot,
+            ],
         account: walletAddress,
         networkId,
         walletClient,
@@ -704,7 +712,10 @@ const useAppContractMethods = (params) => {
               safeSdk,
               executionId,
               transaction:
-                executionId === 6 || executionId === 7
+                executionId === 6 ||
+                executionId === 7 ||
+                executionId === 4 ||
+                executionId === 62
                   ? transaction
                   : approvalTransaction && stakeETHTransaction
                   ? tx.dataDecoded.parameters[0].valueDecoded[2]
@@ -737,7 +748,6 @@ const useAppContractMethods = (params) => {
         }
       }
     } else {
-      // const options = { gasPrice: await getIncreaseGasPrice(networkId) };
       const executeTxResponse = await safeSdk.executeTransaction(tx);
       const receipt =
         executeTxResponse.transactionResponse &&

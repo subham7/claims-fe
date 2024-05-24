@@ -10,7 +10,7 @@ import {
   convertFromWeiGovernance,
   convertToWeiGovernance,
 } from "utils/globalFunctions";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import classes from "./Claim.module.scss";
 import useDropsContractMethods from "hooks/useDropsContractMethods";
 import { CircularProgress, Skeleton, Typography } from "@mui/material";
@@ -93,8 +93,8 @@ const Claim = ({ claimAddress }) => {
 
   const currentTime = Date.now() / 1000;
   const { address: walletAddress } = useAccount();
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
 
   const { getDecimals, getTokenSymbol, getBalance, encode } =
     useCommonContractMethods();

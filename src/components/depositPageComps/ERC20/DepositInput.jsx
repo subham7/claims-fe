@@ -9,7 +9,7 @@ import React, { useState } from "react";
 import { CHAIN_CONFIG } from "utils/constants";
 import { convertToWeiGovernance } from "utils/globalFunctions";
 import { switchNetworkHandler } from "utils/helper";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import classes from "../../claims/Claim.module.scss";
 import Image from "next/image";
 import DepositCardModal from "@components/modals/DepositCardModal/DepositCardModal";
@@ -35,8 +35,8 @@ const DepositInput = ({
   const [showModal, setShowModal] = useState(false);
   const { address: walletAddress } = useAccount();
   const { open } = useWeb3Modal();
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
   const [loading, setLoading] = useState(false);
 
   const connectWalletHandler = async () => {

@@ -1,7 +1,7 @@
 import { getProposalByDaoAddress } from "../api/proposal";
 import { createCancelProposal, getProposalTxHash } from "api/proposal";
 import Web3 from "web3";
-import { getIncreaseGasPrice, getSafeSdk } from "./helper";
+import { getSafeSdk } from "./helper";
 import { factoryContractABI } from "abis/factoryContract.js";
 import { erc721DaoABI } from "abis/erc721Dao";
 import { erc20DaoABI } from "abis/erc20Dao";
@@ -149,11 +149,7 @@ export const executeRejectTx = async ({
       proposalTxHash.data[0].txHash,
     );
 
-    const options = {
-      gasPrice: await getIncreaseGasPrice(),
-    };
-
-    await safeSdk.executeTransaction(safetx, options);
+    await safeSdk.executeTransaction(safetx);
 
     return true;
   } catch (e) {
@@ -555,8 +551,8 @@ const convertWETHtoETHClip = ({
   );
 
   const maskedDepositedAmount =
-    depositedAmountInWeth.substring(0, depositedAmountInWeth.length - 4) +
-    "0000";
+    depositedAmountInWeth.substring(0, depositedAmountInWeth.length - 12) +
+    "000000000000";
 
   return wethContract?.methods?.withdraw(maskedDepositedAmount).encodeABI();
 };
@@ -574,6 +570,7 @@ const clipFinanceWithdrawEncoded = async ({
   web3Call,
   networkId,
   depositAmountInWeth,
+  gnosisAddress,
 }) => {
   const poolContract = new web3Call.eth.Contract(
     clipFinanceEthPoolABI,
@@ -586,9 +583,19 @@ const clipFinanceWithdrawEncoded = async ({
     .dividedBy(BigNumber(tokenRate))
     .toString();
 
+  const balanceOfUserShares = await poolContract?.methods
+    ?.balanceOf(gnosisAddress)
+    .call();
+
   const convertedClipShares = convertToWeiGovernance(clipShares, 18);
 
-  return poolContract?.methods?.withdraw(convertedClipShares).encodeABI();
+  let depositShare = BigNumber(convertedClipShares).isGreaterThan(
+    balanceOfUserShares,
+  )
+    ? balanceOfUserShares
+    : convertedClipShares;
+
+  return poolContract?.methods?.withdraw(depositShare).encodeABI();
 };
 
 const approveDepositWithEncodeABI = (
@@ -2083,6 +2090,7 @@ export const getTransaction = async ({
           web3Call,
           networkId,
           depositAmountInWeth: unstakeAmount,
+          gnosisAddress,
         }),
         value: "0",
       };

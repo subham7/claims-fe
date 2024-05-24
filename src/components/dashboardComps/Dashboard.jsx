@@ -1,5 +1,5 @@
 import ComponentHeader from "@components/common/ComponentHeader";
-import { Tab, Tabs } from "@mui/material";
+import { Tab, Tabs, Typography } from "@mui/material";
 import { getAssetsOfWallet, getNFTsByWallet } from "api/assets";
 import { getProposalByDaoAddress } from "api/proposal";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addNftsOwnedByDao } from "redux/reducers/club";
 import { customToFixedAutoPrecision, handleSignMessage } from "utils/helper";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useChainId, useSignMessage } from "wagmi";
 import AssetsTable from "./AssetsTable";
 import classes from "./Dashboard.module.scss";
 import DashboardActivities from "./DashboardActivities";
@@ -27,15 +27,37 @@ import CreateClubModal from "@components/modals/CreateClubModal/CreateClubModal"
 import BackdropLoader from "@components/common/BackdropLoader";
 import DashboardActionContainer from "./dashboardActions/DashboardActionContainer";
 import { BigNumber } from "bignumber.js";
+import LineaCreateModal from "@components/modals/LineaCreateModal/LineaCreateModal";
+import LineaCampaignModal from "@components/modals/LineaCreateModal/LineaCampaignModal";
+import LineaHelperSteps from "./lineaHelperSteps/LineaHelperSteps";
+import InviteMemberModal from "@components/modals/LineaCreateModal/InviteMemberModal";
+import CustomiseContributionModal from "@components/modals/LineaCreateModal/CustomiseContributionModal";
+import AdminFeeModal from "@components/modals/LineaCreateModal/AdminFeeModal";
+import TreasuryModal from "@components/modals/LineaCreateModal/TreasuryModal";
+import TokenGateModal from "@components/modals/LineaCreateModal/TokenGateModal";
+import WhiteListModal from "@components/modals/LineaCreateModal/WhiteListDepositModal";
+import SendModal from "@components/modals/LineaCreateModal/SendModal";
+import DistributeModal from "@components/modals/LineaCreateModal/DistributeModal";
+import EditKYCModal from "@components/modals/LineaCreateModal/EditKYCModal";
+import EditDeadlineMdoal from "@components/modals/LineaCreateModal/EditDeadlineModal";
+import AddRemoveAdminModal from "@components/modals/LineaCreateModal/AddRemoveAdminModal";
+import CreateSurveyModal from "@components/modals/LineaCreateModal/CreateSurveryModal";
+import MintGTModal from "@components/modals/LineaCreateModal/MintGTModal";
+import StakeDefiModal from "@components/modals/LineaCreateModal/StakeDefiModal";
+import ChangeDepositParamsModal from "@components/modals/LineaCreateModal/ChangeDepositParmsModal";
+import { BiSupport } from "react-icons/bi";
+import { IoIosArrowDropdownCircle } from "react-icons/io";
+import ActivateLXPLModal from "@components/modals/LineaCreateModal/ActivateLXPLModal";
 
 const Dashboard = ({ daoAddress, routeNetworkId }) => {
+  const { signMessageAsync } = useSignMessage();
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
 
-  const { chain } = useNetwork();
+  const chain = useChainId();
   const dispatch = useDispatch();
-  const networkId = "0x" + chain?.id.toString(16);
+  const networkId = "0x" + chain?.toString(16);
   const { address: walletAddress } = useAccount();
 
   const router = useRouter();
@@ -59,6 +81,27 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
   const [showTwitterModal, setShowTwitterModal] = useState(true);
   const [showCreateClubModal, setShowCreateClubModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showLineaCampaignModal, setShowLineaCampaignModal] = useState(false);
+  const [showHelperSteps, setShowHelperSteps] = useState(false);
+
+  // Linea modals
+  const [showInviteMembersModal, setShowInviteMembersModal] = useState(false);
+  const [showCustomiseContributionModal, setShowCustomiseContributionModal] =
+    useState(false);
+  const [showAdminFeeModal, setShowAdminFeeModal] = useState(false);
+  const [showTreasuryModal, setShowTreasuryModal] = useState(false);
+  const [showTokenGateModal, setShowTokenGateModal] = useState(false);
+  const [showWhitelistModal, setShowWhitelistModal] = useState(false);
+  const [showSendModal, setShowSendModal] = useState(false);
+  const [showDistributeModal, setShowDistributeModal] = useState(false);
+  const [showKYCModal, setShowKYCModal] = useState(false);
+  const [showDeadlineModal, setShowDeadlineModal] = useState(false);
+  const [showEditSignerModal, setShowEditSignerModal] = useState(false);
+  const [showCreateSurveyModal, setShowCreateSurveyModal] = useState(false);
+  const [showMintGTModal, setShowMintGTModal] = useState(false);
+  const [showStakeDefiModal, setShowStakeDefiModal] = useState(false);
+  const [showDepositParamsModal, setShowDepositParamsModal] = useState(false);
+  const [showActivateLXPLModal, setShowActivateLXPLModal] = useState(false);
 
   const { getBalance } = useCommonContractMethods({ routeNetworkId });
   const { getERC20TotalSupply, getNftOwnersCount } = useAppContractMethods({
@@ -169,6 +212,11 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
     setAssetType(newValue);
   };
 
+  const handleOnClickLearnMore = () => {
+    setShowTwitterModal(false);
+    setShowActivateLXPLModal(true);
+  };
+
   const currentEOAWalletChangeHandler = (e) => {
     setCurrentEOAWallet({
       walletAddress: e.target.value.walletAddress,
@@ -208,8 +256,8 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
       };
 
       const { signature } = await handleSignMessage(
-        walletAddress,
         JSON.stringify(payload),
+        signMessageAsync,
       );
 
       const res = await createStation({ ...payload, signature });
@@ -277,11 +325,32 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
   return (
     <div className={classes.main}>
       <div className={classes.leftContainer}>
+        {/* {routeNetworkId === "0xe708" && (
+          <div className={classes.joinCampaignBar}>
+            <Typography variant="inherit" fontSize={18} fontWeight={550}>
+              Join the Linea Surge and run stations on StationX to get LXP-L
+              points.{" "}
+              <a
+                href={`https://stnx.notion.site/Participate-in-SurgeOnLinea-a659cb8412a24233971a2f7b247643f7?pvs=25https://stnx.notion.site/Participate-in-SurgeOnLinea-a659cb8412a24233971a2f7b247643f7?pvs=25`}
+                target="_blank"
+                rel="noopener noreferrer">
+                Learn more.
+              </a>
+            </Typography>
+
+            <div></div>
+          </div>
+        )} */}
+
         <div className={classes.headerContainer}>
           <ComponentHeader
             title={clubData?.name}
             subtext={`$${clubData?.symbol}`}
-            showButton={false}
+            showButton={routeNetworkId === "0xe708" ? true : false}
+            buttonText="Activate LXP-L"
+            onClickHandler={() => {
+              setShowActivateLXPLModal(true);
+            }}
           />
         </div>
 
@@ -407,7 +476,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
         />
       )}
 
-      {(create || join) && showTwitterModal && (
+      {(create || join) && showTwitterModal && routeNetworkId !== "0xe708" && (
         <StatusModal
           onClose={() => setShowTwitterModal(false)}
           heading={`Successfully ${
@@ -425,11 +494,189 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
         />
       )}
 
+      {create && showTwitterModal && routeNetworkId === "0xe708" && (
+        <LineaCreateModal
+          onClose={() => setShowTwitterModal(false)}
+          onClick={() => handleOnClickLearnMore()}
+        />
+      )}
+
       {showCreateClubModal ? (
         <CreateClubModal onClick={createClubHandler} />
       ) : null}
 
       <BackdropLoader isOpen={loading} />
+
+      {showLineaCampaignModal ? (
+        <LineaCampaignModal
+          onClose={() => {
+            setShowLineaCampaignModal(false);
+          }}
+        />
+      ) : null}
+
+      {showActivateLXPLModal ? (
+        <ActivateLXPLModal
+          safeAddress={gnosisAddress}
+          onClose={() => {
+            setShowActivateLXPLModal(false);
+          }}
+        />
+      ) : null}
+
+      <div
+        onClick={() => {
+          setShowHelperSteps(!showHelperSteps);
+        }}
+        className={classes.helpContainer}>
+        {showHelperSteps ? <IoIosArrowDropdownCircle /> : <BiSupport />}
+        <Typography variant="inherit" fontWeight={700} pt={0.1}>
+          FAQ
+        </Typography>
+      </div>
+
+      {showHelperSteps ? (
+        <LineaHelperSteps
+          setShowInviteMembersModal={setShowInviteMembersModal}
+          setShowCustomiseContributionModal={setShowCustomiseContributionModal}
+          setShowAdminFeeModal={setShowAdminFeeModal}
+          setShowTreasuryModal={setShowTreasuryModal}
+          setShowTokenGateModal={setShowTokenGateModal}
+          setShowWhitelistModal={setShowWhitelistModal}
+          setShowDistributeModal={setShowDistributeModal}
+          setShowSendModal={setShowSendModal}
+          setShowDeadlineModal={setShowDeadlineModal}
+          setShowKYCModal={setShowKYCModal}
+          setShowEditSignerModal={setShowEditSignerModal}
+          setShowCreateSurveyModal={setShowCreateSurveyModal}
+          setShowMintGTModal={setShowMintGTModal}
+          setShowDepositParamsModal={setShowDepositParamsModal}
+          setShowStakeDefiModal={setShowStakeDefiModal}
+          onClose={() => {
+            setShowHelperSteps(false);
+          }}
+        />
+      ) : null}
+
+      {showInviteMembersModal ? (
+        <InviteMemberModal
+          onClose={() => {
+            setShowInviteMembersModal(false);
+          }}
+        />
+      ) : null}
+
+      {showCustomiseContributionModal ? (
+        <CustomiseContributionModal
+          onClose={() => {
+            setShowCustomiseContributionModal(false);
+          }}
+        />
+      ) : null}
+
+      {showAdminFeeModal ? (
+        <AdminFeeModal
+          onClose={() => {
+            setShowAdminFeeModal(false);
+          }}
+        />
+      ) : null}
+
+      {showTreasuryModal ? (
+        <TreasuryModal
+          onClose={() => {
+            setShowTreasuryModal(false);
+          }}
+        />
+      ) : null}
+
+      {showTokenGateModal ? (
+        <TokenGateModal
+          onClose={() => {
+            setShowTokenGateModal(false);
+          }}
+        />
+      ) : null}
+
+      {showWhitelistModal ? (
+        <WhiteListModal
+          onClose={() => {
+            setShowWhitelistModal(false);
+          }}
+        />
+      ) : null}
+
+      {showSendModal ? (
+        <SendModal
+          onClose={() => {
+            setShowSendModal(false);
+          }}
+        />
+      ) : null}
+
+      {showDistributeModal ? (
+        <DistributeModal
+          onClose={() => {
+            setShowDistributeModal(false);
+          }}
+        />
+      ) : null}
+
+      {showKYCModal ? (
+        <EditKYCModal
+          onClose={() => {
+            setShowKYCModal(false);
+          }}
+        />
+      ) : null}
+
+      {showDeadlineModal ? (
+        <EditDeadlineMdoal
+          onClose={() => {
+            setShowDeadlineModal(false);
+          }}
+        />
+      ) : null}
+
+      {showEditSignerModal ? (
+        <AddRemoveAdminModal
+          onClose={() => {
+            setShowEditSignerModal(false);
+          }}
+        />
+      ) : null}
+
+      {showCreateSurveyModal ? (
+        <CreateSurveyModal
+          onClose={() => {
+            setShowCreateSurveyModal(false);
+          }}
+        />
+      ) : null}
+
+      {showMintGTModal ? (
+        <MintGTModal
+          onClose={() => {
+            setShowMintGTModal(false);
+          }}
+        />
+      ) : null}
+
+      {showStakeDefiModal ? (
+        <StakeDefiModal
+          onClose={() => {
+            setShowStakeDefiModal(false);
+          }}
+        />
+      ) : null}
+
+      {showDepositParamsModal ? (
+        <ChangeDepositParamsModal
+          onClose={() => {
+            setShowDepositParamsModal(false);
+          }}
+        />
+      ) : null}
     </div>
   );
 };

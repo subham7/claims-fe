@@ -12,7 +12,7 @@ import {
   claimStep1ValidationSchema,
   claimStep2ValidationSchema,
 } from "../createClubComps/ValidationSchemas";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import {
   getTokensList,
   getTokensListBeraChain,
@@ -40,8 +40,8 @@ const useStyles = makeStyles({
 const CreateClaim = () => {
   const classes = useStyles();
   const { address: walletAddress } = useAccount();
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
   const router = useRouter();
   const dispatch = useDispatch();
 

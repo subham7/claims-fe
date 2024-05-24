@@ -277,7 +277,7 @@ export default function ERC20Step2(props) {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
                 value={props.formik.values.depositClose}
-                minDateTime={dayjs(Date.now())}
+                minDateTime={dayjs(Date.now()).locale("en")}
                 onChange={(value) => {
                   props.formik.setFieldValue("depositClose", value);
                 }}
@@ -289,10 +289,15 @@ export default function ERC20Step2(props) {
         <br />
 
         <Card>
-          <div className="f-d f-v-c f-h-sb">
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <Typography fontWeight={600} variant="body" className="text-blue">
-                LP token price
+                Price per token
               </Typography>
               <Tooltip placement="bottom" title="Price of your station's token">
                 <div>
@@ -318,6 +323,13 @@ export default function ERC20Step2(props) {
                   props.formik.errors.pricePerToken
                 }
                 InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Typography variant="inherit" fontSize={16}>
+                        1 ${props.tokenSymbol.toUpperCase()} ={" "}
+                      </Typography>
+                    </InputAdornment>
+                  ),
                   endAdornment: (
                     <InputAdornment position="end" sx={{ color: "#dcdcdc" }}>
                       {CHAIN_CONFIG[props.networkId].usdcAddress ===
@@ -340,6 +352,7 @@ export default function ERC20Step2(props) {
                 />
               )}
             </div>
+            {/* </div> */}
           </div>
         </Card>
         <br />

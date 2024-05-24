@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { useNetwork } from "wagmi";
+import { useChainId } from "wagmi";
 import classes from "./Staking.module.scss";
 import StakingModal from "./StakingModal";
 
@@ -38,8 +38,8 @@ const StakingCard = ({
   };
 
   const router = useRouter();
-  const { chain } = useNetwork();
-  const networkId = "0x" + chain?.id.toString(16);
+  const chain = useChainId();
+  const networkId = "0x" + chain?.toString(16);
 
   return (
     <>

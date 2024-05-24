@@ -10,6 +10,16 @@ import { signMessageLibAbi } from "abis/gnosis-abis/signMessageLibAbi";
 import { simulateTxAccessorAbi } from "abis/gnosis-abis/simulateTxAccessorAbi";
 import { renzoStakingPoolABI } from "abis/renzo/renzoStakingPoolContract";
 import { renzoStakingPoolABILinea } from "abis/renzo/renzoStakingPoolLinea";
+import {
+  arbitrum,
+  avalanche,
+  base,
+  bsc,
+  linea,
+  mainnet,
+  polygon,
+  scroll,
+} from "viem/chains";
 
 export const BLOCK_CONFIRMATIONS = 4;
 export const BLOCK_TIMEOUT = 240000;
@@ -199,7 +209,7 @@ export const CHAIN_CONFIG = {
     claimsSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-base/prod/gn",
     stationSubgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/subham7/stnx-be-base",
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-base-native/prod/gn",
     covalentNetworkName: "base-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
@@ -306,7 +316,11 @@ export const CHAIN_CONFIG = {
     },
     rpcUrls: ["https://bsc.meowrpc.com"],
     appRpcUrl: `https://delicate-orbital-sunset.bsc.quiknode.pro/e0773be7bcd4c69a6fc5429550dbcb571397b044/`,
-    factoryContractAddress: "",
+    factoryContractAddress: "0x8a1D0Be1fe8b1D7A5C3051Da5d6b3A2690E12CAC",
+    airdropContractAddress: "0xc72aDc4F927384Aff6cA479900e788ba4eFa9aB7",
+    usdcAddress: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+    stationSubgraphUrl:
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-bsc-cc/prod/gn",
     claimFactoryAddress: "0x80e1429430cfB717187BD37eb5Bd0076d77dcE85",
     claimsSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-bsc/prod/gn",
@@ -371,19 +385,17 @@ export const CHAIN_CONFIG = {
       image: "/assets/icons/eth.png",
     },
     rpcUrls: ["https://rpc.scroll.io"],
-    appRpcUrl: `https://sparkling-young-spring.scroll-mainnet.quiknode.pro/${process.env.NEXT_PUBLIC_QUICKNODE_SCROLL_API_KEY}/`,
-    factoryContractAddress: "0x42a3a866dd9D40078f6009EFa03494ECc8EA5755",
-    //change this
+    appRpcUrl: `https://delicate-chaotic-dream.scroll-mainnet.quiknode.pro/14d4911b0589e5e03f6527ea874ad980849f2156/`,
+    factoryContractAddress: "0xE4D8Aac495adafFF1cF59fB1A6b91f0E4c21C26e",
     claimFactoryAddress: "0x563993D2c56628cfBBdec3FC3B3fb94744BbA9A6",
-    //change this
     claimsSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-scroll/prod/gn",
     stationSubgraphUrl:
-      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-scroll/prod/gn",
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-scroll-cc/prod/gn",
     covalentNetworkName: "scroll-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
-    airdropContractAddress: "0xA0113FF935416ad6E2F0DD689329Ec13Fc062389",
+    airdropContractAddress: "0xa65A4497526F07c3a92281695774F4D04e9c131A",
     blockExplorerUrl: "https://blockscout.scroll.io/",
     disburseContractAddress: "0x3DA9Fb55Ab77b10F99C1C1f52C150280dbd5a611",
     logoUri: "/assets/networks/0x82750.png",
@@ -916,39 +928,22 @@ export const dropsNetworksChaindId = [
 ];
 
 export const stationNetworksChainId = [
-  {
-    chainId: 137,
-    networkId: "0x89",
-  },
-  {
-    chainId: 1,
-    networkId: "0x1",
-  },
-  {
-    chainId: 42161,
-    networkId: "0xa4b1",
-  },
-  {
-    chainId: 59144,
-    networkId: "0xe708",
-  },
-  {
-    chainId: 43114,
-    networkId: "0xa86a",
-  },
-  // {
-  //   chainId: 100,
-  //   networkId: "0x64",
-  // },
-  { chainId: 534352, networkId: "0x82750" },
+  arbitrum,
+  avalanche,
+  linea,
+  mainnet,
+  polygon,
+  scroll,
+  bsc,
+  base,
 ];
 
 export const ALLOWED_NETWORKS_FOR_STATION = [
   "0x89",
   "0x1",
-  "0xa4b1",
   "0xe708",
-  // "0x82750",
   "0xa86a",
   "0x82750",
+  "0x38",
+  "0x2105",
 ];

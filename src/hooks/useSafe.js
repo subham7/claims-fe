@@ -10,8 +10,11 @@ import {
   DAO_INITIALIZED_TOPIC,
   SAFE_SETUP_TOPIC,
 } from "utils/smartContractConstants";
+import { useSignMessage } from "wagmi";
+import { CC_NETWORKS } from "utils/networkConstants";
 
 const useSafe = () => {
+  const { signMessageAsync } = useSignMessage();
   const { createERC721DAO, createERC20DAO } = useAppContractMethods();
   const router = useRouter();
 
@@ -52,7 +55,7 @@ const useSafe = () => {
         });
       }
 
-      if (networkId === "0xe708") {
+      if (CC_NETWORKS.includes(networkId)) {
         const createDaoTopic = value.logs.filter(
           (log) => log.topics[0].toLowerCase() === DAO_INITIALIZED_TOPIC,
         );
@@ -97,8 +100,8 @@ const useSafe = () => {
       };
 
       const { signature } = await handleSignMessage(
-        addressList[0],
         JSON.stringify(payload),
+        signMessageAsync,
       );
 
       try {
