@@ -3,7 +3,7 @@ import { Dialog, DialogContent, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { IoMdClose } from "react-icons/io";
 import { PROPOSAL_MENU_ITEMS } from "utils/proposalConstants";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 
@@ -63,6 +63,7 @@ const useStyles = makeStyles({
 
 const SelectActionDialog = ({ open, onClose, daoAddress, networkId }) => {
   const classes = useStyles();
+  const router = useRouter();
 
   const isGovernanceERC20 = useSelector((state) => {
     return state.club.erc20ClubDetails.isGovernanceActive;
@@ -80,9 +81,9 @@ const SelectActionDialog = ({ open, onClose, daoAddress, networkId }) => {
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
 
   const onProposalClick = (key) => {
-    Router.push({
+    router.push({
       pathname:
-        window.location.origin + `/proposals/${daoAddress}/${networkId}/new`,
+        window.location.origin + `/newProposals/${daoAddress}/${networkId}/new`,
       query: { executionId: key },
     });
   };

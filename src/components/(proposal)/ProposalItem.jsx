@@ -8,13 +8,14 @@ import {
   proposalItemVerb,
 } from "utils/proposalHelpers/proposalItemHelper";
 
-const ProposalItem = ({ type, note = "", executionId = 46 }) => {
+const ProposalItem = ({ type, note = "", executionId = 42, proposal }) => {
+  console.log("xxx", proposal?.commands[0]);
   return (
     <div className={classes.proposal}>
       <div className={classes.proposalItemContainer}>
         <div className={classes.proposalDetails}>
           <Typography variant="inherit" fontSize={16} fontWeight={600}>
-            {getProposalType(24)}
+            {getProposalType(executionId)}
           </Typography>
           <div className={classes.imageInfo}>
             <Image
@@ -28,7 +29,7 @@ const ProposalItem = ({ type, note = "", executionId = 46 }) => {
             </Typography>
           </div>
           <Typography variant="inherit" fontSize={16}>
-            {proposalItemVerb(24)}
+            {proposalItemVerb(executionId)}
           </Typography>
           <div className={classes.imageInfo}>
             <Image

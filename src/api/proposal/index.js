@@ -91,7 +91,7 @@ export async function createProposalTxHash(data) {
 
 export async function getProposalByDaoAddress(daoAddress) {
   try {
-    return await axios.get(MAIN_API_URL + `proposal/station/${daoAddress}`, {});
+    return await axios.get(MAIN_API_URL + `proposal/station/${daoAddress}`);
   } catch (error) {
     console.log(error);
   }

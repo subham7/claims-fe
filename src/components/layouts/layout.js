@@ -9,7 +9,6 @@ import CustomAlert from "@components/common/CustomAlert";
 import { showWrongNetworkModal } from "utils/helper";
 import { useRouter } from "next/router";
 import WrongNetworkModal from "@components/modals/WrongNetworkModal";
-import LineaSurgeBar from "@components/modals/LineaCreateModal/LineaSurgeBar";
 import ConnectWallet from "@components/ui/ConnectWallet/ConnectWallet";
 
 const drawerWidth = 50;
@@ -35,8 +34,8 @@ export default function Layout(props) {
     <>
       {networkId === "0xe708" && (
         <div>
-          <LineaSurgeBar />
-          <div style={{ height: "40px" }}></div>
+          {/* <LineaSurgeBar /> */}
+          {/* <div style={{ height: "40px" }}></div> */}
         </div>
       )}
 

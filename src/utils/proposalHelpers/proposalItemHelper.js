@@ -1,6 +1,4 @@
-import {
-  DEFI_PROPOSALS_ETH_POOLS,
-} from "utils/proposalConstants";
+import { DEFI_PROPOSALS_ETH_POOLS } from "utils/proposalConstants";
 
 export const executionIdsForStakeETH = [
   24, 17, 26, 39, 45, 35, 31, 33, 37, 41, 47, 57, 51, 53,
