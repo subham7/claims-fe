@@ -251,7 +251,7 @@ const CreateProposalDialog = ({ daoAddress, routeNetworkId }) => {
         };
         const { signature } = await handleSignMessage(
           JSON.stringify(payload),
-          signMessage,
+          signMessageAsync,
         );
         const response = await createProposal(isGovernanceActive, {
           ...payload,
