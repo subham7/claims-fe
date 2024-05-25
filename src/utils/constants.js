@@ -166,7 +166,7 @@ export const CHAIN_CONFIG = {
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
     blockExplorerUrl: "https://etherscan.io",
-    disburseContractAddress: "0x8b41c0aa45c86cebcfed5fb3744bf99ac8fb45c3",
+    disburseContractAddress: "0xeC0898bDB39280ECa6290FB6F06f27d8f0f85975",
     gnosisTxUrl: "https://safe-transaction-mainnet.safe.global/",
     logoUri: "/assets/networks/0x1.png",
     kelpRsETHAddress: "0xA1290d69c65A6Fe4DF752f95823fae25cB99e5A7",
