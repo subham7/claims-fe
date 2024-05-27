@@ -156,8 +156,8 @@ const CreateClaim = () => {
       description: "",
       // rollbackAddress: "",
       numberOfTokens: "",
-      startDate: dayjs(Date.now() + 300000),
-      endDate: dayjs(Date.now() + 600000),
+      startDate: dayjs(Date.now() + 300000).locale("en"),
+      endDate: dayjs(Date.now() + 600000).locale("en"),
       selectedToken: "", // token Name
       recieveTokens: "immediately", // immediately or later
       walletAddress: "",
