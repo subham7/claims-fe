@@ -4,12 +4,32 @@ import { Typography } from "@mui/material";
 import Image from "next/image";
 import { FaRegCopy } from "react-icons/fa";
 import {
+  getProposalImage,
   getProposalType,
+  proposalItemObject,
   proposalItemVerb,
 } from "utils/proposalHelpers/proposalItemHelper";
 
-const ProposalItem = ({ type, note = "", executionId = 42, proposal }) => {
-  console.log("xxx", proposal?.commands[0]);
+const ProposalItem = ({
+  type,
+  note = "",
+  executionId = 42,
+  proposal,
+  // daoAddress,
+  // routeNetworkId,
+}) => {
+  // const { getDecimals } = useCommonContractMethods({
+  //   daoAddress,
+  //   routeNetworkId,
+  // });
+  // console.log("xxx", proposal?.commands[0]);
+
+  // const data = await getProposalAmount({
+  //   executionId,
+  //   proposal,
+  //   getDecimals,
+  // });
+
   return (
     <div className={classes.proposal}>
       <div className={classes.proposalItemContainer}>
@@ -31,17 +51,27 @@ const ProposalItem = ({ type, note = "", executionId = 42, proposal }) => {
           <Typography variant="inherit" fontSize={16}>
             {proposalItemVerb(executionId)}
           </Typography>
-          <div className={classes.imageInfo}>
-            <Image
-              src={"/assets/icons/avatar2.png"}
-              height={15}
-              width={15}
-              alt="image"
-            />
-            <Typography variant="inherit" fontSize={14}>
-              0x823D...76RG
-            </Typography>
-          </div>
+
+          {getProposalImage(executionId).length ||
+          proposalItemObject({
+            executionId,
+            proposal,
+          }) ? (
+            <div className={classes.imageInfo}>
+              <Image
+                src={
+                  getProposalImage(executionId) ?? "/assets/icons/avatar2.png"
+                }
+                height={15}
+                width={15}
+                alt="image"
+              />
+
+              <Typography variant="inherit" fontSize={14}>
+                {proposalItemObject({ executionId, proposal })}
+              </Typography>
+            </div>
+          ) : null}
         </div>
 
         {type === "executed" ? (

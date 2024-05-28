@@ -29,7 +29,7 @@ const ProposalSection = ({ daoAddress, routeNetworkId }) => {
           }}
         />
 
-        <ProposalList daoAddress={daoAddress} />
+        <ProposalList daoAddress={daoAddress} routeNetworkId={routeNetworkId} />
       </div>
 
       <div className={classes.rightContainer}>

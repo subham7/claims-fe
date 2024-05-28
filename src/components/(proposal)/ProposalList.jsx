@@ -7,7 +7,7 @@ import ProposalItem from "./ProposalItem";
 import { getProposalByDaoAddress } from "api/proposal";
 import ExecutedProposalList from "./ExecutedProposalList";
 
-const ProposalList = ({ daoAddress }) => {
+const ProposalList = ({ daoAddress, routeNetworkId }) => {
   const [tabType, setTabType] = useState("Queue");
   const [executedProposals, setExecutedProposals] = useState([]);
 
@@ -64,7 +64,11 @@ const ProposalList = ({ daoAddress }) => {
           <ProposalItem type={"sign"} />
         </div>
       ) : (
-        <ExecutedProposalList executedProposals={executedProposals} />
+        <ExecutedProposalList
+          // daoAddress={daoAddress}
+          // routeNetworkId={routeNetworkId}
+          executedProposals={executedProposals}
+        />
       )}
     </div>
   );

@@ -14,7 +14,7 @@ import {
 // import Image from "next/image";
 import { CHAIN_CONFIG } from "utils/constants";
 import { getTokensList } from "api/token";
-import { getUserTokenData, handleSignMessage } from "utils/helper";
+import { getUserTokenData } from "utils/helper";
 import { useFormik } from "formik";
 // import { getProposalCommands } from "utils/proposalData";
 import { useSelector } from "react-redux";
@@ -29,6 +29,13 @@ import { useAccount, useSignMessage } from "wagmi";
 import BackdropLoader from "@components/common/BackdropLoader";
 import { actionModalValidation } from "@components/createClubComps/ValidationSchemas";
 import { MdInfo } from "react-icons/md";
+import {
+  createOrUpdateSafeTransaction,
+  getSafeTransaction,
+  signAndConfirmTransaction,
+} from "utils/proposalData";
+import Web3 from "web3";
+import { getTransaction } from "utils/proposal";
 
 const ActionModal = ({
   type,
@@ -50,6 +57,10 @@ const ActionModal = ({
     return state.club.clubData.tokenType;
   });
 
+  const isAssetsStoredOnGnosis = useSelector((state) => {
+    return state.club.clubData.assetsStoredOnGnosis;
+  });
+
   const isGovernanceERC20 = useSelector((state) => {
     return state.club.erc20ClubDetails.isGovernanceActive;
   });
@@ -60,6 +71,9 @@ const ActionModal = ({
 
   const isGovernanceActive =
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
+
+  const factoryContractAddress =
+    CHAIN_CONFIG[networkId]?.factoryContractAddress;
 
   const fetchLatestBlockNumber = async () => {
     const publicClient = getPublicClient(networkId);
@@ -122,6 +136,62 @@ const ActionModal = ({
           };
         }
 
+        const proposalData = {
+          commands: [commands],
+        };
+
+        const { safeSdk, safeService } = await getSafeTransaction(
+          gnosisAddress,
+          walletAddress,
+          CHAIN_CONFIG[networkId]?.gnosisTxUrl,
+        );
+
+        const nonce = await safeService.getNextNonce(gnosisAddress);
+        const {
+          transaction,
+          approvalTransaction,
+          stakeETHTransaction,
+          approvalTransaction2,
+        } = await getTransaction({
+          walletAddress,
+          daoAddress,
+          gnosisAddress,
+          networkId,
+          factoryContractAddress,
+          isAssetsStoredOnGnosis,
+          proposalData: proposalData,
+          tokenData: values.airdropToken.address,
+          airDropAmountArray: commands?.customTokenAmounts,
+          membersArray: commands?.customTokenAddresses,
+        });
+
+        const { safeTransaction, safeTxHash } =
+          await createOrUpdateSafeTransaction({
+            safeSdk,
+            executionId: commands.executionId,
+            transaction,
+            approvalTransaction,
+            stakeETHTransaction,
+            nonce,
+            approvalTransaction2,
+          });
+
+        const proposeTxn = await safeService.proposeTransaction({
+          safeAddress: Web3.utils.toChecksumAddress(gnosisAddress),
+          safeTransactionData: safeTransaction.data,
+          safeTxHash: safeTxHash,
+          senderAddress: Web3.utils.toChecksumAddress(walletAddress),
+        });
+
+        const signature = await signAndConfirmTransaction({
+          safeSdk,
+          safeService,
+          safeTransaction,
+          rejectionTransaction: null,
+          executionStatus: "passed",
+          safeTxHash,
+        });
+
         const blockNum = await fetchLatestBlockNumber();
 
         const payload = {
@@ -140,15 +210,15 @@ const ActionModal = ({
           networkId: networkId,
         };
 
-        const { signature } = await handleSignMessage(
-          JSON.stringify(payload),
-          signMessageAsync,
-        );
+        // const { signature } = await handleSignMessage(
+        //   JSON.stringify(payload),
+        //   signMessageAsync,
+        // );
 
         const request = await createProposal(isGovernanceActive, {
           ...payload,
           description: "",
-          signature,
+          signature: signature.data,
         });
 
         onClose();
