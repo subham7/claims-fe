@@ -1,12 +1,14 @@
+import { CHAIN_CONFIG } from "utils/constants";
+import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { shortAddress } from "utils/helper";
 import { DEFI_PROPOSALS_ETH_POOLS } from "utils/proposalConstants";
 
 export const executionIdsForStakeETH = [
-  24, 17, 26, 39, 45, 35, 31, 33, 37, 41, 47, 57, 51, 53,
+  24, 17, 26, 39, 45, 35, 31, 33, 37, 41, 47, 57, 51,
 ];
 
 export const executionIdsForUnstakeETH = [
-  65, 18, 27, 40, 46, 36, 32, 34, 38, 42, 48, 58, 52, 54,
+  65, 18, 27, 40, 46, 36, 32, 34, 38, 42, 48, 58, 52,
 ];
 
 export const findUsdcPoolByExecutionId = (executionId) => {
@@ -90,7 +92,8 @@ export const proposalItemVerb = (executionId) => {
 };
 
 export const proposalItemObject = ({ executionId, proposal }) => {
-  const { customTokenAddresses } = proposal?.commands[0] ?? {};
+  const { customTokenAddresses, ownerAddress, safeThreshold } =
+    proposal?.commands[0] ?? {};
 
   if (
     executionIdsForStakeETH.includes(executionId) ||
@@ -106,8 +109,15 @@ export const proposalItemObject = ({ executionId, proposal }) => {
       return "";
     case 4:
       return shortAddress(customTokenAddresses[0]);
+    case 6:
+    case 7:
+      return shortAddress(ownerAddress);
+    case 62:
+      return safeThreshold;
+    case 65:
+      return "hello";
     default:
-      "";
+      return "";
   }
 };
 
@@ -122,6 +132,9 @@ export const getProposalImage = (executionId) => {
   switch (executionId) {
     case 0:
     case 4:
+    case 6:
+    case 7:
+    case 62:
       return "/assets/icons/avatar2.png";
     default:
       return "";
@@ -156,48 +169,112 @@ export const findPoolLogoByExecutionId = (executionId, pools) => {
   }
 };
 
-// export const getProposalAmount = async ({
-//   executionId,
-//   proposal,
-//   getDecimals,
-// }) => {
-//   const {
-//     airDropToken,
-//     airDropAmount,
-//     mintGTAmounts,
-//     customTokenAmounts,
-//     depositToken,
-//     depositAmount,
-//     updatedMinimumDepositAmount,
-//     updatedMaximumDepositAmount,
-//     pricePerToken,
-//     unstakeToken,
-//     unstakeAmount,
-//   } = proposal?.commands[0] ?? {};
+export const getProposalAmount = async ({
+  executionId,
+  proposal,
+  getDecimals,
+  getTokenSymbol,
+  isNativeToken,
+  routeNetworkId,
+}) => {
+  const {
+    airDropToken,
+    airDropAmount,
+    mintGTAmounts,
+    customTokenAmounts,
+    customToken,
+    depositToken,
+    depositAmount,
+    updatedMinimumDepositAmount,
+    updatedMaximumDepositAmount,
+    pricePerToken,
+    unstakeToken,
+    unstakeAmount,
+    withdrawAmount,
+    withdrawToken,
+  } = proposal?.commands[0] ?? {};
 
-//   if (executionIdsForStakeETH.includes(executionId)) {
-//     return depositAmount;
-//   }
+  switch (executionId) {
+    case 0:
+      const airdropTokenSymbol = await getTokenSymbol(airDropToken);
+      const airdropTokenDecimal = await getDecimals(airDropToken);
+      return `${convertFromWeiGovernance(
+        airDropAmount,
+        airdropTokenDecimal,
+      )} ${airdropTokenSymbol}`;
+    case 1:
+      return mintGTAmounts;
+    case 4:
+      const sendTokenSymbol = await getTokenSymbol(customToken);
+      const customTokenDecimal = await getDecimals(customToken);
+      return `${convertFromWeiGovernance(
+        customTokenAmounts[0],
+        customTokenDecimal,
+      )} ${sendTokenSymbol}`;
+    case 13:
+      return `${pricePerToken} ${
+        isNativeToken
+          ? CHAIN_CONFIG[routeNetworkId].nativeCurrency.symbol
+          : "USDC"
+      }`;
+    case 18:
+    case 48:
+    case 50:
+    case 56:
+    case 58:
+    case 65:
+      const unstakeSymbol = await getTokenSymbol(unstakeToken);
+      const unstakeDecimals = await getDecimals(unstakeToken);
+      return `${convertFromWeiGovernance(
+        unstakeAmount,
+        unstakeDecimals,
+      )} ${unstakeSymbol}`;
+    case 14:
+    case 24:
+      const tokenSymbol = await getTokenSymbol(depositToken);
+      const decimals = await getDecimals(depositToken);
+      return `${convertFromWeiGovernance(
+        depositAmount,
+        decimals,
+      )} ${tokenSymbol}`;
+    case 15:
+      const withdrawDecimals = await getDecimals(withdrawToken);
+      const withdrawSymbol = await getTokenSymbol(withdrawToken);
 
-//   if (executionIdsForUnstakeETH.includes(executionId)) {
-//     return depositAmount;
-//   }
-
-//   switch (executionId) {
-//     case 0:
-//       const airdropTokenDecimal = await getDecimals(airDropToken);
-//       return convertFromWeiGovernance(airDropAmount, airdropTokenDecimal);
-//     case 1:
-//       return mintGTAmounts;
-//     case 4:
-//       return customTokenAmounts[0];
-//     case 13:
-//       return pricePerToken;
-//     case 60:
-//       return updatedMinimumDepositAmount;
-//     case 61:
-//       return updatedMaximumDepositAmount;
-//     default:
-//       return 0;
-//   }
-// };
+      return `${convertFromWeiGovernance(
+        withdrawAmount,
+        withdrawDecimals,
+      )} ${withdrawSymbol}`;
+    case 26:
+    case 31:
+    case 33:
+    case 35:
+    case 37:
+    case 39:
+    case 41:
+    case 43:
+    case 45:
+    case 47:
+    case 51:
+    case 53:
+    case 57:
+      return `${depositAmount} ETH`;
+    case 49:
+    case 55:
+      return `${depositAmount} USDC`;
+    case 60:
+      return `${updatedMinimumDepositAmount} ${
+        isNativeToken
+          ? CHAIN_CONFIG[routeNetworkId].nativeCurrency.symbol
+          : "USDC"
+      }`;
+    case 61:
+      return `${updatedMaximumDepositAmount} ${
+        isNativeToken
+          ? CHAIN_CONFIG[routeNetworkId].nativeCurrency.symbol
+          : "USDC"
+      }`;
+    default:
+      return "";
+  }
+};

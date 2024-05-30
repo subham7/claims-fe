@@ -6,10 +6,12 @@ import { Typography } from "@mui/material";
 import ProposalItem from "./ProposalItem";
 import { getProposalByDaoAddress } from "api/proposal";
 import ExecutedProposalList from "./ExecutedProposalList";
+import PassedProposalList from "./PassedProposalList";
 
 const ProposalList = ({ daoAddress, routeNetworkId }) => {
   const [tabType, setTabType] = useState("Queue");
   const [executedProposals, setExecutedProposals] = useState([]);
+  const [passedProposals, setPassedProposals] = useState([]);
 
   const tabChangeHandler = (event, newValue) => {
     setTabType(newValue);
@@ -22,8 +24,12 @@ const ProposalList = ({ daoAddress, routeNetworkId }) => {
       (proposal) => proposal.status === "executed",
     );
 
-    console.log("xxx", executedProposals);
+    const passedProposals = data.data?.filter(
+      (proposal) => proposal.status === "passed",
+    );
+
     setExecutedProposals(executedProposals);
+    setPassedProposals(passedProposals);
   };
 
   useEffect(() => {
@@ -59,14 +65,16 @@ const ProposalList = ({ daoAddress, routeNetworkId }) => {
             color={"#707070"}>
             Execute later
           </Typography>
-          <ProposalItem type={"sign"} />
-          <ProposalItem type={"sign"} />
-          <ProposalItem type={"sign"} />
+          <PassedProposalList
+            daoAddress={daoAddress}
+            routeNetworkId={routeNetworkId}
+            passedProposals={passedProposals}
+          />
         </div>
       ) : (
         <ExecutedProposalList
-          // daoAddress={daoAddress}
-          // routeNetworkId={routeNetworkId}
+          daoAddress={daoAddress}
+          routeNetworkId={routeNetworkId}
           executedProposals={executedProposals}
         />
       )}

@@ -1,19 +1,19 @@
 import React from "react";
 import ProposalItem from "./ProposalItem";
 
-const ExecutedProposalList = ({
-  executedProposals,
+const PassedProposalList = ({
+  passedProposals,
   daoAddress,
   routeNetworkId,
 }) => {
   return (
     <div>
-      {executedProposals?.map((proposal, index) => (
-        <div key={proposal.proposalId}>
+      {passedProposals?.map((proposal, index) => (
+        <div key={index}>
           <ProposalItem
             proposal={proposal}
             executionId={proposal?.commands[0]?.executionId}
-            type={"executed"}
+            type={"sign"}
             daoAddress={daoAddress}
             routeNetworkId={routeNetworkId}
           />
@@ -23,4 +23,4 @@ const ExecutedProposalList = ({
   );
 };
 
-export default ExecutedProposalList;
+export default PassedProposalList;

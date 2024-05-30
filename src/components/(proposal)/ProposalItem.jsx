@@ -1,34 +1,81 @@
-import React from "react";
+import React, { useState } from "react";
 import classes from "./Proposal.module.scss";
 import { Typography } from "@mui/material";
 import Image from "next/image";
 import { FaRegCopy } from "react-icons/fa";
 import {
+  getProposalAmount,
   getProposalImage,
   getProposalType,
   proposalItemObject,
   proposalItemVerb,
 } from "utils/proposalHelpers/proposalItemHelper";
-
+import useCommonContractMethods from "hooks/useCommonContractMehods";
+import { useEffect } from "react";
+import { isNative, shortAddress } from "utils/helper";
+import { useSelector } from "react-redux";
+import { getProposalTxHash } from "api/proposal";
 const ProposalItem = ({
   type,
   note = "",
   executionId = 42,
   proposal,
-  // daoAddress,
-  // routeNetworkId,
+  daoAddress,
+  routeNetworkId,
 }) => {
-  // const { getDecimals } = useCommonContractMethods({
-  //   daoAddress,
-  //   routeNetworkId,
-  // });
-  // console.log("xxx", proposal?.commands[0]);
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
+  });
 
-  // const data = await getProposalAmount({
-  //   executionId,
-  //   proposal,
-  //   getDecimals,
-  // });
+  const [amount, setAmount] = useState("");
+  const [txHash, setTxHash] = useState("");
+
+  const { getDecimals, getTokenSymbol } = useCommonContractMethods({
+    daoAddress,
+    routeNetworkId,
+  });
+
+  const isNativeToken = isNative(clubData.depositTokenAddress, routeNetworkId);
+
+  const fetchProposalAmount = async () => {
+    const data = await getProposalAmount({
+      executionId,
+      proposal,
+      getDecimals,
+      getTokenSymbol,
+      isNativeToken,
+      routeNetworkId,
+    });
+
+    setAmount(data);
+  };
+
+  const fetchProposalTxHash = async () => {
+    const fetchedTxHash = localStorage.getItem(
+      `stationx-proposal-${daoAddress}-${executionId}-${proposal.proposalId}`,
+    );
+
+    if (fetchedTxHash) {
+      setTxHash(fetchedTxHash);
+    } else {
+      const data = await getProposalTxHash(proposal?.proposalId);
+      localStorage.setItem(
+        `stationx-proposal-${daoAddress}-${executionId}-${proposal.proposalId}`,
+        data?.data[0]?.txHash,
+      );
+      setTxHash(data.data[0].txHash);
+    }
+  };
+
+  useEffect(() => {
+    if (type === "executed") {
+      fetchProposalTxHash();
+    }
+  }, [type]);
+
+  useEffect(() => {
+    if (executionId && routeNetworkId) fetchProposalAmount();
+  }, [executionId, routeNetworkId]);
 
   return (
     <div className={classes.proposal}>
@@ -37,17 +84,29 @@ const ProposalItem = ({
           <Typography variant="inherit" fontSize={16} fontWeight={600}>
             {getProposalType(executionId)}
           </Typography>
-          <div className={classes.imageInfo}>
-            <Image
-              src={"/assets/icons/eth.png"}
-              height={15}
-              width={15}
-              alt="ETH"
-            />
-            <Typography variant="inherit" fontSize={14}>
-              1 ETH
-            </Typography>
-          </div>
+
+          {amount.length ? (
+            <div className={classes.imageInfo}>
+              <Image
+                src={
+                  amount.includes("ETH")
+                    ? "/assets/icons/eth.png"
+                    : amount.includes("USDC")
+                    ? "/assets/icons/usdc.png"
+                    : amount.includes("MATIC")
+                    ? "/assets/networks/0x89.png"
+                    : "/assets/icons/testToken.png"
+                }
+                height={15}
+                width={15}
+                alt="ETH"
+              />
+              <Typography variant="inherit" fontSize={14}>
+                {amount}
+              </Typography>
+            </div>
+          ) : null}
+
           <Typography variant="inherit" fontSize={16}>
             {proposalItemVerb(executionId)}
           </Typography>
@@ -82,7 +141,7 @@ const ProposalItem = ({
 
             <div className={classes.txContainer}>
               <Typography className={classes.txText}>
-                TX: 0x813B...6650
+                TX: {shortAddress(txHash)}
               </Typography>
               <FaRegCopy className={classes.copy} />
             </div>
