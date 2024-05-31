@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import classes from "@components/(proposal)/Proposal.module.scss";
 
 import ProposalTabs from "./ProposalTabs";
-import { Typography } from "@mui/material";
+import { CircularProgress, Pagination, Typography } from "@mui/material";
 import ProposalItem from "./ProposalItem";
-import { getProposalByDaoAddress } from "api/proposal";
+import { getPaginatedProposalList } from "api/proposal";
 import ExecutedProposalList from "./ExecutedProposalList";
 import PassedProposalList from "./PassedProposalList";
 
@@ -12,32 +12,60 @@ const ProposalList = ({ daoAddress, routeNetworkId }) => {
   const [tabType, setTabType] = useState("Queue");
   const [executedProposals, setExecutedProposals] = useState([]);
   const [passedProposals, setPassedProposals] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(1);
+
+  const limit = 10;
+  const pageCount = Math.ceil(totalCount / limit);
 
   const tabChangeHandler = (event, newValue) => {
     setTabType(newValue);
-  };
-
-  const fetchProposals = async () => {
-    const data = await getProposalByDaoAddress(daoAddress);
-
-    const executedProposals = data.data?.filter(
-      (proposal) => proposal.status === "executed",
-    );
-
-    const passedProposals = data.data?.filter(
-      (proposal) => proposal.status === "passed",
-    );
-
-    setExecutedProposals(executedProposals);
-    setPassedProposals(passedProposals);
+    setPage(1);
   };
 
   useEffect(() => {
-    if (daoAddress) fetchProposals();
-  }, [daoAddress]);
+    const loadSignedProposals = async () => {
+      setLoading(true);
+      const offset = (page - 1) * limit;
+      const data = await getPaginatedProposalList(daoAddress, limit, offset);
+      setPassedProposals(data.data.data || []);
+      setTotalCount(data?.data?.total);
+      setLoading(false);
+    };
+
+    const loadExecutedProposals = async () => {
+      setLoading(true);
+      const offset = (page - 1) * limit;
+      const data = await getPaginatedProposalList(
+        daoAddress,
+        limit,
+        offset,
+        "executed",
+      );
+      setExecutedProposals(data.data.data || []);
+      setTotalCount(data?.data?.total);
+      setLoading(false);
+    };
+
+    if (tabType === "Queue") {
+      loadSignedProposals();
+    } else {
+      loadExecutedProposals();
+    }
+  }, [page, tabType]);
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
 
   return (
-    <div>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "20px",
+      }}>
       <ProposalTabs onChange={tabChangeHandler} tabType={tabType} />
 
       {tabType === "Queue" ? (
@@ -65,19 +93,53 @@ const ProposalList = ({ daoAddress, routeNetworkId }) => {
             color={"#707070"}>
             Execute later
           </Typography>
-          <PassedProposalList
-            daoAddress={daoAddress}
-            routeNetworkId={routeNetworkId}
-            passedProposals={passedProposals}
-          />
+
+          {loading ? (
+            <div
+              style={{
+                width: "fit-content",
+                margin: "20px auto",
+              }}>
+              <CircularProgress />
+            </div>
+          ) : (
+            <PassedProposalList
+              daoAddress={daoAddress}
+              routeNetworkId={routeNetworkId}
+              passedProposals={passedProposals}
+            />
+          )}
         </div>
       ) : (
-        <ExecutedProposalList
-          daoAddress={daoAddress}
-          routeNetworkId={routeNetworkId}
-          executedProposals={executedProposals}
-        />
+        <>
+          {loading ? (
+            <div
+              style={{
+                width: "fit-content",
+                margin: "20px auto",
+                minHeight: "50vh",
+              }}>
+              <CircularProgress />
+            </div>
+          ) : (
+            <ExecutedProposalList
+              daoAddress={daoAddress}
+              routeNetworkId={routeNetworkId}
+              executedProposals={executedProposals}
+            />
+          )}
+        </>
       )}
+
+      <Pagination
+        style={{
+          alignSelf: "flex-end",
+        }}
+        variant="outlined"
+        count={pageCount}
+        page={page}
+        onChange={handlePageChange}
+      />
     </div>
   );
 };

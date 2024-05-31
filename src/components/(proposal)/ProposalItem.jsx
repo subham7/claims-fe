@@ -15,10 +15,11 @@ import { useEffect } from "react";
 import { isNative, shortAddress } from "utils/helper";
 import { useSelector } from "react-redux";
 import { getProposalTxHash } from "api/proposal";
+import { useAccount } from "wagmi";
 const ProposalItem = ({
   type,
   note = "",
-  executionId = 42,
+  executionId,
   proposal,
   daoAddress,
   routeNetworkId,
@@ -29,6 +30,9 @@ const ProposalItem = ({
 
   const [amount, setAmount] = useState("");
   const [txHash, setTxHash] = useState("");
+  const { address: walletAddress } = useAccount();
+
+  const signedOwners = proposal?.signedOwners ?? [];
 
   const { getDecimals, getTokenSymbol } = useCommonContractMethods({
     daoAddress,
@@ -156,10 +160,17 @@ const ProposalItem = ({
                 alt="Sign"
               />
               <Typography className={classes.signText} variant="inherit">
-                1 out of 3
+                {signedOwners.length} out of {clubData?.currentSafeThreshold}
               </Typography>
             </div>
-            <button className={classes.signButton}>Sign</button>
+
+            {signedOwners?.includes(walletAddress) ? (
+              <button disabled className={classes.signButton}>
+                Signed
+              </button>
+            ) : (
+              <button className={classes.signButton}>Sign</button>
+            )}
           </div>
         )}
       </div>

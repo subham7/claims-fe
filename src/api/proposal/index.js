@@ -96,3 +96,19 @@ export async function getProposalByDaoAddress(daoAddress) {
     console.log(error);
   }
 }
+
+export async function getPaginatedProposalList(
+  daoAddress,
+  limit = 10,
+  offset,
+  status = "passed",
+) {
+  try {
+    return await axios.get(
+      MAIN_API_URL +
+        `proposal/station/${daoAddress}?limit=${limit}&offset=${offset}&status=["${status}"]`,
+    );
+  } catch (error) {
+    console.log(error);
+  }
+}

@@ -72,11 +72,16 @@
 
                     .signButton{
                         background-color: #1e1e1e;
-                        padding:6px 32px;
+                        padding:6px;
+                        width: 100px;
                         border: 0.5px solid $divider-color;
                         color: white;
                         font-family: inherit;
                         border-radius: 8px;
+
+                        &:disabled{
+                            color: #707070;
+                        }
                     }
 
                 }
