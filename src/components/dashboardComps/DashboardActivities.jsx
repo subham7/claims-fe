@@ -111,7 +111,7 @@ const DashboardActivities = ({ proposals, daoAddress, networkId }) => {
   return (
     <div className={classes.rightContainer}>
       <CopyLinkContainer daoAddress={daoAddress} routeNetworkId={networkId} />
-      {[
+      {/* {[
         {
           title: "Latest Activity",
           data: proposals,
@@ -157,7 +157,7 @@ const DashboardActivities = ({ proposals, daoAddress, networkId }) => {
             )}
           </div>
         </div>
-      ))}
+      ))} */}
     </div>
   );
 };

@@ -164,6 +164,9 @@
         display: flex;
         flex-direction: column;
         gap: 20px;
+        position: sticky;
+        top: 100px;
+        height: fit-content;
 
         .infoContainer{
             display: flex;
@@ -172,6 +175,9 @@
             border: .5px solid $divider-color;
             border-radius: 8px;
             padding: 16px;
+            
+
+
         }
 
         .signersContainer{
