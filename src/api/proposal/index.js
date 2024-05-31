@@ -112,3 +112,13 @@ export async function getPaginatedProposalList(
     console.log(error);
   }
 }
+
+export const getLatesExecutableProposal = async (daoAddress) => {
+  try {
+    return await axios.get(
+      MAIN_API_URL + `proposal/station/latest/${daoAddress}`,
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};

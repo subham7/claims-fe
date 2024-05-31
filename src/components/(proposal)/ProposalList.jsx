@@ -4,7 +4,10 @@ import classes from "@components/(proposal)/Proposal.module.scss";
 import ProposalTabs from "./ProposalTabs";
 import { CircularProgress, Pagination, Typography } from "@mui/material";
 import ProposalItem from "./ProposalItem";
-import { getPaginatedProposalList } from "api/proposal";
+import {
+  getLatesExecutableProposal,
+  getPaginatedProposalList,
+} from "api/proposal";
 import ExecutedProposalList from "./ExecutedProposalList";
 import PassedProposalList from "./PassedProposalList";
 
@@ -12,6 +15,7 @@ const ProposalList = ({ daoAddress, routeNetworkId }) => {
   const [tabType, setTabType] = useState("Queue");
   const [executedProposals, setExecutedProposals] = useState([]);
   const [passedProposals, setPassedProposals] = useState([]);
+  const [executableProposal, setExecutableProposal] = useState();
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(1);
@@ -48,8 +52,14 @@ const ProposalList = ({ daoAddress, routeNetworkId }) => {
       setLoading(false);
     };
 
+    const loadExecutableLatestProposal = async () => {
+      const data = await getLatesExecutableProposal(daoAddress);
+      setExecutableProposal(data.data[0]);
+    };
+
     if (tabType === "Queue") {
       loadSignedProposals();
+      loadExecutableLatestProposal();
     } else {
       loadExecutedProposals();
     }
@@ -80,7 +90,13 @@ const ProposalList = ({ daoAddress, routeNetworkId }) => {
               color={"#707070"}>
               Next
             </Typography>
-            <ProposalItem type={"sign"} note={"Hello there"} />
+            <ProposalItem
+              daoAddress={daoAddress}
+              executionId={executableProposal?.commands[0].executionId}
+              proposal={executableProposal}
+              routeNetworkId={routeNetworkId}
+              type={"execute"}
+            />
           </div>
 
           <Typography
@@ -131,15 +147,17 @@ const ProposalList = ({ daoAddress, routeNetworkId }) => {
         </>
       )}
 
-      <Pagination
-        style={{
-          alignSelf: "flex-end",
-        }}
-        variant="outlined"
-        count={pageCount}
-        page={page}
-        onChange={handlePageChange}
-      />
+      {!loading && (
+        <Pagination
+          style={{
+            alignSelf: "flex-end",
+          }}
+          variant="outlined"
+          count={pageCount}
+          page={page}
+          onChange={handlePageChange}
+        />
+      )}
     </div>
   );
 };

@@ -147,7 +147,7 @@ const ActionModal = ({
 
         const request = await createProposal(isGovernanceActive, {
           ...payload,
-          description: "",
+          description: values.note ?? "",
           signature: signature,
         });
 

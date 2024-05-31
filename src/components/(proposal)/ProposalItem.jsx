@@ -16,9 +16,16 @@ import { isNative, shortAddress } from "utils/helper";
 import { useSelector } from "react-redux";
 import { getProposalTxHash } from "api/proposal";
 import { useAccount } from "wagmi";
+import useAppContractMethods from "hooks/useAppContractMethods";
+import Web3 from "web3";
+import {
+  fetchABI,
+  getEncodedData,
+  getTokenTypeByExecutionId,
+} from "utils/proposal";
+
 const ProposalItem = ({
   type,
-  note = "",
   executionId,
   proposal,
   daoAddress,
@@ -28,13 +35,23 @@ const ProposalItem = ({
     return state.club.clubData;
   });
 
+  const gnosisAddress = useSelector((state) => {
+    return state.club.clubData.gnosisAddress;
+  });
+
   const [amount, setAmount] = useState("");
   const [txHash, setTxHash] = useState("");
+  const [members, setMembers] = useState([]);
   const { address: walletAddress } = useAccount();
 
   const signedOwners = proposal?.signedOwners ?? [];
 
   const { getDecimals, getTokenSymbol } = useCommonContractMethods({
+    daoAddress,
+    routeNetworkId,
+  });
+
+  const { updateProposalAndExecution } = useAppContractMethods({
     daoAddress,
     routeNetworkId,
   });
@@ -68,6 +85,49 @@ const ProposalItem = ({
         data?.data[0]?.txHash,
       );
       setTxHash(data.data[0].txHash);
+    }
+  };
+
+  const signHandler = async (proposalStatus) => {
+    try {
+      const ABI = await fetchABI(
+        proposal?.commands[0]?.executionId,
+        clubData.tokenType,
+      );
+
+      const {
+        data,
+        approvalData,
+        transactionData,
+        membersArray,
+        airDropAmountArray,
+      } = await getEncodedData({
+        getDecimals,
+        proposalData: proposal,
+        daoAddress,
+        clubData,
+        contractABI: ABI,
+        setMembers,
+        networkId: routeNetworkId,
+        gnosisAddress,
+      });
+
+      const tokenData = getTokenTypeByExecutionId(proposal.commands);
+
+      const response = await updateProposalAndExecution({
+        data,
+        approvalData,
+        gnosisAddress: Web3.utils.toChecksumAddress(gnosisAddress),
+        pid: proposal?.proposalId,
+        tokenData,
+        proposalStatus,
+        proposalData: proposal,
+        membersArray,
+        airDropAmountArray,
+        transactionData,
+      });
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -164,21 +224,31 @@ const ProposalItem = ({
               </Typography>
             </div>
 
-            {signedOwners?.includes(walletAddress) ? (
+            {signedOwners?.includes(walletAddress) && type === "execute" ? (
+              <button
+                onClick={() => signHandler("executed")}
+                className={classes.executeButton}>
+                Execute
+              </button>
+            ) : signedOwners?.includes(walletAddress) ? (
               <button disabled className={classes.signButton}>
                 Signed
               </button>
             ) : (
-              <button className={classes.signButton}>Sign</button>
+              <button
+                onClick={() => signHandler("passed")}
+                className={classes.signButton}>
+                Sign
+              </button>
             )}
           </div>
         )}
       </div>
 
-      {note?.length ? (
+      {proposal?.description?.length ? (
         <div className={classes.notesContainer}>
           <Typography className={classes.note}>
-            📝 Sending funds to Aman for getting shit done!
+            📝 {proposal?.description}
           </Typography>
         </div>
       ) : null}

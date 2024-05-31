@@ -78,9 +78,31 @@
                         color: white;
                         font-family: inherit;
                         border-radius: 8px;
+                        cursor: pointer;
 
                         &:disabled{
+                            background-color: #1E1E1E;
                             color: #707070;
+                            cursor: not-allowed;
+                            
+                            &:hover{
+                            background-color: #1E1E1E;
+                        }
+                        }
+                        
+                        &:hover{
+                            background-color: #282828;
+                        }
+                    }
+
+                    .executeButton{
+                        @extend .signButton;
+                        background-color: white;
+                        color: black;
+
+                        &:hover{
+                            color: black;
+                            background-color: white;
                         }
                     }
 
@@ -158,6 +180,38 @@
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
+            }
+
+            .signersList{
+                margin-top: 20px;
+
+
+                .signer{
+                    display: flex;
+                    align-items: center;
+                    gap: 16px;
+                    margin-bottom: 8px;
+
+                    div{
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        background-color: #1E1E1E;
+                        color: white;
+                        padding: 4px 8px;
+                        border-radius: 4px;
+                        width: 150px;
+                    }
+
+                    .copyAddress{
+                        background-color: #1E1E1E;
+                        padding: 8px;
+                        border-radius: 4px;
+                        cursor: pointer;
+                        
+                    }
+
+                }
             }
         }
     }

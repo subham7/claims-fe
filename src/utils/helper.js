@@ -216,7 +216,6 @@ export const getUserTokenData = async (
 
 export const requestEthereumChain = async (method, params) => {
   const connector = await getConnections(config)[0].connector.getProvider();
-  console.log("Xxx", connector);
 
   return await window.ethereum.request({ method, params });
 };

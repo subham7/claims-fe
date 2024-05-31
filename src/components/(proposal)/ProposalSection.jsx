@@ -43,7 +43,10 @@ const ProposalSection = ({ daoAddress, routeNetworkId }) => {
           </Typography>
         </div>
 
-        <ProposalSigners />
+        <ProposalSigners
+          daoAddress={daoAddress}
+          routeNetworkId={routeNetworkId}
+        />
       </div>
 
       <SelectActionDialog
