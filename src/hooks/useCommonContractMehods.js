@@ -169,7 +169,7 @@ const useCommonContractMethods = (params) => {
           networkId,
         });
 
-        return Number(response);
+        return response ? Number(response) : 0;
       } else {
         return 0;
       }

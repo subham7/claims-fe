@@ -66,6 +66,7 @@ const Claim = ({ claimAddress }) => {
   const [loading, setLoading] = useState(false);
   const [erc1155TokenId, setErc1155TokenId] = useState(0);
   const [isTokenErc1155, setIsTokenErc1155] = useState();
+  const [whitelistTokenBalance, setWhitelistTokenBalance] = useState(0);
   const dispatch = useDispatch();
 
   const [tokenDetails, setTokenDetails] = useState({
@@ -299,6 +300,8 @@ const Claim = ({ claimAddress }) => {
           } else {
             whitelistTokenBalance = await getBalance(dropsData?.daoToken);
           }
+
+          setWhitelistTokenBalance(whitelistTokenBalance);
 
           if (
             Number(whitelistTokenBalance) >= Number(dropsData?.tokenGatingValue)
@@ -542,6 +545,7 @@ const Claim = ({ claimAddress }) => {
               setClaimInput: setClaimInput,
               tokenDetails: tokenDetails,
               claimsData: claimsData,
+              whitelistTokenBalance,
             }}
             alreadyClaimed={alreadyClaimed}
             buttonProps={{
