@@ -106,6 +106,7 @@ const Claim = ({ claimAddress }) => {
     encode,
     checkTokenIsErc1155,
     getBalanceErc1155,
+    getTokenName,
   } = useCommonContractMethods();
 
   const { claimSettings, claimBalance, claimAmount, claim } =
@@ -127,7 +128,7 @@ const Claim = ({ claimAddress }) => {
       let whitelistTokenSymbol;
 
       try {
-        whitelistTokenSymbol = await getTokenSymbol(claims[0].whitelistToken);
+        whitelistTokenSymbol = await getTokenName(claims[0].whitelistToken);
       } catch (error) {
         console.log(error);
       }

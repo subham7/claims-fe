@@ -63,7 +63,7 @@ const useCommonContractMethods = (params) => {
       const name = localStorage.getItem(
         `stationx-${contractAddress}-${networkId}--name`,
       );
-      if (name !== "undefined") {
+      if (name !== "undefined" && name !== null) {
         return name;
       } else if (isNative(contractAddress, networkId)) {
         localStorage.setItem(
