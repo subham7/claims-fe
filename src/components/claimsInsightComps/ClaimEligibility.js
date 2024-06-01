@@ -21,7 +21,14 @@ const ClaimEligibility = ({
   useEffect(() => {
     const fetchWhiteListTokenDetails = async () => {
       const symbol = await getTokenSymbol(whitelistTokenAddress);
-      const decimals = await getDecimals(whitelistTokenAddress);
+
+      let decimals;
+
+      try {
+        decimals = await getDecimals(whitelistTokenAddress);
+      } catch (error) {
+        console.log(error);
+      }
 
       setWhitelistTokenData({
         decimals: decimals,
@@ -51,10 +58,12 @@ const ClaimEligibility = ({
         <>
           <div className={classes.eligibleToken}>
             <p>
-              {convertFromWeiGovernance(
-                minWhitelistTokenValue,
-                whitelistTokenData.decimals,
-              )}
+              {whitelistTokenData?.decimals
+                ? convertFromWeiGovernance(
+                    minWhitelistTokenValue,
+                    whitelistTokenData.decimals,
+                  )
+                : minWhitelistTokenValue}
             </p>
 
             <p>{whitelistTokenData.symbol}</p>

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { COVALENT_API, MAIN_API_URL } from "../index";
+import { COVALENT_API, MAIN_API_URL, NFT_SCAN_KEY } from "../index";
 
 const MANTA_API_URL = process.env.NEXT_PUBLIC_MANTA_API_URL;
 export const NFT_STORAGE_TOKEN = process.env.NEXT_PUBLIC_NFT_STORAGE_TOKEN;
@@ -79,6 +79,26 @@ export const getTotalNumberOfTokenHolders = async (
     );
     const data = await res.json();
     return data.data.pagination.total_count;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getErc1155TokenId = async (walletAddress, contractAddress) => {
+  try {
+    let headers = new Headers();
+    headers.set("X-API-KEY", NFT_SCAN_KEY);
+
+    const res = await fetch(
+      `https://baseapi.nftscan.com/api/v2/account/own/${walletAddress}?erc_type=erc1155&show_attribute=false&contract_address=${contractAddress}`,
+      {
+        method: "GET",
+        headers: headers,
+      },
+    );
+
+    const data = await res.json();
+    return data.data.content[0].token_id;
   } catch (error) {
     console.log(error);
   }
