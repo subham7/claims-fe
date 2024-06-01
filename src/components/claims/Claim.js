@@ -64,7 +64,7 @@ const ClaimInputComponent = ({
 const Claim = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState();
   const [loading, setLoading] = useState(false);
-  const [erc1155TokenId, setErc1155TokenId] = useState();
+  const [erc1155TokenId, setErc1155TokenId] = useState(0);
   const [isTokenErc1155, setIsTokenErc1155] = useState();
   const dispatch = useDispatch();
 
@@ -363,6 +363,7 @@ const Claim = ({ claimAddress }) => {
           walletAddress,
           proof,
           encodedLeaf,
+          erc1155TokenId,
         );
 
         const claimedAmt = await claimAmount(claimAddress, walletAddress);
@@ -389,6 +390,7 @@ const Claim = ({ claimAddress }) => {
           walletAddress,
           [],
           "",
+          erc1155TokenId,
         );
 
         fetchContractData();

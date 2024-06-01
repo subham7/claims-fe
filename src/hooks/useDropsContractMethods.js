@@ -168,13 +168,14 @@ const useDropsContractMethods = () => {
     reciever,
     merkleProof,
     encodedData,
+    erc1155tokenId = 0,
   ) => {
     try {
       const res = await writeContractFunction({
         address: claimAddress,
         abi: claimContractABI,
         functionName: "claim",
-        args: [amount, reciever, merkleProof, encodedData],
+        args: [amount, reciever, merkleProof, encodedData, erc1155tokenId],
         account: walletAddress,
         networkId,
         walletClient,

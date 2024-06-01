@@ -36,6 +36,11 @@ export const claimContractABI = [
   },
   {
     inputs: [],
+    name: "InvalidTime",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "MaxReached",
     type: "error",
   },
@@ -260,6 +265,11 @@ export const claimContractABI = [
         internalType: "bytes",
         name: "_encodedData",
         type: "bytes",
+      },
+      {
+        internalType: "uint256",
+        name: "_tokenId",
+        type: "uint256",
       },
     ],
     name: "claim",
