@@ -270,8 +270,12 @@ const ClaimInsight = ({ claimAddress, routeNetworkId }) => {
               rollbackTokensHandler={rollbackTokensHandler}
               airdropTokenDetails={airdropTokenDetails}
               modifyStartAndEndTimeHandler={modifyStartAndEndTimeHandler}
-              endTime={dayjs(Number(claimsData[0]?.endTime) * 1000)}
-              startTime={dayjs(Number(claimsData[0]?.startTime) * 1000)}
+              endTime={dayjs(Number(claimsData[0]?.endTime) * 1000).locale(
+                "en",
+              )}
+              startTime={dayjs(Number(claimsData[0]?.startTime) * 1000).locale(
+                "en",
+              )}
               hasAllowanceMechanism={claimsData[0]?.hasAllowanceMechanism}
             />
             <ClaimEligibility
