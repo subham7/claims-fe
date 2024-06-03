@@ -14,7 +14,7 @@ import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { useEffect } from "react";
 import { isNative, shortAddress } from "utils/helper";
 import { useSelector } from "react-redux";
-import { getProposalTxHash } from "api/proposal";
+import { getProposalTxHash, patchProposalExecuted } from "api/proposal";
 import { useAccount } from "wagmi";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import Web3 from "web3";
@@ -23,6 +23,7 @@ import {
   getEncodedData,
   getTokenTypeByExecutionId,
 } from "utils/proposal";
+import TransactionLoadingModal from "@components/modals/StatusModal/TransactionLoadingModal";
 
 const ProposalItem = ({
   type,
@@ -42,6 +43,7 @@ const ProposalItem = ({
   const [amount, setAmount] = useState("");
   const [txHash, setTxHash] = useState("");
   const [members, setMembers] = useState([]);
+  const [transactionLoading, setTransactionLoading] = useState(false);
   const { address: walletAddress } = useAccount();
 
   const signedOwners = proposal?.signedOwners ?? [];
@@ -90,6 +92,7 @@ const ProposalItem = ({
 
   const signHandler = async (proposalStatus) => {
     try {
+      setTransactionLoading(true);
       const ABI = await fetchABI(
         proposal?.commands[0]?.executionId,
         clubData.tokenType,
@@ -126,8 +129,14 @@ const ProposalItem = ({
         airDropAmountArray,
         transactionData,
       });
+
+      if (proposalStatus === "executed") {
+        await patchProposalExecuted(proposal?.proposalId);
+      }
+      setTransactionLoading(false);
     } catch (error) {
       console.error(error);
+      setTransactionLoading(false);
     }
   };
 
@@ -251,6 +260,17 @@ const ProposalItem = ({
             📝 {proposal?.description}
           </Typography>
         </div>
+      ) : null}
+
+      {transactionLoading ? (
+        <TransactionLoadingModal
+          heading={`Proposal getting ${
+            type === "sign" ? "signed" : "executed"
+          } ⏳`}
+          subheading={
+            "It’s all happening onchain so this may take a minute or two."
+          }
+        />
       ) : null}
     </div>
   );

@@ -50,7 +50,7 @@ export const getProposalType = (executionId) => {
     case 0:
       return "Distribute";
     case 1:
-      return "Mint station tokens";
+      return "Mint";
     case 3:
       return "Set raise amount to ";
     case 4:
@@ -83,17 +83,23 @@ export const proposalItemVerb = (executionId) => {
 
   switch (executionId) {
     case 0:
-    case 1:
     case 4:
       return "to";
+    case 1:
+      return "station tokens to";
     default:
       "";
   }
 };
 
 export const proposalItemObject = ({ executionId, proposal }) => {
-  const { customTokenAddresses, ownerAddress, safeThreshold } =
-    proposal?.commands[0] ?? {};
+  const {
+    customTokenAddresses,
+    ownerAddress,
+    safeThreshold,
+    mintGTAddresses,
+    totalDeposits,
+  } = proposal?.commands[0] ?? {};
 
   if (
     executionIdsForStakeETH.includes(executionId) ||
@@ -106,7 +112,8 @@ export const proposalItemObject = ({ executionId, proposal }) => {
     case 0:
       return "Members";
     case 1:
-      return "";
+      return `${mintGTAddresses[0]} ...`;
+
     case 4:
       return shortAddress(customTokenAddresses[0]);
     case 6:
@@ -131,6 +138,7 @@ export const getProposalImage = (executionId) => {
 
   switch (executionId) {
     case 0:
+    case 1:
     case 4:
     case 6:
     case 7:
@@ -192,6 +200,7 @@ export const getProposalAmount = async ({
     unstakeAmount,
     withdrawAmount,
     withdrawToken,
+    totalDeposits,
   } = proposal?.commands[0] ?? {};
 
   switch (executionId) {
@@ -204,6 +213,12 @@ export const getProposalAmount = async ({
       )} ${airdropTokenSymbol}`;
     case 1:
       return mintGTAmounts;
+    case 3:
+      return `${totalDeposits} ${
+        isNativeToken
+          ? CHAIN_CONFIG[routeNetworkId].nativeCurrency.symbol
+          : "USDC"
+      }`;
     case 4:
       const sendTokenSymbol = await getTokenSymbol(customToken);
       const customTokenDecimal = await getDecimals(customToken);

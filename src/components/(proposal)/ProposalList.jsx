@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import classes from "@components/(proposal)/Proposal.module.scss";
 
 import ProposalTabs from "./ProposalTabs";
-import { CircularProgress, Pagination, Typography } from "@mui/material";
+import { Pagination, Skeleton, Typography } from "@mui/material";
 import ProposalItem from "./ProposalItem";
 import {
   getLatesExecutableProposal,
@@ -10,6 +10,27 @@ import {
 } from "api/proposal";
 import ExecutedProposalList from "./ExecutedProposalList";
 import PassedProposalList from "./PassedProposalList";
+
+export const PropsalLoadingShimmer = () => {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "10px",
+      }}>
+      {[1, 2, 3, 4, 5].map((item) => (
+        <Skeleton
+          key={item}
+          height={120}
+          sx={{
+            minWidth: "68vw",
+          }}
+        />
+      ))}
+    </div>
+  );
+};
 
 const ProposalList = ({ daoAddress, routeNetworkId }) => {
   const [tabType, setTabType] = useState("Queue");
@@ -33,7 +54,7 @@ const ProposalList = ({ daoAddress, routeNetworkId }) => {
       setLoading(true);
       const offset = (page - 1) * limit;
       const data = await getPaginatedProposalList(daoAddress, limit, offset);
-      setPassedProposals(data.data.data || []);
+      setPassedProposals(data?.data?.data || []);
       setTotalCount(data?.data?.total);
       setLoading(false);
     };
@@ -47,14 +68,14 @@ const ProposalList = ({ daoAddress, routeNetworkId }) => {
         offset,
         "executed",
       );
-      setExecutedProposals(data.data.data || []);
+      setExecutedProposals(data?.data?.data || []);
       setTotalCount(data?.data?.total);
       setLoading(false);
     };
 
     const loadExecutableLatestProposal = async () => {
       const data = await getLatesExecutableProposal(daoAddress);
-      setExecutableProposal(data.data[0]);
+      setExecutableProposal(data?.data[0]);
     };
 
     if (tabType === "Queue") {
@@ -80,27 +101,29 @@ const ProposalList = ({ daoAddress, routeNetworkId }) => {
 
       {tabType === "Queue" ? (
         <div>
-          <div className={classes.nextProposalContainer}>
-            <Typography
-              fontFamily={"inherit"}
-              fontSize={12}
-              sx={{
-                textTransform: "uppercase",
-              }}
-              color={"#707070"}>
-              Next
-            </Typography>
-            <ProposalItem
-              daoAddress={daoAddress}
-              executionId={executableProposal?.commands[0].executionId}
-              proposal={executableProposal}
-              routeNetworkId={routeNetworkId}
-              type={"execute"}
-            />
-          </div>
+          {executableProposal ? (
+            <div className={classes.nextProposalContainer}>
+              <Typography
+                fontFamily={"inherit"}
+                fontSize={12}
+                sx={{
+                  textTransform: "uppercase",
+                }}
+                color={"#707070"}>
+                Next
+              </Typography>
+              <ProposalItem
+                daoAddress={daoAddress}
+                executionId={executableProposal?.commands[0].executionId}
+                proposal={executableProposal}
+                routeNetworkId={routeNetworkId}
+                type={"execute"}
+              />
+            </div>
+          ) : null}
 
           <Typography
-            paddingTop={4}
+            // paddingTop={4}
             fontFamily={"inherit"}
             fontSize={12}
             sx={{
@@ -116,7 +139,7 @@ const ProposalList = ({ daoAddress, routeNetworkId }) => {
                 width: "fit-content",
                 margin: "20px auto",
               }}>
-              <CircularProgress />
+              <PropsalLoadingShimmer />
             </div>
           ) : (
             <PassedProposalList
@@ -135,7 +158,7 @@ const ProposalList = ({ daoAddress, routeNetworkId }) => {
                 margin: "20px auto",
                 minHeight: "50vh",
               }}>
-              <CircularProgress />
+              <PropsalLoadingShimmer />
             </div>
           ) : (
             <ExecutedProposalList
