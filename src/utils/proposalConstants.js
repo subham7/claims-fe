@@ -1,7 +1,6 @@
 import sendIcon from "../../public/assets/icons/send_icon.svg";
 import nftIcon from "../../public/assets/icons/NFT.svg";
 import piggyIcon from "../../public/assets/icons/piggy_icon.svg";
-import whitelistIcon from "../../public/assets/icons/whitelist_icon.svg";
 // import lensIcon from "../../public/assets/icons/Lens_icon.svg";
 import rewardIcon from "../../public/assets/icons/reward_icon.svg";
 import walletIcon from "../../public/assets/icons/Wallet_icon.svg";
@@ -303,28 +302,28 @@ export const PROPOSAL_MENU_ITEMS = (isGovernanceActive, tokenType) => {
     //     "0xa86a",
     //   ],
     // },
-    {
-      key: 10,
-      icon: whitelistIcon,
-      value: "Whitelist addresses",
-      text: "Whitelist custom addresses",
-      section: "Deposits",
-      availableOnNetworkIds: [
-        "0x89",
-        "0x5",
-        "0x1",
-        "0x2105",
-        "0xa4b1",
-        "0xe708",
-        "0x38",
-        "0x1388",
-        "0x64",
-        "0x82750",
-        "0xa9",
-        "0x28c5f",
-        "0xa86a",
-      ],
-    },
+    // {
+    //   key: 10,
+    //   icon: whitelistIcon,
+    //   value: "Whitelist addresses",
+    //   text: "Whitelist custom addresses",
+    //   section: "Deposits",
+    //   availableOnNetworkIds: [
+    //     "0x89",
+    //     "0x5",
+    //     "0x1",
+    //     "0x2105",
+    //     "0xa4b1",
+    //     "0xe708",
+    //     "0x38",
+    //     "0x1388",
+    //     "0x64",
+    //     "0x82750",
+    //     "0xa9",
+    //     "0x28c5f",
+    //     "0xa86a",
+    //   ],
+    // },
     // {
     //   key: 11,
     //   icon: lensIcon,
