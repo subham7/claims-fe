@@ -8,17 +8,21 @@ const ExecutedProposalList = ({
 }) => {
   return (
     <div>
-      {executedProposals?.map((proposal, index) => (
-        <div key={proposal.proposalId}>
-          <ProposalItem
-            proposal={proposal}
-            executionId={proposal?.commands[0]?.executionId}
-            type={"executed"}
-            daoAddress={daoAddress}
-            routeNetworkId={routeNetworkId}
-          />
-        </div>
-      ))}
+      {executedProposals?.length ? (
+        executedProposals?.map((proposal, index) => (
+          <div key={proposal.proposalId}>
+            <ProposalItem
+              proposal={proposal}
+              executionId={proposal?.commands[0]?.executionId}
+              type={"executed"}
+              daoAddress={daoAddress}
+              routeNetworkId={routeNetworkId}
+            />
+          </div>
+        ))
+      ) : (
+        <p style={{ textAlign: "center" }}>No history found</p>
+      )}
     </div>
   );
 };

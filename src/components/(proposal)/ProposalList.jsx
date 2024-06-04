@@ -121,33 +121,34 @@ const ProposalList = ({ daoAddress, routeNetworkId }) => {
               />
             </div>
           ) : null}
+          <>
+            <Typography
+              // paddingTop={4}
+              fontFamily={"inherit"}
+              fontSize={12}
+              sx={{
+                textTransform: "uppercase",
+              }}
+              color={"#707070"}>
+              Execute later
+            </Typography>
 
-          <Typography
-            // paddingTop={4}
-            fontFamily={"inherit"}
-            fontSize={12}
-            sx={{
-              textTransform: "uppercase",
-            }}
-            color={"#707070"}>
-            Execute later
-          </Typography>
-
-          {loading ? (
-            <div
-              style={{
-                width: "fit-content",
-                margin: "20px auto",
-              }}>
-              <PropsalLoadingShimmer />
-            </div>
-          ) : (
-            <PassedProposalList
-              daoAddress={daoAddress}
-              routeNetworkId={routeNetworkId}
-              passedProposals={passedProposals}
-            />
-          )}
+            {loading ? (
+              <div
+                style={{
+                  width: "fit-content",
+                  margin: "20px auto",
+                }}>
+                <PropsalLoadingShimmer />
+              </div>
+            ) : (
+              <PassedProposalList
+                daoAddress={daoAddress}
+                routeNetworkId={routeNetworkId}
+                passedProposals={passedProposals}
+              />
+            )}
+          </>
         </div>
       ) : (
         <>

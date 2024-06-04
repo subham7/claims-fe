@@ -159,9 +159,7 @@ const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
           }
           onButtonClick={() => {
             if (isActionCreated === "success") {
-              router.push(
-                `/proposals/${daoAddress}/${routeNetworkId}/${proposalId}`,
-              );
+              router.push(`/newProposals/${daoAddress}/${routeNetworkId}`);
             } else {
               setIsActionCreated(null);
             }

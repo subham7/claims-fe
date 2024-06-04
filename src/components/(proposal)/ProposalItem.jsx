@@ -13,7 +13,7 @@ import {
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { useEffect } from "react";
 import { isNative, shortAddress } from "utils/helper";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getProposalTxHash, patchProposalExecuted } from "api/proposal";
 import { useAccount } from "wagmi";
 import useAppContractMethods from "hooks/useAppContractMethods";
@@ -24,6 +24,9 @@ import {
   getTokenTypeByExecutionId,
 } from "utils/proposal";
 import TransactionLoadingModal from "@components/modals/StatusModal/TransactionLoadingModal";
+import { setAlertData } from "redux/reducers/alert";
+import { generateAlertData } from "utils/globalFunctions";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const ProposalItem = ({
   type,
@@ -45,6 +48,11 @@ const ProposalItem = ({
   const [members, setMembers] = useState([]);
   const [transactionLoading, setTransactionLoading] = useState(false);
   const { address: walletAddress } = useAccount();
+  const dispatch = useDispatch();
+
+  const dispatchAlert = (message, severity) => {
+    dispatch(setAlertData(generateAlertData(message, severity)));
+  };
 
   const signedOwners = proposal?.signedOwners ?? [];
 
@@ -132,10 +140,19 @@ const ProposalItem = ({
 
       if (proposalStatus === "executed") {
         await patchProposalExecuted(proposal?.proposalId);
+        dispatchAlert("Executed successfully", "success");
+      } else {
+        dispatchAlert("Signed successfully", "success");
       }
+
       setTransactionLoading(false);
     } catch (error) {
       console.error(error);
+      if (proposalStatus === "executed") {
+        dispatchAlert("Execution failed", "error");
+      } else {
+        dispatchAlert("Signature failed", "error");
+      }
       setTransactionLoading(false);
     }
   };
@@ -216,7 +233,16 @@ const ProposalItem = ({
               <Typography className={classes.txText}>
                 TX: {shortAddress(txHash)}
               </Typography>
-              <FaRegCopy className={classes.copy} />
+              <FaRegCopy
+                cursor={"pointer"}
+                onClick={() => {
+                  navigator.clipboard.writeText(
+                    `${CHAIN_CONFIG[routeNetworkId].blockExplorerUrl}/tx/${txHash}`,
+                  );
+                  dispatchAlert("Transaction copied", "success");
+                }}
+                className={classes.copy}
+              />
             </div>
           </div>
         ) : (

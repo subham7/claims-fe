@@ -143,7 +143,7 @@ const SelectActionDialog = ({ open, onClose, daoAddress, networkId }) => {
             <IoMdClose onClick={onClose} className={classes.icon} size={24} />
           </div>
           <div className={classes.list}>
-            <Typography variant="inherit" className={classes.title}>
+            {/* <Typography variant="inherit" className={classes.title}>
               Survey
             </Typography>
             <div className={classes.section}>
@@ -159,7 +159,7 @@ const SelectActionDialog = ({ open, onClose, daoAddress, networkId }) => {
                 />
                 Create a Survey
               </div>
-            </div>
+            </div> */}
             <Typography variant="inherit" className={classes.title}>
               Manage Assets
             </Typography>

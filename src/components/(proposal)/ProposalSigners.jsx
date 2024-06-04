@@ -1,16 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { Typography } from "@mui/material";
 import classes from "@components/(proposal)/Proposal.module.scss";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getSafeSdk, shortAddress } from "utils/helper";
 import { useAccount } from "wagmi";
 import Web3 from "web3";
 import Image from "next/image";
 import { FaRegCopy } from "react-icons/fa";
+import { setAlertData } from "redux/reducers/alert";
+import { generateAlertData } from "utils/globalFunctions";
 
 const ProposalSigners = ({ daoAddress, routeNetworkId }) => {
   const [ownerAddresses, setOwnerAddresses] = useState([]);
   const { address: walletAddress } = useAccount();
+  const dispatch = useDispatch();
+
+  const dispatchAlert = (message, severity) => {
+    dispatch(setAlertData(generateAlertData(message, severity)));
+  };
 
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
@@ -80,7 +87,14 @@ const ProposalSigners = ({ daoAddress, routeNetworkId }) => {
                 {shortAddress(owner)}
               </Typography>
             </div>
-            <FaRegCopy size={32} className={classes.copyAddress} />
+            <FaRegCopy
+              onClick={() => {
+                navigator.clipboard.writeText(owner);
+                dispatchAlert("Address copied!", "success");
+              }}
+              size={32}
+              className={classes.copyAddress}
+            />
           </div>
         ))}
       </div>

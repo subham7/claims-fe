@@ -88,7 +88,7 @@ export const proposalItemVerb = (executionId) => {
     case 1:
       return "station tokens to";
     default:
-      "";
+      return "";
   }
 };
 
