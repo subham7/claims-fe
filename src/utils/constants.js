@@ -397,7 +397,7 @@ export const CHAIN_CONFIG = {
     usdcAddress: "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
     airdropContractAddress: "0xa65A4497526F07c3a92281695774F4D04e9c131A",
     blockExplorerUrl: "https://blockscout.scroll.io/",
-    disburseContractAddress: "0x3DA9Fb55Ab77b10F99C1C1f52C150280dbd5a611",
+    disburseContractAddress: "0x7633897a740Eb546c6DAAd0556Fb717b25D86F16",
     logoUri: "/assets/networks/0x82750.png",
     gnosisTxUrl: "https://transaction.safe.scroll.xyz",
     layerBankToken: "0x274C3795dadfEbf562932992bF241ae087e0a98C",
