@@ -327,7 +327,7 @@ export const CHAIN_CONFIG = {
     covalentNetworkName: "bsc-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     blockExplorerUrl: "https://bscscan.com",
-    disburseContractAddress: "",
+    disburseContractAddress: "0x6310209744339e0F03EBef212a9E528630c85d2c",
     gnosisTxUrl: "https://safe-transaction-bsc.safe.global/",
     logoUri: "/assets/networks/0x38.png",
   },
