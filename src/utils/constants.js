@@ -215,7 +215,7 @@ export const CHAIN_CONFIG = {
     usdcAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
     airdropContractAddress: "0x9aeF8F840FED23502506CC988c0057F24638C00E",
     blockExplorerUrl: "https://explorer.base.org",
-    disburseContractAddress: "0x63117D1D1405B582b13DAbddb57caa815E58F3e1",
+    disburseContractAddress: "0x66AB805f4bc0FCbFFC3240C80ecECE452aa9d94f",
     gnosisTxUrl: "https://safe-transaction-base.safe.global/",
     logoUri: "/assets/networks/0x2105.png",
   },
