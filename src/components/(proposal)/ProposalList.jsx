@@ -49,35 +49,48 @@ const ProposalList = ({ daoAddress, routeNetworkId }) => {
     setPage(1);
   };
 
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
+
+  const refreshProposals = async () => {
+    if (tabType === "Queue") {
+      await loadSignedProposals();
+      await loadExecutableLatestProposal();
+    } else {
+      await loadExecutedProposals();
+    }
+  };
+
+  const loadSignedProposals = async () => {
+    setLoading(true);
+    const offset = (page - 1) * limit;
+    const data = await getPaginatedProposalList(daoAddress, limit, offset);
+    setPassedProposals(data?.data?.data || []);
+    setTotalCount(data?.data?.total);
+    setLoading(false);
+  };
+
+  const loadExecutedProposals = async () => {
+    setLoading(true);
+    const offset = (page - 1) * limit;
+    const data = await getPaginatedProposalList(
+      daoAddress,
+      limit,
+      offset,
+      "executed",
+    );
+    setExecutedProposals(data?.data?.data || []);
+    setTotalCount(data?.data?.total);
+    setLoading(false);
+  };
+
+  const loadExecutableLatestProposal = async () => {
+    const data = await getLatesExecutableProposal(daoAddress);
+    setExecutableProposal(data?.data[0]);
+  };
+
   useEffect(() => {
-    const loadSignedProposals = async () => {
-      setLoading(true);
-      const offset = (page - 1) * limit;
-      const data = await getPaginatedProposalList(daoAddress, limit, offset);
-      setPassedProposals(data?.data?.data || []);
-      setTotalCount(data?.data?.total);
-      setLoading(false);
-    };
-
-    const loadExecutedProposals = async () => {
-      setLoading(true);
-      const offset = (page - 1) * limit;
-      const data = await getPaginatedProposalList(
-        daoAddress,
-        limit,
-        offset,
-        "executed",
-      );
-      setExecutedProposals(data?.data?.data || []);
-      setTotalCount(data?.data?.total);
-      setLoading(false);
-    };
-
-    const loadExecutableLatestProposal = async () => {
-      const data = await getLatesExecutableProposal(daoAddress);
-      setExecutableProposal(data?.data[0]);
-    };
-
     if (tabType === "Queue") {
       loadSignedProposals();
       loadExecutableLatestProposal();
@@ -85,10 +98,6 @@ const ProposalList = ({ daoAddress, routeNetworkId }) => {
       loadExecutedProposals();
     }
   }, [page, tabType]);
-
-  const handlePageChange = (event, value) => {
-    setPage(value);
-  };
 
   return (
     <div
@@ -118,6 +127,7 @@ const ProposalList = ({ daoAddress, routeNetworkId }) => {
                 proposal={executableProposal}
                 routeNetworkId={routeNetworkId}
                 type={"execute"}
+                onProposalUpdate={refreshProposals}
               />
             </div>
           ) : null}
@@ -146,6 +156,7 @@ const ProposalList = ({ daoAddress, routeNetworkId }) => {
                 daoAddress={daoAddress}
                 routeNetworkId={routeNetworkId}
                 passedProposals={passedProposals}
+                onProposalUpdate={refreshProposals}
               />
             )}
           </>
@@ -166,6 +177,7 @@ const ProposalList = ({ daoAddress, routeNetworkId }) => {
               daoAddress={daoAddress}
               routeNetworkId={routeNetworkId}
               executedProposals={executedProposals}
+              onProposalUpdate={refreshProposals}
             />
           )}
         </>

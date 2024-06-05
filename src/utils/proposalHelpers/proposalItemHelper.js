@@ -1,47 +1,36 @@
 import { CHAIN_CONFIG } from "utils/constants";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { shortAddress } from "utils/helper";
-import { DEFI_PROPOSALS_ETH_POOLS } from "utils/proposalConstants";
+import {
+  DEFI_PROPOSALS_ETH_POOLS,
+  DEFI_PROPOSALS_PAIR_POOLS,
+  DEFI_PROPOSALS_USDC_POOLS,
+} from "utils/proposalConstants";
 
 export const executionIdsForStakeETH = [
-  24, 17, 26, 39, 45, 35, 31, 33, 37, 41, 47, 57, 51,
+  24, 17, 26, 39, 45, 35, 31, 33, 37, 41, 47, 57, 51, 63,
 ];
 
 export const executionIdsForUnstakeETH = [
-  65, 18, 27, 40, 46, 36, 32, 34, 38, 42, 48, 58, 52,
+  65, 18, 27, 40, 46, 36, 32, 34, 38, 42, 48, 58, 52, 64,
 ];
 
-export const findUsdcPoolByExecutionId = (executionId) => {
-  const ethPools = DEFI_PROPOSALS_ETH_POOLS({
-    networkId,
-  });
+export const executionIdsForStakeUSDC = [55, 49];
 
-  const poolDetails = [];
-
-  ethPools.forEach((pool) => {
-    if (
-      pool.executionIds.Stake === executionId ||
-      pool.executionIds.Unstake === executionId
-    ) {
-      poolDetails.push({
-        poolName: pool.name,
-        token: pool.token,
-        logo: pool.logo,
-      });
-    }
-  });
-
-  return poolDetails.length > 0
-    ? poolDetails
-    : "No pool found with this execution ID.";
-};
+export const executionIdsForUnstakeUSDC = [56, 50];
 
 export const getProposalType = (executionId) => {
-  if (executionIdsForStakeETH.includes(executionId)) {
+  if (
+    executionIdsForStakeETH.includes(executionId) ||
+    executionIdsForStakeUSDC.includes(executionId)
+  ) {
     return "Stake";
   }
 
-  if (executionIdsForUnstakeETH.includes(executionId)) {
+  if (
+    executionIdsForUnstakeETH.includes(executionId) ||
+    executionIdsForUnstakeUSDC.includes(executionId)
+  ) {
     return "Unstake";
   }
 
@@ -73,11 +62,17 @@ export const getProposalType = (executionId) => {
 };
 
 export const proposalItemVerb = (executionId) => {
-  if (executionIdsForStakeETH.includes(executionId)) {
+  if (
+    executionIdsForStakeETH.includes(executionId) ||
+    executionIdsForStakeUSDC.includes(executionId)
+  ) {
     return "on";
   }
 
-  if (executionIdsForUnstakeETH.includes(executionId)) {
+  if (
+    executionIdsForUnstakeETH.includes(executionId) ||
+    executionIdsForUnstakeUSDC.includes(executionId)
+  ) {
     return "from";
   }
 
@@ -93,19 +88,29 @@ export const proposalItemVerb = (executionId) => {
 };
 
 export const proposalItemObject = ({ executionId, proposal }) => {
-  const {
-    customTokenAddresses,
-    ownerAddress,
-    safeThreshold,
-    mintGTAddresses,
-    totalDeposits,
-  } = proposal?.commands[0] ?? {};
+  const { customTokenAddresses, ownerAddress, safeThreshold, mintGTAddresses } =
+    proposal?.commands[0] ?? {};
+
+  if (executionId === 63 || executionId === 64) {
+    return findPoolNameByExecutionId(
+      executionId,
+      DEFI_PROPOSALS_PAIR_POOLS({}),
+    );
+  }
 
   if (
     executionIdsForStakeETH.includes(executionId) ||
     executionIdsForUnstakeETH.includes(executionId)
   ) {
     return findPoolNameByExecutionId(executionId, DEFI_PROPOSALS_ETH_POOLS({}));
+  } else if (
+    executionIdsForStakeUSDC.includes(executionId) ||
+    executionIdsForUnstakeUSDC.includes(executionId)
+  ) {
+    return findPoolNameByExecutionId(
+      executionId,
+      DEFI_PROPOSALS_USDC_POOLS({}),
+    );
   }
 
   switch (executionId) {
@@ -113,7 +118,6 @@ export const proposalItemObject = ({ executionId, proposal }) => {
       return "Members";
     case 1:
       return `${mintGTAddresses[0]} ...`;
-
     case 4:
       return shortAddress(customTokenAddresses[0]);
     case 6:
@@ -129,11 +133,26 @@ export const proposalItemObject = ({ executionId, proposal }) => {
 };
 
 export const getProposalImage = (executionId) => {
+  if (executionId === 63 || executionId === 64) {
+    return findPoolLogoByExecutionId(
+      executionId,
+      DEFI_PROPOSALS_PAIR_POOLS({}),
+    );
+  }
+
   if (
     executionIdsForStakeETH.includes(executionId) ||
     executionIdsForUnstakeETH.includes(executionId)
   ) {
     return findPoolLogoByExecutionId(executionId, DEFI_PROPOSALS_ETH_POOLS({}));
+  } else if (
+    executionIdsForStakeUSDC.includes(executionId) ||
+    executionIdsForUnstakeUSDC.includes(executionId)
+  ) {
+    return findPoolLogoByExecutionId(
+      executionId,
+      DEFI_PROPOSALS_USDC_POOLS({}),
+    );
   }
 
   switch (executionId) {
@@ -201,6 +220,9 @@ export const getProposalAmount = async ({
     withdrawAmount,
     withdrawToken,
     totalDeposits,
+    stakeAmount,
+    stakeToken1Amount,
+    stakeToken2Amount,
   } = proposal?.commands[0] ?? {};
 
   switch (executionId) {
@@ -232,6 +254,8 @@ export const getProposalAmount = async ({
           ? CHAIN_CONFIG[routeNetworkId].nativeCurrency.symbol
           : "USDC"
       }`;
+    case 17:
+      return `${convertFromWeiGovernance(stakeAmount, 18)} ETH`;
     case 18:
     case 48:
     case 50:
@@ -289,6 +313,8 @@ export const getProposalAmount = async ({
           ? CHAIN_CONFIG[routeNetworkId].nativeCurrency.symbol
           : "USDC"
       }`;
+    case 63:
+      return `${stakeToken1Amount} ezETH`;
     default:
       return "";
   }

@@ -34,6 +34,7 @@ const ProposalItem = ({
   proposal,
   daoAddress,
   routeNetworkId,
+  onProposalUpdate,
 }) => {
   const clubData = useSelector((state) => {
     return state.club.clubData;
@@ -145,6 +146,7 @@ const ProposalItem = ({
         dispatchAlert("Signed successfully", "success");
       }
 
+      onProposalUpdate();
       setTransactionLoading(false);
     } catch (error) {
       console.error(error);
@@ -153,6 +155,7 @@ const ProposalItem = ({
       } else {
         dispatchAlert("Signature failed", "error");
       }
+
       setTransactionLoading(false);
     }
   };
@@ -208,6 +211,9 @@ const ProposalItem = ({
           }) ? (
             <div className={classes.imageInfo}>
               <Image
+                style={{
+                  borderRadius: "25px",
+                }}
                 src={
                   getProposalImage(executionId) ?? "/assets/icons/avatar2.png"
                 }

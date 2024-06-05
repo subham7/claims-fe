@@ -5,6 +5,7 @@ const ExecutedProposalList = ({
   executedProposals,
   daoAddress,
   routeNetworkId,
+  onProposalUpdate,
 }) => {
   return (
     <div>
@@ -17,6 +18,7 @@ const ExecutedProposalList = ({
               type={"executed"}
               daoAddress={daoAddress}
               routeNetworkId={routeNetworkId}
+              onProposalUpdate={onProposalUpdate}
             />
           </div>
         ))

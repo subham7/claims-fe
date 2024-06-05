@@ -849,8 +849,8 @@ export const DEFI_PROPOSALS_ETH_POOLS = ({
 };
 
 export const DEFI_PROPOSALS_USDC_POOLS = ({
-  mendiStaked,
-  zeroLendUSDCStaked,
+  mendiStaked = 0,
+  zeroLendUSDCStaked = 0,
   networkId,
 }) => {
   return [

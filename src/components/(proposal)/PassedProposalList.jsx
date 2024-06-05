@@ -5,6 +5,7 @@ const PassedProposalList = ({
   passedProposals,
   daoAddress,
   routeNetworkId,
+  onProposalUpdate,
 }) => {
   return (
     <div>
@@ -17,6 +18,7 @@ const PassedProposalList = ({
               type={"sign"}
               daoAddress={daoAddress}
               routeNetworkId={routeNetworkId}
+              onProposalUpdate={onProposalUpdate}
             />
           </div>
         ))
