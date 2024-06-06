@@ -4,10 +4,10 @@ import {
   Card,
   IconButton,
   Slider,
-  ToggleButton,
-  ToggleButtonGroup,
+  // ToggleButton,
+  // ToggleButtonGroup,
   Typography,
-  Tooltip,
+  // Tooltip,
 } from "@mui/material";
 import { TextField } from "@components/ui";
 
@@ -99,7 +99,7 @@ export default function Step3(props) {
         multisig wallet.
       </Typography>
 
-      <Typography fontWeight={600} variant="body" className="text-light-gray">
+      {/* <Typography fontWeight={600} variant="body" className="text-light-gray">
         Multisig
       </Typography>
 
@@ -137,7 +137,7 @@ export default function Step3(props) {
             Coming soon
           </ToggleButton>
         </Tooltip>
-      </ToggleButtonGroup>
+      </ToggleButtonGroup> */}
 
       {/* {props.formik.values.deploySafe} */}
       {props.formik.values.deploySafe === "oldSafe" &&
@@ -367,7 +367,7 @@ export default function Step3(props) {
 
       <br />
 
-      <Typography
+      {/* <Typography
         fontWeight={600}
         mb={1}
         variant="info"
@@ -398,7 +398,7 @@ export default function Step3(props) {
           value="governance">
           Community governance
         </ToggleButton>
-      </ToggleButtonGroup>
+      </ToggleButtonGroup> */}
       <br />
       {props.formik.values.governance === "governance" ? (
         <>
