@@ -314,8 +314,16 @@ export const getProposalAmount = async ({
           : "USDC"
       }`;
     case 63:
-      return `${stakeToken1Amount} ezETH`;
+      return `~ ${stakeToken1Amount?.toFixed(5)} ezETH`;
     default:
       return "";
+  }
+};
+
+export const getNileAmount2 = ({ executionId, proposal }) => {
+  const { stakeToken2Amount } = proposal?.commands[0] ?? {};
+
+  if (executionId === 63 || executionId === 64) {
+    return `~ ${stakeToken2Amount?.toFixed(5)} ETH`;
   }
 };

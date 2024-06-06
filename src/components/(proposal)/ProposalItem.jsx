@@ -4,6 +4,7 @@ import { Typography } from "@mui/material";
 import Image from "next/image";
 import { FaRegCopy } from "react-icons/fa";
 import {
+  getNileAmount2,
   getProposalAmount,
   getProposalImage,
   getProposalType,
@@ -45,6 +46,7 @@ const ProposalItem = ({
   });
 
   const [amount, setAmount] = useState("");
+  const [amount2, setAmount2] = useState("");
   const [txHash, setTxHash] = useState("");
   const [members, setMembers] = useState([]);
   const [transactionLoading, setTransactionLoading] = useState(false);
@@ -179,25 +181,47 @@ const ProposalItem = ({
           </Typography>
 
           {amount.length ? (
-            <div className={classes.imageInfo}>
-              <Image
-                src={
-                  amount.includes("ETH")
-                    ? "/assets/icons/eth.png"
-                    : amount.includes("USDC")
-                    ? "/assets/icons/usdc.png"
-                    : amount.includes("MATIC")
-                    ? "/assets/networks/0x89.png"
-                    : "/assets/icons/testToken.png"
-                }
-                height={15}
-                width={15}
-                alt="ETH"
-              />
-              <Typography variant="inherit" fontSize={14}>
-                {amount}
-              </Typography>
-            </div>
+            <>
+              <div className={classes.imageInfo}>
+                <Image
+                  src={
+                    amount.includes("ETH")
+                      ? "/assets/icons/eth.png"
+                      : amount.includes("USDC")
+                      ? "/assets/icons/usdc.png"
+                      : amount.includes("MATIC")
+                      ? "/assets/networks/0x89.png"
+                      : "/assets/icons/testToken.png"
+                  }
+                  height={15}
+                  width={15}
+                  alt="ETH"
+                />
+                <Typography variant="inherit" fontSize={14}>
+                  {amount}
+                </Typography>
+              </div>
+
+              {executionId === 63 || executionId === 64 ? (
+                <>
+                  &
+                  <div className={classes.imageInfo}>
+                    <Image
+                      src={"/assets/icons/eth.png"}
+                      height={15}
+                      width={15}
+                      alt="ETH"
+                    />
+                    <Typography variant="inherit" fontSize={14}>
+                      {getNileAmount2({
+                        executionId,
+                        proposal,
+                      })}
+                    </Typography>
+                  </div>
+                </>
+              ) : null}
+            </>
           ) : null}
 
           <Typography variant="inherit" fontSize={16}>
