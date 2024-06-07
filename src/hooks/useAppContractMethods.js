@@ -1,32 +1,34 @@
+import { BigNumber } from "bignumber.js";
 import { useSelector } from "react-redux";
-import Web3 from "web3";
-import { readContractFunction, writeContractFunction } from "utils/helper";
-import { createProposalTxHash } from "../api/proposal";
+import { encodeFunctionData, parseEther } from "viem";
 import { useAccount, useChainId, useWalletClient } from "wagmi";
-import { factoryContractABI } from "abis/factoryContract.js";
-import { getTransaction } from "utils/proposal";
+import Web3 from "web3";
+
+import { clipFinanceEthPoolABI } from "abis/clip-finance/ethPoolAbi";
+import { eigenContractABI } from "abis/eigenContract";
 import { erc20DaoABI } from "abis/erc20Dao";
 import { erc721DaoABI } from "abis/erc721Dao";
-import { encodeFunctionData, parseEther } from "viem";
+import { factoryContractABI } from "abis/factoryContract.js";
+import { factoryContractCCABI } from "abis/factoryContractCC";
+import { mendiTokenContract } from "abis/mendi/mendiToken";
+import { ezETH_ETH_ProxyABI } from "abis/nile/ezETh_ETH_ProxyABI";
 import { CHAIN_CONFIG } from "utils/constants";
+import {
+  convertFromWeiGovernance,
+  convertToWeiGovernance,
+} from "utils/globalFunctions";
+import { readContractFunction, writeContractFunction } from "utils/helper";
+import { CC_NETWORKS } from "utils/networkConstants";
+import { getTransaction } from "utils/proposal";
 import {
   createOrUpdateSafeTransaction,
   getSafeTransaction,
   getTransactionHash,
   signAndConfirmTransaction,
 } from "utils/proposalData";
-import { eigenContractABI } from "abis/eigenContract";
-import { mendiTokenContract } from "abis/mendi/mendiToken";
-import { BigNumber } from "bignumber.js";
-import {
-  convertFromWeiGovernance,
-  convertToWeiGovernance,
-} from "utils/globalFunctions";
+
+import { createProposalTxHash } from "../api/proposal";
 import useCommonContractMethods from "./useCommonContractMehods";
-import { factoryContractCCABI } from "abis/factoryContractCC";
-import { CC_NETWORKS } from "utils/networkConstants";
-import { ezETH_ETH_ProxyABI } from "abis/nile/ezETh_ETH_ProxyABI";
-import { clipFinanceEthPoolABI } from "abis/clip-finance/ethPoolAbi";
 
 const useAppContractMethods = (params) => {
   const walletClient = useWalletClient();
@@ -167,6 +169,7 @@ const useAppContractMethods = (params) => {
         args: [daoAddress],
         // account: walletAddress,
         networkId: routeNetworkId ?? networkId,
+        //
       });
 
       return response ?? {};
