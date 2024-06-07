@@ -8,7 +8,6 @@ import { useRouter } from "next/router";
 import StatusModal from "@components/modals/StatusModal/StatusModal";
 import UpdateAmountTextfield from "./UpdateAmountTextfield";
 import classes from "@components/(settings)/Settings.module.scss";
-// import { CC_NETWORKS } from "utils/networkConstants";
 // import EnableKYC from "./EnableKyc";
 
 const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
