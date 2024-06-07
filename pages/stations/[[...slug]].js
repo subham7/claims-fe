@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Layout from "@components/layouts/layout";
 // import InviteCard from "@components/cards/InviteCard";
-import { Grid, Card, Divider, Stack, ListItemButton } from "@mui/material";
-import { Button, Typography } from "@components/ui";
+import { Typography } from "@components/ui";
 import Web3 from "web3";
 import { useDispatch } from "react-redux";
 import { addClubData } from "redux/reducers/club";
@@ -13,112 +12,216 @@ import {
 import { useAccount, useChainId } from "wagmi";
 import { makeStyles } from "@mui/styles";
 import { getReferralCode } from "api/invite/invite";
-import { OMIT_DAOS } from "utils/constants";
-import { convertToFullNumber, shortAddress } from "utils/helper";
+// import { OMIT_DAOS } from "utils/constants";
+import { convertToFullNumber } from "utils/helper";
 import { useRouter } from "next/router";
 import BackdropLoader from "@components/common/BackdropLoader";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { BigNumber } from "bignumber.js";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
+import { HiSearch } from "react-icons/hi";
+import { RiFilter3Fill } from "react-icons/ri";
+import { SlOptionsVertical } from "react-icons/sl";
+import { GoPlus } from "react-icons/go";
+import Image from "next/image";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   container: {
-    maxHeight: "100vh",
-    width: "100%",
-  },
-  yourClubText: {
-    fontSize: "30px",
-    color: "#F5F5F5",
-    opacity: 1,
-  },
-  createClubButton: {
-    fontSize: "22px",
-
-    borderRadius: "30px",
-  },
-  divider: {
-    marginTop: "15px",
-    marginBottom: "15px",
-  },
-  logoImage: {
-    width: "75px",
-    height: "auto",
-    maxWidth: "100px",
-    minWidth: "50px",
-  },
-  clubAddress: {
-    fontSize: "16px",
-    color: "#dcdcdc",
-    opacity: 1,
-  },
-  bannerImage: {
-    width: "60vh",
-  },
-  modalStyle: {
-    width: "792px",
-    backgroundColor: "#19274B",
-  },
-  dialogBox: {
-    fontSize: "28px",
-  },
-  profilePic: {
-    borderRadius: "50%",
-  },
-  cardContainer: {
-    width: "min-content",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "center",
-    margin: "0 auto",
-    minHeight: "70vh",
-  },
-  watchBtn: {
-    background: "#151515",
-    borderRadius: "50px",
-    border: "1px solid #EFEFEF",
-    width: "180px",
-    padding: 10,
-    margin: 0,
-    display: "flex",
+    width: "100%",
+    paddingLeft: "35rem",
+    paddingRight: "35rem",
+    paddingTop: "3rem",
+    gap: "1.25rem",
     alignItems: "center",
-    gap: "10px",
+    justifyContent: "center",
+    [theme.breakpoints.down("xl")]: {
+      paddingLeft: "20rem",
+      paddingRight: "20rem",
+    },
+    [theme.breakpoints.down("lg")]: {
+      paddingLeft: "12rem",
+      paddingRight: "12rem",
+    },
+    [theme.breakpoints.down("md")]: {
+      paddingLeft: "6rem",
+      paddingRight: "6rem",
+    },
+    [theme.breakpoints.down("sm")]: {
+      paddingLeft: "0.25rem",
+      paddingRight: "0.25rem",
+    },
+  },
+  header: {
+    display: "flex",
+    width: "100%",
+    alignItems: "end",
+    justifyContent: "space-between",
+  },
+  title: {
+    fontSize: "1.975rem",
+    fontWeight: 500,
+    lineHeight: 1,
+  },
+  button: {
+    display: "flex",
+    flexDirection: "row",
+    padding: "0.625rem 1.25rem",
+    gap: "0.4rem",
+    backgroundColor: "#ffffff",
+    color: "#000000",
+    border: "0px",
+    borderRadius: "0.6375rem",
+    alignItems: "center",
+    cursor: "pointer",
+    "&:hover": {
+      backgroundColor: "#e5e5e5",
+    },
+  },
+  filter: {
+    display: "flex",
+    width: "100%",
+    gap: "1rem",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  searchIcon: {
+    color: "#707070",
+  },
+  searchBar: {
+    display: "flex",
+    width: "80%",
+    borderRadius: "0.6375rem",
+    padding: "0.8rem",
+    backgroundColor: "#181818",
+    border: "1px solid #1D1D1D",
+    alignItems: "center",
+    justifyContent: "start",
+  },
+  searchInput: {
+    marginLeft: "0.825rem",
+    width: "90%",
+    backgroundColor: "transparent",
+    color: "#cccccc",
+    border: "none",
+    outline: "none",
+  },
+  filterButton: {
+    display: "flex",
+    flexDirection: "row",
+    width: "20%",
+    borderRadius: "0.6375rem",
+    padding: "0.8rem",
+    gap: "0.5rem",
+    fontSize: "0.9625rem",
+    color: "white",
+    backgroundColor: "#181818",
+    border: "1px solid #1D1D1D",
+    alignItems: "center",
     justifyContent: "center",
     cursor: "pointer",
   },
-  secondContainer: {
-    background: "#151515",
-    borderRadius: "20px",
-    marginTop: "20px",
+  section: {
     display: "flex",
-    padding: "20px 30px",
-    justifyContent: "space-between",
+    flexDirection: "column",
+    width: "100%",
+    padding: "1.5rem",
+    gap: "1rem",
+    backgroundColor: "#141414",
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
+    borderRadius: "0.6375rem",
+  },
+  sectionTitle: {
+    fontSize: "1.2rem",
+    fontWeight: 300,
+  },
+  sectionSubtitle: {
+    color: "#707070",
+  },
+  station: {
+    position: "relative",
+    display: "flex",
+    flexDirection: "row",
+    gap: "0.8rem",
+    width: "100%",
+    paddingBlock: "1.2rem",
+    paddingInline: "1.5rem",
+    border: "1px solid #1D1D1D",
+    borderRadius: "0.6375rem",
     alignItems: "center",
-  },
-  isAdmin: {
-    fontSize: "16px",
-    color: "#dcdcdc",
-    opacity: 1,
-  },
-  flexContainer: {
-    display: "flex",
     justifyContent: "space-between",
-    alignItems: "center",
   },
-
-  flex: {
+  stationImage: {
+    width: 60,
+    height: 60,
+    backgroundColor: "#1c1c1c",
+    borderRadius: "0.6375rem",
+    objectFit: "cover",
+  },
+  stationInfo: {
     display: "flex",
+    flexDirection: "column",
+    gap: "0.1rem",
+    width: "75%",
+  },
+  stationHeader: {
+    display: "flex",
+    flexDirection: "row",
     width: "100%",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: "15px",
   },
-});
+  stationTitle: {
+    fontSize: "1.2rem",
+    fontWeight: 500,
+    lineHeight: 1,
+  },
+  stationBadge: {
+    paddingInline: "0.6rem",
+    paddingBlockStart: "0.4rem",
+    paddingBlockEnd: "0.1rem",
+    backgroundColor: "#1D1D1D",
+    color: "#707070",
+    borderRadius: "0.6375rem",
+    fontSize: "0.75rem",
+  },
+  stationYield: {
+    fontSize: "1.2rem",
+    fontWeight: 300,
+  },
+  stationSubTitle: {
+    display: "flex",
+    flexDirection: "row",
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  stationMetadata: {
+    fontSize: "0.875rem",
+    fontWeight: 300,
+    color: "#707070",
+  },
+  option: {
+    color: "#707070",
+    cursor: "pointer",
+  },
+  chainIcon: {
+    position: "absolute",
+    width: 20,
+    height: 20,
+    backgroundColor: "white",
+    top: "1rem",
+    left: "1rem",
+    borderRadius: "1rem",
+  },
+}));
 
 const StationsPage = () => {
   const classes = useStyles();
   const { address: walletAddress } = useAccount();
-  // const chain = useChainId();
   const chain = useChainId();
   const networkId = "0x" + chain?.toString(16);
   const dispatch = useDispatch();
@@ -301,96 +404,65 @@ const StationsPage = () => {
   return (
     <Layout showSidebar={false} faucet={false}>
       <div className={classes.container}>
-        {/* {isUserWhitelisted ? ( */}
-        <Grid
-          container
-          direction="row"
-          justifyContent="center"
-          alignItems="start"
-          mt={2}
-          mb={0}>
-          <Grid item md={5}>
-            <Card>
-              <div className={classes.flex}>
-                <Grid item>
-                  <Typography variant="heading">My Stations</Typography>
-                </Grid>
-                <Grid>
-                  <Button onClick={handleCreateButtonClick}>Create new</Button>
-                </Grid>
+        <div className={classes.header}>
+          <Typography className={classes.title}>GM, anon!</Typography>
+          <button className={classes.button}>
+            <GoPlus size={22} /> Create station
+          </button>
+        </div>
+        <div className={classes.filter}>
+          <div className={classes.searchBar}>
+            <HiSearch size={25} className={classes.searchIcon} />
+            <input
+              className={classes.searchInput}
+              placeholder="Search your stations by name, owner, ticker..."
+              onChange={(e) => {}}
+            />
+          </div>
+          <button className={classes.filterButton}>
+            <RiFilter3Fill size={25} />
+            Chains
+          </button>
+        </div>
+        <div className={classes.section}>
+          <Typography className={classes.sectionTitle}>
+            My stations <span className={classes.sectionSubtitle}>(4)</span>
+          </Typography>
+          <div className={classes.station}>
+            <Image
+              src="/assets/icons/eth.png"
+              alt="network"
+              width={10}
+              height={10}
+              className={classes.chainIcon}
+            />
+            <Image
+              src="/assets/images/astronaut_hurray.png"
+              alt="stationImage"
+              width={50}
+              height={50}
+              className={classes.stationImage}
+            />
+            <div className={classes.stationInfo}>
+              <div className={classes.stationHeader}>
+                <Typography className={classes.stationTitle}>
+                  Safe secondary{" "}
+                  <span className={classes.stationBadge}>NFT</span>
+                </Typography>
+                <Typography className={classes.stationYield}>7.6%</Typography>
               </div>
-              <Divider className={classes.divider} />
-              <div>
-                <div style={{ overflowY: "scroll", maxHeight: "60vh" }}>
-                  {walletAddress && clubListData.length ? (
-                    clubListData
-                      .filter((club) => !OMIT_DAOS.includes(club.daoAddress))
-                      .map((club, key) => {
-                        return (
-                          <ListItemButton
-                            style={{ marginBottom: "8px" }}
-                            key={key}
-                            onClick={(e) => {
-                              handleItemClick(clubListData[key]);
-                            }}>
-                            <Grid container className={classes.flexContainer}>
-                              <Grid item md={6}>
-                                <Stack spacing={0}>
-                                  <Typography variant="subheading">
-                                    {club.daoName}
-                                  </Typography>
-                                  <Typography
-                                    variant="body"
-                                    className="text-blue">
-                                    {shortAddress(club.userAddress)}
-                                  </Typography>
-                                </Stack>
-                              </Grid>
-                              <Grid>
-                                <Stack
-                                  spacing={0}
-                                  alignItems="flex-end"
-                                  justifyContent="flex-end">
-                                  <Typography
-                                    variant="body"
-                                    className="text-blue">
-                                    {club.isAdmin ? "Admin" : "Member"}
-                                  </Typography>
-                                </Stack>
-                              </Grid>
-                            </Grid>
-                          </ListItemButton>
-                        );
-                      })
-                  ) : (
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexDirection: "column",
-                      }}>
-                      <h3
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "400",
-                          marginBottom: 0,
-                        }}>
-                        No stations found
-                      </h3>
-                      <p style={{ color: "#dcdcdc", fontWeight: "300" }}>
-                        Station(s) you created or a part of appear here
-                      </p>
-                    </div>
-                  )}
-                </div>
+              <div className={classes.stationSubTitle}>
+                <Typography className={classes.stationMetadata}>
+                  ⚡️ Admin • xSAFE • 37 members
+                </Typography>
+                <Typography className={classes.stationMetadata}>
+                  10,000 USDC
+                </Typography>
               </div>
-            </Card>
-          </Grid>
-        </Grid>
-        {/* // ) : (
-        //   <InviteCard setIsUserWhitelisted={setIsUserWhitelisted} />
-        // )} */}
+            </div>
+            <SlOptionsVertical className={classes.option} />
+          </div>
+        </div>
       </div>
     </Layout>
   );
