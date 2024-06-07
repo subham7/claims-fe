@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 import StatusModal from "@components/modals/StatusModal/StatusModal";
 import UpdateAmountTextfield from "./UpdateAmountTextfield";
 import classes from "@components/(settings)/Settings.module.scss";
-import { CC_NETWORKS } from "utils/networkConstants";
+// import { CC_NETWORKS } from "utils/networkConstants";
 // import EnableKYC from "./EnableKyc";
 
 const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
@@ -49,7 +49,7 @@ const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
           clubData={clubData}
         />
       ),
-      isHidden: CC_NETWORKS.includes(routeNetworkId),
+      // isHidden: CC_NETWORKS.includes(routeNetworkId),
     },
     {
       key: "treasuryMultisig",

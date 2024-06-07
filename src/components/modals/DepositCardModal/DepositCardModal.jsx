@@ -20,13 +20,18 @@ const DepositCardModal = ({
   amount,
   networkId,
   isNative,
+  routeNetworkId,
 }) => {
   const [fees, setFees] = useState(0);
   const [isChecked, setIsChecked] = useState(false);
   const iconStyle = { fontWeight: 800, marginRight: "4px" };
   const club = useSelector((state) => state.club.clubData);
-  const adminFee = (club.ownerFeePerDepositPercent * amount) / 10000;
+  const adminFee = (club.ownerFeePerDepositPercent * amount) / 10000 ?? 0;
   const { getDepositFees } = useCommonContractMethods();
+
+  const depositAmount = CC_NETWORKS.includes(routeNetworkId)
+    ? Number(amount) + adminFee
+    : Number(amount) - adminFee;
 
   useEffect(() => {
     if (CC_NETWORKS.includes(networkId)) {
@@ -45,7 +50,9 @@ const DepositCardModal = ({
         <UserInfo
           name={club.name}
           wallet={shortAddress(wallet)}
-          amount={`${amount} ${
+          amount={`${
+            CC_NETWORKS.includes(routeNetworkId) ? depositAmount : amount
+          } ${
             isNative ? CHAIN_CONFIG[networkId]?.nativeCurrency?.symbol : "USDC"
           }`}
         />
@@ -54,7 +61,7 @@ const DepositCardModal = ({
       <div className={classes.detailsContainer}>
         <AmountInfo
           title="Deposit"
-          amount={`${Number(amount) - (adminFee ? adminFee : 0)} ${
+          amount={`${depositAmount} ${
             isNative ? CHAIN_CONFIG[networkId]?.nativeCurrency?.symbol : "USDC"
           }`}
           icon={<PiArrowElbowDownRightBold style={iconStyle} />}

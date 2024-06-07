@@ -35,6 +35,7 @@ import classes from "@components/modals/StatusModal/StatusModal.module.scss";
 import { BigNumber } from "bignumber.js";
 import { getClubData } from "api/club";
 import { verifyWithZkMeServices } from "@zkmelabs/widget";
+import { CC_NETWORKS } from "utils/networkConstants";
 
 const DepositInputComponents = ({
   formik,
@@ -181,10 +182,16 @@ const ERC20 = ({
   const approveERC20Handler = async () => {
     setLoading(true);
     try {
+      const adminFee = CC_NETWORKS.includes(routeNetworkId)
+        ? (clubData?.ownerFeePerDepositPercent *
+            Number(formik.values.tokenInput)) /
+          10000
+        : 0;
+
       await approveDeposit(
         CHAIN_CONFIG[networkId].usdcAddress,
         CHAIN_CONFIG[networkId].factoryContractAddress,
-        formik.values.tokenInput,
+        Number(formik.values.tokenInput) + adminFee,
         tokenDetails?.tokenDecimal,
       );
 
@@ -241,6 +248,10 @@ const ERC20 = ({
           clubData?.depositTokenDecimal,
         );
 
+        const adminFee = CC_NETWORKS.includes(routeNetworkId)
+          ? (clubData?.ownerFeePerDepositPercent * inputValue) / 10000
+          : 0;
+
         await buyGovernanceTokenERC20DAO(
           convertToWeiGovernance(
             BigNumber(inputValue)
@@ -251,7 +262,7 @@ const ERC20 = ({
           whitelistUserData?.proof ? whitelistUserData.proof : [],
           clubData.depositTokenAddress.toLowerCase() ===
             CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
-            ? inputValue
+            ? inputValue + adminFee
             : "0",
         );
 
