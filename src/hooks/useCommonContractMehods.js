@@ -61,7 +61,7 @@ const useCommonContractMethods = (params) => {
   const getTokenName = async (contractAddress) => {
     try {
       const name = localStorage.getItem(
-        `stationx-${contractAddress}-${networkId}--name`,
+        `stationx-${contractAddress}-${networkId}-name`,
       );
       if (name !== "undefined" && name !== null) {
         return name;

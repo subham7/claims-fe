@@ -8,6 +8,7 @@ import { ClaimsInsightStyles } from "./claimsInsightStyles";
 const ClaimEligibility = ({
   minWhitelistTokenValue,
   whitelistTokenAddress,
+  routeNetworkId,
 }) => {
   const [whitelistTokenData, setWhitelistTokenData] = useState({
     decimals: 0,
@@ -17,7 +18,7 @@ const ClaimEligibility = ({
   const theme = useTheme();
   const classes = ClaimsInsightStyles(theme);
   const { getDecimals, getTokenSymbol, checkTokenIsErc1155, getTokenName } =
-    useCommonContractMethods();
+    useCommonContractMethods({ routeNetworkId });
 
   useEffect(() => {
     const fetchWhiteListTokenDetails = async () => {

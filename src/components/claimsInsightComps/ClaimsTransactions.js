@@ -26,6 +26,7 @@ const ClaimsTransactions = ({
   claimAddress,
   airdropTokenDetails,
   maxClaimAmount,
+  routeNetworkId,
 }) => {
   const [walletWiseTransactionData, setWalletWiseTransactionData] = useState(
     [],
@@ -53,7 +54,7 @@ const ClaimsTransactions = ({
     try {
       const { claimers } = await queryWalletWiseTransactionsFromSubgraph(
         claimAddress,
-        networkId,
+        routeNetworkId,
       );
 
       if (claimers.length) setWalletWiseTransactionData(claimers);
@@ -66,7 +67,7 @@ const ClaimsTransactions = ({
     try {
       const { airdrops } = await queryAllDropsTransactionsFromSubgraph(
         claimAddress,
-        networkId,
+        routeNetworkId,
       );
 
       if (airdrops.length) setAllTransactionsData(airdrops?.reverse());
