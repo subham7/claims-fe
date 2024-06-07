@@ -240,6 +240,7 @@ const Mint = ({
           )}
           networkId={networkId}
           isNative={tokenDetails?.isNativeToken}
+          routeNetworkId={routeNetworkId}
         />
       ) : null}
     </>
