@@ -262,7 +262,7 @@ const ERC20 = ({
           whitelistUserData?.proof ? whitelistUserData.proof : [],
           clubData.depositTokenAddress.toLowerCase() ===
             CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
-            ? inputValue + adminFee
+            ? BigNumber(inputValue).plus(adminFee).toString()
             : "0",
         );
 
