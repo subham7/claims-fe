@@ -1,14 +1,16 @@
 import { makeStyles } from "@mui/styles";
-import React, { useEffect, useState } from "react";
-import { BsLink45Deg, BsFillSendFill } from "react-icons/bs";
-import { AiFillCalendar } from "react-icons/ai";
-import { FaCoins } from "react-icons/fa";
 import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
 import Countdown from "react-countdown";
-import { convertFromWeiGovernance } from "../../utils/globalFunctions";
-import useCommonContractMethods from "hooks/useCommonContractMehods";
+import { AiFillCalendar } from "react-icons/ai";
+import { BsFillSendFill, BsLink45Deg } from "react-icons/bs";
+import { FaCoins } from "react-icons/fa";
 import { useDispatch } from "react-redux";
+
+import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { setAlertData } from "redux/reducers/alert";
+
+import { convertFromWeiGovernance } from "../../utils/globalFunctions";
 
 const useStyles = makeStyles({
   container: {
@@ -152,7 +154,7 @@ const ClaimsCard = ({
   });
 
   const claimHandler = () => {
-    router.push(`/claims/${claimsNetwork}/${claimContract}`);
+    router.push(`/claims/${claimContract}/${claimsNetwork}`);
   };
 
   return (
