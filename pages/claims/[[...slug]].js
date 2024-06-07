@@ -9,7 +9,7 @@ import CreateDisburse from "@components/claims/disburse";
 const ClaimsPage = () => {
   const router = useRouter();
 
-  const [networkId, claimAddress] = router?.query?.slug ?? [];
+  const [claimAddress, networkId] = router?.query?.slug ?? [];
 
   return (
     <Layout
@@ -18,9 +18,9 @@ const ClaimsPage = () => {
       networkId={networkId}>
       {!claimAddress && !networkId ? (
         <ListClaims />
-      ) : networkId === "create" ? (
+      ) : claimAddress === "create" ? (
         <CreateClaim />
-      ) : networkId === "disburse" ? (
+      ) : claimAddress === "disburse" ? (
         <CreateDisburse />
       ) : (
         <ClaimInsight routeNetworkId={networkId} claimAddress={claimAddress} />

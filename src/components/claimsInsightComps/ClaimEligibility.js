@@ -16,11 +16,15 @@ const ClaimEligibility = ({
 
   const theme = useTheme();
   const classes = ClaimsInsightStyles(theme);
-  const { getDecimals, getTokenSymbol } = useCommonContractMethods();
+  const { getDecimals, getTokenSymbol, checkTokenIsErc1155, getTokenName } =
+    useCommonContractMethods();
 
   useEffect(() => {
     const fetchWhiteListTokenDetails = async () => {
-      const symbol = await getTokenSymbol(whitelistTokenAddress);
+      const tokenIsErc1155 = await checkTokenIsErc1155(whitelistTokenAddress);
+      const symbol = tokenIsErc1155
+        ? await getTokenName(whitelistTokenAddress)
+        : await getTokenSymbol(whitelistTokenAddress);
 
       let decimals;
 
