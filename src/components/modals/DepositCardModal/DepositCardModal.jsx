@@ -48,7 +48,7 @@ const DepositCardModal = ({
           wallet={shortAddress(wallet)}
           amount={`${
             CC_NETWORKS.includes(routeNetworkId)
-              ? Number(amount) + adminFee
+              ? Number(amount + adminFee).toFixed(4)
               : amount
           } ${
             isNative ? CHAIN_CONFIG[networkId]?.nativeCurrency?.symbol : "USDC"
@@ -62,7 +62,7 @@ const DepositCardModal = ({
           amount={`${
             CC_NETWORKS.includes(routeNetworkId)
               ? amount
-              : Number(amount) - adminFee
+              : Number(amount - adminFee).toFixed(4)
           } ${
             isNative ? CHAIN_CONFIG[networkId]?.nativeCurrency?.symbol : "USDC"
           }`}
