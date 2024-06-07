@@ -178,6 +178,7 @@ const DepositInput = ({
           wallet={ownerAddress}
           amount={formik.values.tokenInput}
           networkId={networkId}
+          routeNetworkId={routeNetworkId}
           isNative={tokenDetails?.isNativeToken}
         />
       ) : null}
