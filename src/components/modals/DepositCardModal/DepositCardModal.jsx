@@ -41,7 +41,6 @@ const DepositCardModal = ({
   return (
     <Modal className={classes.modal}>
       <ModalTitle onClose={onClose} title="Join this station" />
-
       <div className={classes.userInputContainer}>
         <UserInfo
           name={club.name}
