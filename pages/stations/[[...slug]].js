@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useEffect, useState } from "react";
 import Layout from "@components/layouts/layout";
 // import InviteCard from "@components/cards/InviteCard";
@@ -12,7 +13,12 @@ import {
 import { useAccount, useChainId } from "wagmi";
 import { makeStyles } from "@mui/styles";
 import { getReferralCode } from "api/invite/invite";
-// import { OMIT_DAOS } from "utils/constants";
+import {
+  CHAIN_CONFIG,
+  OMIT_DAOS,
+  dropsNetworksChaindId,
+  stationNetworksChainId,
+} from "utils/constants";
 import { convertToFullNumber } from "utils/helper";
 import { useRouter } from "next/router";
 import BackdropLoader from "@components/common/BackdropLoader";
@@ -108,10 +114,14 @@ const useStyles = makeStyles((theme) => ({
     border: "none",
     outline: "none",
   },
+  chainFilter: {
+    width: "20%",
+    position: "relative",
+  },
   filterButton: {
     display: "flex",
     flexDirection: "row",
-    width: "20%",
+    width: "100%",
     borderRadius: "0.6375rem",
     padding: "0.8rem",
     gap: "0.5rem",
@@ -122,6 +132,33 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
     cursor: "pointer",
+  },
+  filterDropdown: {
+    display: "flex",
+    flexDirection: "column",
+    position: "absolute",
+    width: "11rem",
+    height: "13rem",
+    top: "3.5rem",
+    alignItems: "start",
+    overflowY: "scroll",
+    backgroundColor: "#181818",
+    borderRadius: "0.6375rem",
+    zIndex: 100,
+  },
+  filterOption: {
+    display: "flex",
+    width: "100%",
+    padding: "0.8rem",
+    color: "white",
+    backgroundColor: "#181818",
+    alignItems: "center",
+    justifyContent: "start",
+    cursor: "pointer",
+    border: "none",
+    "&:hover": {
+      backgroundColor: "#1D1D1D",
+    },
   },
   section: {
     display: "flex",
@@ -141,12 +178,21 @@ const useStyles = makeStyles((theme) => ({
   sectionSubtitle: {
     color: "#707070",
   },
+  stations: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.8rem",
+    width: "100%",
+    overflowY: "scroll",
+    maxHeight: "60vh",
+  },
   station: {
     position: "relative",
     display: "flex",
     flexDirection: "row",
     gap: "0.8rem",
     width: "100%",
+    backgroundColor: "transparent",
     paddingBlock: "1.2rem",
     paddingInline: "1.5rem",
     border: "1px solid #1D1D1D",
@@ -157,7 +203,7 @@ const useStyles = makeStyles((theme) => ({
   stationImage: {
     width: 60,
     height: 60,
-    backgroundColor: "#1c1c1c",
+    background: "linear-gradient(to top left, #D9D9D9, #737373)",
     borderRadius: "0.6375rem",
     objectFit: "cover",
   },
@@ -171,7 +217,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
     width: "100%",
-    alignItems: "center",
+    alignItems: "start",
     justifyContent: "space-between",
   },
   stationTitle: {
@@ -181,10 +227,10 @@ const useStyles = makeStyles((theme) => ({
   },
   stationBadge: {
     paddingInline: "0.6rem",
-    paddingBlockStart: "0.4rem",
-    paddingBlockEnd: "0.1rem",
+    paddingBlock: "0.2rem",
     backgroundColor: "#1D1D1D",
     color: "#707070",
+    textTransform: "uppercase",
     borderRadius: "0.6375rem",
     fontSize: "0.75rem",
   },
@@ -229,7 +275,9 @@ const StationsPage = () => {
   const [isUserWhitelisted, setIsUserWhitelisted] = useState(null);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
-
+  const [isOpen, setIsOpen] = useState(false);
+  const [network, setNetwork] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const { getDaoDetails } = useAppContractMethods();
   const { getDecimals, getTokenSymbol } = useCommonContractMethods();
 
@@ -377,12 +425,9 @@ const StationsPage = () => {
     const fetchClubs = async () => {
       try {
         setIsLoading(true);
-        const data = await queryStationListFromSubgraph(
-          walletAddress,
-          networkId,
-        );
+        const stations = await queryStationListFromSubgraph(walletAddress);
 
-        if (data.users) setClubListData(data.users);
+        if (stations?.data?.clubs) setClubListData(stations.data.clubs);
 
         setIsLoading(false);
       } catch (error) {
@@ -390,8 +435,8 @@ const StationsPage = () => {
       }
     };
 
-    if (walletAddress && networkId) fetchClubs();
-  }, [networkId, walletAddress]);
+    if (walletAddress) fetchClubs();
+  }, [walletAddress]);
 
   if (isUserWhitelisted === null || isLoading) {
     return (
@@ -401,12 +446,22 @@ const StationsPage = () => {
     );
   }
 
+  const filteredSearchClubs = searchQuery
+    ? clubListData.filter((club) =>
+        club.name.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
+    : clubListData;
+
+  const filteredClubs = network
+    ? filteredSearchClubs.filter((club) => club?.networkId === network)
+    : filteredSearchClubs;
+
   return (
     <Layout showSidebar={false} faucet={false}>
       <div className={classes.container}>
         <div className={classes.header}>
           <Typography className={classes.title}>GM, anon!</Typography>
-          <button className={classes.button}>
+          <button className={classes.button} onClick={handleCreateButtonClick}>
             <GoPlus size={22} /> Create station
           </button>
         </div>
@@ -416,51 +471,124 @@ const StationsPage = () => {
             <input
               className={classes.searchInput}
               placeholder="Search your stations by name, owner, ticker..."
-              onChange={(e) => {}}
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+              }}
             />
           </div>
-          <button className={classes.filterButton}>
-            <RiFilter3Fill size={25} />
-            Chains
-          </button>
+          <div className={classes.chainFilter}>
+            <button
+              className={classes.filterButton}
+              onClick={() => {
+                setIsOpen((prev) => !prev);
+              }}>
+              <RiFilter3Fill size={25} />
+              Chains
+            </button>
+            {isOpen && (
+              <div className={classes.filterDropdown}>
+                {stationNetworksChainId.map((network, key) => (
+                  <button
+                    key={key}
+                    className={classes.filterOption}
+                    onClick={() => {
+                      const networkId = dropsNetworksChaindId.filter(
+                        (chain) => chain?.chainId === network.id,
+                      )[0]?.networkId;
+                      setNetwork(networkId);
+                      setIsOpen(false);
+                    }}>
+                    <p style={{ fontSize: "1rem" }}>{network.name}</p>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
         <div className={classes.section}>
           <Typography className={classes.sectionTitle}>
-            My stations <span className={classes.sectionSubtitle}>(4)</span>
+            My stations{" "}
+            {clubListData.length > 0 && (
+              <span className={classes.sectionSubtitle}>
+                ({clubListData.length})
+              </span>
+            )}
           </Typography>
-          <div className={classes.station}>
-            <Image
-              src="/assets/icons/eth.png"
-              alt="network"
-              width={10}
-              height={10}
-              className={classes.chainIcon}
-            />
-            <Image
-              src="/assets/images/astronaut_hurray.png"
-              alt="stationImage"
-              width={50}
-              height={50}
-              className={classes.stationImage}
-            />
-            <div className={classes.stationInfo}>
-              <div className={classes.stationHeader}>
-                <Typography className={classes.stationTitle}>
-                  Safe secondary{" "}
-                  <span className={classes.stationBadge}>NFT</span>
-                </Typography>
-                <Typography className={classes.stationYield}>7.6%</Typography>
+          <div className={classes.stations}>
+            {walletAddress && filteredClubs.length ? (
+              filteredClubs
+                .filter((club) => !OMIT_DAOS.includes(club.daoAddress))
+                .map((club, key) => {
+                  return (
+                    <button className={classes.station} key={key}>
+                      <Image
+                        src={CHAIN_CONFIG[club?.networkId]?.logoUri}
+                        alt={CHAIN_CONFIG[club?.networkId]?.shortName}
+                        width={10}
+                        height={10}
+                        className={classes.chainIcon}
+                      />
+                      {club?.imageUrl ? (
+                        <img
+                          src={club?.imageUrl}
+                          alt="stationImage"
+                          width={50}
+                          height={50}
+                          className={classes.stationImage}
+                        />
+                      ) : (
+                        <span className={classes.stationImage}></span>
+                      )}
+                      <div className={classes.stationInfo}>
+                        <div className={classes.stationHeader}>
+                          <Typography className={classes.stationTitle}>
+                            {club?.name}{" "}
+                            <span className={classes.stationBadge}>
+                              {club?.tokenType == "erc721"
+                                ? "NFT"
+                                : club?.tokenType}
+                            </span>
+                          </Typography>
+                          <Typography className={classes.stationYield}>
+                            7.6%
+                          </Typography>
+                        </div>
+                        <div className={classes.stationSubTitle}>
+                          <Typography className={classes.stationMetadata}>
+                            ⚡️ Admin • {club?.membersCount}{" "}
+                            {club?.membersCount > 1 ? "members" : "member"}
+                          </Typography>
+                          <Typography className={classes.stationMetadata}>
+                            {club?.totalAmountRaised} USDC
+                          </Typography>
+                        </div>
+                      </div>
+                      <SlOptionsVertical className={classes.option} />
+                    </button>
+                  );
+                })
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                }}>
+                <h3
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "400",
+                    marginBottom: 0,
+                  }}>
+                  No stations found
+                </h3>
+                <p style={{ color: "#dcdcdc", fontWeight: "300" }}>
+                  Station(s) you created or a part of appear here
+                </p>
               </div>
-              <div className={classes.stationSubTitle}>
-                <Typography className={classes.stationMetadata}>
-                  ⚡️ Admin • xSAFE • 37 members
-                </Typography>
-                <Typography className={classes.stationMetadata}>
-                  10,000 USDC
-                </Typography>
-              </div>
-            </div>
-            <SlOptionsVertical className={classes.option} />
+            )}
           </div>
         </div>
       </div>
