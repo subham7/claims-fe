@@ -137,9 +137,10 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     position: "absolute",
-    width: "11rem",
+    width: "12rem",
     height: "13rem",
     top: "3.5rem",
+    right: 0,
     alignItems: "start",
     overflowY: "scroll",
     backgroundColor: "#181818",
@@ -159,6 +160,17 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       backgroundColor: "#1D1D1D",
     },
+  },
+  selectedNetwork: {
+    display: "flex",
+    width: "100%",
+    padding: "0.8rem",
+    color: "#db2777",
+    backgroundColor: "#1D1D1D",
+    alignItems: "center",
+    justifyContent: "start",
+    cursor: "pointer",
+    border: "none",
   },
   section: {
     display: "flex",
@@ -276,7 +288,7 @@ const StationsPage = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
-  const [network, setNetwork] = useState("");
+  const [selectedNetworks, setSelectedNetworks] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const { getDaoDetails } = useAppContractMethods();
   const { getDecimals, getTokenSymbol } = useCommonContractMethods();
@@ -404,6 +416,14 @@ const StationsPage = () => {
     }
   };
 
+  const handleToggleNetwork = (networkId) => {
+    setSelectedNetworks((prev) =>
+      prev.includes(networkId)
+        ? prev.filter((id) => id !== networkId)
+        : [...prev, networkId],
+    );
+  };
+
   useEffect(() => {
     (async () => {
       try {
@@ -452,8 +472,10 @@ const StationsPage = () => {
       )
     : clubListData;
 
-  const filteredClubs = network
-    ? filteredSearchClubs.filter((club) => club?.networkId === network)
+  const filteredClubs = selectedNetworks.length
+    ? filteredSearchClubs.filter((club) =>
+        selectedNetworks.includes(club?.networkId),
+      )
     : filteredSearchClubs;
 
   return (
@@ -488,20 +510,47 @@ const StationsPage = () => {
             </button>
             {isOpen && (
               <div className={classes.filterDropdown}>
-                {stationNetworksChainId.map((network, key) => (
-                  <button
-                    key={key}
-                    className={classes.filterOption}
-                    onClick={() => {
-                      const networkId = dropsNetworksChaindId.filter(
-                        (chain) => chain?.chainId === network.id,
-                      )[0]?.networkId;
-                      setNetwork(networkId);
-                      setIsOpen(false);
-                    }}>
-                    <p style={{ fontSize: "1rem" }}>{network.name}</p>
-                  </button>
-                ))}
+                {stationNetworksChainId.map((network, key) => {
+                  const networkId = dropsNetworksChaindId.filter(
+                    (chain) => chain?.chainId === network.id,
+                  )[0]?.networkId;
+                  const isSelected = selectedNetworks.includes(networkId);
+
+                  return (
+                    <button
+                      key={key}
+                      className={
+                        isSelected
+                          ? classes.selectedNetwork
+                          : classes.filterOption
+                      }
+                      onClick={() => {
+                        handleToggleNetwork(networkId);
+                      }}>
+                      <span
+                        style={{
+                          display: "flex",
+                          gap: 10,
+                          fontSize: "1rem",
+                          alignItems: "center",
+                        }}>
+                        <Image
+                          alt={CHAIN_CONFIG[networkId]?.shortName}
+                          src={CHAIN_CONFIG[networkId]?.logoUri}
+                          width={10}
+                          height={10}
+                          style={{
+                            width: 20,
+                            height: 20,
+                            backgroundColor: "white",
+                            borderRadius: "1rem",
+                          }}
+                        />
+                        {network.name}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
