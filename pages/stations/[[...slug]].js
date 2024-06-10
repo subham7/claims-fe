@@ -10,14 +10,14 @@ import {
   queryStationDataFromSubgraph,
   queryStationListFromSubgraph,
 } from "utils/stationsSubgraphHelper";
-import { useAccount, useChainId } from "wagmi";
+import { useAccount } from "wagmi";
 import { makeStyles } from "@mui/styles";
 import { getReferralCode } from "api/invite/invite";
 import {
   CHAIN_CONFIG,
   OMIT_DAOS,
-  dropsNetworksChaindId,
   stationNetworksChainId,
+  supportedNetworksChaindId,
 } from "utils/constants";
 import { convertToFullNumber } from "utils/helper";
 import { useRouter } from "next/router";
@@ -183,7 +183,17 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "flex-start",
     borderRadius: "0.6375rem",
   },
+  sectionHeader: {
+    display: "flex",
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
   sectionTitle: {
+    display: "flex",
+    gap: 5,
+    alignItems: "center",
+    justifyContent: "space-between",
     fontSize: "1.2rem",
     fontWeight: 300,
   },
@@ -211,6 +221,10 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "0.6375rem",
     alignItems: "center",
     justifyContent: "space-between",
+    cursor: "pointer",
+    "&:hover": {
+      backgroundColor: "#1D1D1D",
+    },
   },
   stationImage: {
     width: 60,
@@ -221,21 +235,26 @@ const useStyles = makeStyles((theme) => ({
   },
   stationInfo: {
     display: "flex",
-    flexDirection: "column",
-    gap: "0.1rem",
-    width: "75%",
+    flexDirection: "row",
+    width: "80%",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   stationHeader: {
     display: "flex",
-    flexDirection: "row",
+    flexDirection: "column",
     width: "100%",
+    gap: 6,
     alignItems: "start",
-    justifyContent: "space-between",
   },
   stationTitle: {
+    display: "flex",
+    flexDirection: "row",
+    gap: 5,
     fontSize: "1.2rem",
     fontWeight: 500,
     lineHeight: 1,
+    alignItems: "center",
   },
   stationBadge: {
     paddingInline: "0.6rem",
@@ -246,16 +265,13 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "0.6375rem",
     fontSize: "0.75rem",
   },
-  stationYield: {
-    fontSize: "1.2rem",
-    fontWeight: 300,
-  },
-  stationSubTitle: {
+  stationFunding: {
     display: "flex",
     flexDirection: "row",
-    width: "100%",
+    gap: 5,
+    fontSize: "0.8rem",
+    fontWeight: 300,
     alignItems: "center",
-    justifyContent: "space-between",
   },
   stationMetadata: {
     fontSize: "0.875rem",
@@ -280,8 +296,6 @@ const useStyles = makeStyles((theme) => ({
 const StationsPage = () => {
   const classes = useStyles();
   const { address: walletAddress } = useAccount();
-  const chain = useChainId();
-  const networkId = "0x" + chain?.toString(16);
   const dispatch = useDispatch();
   const [clubListData, setClubListData] = useState([]);
   const [isUserWhitelisted, setIsUserWhitelisted] = useState(null);
@@ -301,13 +315,13 @@ const StationsPage = () => {
     }
   };
 
-  const handleItemClick = async (data) => {
+  const handleItemClick = async (daoAddress, networkId) => {
     try {
       const clubData = await queryStationDataFromSubgraph(
-        data.daoAddress,
+        daoAddress,
         networkId,
       );
-      const daoDetails = await getDaoDetails(data.daoAddress);
+      const daoDetails = await getDaoDetails(daoAddress);
 
       const depositTokenDecimal = await getDecimals(
         daoDetails.depositTokenAddress,
@@ -403,9 +417,7 @@ const StationsPage = () => {
           }),
         );
       router.push(
-        `/dashboard/${Web3.utils.toChecksumAddress(
-          data.daoAddress,
-        )}/${networkId}`,
+        `/dashboard/${Web3.utils.toChecksumAddress(daoAddress)}/${networkId}`,
         undefined,
         {
           shallow: true,
@@ -511,7 +523,7 @@ const StationsPage = () => {
             {isOpen && (
               <div className={classes.filterDropdown}>
                 {stationNetworksChainId.map((network, key) => {
-                  const networkId = dropsNetworksChaindId.filter(
+                  const networkId = supportedNetworksChaindId.filter(
                     (chain) => chain?.chainId === network.id,
                   )[0]?.networkId;
                   const isSelected = selectedNetworks.includes(networkId);
@@ -556,21 +568,33 @@ const StationsPage = () => {
           </div>
         </div>
         <div className={classes.section}>
-          <Typography className={classes.sectionTitle}>
-            My stations{" "}
+          <span className={classes.sectionHeader}>
+            <Typography className={classes.sectionTitle}>
+              My stations{" "}
+              {filteredClubs.length > 0 && (
+                <p className={classes.sectionSubtitle}>
+                  ({filteredClubs.length})
+                </p>
+              )}
+            </Typography>
             {clubListData.length > 0 && (
-              <span className={classes.sectionSubtitle}>
-                ({clubListData.length})
-              </span>
+              <p className={classes.sectionSubtitle}>
+                Total Stations: {clubListData.length}
+              </p>
             )}
-          </Typography>
+          </span>
           <div className={classes.stations}>
             {walletAddress && filteredClubs.length ? (
               filteredClubs
                 .filter((club) => !OMIT_DAOS.includes(club.daoAddress))
                 .map((club, key) => {
                   return (
-                    <button className={classes.station} key={key}>
+                    <button
+                      className={classes.station}
+                      key={key}
+                      onClick={() => {
+                        handleItemClick(club.daoAddress, club.networkId);
+                      }}>
                       <Image
                         src={CHAIN_CONFIG[club?.networkId]?.logoUri}
                         alt={CHAIN_CONFIG[club?.networkId]?.shortName}
@@ -599,19 +623,20 @@ const StationsPage = () => {
                                 : club?.tokenType}
                             </span>
                           </Typography>
-                          <Typography className={classes.stationYield}>
-                            7.6%
-                          </Typography>
-                        </div>
-                        <div className={classes.stationSubTitle}>
                           <Typography className={classes.stationMetadata}>
-                            ⚡️ Admin • {club?.membersCount}{" "}
+                            {club?.membersCount}{" "}
                             {club?.membersCount > 1 ? "members" : "member"}
                           </Typography>
-                          <Typography className={classes.stationMetadata}>
-                            {club?.totalAmountRaised} USDC
-                          </Typography>
                         </div>
+                        <Typography className={classes.stationFunding}>
+                          {club?.totalAmountRaised}{" "}
+                          {club?.depositTokenAddress !==
+                          "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" ? (
+                            <p>ETH</p>
+                          ) : (
+                            <p>USDC</p>
+                          )}
+                        </Typography>
                       </div>
                       <SlOptionsVertical className={classes.option} />
                     </button>
