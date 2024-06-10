@@ -936,6 +936,41 @@ export const dropsNetworksChaindId = [
   },
 ];
 
+export const supportedNetworksChaindId = [
+  {
+    chainId: 137,
+    networkId: "0x89",
+  },
+  {
+    chainId: 8453,
+    networkId: "0x2105",
+  },
+  {
+    chainId: 42161,
+    networkId: "0xa4b1",
+  },
+  {
+    chainId: 59144,
+    networkId: "0xe708",
+  },
+  {
+    chainId: 56,
+    networkId: "0x38",
+  },
+  {
+    chainId: 534352,
+    networkId: "0x82750",
+  },
+  {
+    chainId: 1,
+    networkId: "0x1",
+  },
+  {
+    chainId: 43114,
+    networkId: "0xa86a",
+  },
+];
+
 export const stationNetworksChainId = [
   arbitrum,
   avalanche,
