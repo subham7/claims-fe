@@ -350,6 +350,8 @@ const ERC721 = ({
     }
   }, [day2, day1, daoDetails?.depositDeadline]);
 
+  console.log("xxx");
+
   return (
     <>
       <PublicPageLayout
