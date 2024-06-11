@@ -1,21 +1,26 @@
 import { Typography } from "@mui/material";
+import { Tooltip } from "@mui/material";
 import React from "react";
+import { MetaMaskAvatar } from "react-metamask-avatar";
 import { useSelector } from "react-redux";
+import { useRouter } from "next/router";
 import classes from "../../claims/Claim.module.scss";
-import { formatNumbers, shortAddress } from "utils/helper";
-
+import { formatNumbers } from "utils/helper";
+import { CHAIN_CONFIG } from "utils/constants";
 const DepositDetails = () => {
   const clubData = useSelector((state) => {
     return state.club.clubData;
   });
+  const adminAddresses = clubData?.adminAddresses;
+  const router = useRouter();
+  const [_, networkId = "0x89"] = router?.query?.slug ?? [];
+  const blockExplorerUrl = CHAIN_CONFIG[networkId]?.blockExplorerUrl;
 
   const {
     minDepositAmountFormatted,
     maxDepositAmountFormatted,
-    ownerAddress,
     depositTokenSymbol,
   } = clubData;
-
   return (
     <div>
       <div className={classes.detailContainer}>
@@ -57,7 +62,23 @@ const DepositDetails = () => {
             fontWeight={600}
             color={"white"}
             variant="inherit">
-            {shortAddress(ownerAddress)}
+            <div className="flex gap-[8px]">
+              {adminAddresses &&
+                adminAddresses.map((addr, ind) => {
+                  return (
+                    <Tooltip title={addr} key={ind}>
+                      <div className="cursor-pointer">
+                        <a
+                          target="_blank"
+                          href={blockExplorerUrl + "/address/" + addr}
+                          rel="noopener noreferrer">
+                          <MetaMaskAvatar address={addr} />
+                        </a>
+                      </div>
+                    </Tooltip>
+                  );
+                })}
+            </div>
           </Typography>
         </div>
       </div>

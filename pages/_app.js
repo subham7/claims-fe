@@ -5,7 +5,7 @@ import store from "../src/redux/store";
 import { Provider } from "react-redux";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { cookieToInitialState } from "wagmi";
-
+import "./index.css";
 import "../styles/globals.scss";
 import Script from "next/script";
 import Web3ModalProvider from "context/WagmiProvider";
