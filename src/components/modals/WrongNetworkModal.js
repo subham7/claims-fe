@@ -26,24 +26,24 @@ const useStyles = makeStyles((theme) => ({
     gap: "20px",
   },
   btn: {
-    width: "200px",
+    width: "100%",
     textAlign: "center",
     padding: "10px",
-    borderRadius: "50px",
-    backgroundColor: "#B85286",
-    fontSize: "18px",
-    color: "#fff",
+    height: "45px",
+    borderRadius: "100px",
+    backgroundColor: "#EFEFEF",
+    fontSize: "14px",
+    color: "#1E1E1E",
     border: "none",
+    fontWeight: "600",
     // marginTop: "20px",
     cursor: "pointer",
   },
   text: {
-    textAlign: "center",
-    fontSize: "24px",
-    fontWeight: "400",
-    padding: 0,
-    margin: 0,
-    color: "#fff",
+    width: "100%",
+    fontSize: "28px",
+    fontWeight: "600",
+    color: "#EFEFEF",
   },
 }));
 
@@ -61,15 +61,13 @@ const WrongNetworkModal = ({ chainId = "0x89" }) => {
     <>
       <BackdropLoader isOpen={true} showLoading={false}>
         <div className={classes.modal}>
-          <div className="text-[#EFEFEF] text-[28px] font-semibold w-full">
+          <div className={classes.text}>
             <p> Wrong network detected,</p>
             <p> Switch to continue.</p>
           </div>
           <Image src={img} alt="Wrong network" height={192} width={217} />
 
-          <button
-            className="w-full h-[45px] bg-[#EFEFEF] cursor-pointer text-[14px] font-semibold text-[#1E1E1E] border-transparent rounded-[100px] "
-            onClick={switchNetworkHandler}>
+          <button className={classes.btn} onClick={switchNetworkHandler}>
             Switch to {CHAIN_CONFIG[chainId]?.shortName}
           </button>
         </div>

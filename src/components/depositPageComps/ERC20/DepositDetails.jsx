@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import classes from "../../claims/Claim.module.scss";
 import { formatNumbers } from "utils/helper";
 import { CHAIN_CONFIG } from "utils/constants";
+
 const DepositDetails = () => {
   const clubData = useSelector((state) => {
     return state.club.clubData;
@@ -62,12 +63,12 @@ const DepositDetails = () => {
             fontWeight={600}
             color={"white"}
             variant="inherit">
-            <div className="flex gap-[8px]">
+            <div className="f-d f-gap-8">
               {adminAddresses &&
                 adminAddresses.map((addr, ind) => {
                   return (
                     <Tooltip title={addr} key={ind}>
-                      <div className="cursor-pointer">
+                      <div>
                         <a
                           target="_blank"
                           href={blockExplorerUrl + "/address/" + addr}
