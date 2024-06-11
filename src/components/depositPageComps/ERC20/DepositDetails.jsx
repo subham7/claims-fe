@@ -13,7 +13,6 @@ const DepositDetails = () => {
     return state.club.clubData;
   });
   const adminAddresses = clubData?.adminAddresses;
-
   const router = useRouter();
   const [_, networkId = "0x89"] = router?.query?.slug ?? [];
   const blockExplorerUrl = CHAIN_CONFIG[networkId]?.blockExplorerUrl;
@@ -65,10 +64,6 @@ const DepositDetails = () => {
             color={"white"}
             variant="inherit">
             <Avatar.Group
-              onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation(); // stop propagation main button
-              }}
               size="small"
               max={{
                 count: 3,
