@@ -189,7 +189,7 @@ const ERC20 = ({
         : 0;
 
       await approveDeposit(
-        CHAIN_CONFIG[networkId].usdcAddress,
+        clubData.depositTokenAddress,
         CHAIN_CONFIG[networkId].factoryContractAddress,
         Number(formik.values.tokenInput) + adminFee,
         tokenDetails?.tokenDecimal,

@@ -19,6 +19,7 @@ import Image from "next/image";
 import empty_nft from "../../../public/assets/icons/empty_nft.svg";
 import { useEffect, useState } from "react";
 import { CHAIN_CONFIG } from "utils/constants";
+import { getTokenSymbolFromAddress } from "utils/tokenHelper";
 
 export default function NFTStep2(props) {
   const [isVideo, setIsVideo] = useState(false);
@@ -57,7 +58,7 @@ export default function NFTStep2(props) {
         variant="info"
         className="text-light-gray tb-pad-1">
         Configure membership mint parameters for the station. Members mint their
-        NFT by paying in USDC or native currency to join the station
+        NFT by paying in USDC/USDT or native currency to join the station
       </Typography>
 
       <Typography fontWeight={600} variant="body" className="text-blue">
@@ -179,6 +180,9 @@ export default function NFTStep2(props) {
               <MenuItem value={CHAIN_CONFIG[props.networkId].usdcAddress}>
                 USDC
               </MenuItem>
+              <MenuItem value={CHAIN_CONFIG[props.networkId].usdtAddress}>
+                USDT
+              </MenuItem>
               <MenuItem value={CHAIN_CONFIG[props.networkId].nativeToken}>
                 {" "}
                 {CHAIN_CONFIG[props.networkId].nativeCurrency.symbol}
@@ -223,13 +227,7 @@ export default function NFTStep2(props) {
                 ),
                 endAdornment: (
                   <InputAdornment position="end" sx={{ color: "#dcdcdc" }}>
-                    {CHAIN_CONFIG[props.networkId].usdcAddress ===
-                    props.formik.values.depositToken
-                      ? "USDC"
-                      : CHAIN_CONFIG[props.networkId].nativeToken ===
-                        props.formik.values.depositToken
-                      ? CHAIN_CONFIG[props.networkId].nativeCurrency.symbol
-                      : ""}
+                    {getTokenSymbolFromAddress(props)}
                   </InputAdornment>
                 ),
               }}
