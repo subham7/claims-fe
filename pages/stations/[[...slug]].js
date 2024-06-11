@@ -4,6 +4,7 @@ import Layout from "@components/layouts/layout";
 // import InviteCard from "@components/cards/InviteCard";
 import { Typography } from "@components/ui";
 import Web3 from "web3";
+import axios from "axios";
 import { useDispatch } from "react-redux";
 import { addClubData } from "redux/reducers/club";
 import {
@@ -436,6 +437,13 @@ const StationsPage = () => {
     );
   };
 
+  const getImage = async (daoAddress) => {
+    const imageData = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_HOST}club/${daoAddress}/file`,
+    );
+    return imageData;
+  };
+
   useEffect(() => {
     (async () => {
       try {
@@ -457,9 +465,24 @@ const StationsPage = () => {
     const fetchClubs = async () => {
       try {
         setIsLoading(true);
-        const stations = await queryStationListFromSubgraph(walletAddress);
+        const stations = await queryStationListFromSubgraph(
+          "0x66264a63FcE8BAcF52E36a4f005179D71514aD8e",
+        );
 
         if (stations?.data?.clubs) setClubListData(stations.data.clubs);
+
+        const imageData = await Promise.all(
+          stations.data.clubs.map((club) => getImage(club.daoAddress)),
+        );
+        const filteredImageData = imageData.filter((image) => image.data);
+        setClubListData((prev) =>
+          prev.map((club, index) => {
+            return {
+              ...club,
+              imageUrl: filteredImageData[index]?.data[0]?.imageUrl,
+            };
+          }),
+        );
 
         setIsLoading(false);
       } catch (error) {
