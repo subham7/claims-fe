@@ -6,6 +6,7 @@ import React from "react";
 import classes from "./StatusModal.module.scss";
 import { addTokenToWallet } from "utils/walletHelper";
 import { useSelector } from "react-redux";
+import { IoMdClose } from "react-icons/io";
 
 const StatusModal = ({
   heading,
@@ -35,6 +36,18 @@ const StatusModal = ({
           height={220}
           width={isError ? 160 : 220}
           alt="Success"
+        />
+
+        <IoMdClose
+          onClick={onClose}
+          color="#fff"
+          style={{
+            cursor: "pointer",
+            fontSize: "20px",
+            position: "absolute",
+            top: "20px",
+            right: "20px",
+          }}
         />
       </div>
       <Typography className={classes.heading} variant="inherit">
