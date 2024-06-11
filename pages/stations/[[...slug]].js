@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Layout from "@components/layouts/layout";
 // import InviteCard from "@components/cards/InviteCard";
 import { Typography } from "@components/ui";
@@ -140,7 +140,7 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     width: "12rem",
     height: "13rem",
-    top: "3.5rem",
+    top: "3.8rem",
     right: 0,
     alignItems: "start",
     overflowY: "scroll",
@@ -222,7 +222,6 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "0.6375rem",
     alignItems: "center",
     justifyContent: "space-between",
-    cursor: "pointer",
     "&:hover": {
       backgroundColor: "#1D1D1D",
     },
@@ -256,6 +255,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 500,
     lineHeight: 1,
     alignItems: "center",
+    cursor: "pointer",
   },
   stationBadge: {
     paddingInline: "0.6rem",
@@ -280,8 +280,45 @@ const useStyles = makeStyles((theme) => ({
     color: "#707070",
   },
   option: {
+    position: "relative",
+  },
+  optionButton: {
+    width: "fit-content",
     color: "#707070",
+    background: "none",
+    border: "none",
     cursor: "pointer",
+    "&:hover": {
+      color: "#ffffff",
+    },
+  },
+  optionDropdown: {
+    display: "flex",
+    flexDirection: "column",
+    position: "absolute",
+    width: "11rem",
+    top: "1.5rem",
+    right: 0,
+    alignItems: "start",
+    backgroundColor: "#111111",
+    border: "1px solid #1D1D1D",
+    borderRadius: "0.6375rem",
+    zIndex: 100,
+  },
+  optionDropdownButton: {
+    display: "flex",
+    width: "100%",
+    padding: "0.8rem",
+    color: "white",
+    backgroundColor: "#111111",
+    alignItems: "center",
+    justifyContent: "start",
+    cursor: "pointer",
+    border: "none",
+    borderRadius: "0.6375rem",
+    "&:hover": {
+      backgroundColor: "#181818",
+    },
   },
   chainIcon: {
     position: "absolute",
@@ -303,10 +340,12 @@ const StationsPage = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(null);
   const [selectedNetworks, setSelectedNetworks] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const { getDaoDetails } = useAppContractMethods();
   const { getDecimals, getTokenSymbol } = useCommonContractMethods();
+  const dropdownRef = useRef(null);
 
   const handleCreateButtonClick = async () => {
     const { pathname } = router;
@@ -493,6 +532,19 @@ const StationsPage = () => {
     if (walletAddress) fetchClubs();
   }, [walletAddress]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setSelectedIndex(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   if (isUserWhitelisted === null || isLoading) {
     return (
       <Layout showSidebar={false} faucet={false}>
@@ -550,7 +602,6 @@ const StationsPage = () => {
                     (chain) => chain?.chainId === network.id,
                   )[0]?.networkId;
                   const isSelected = selectedNetworks.includes(networkId);
-
                   return (
                     <button
                       key={key}
@@ -612,12 +663,7 @@ const StationsPage = () => {
                 .filter((club) => !OMIT_DAOS.includes(club.daoAddress))
                 .map((club, key) => {
                   return (
-                    <button
-                      className={classes.station}
-                      key={key}
-                      onClick={() => {
-                        handleItemClick(club.daoAddress, club.networkId);
-                      }}>
+                    <div className={classes.station} key={key}>
                       <Image
                         src={CHAIN_CONFIG[club?.networkId]?.logoUri}
                         alt={CHAIN_CONFIG[club?.networkId]?.shortName}
@@ -638,7 +684,11 @@ const StationsPage = () => {
                       )}
                       <div className={classes.stationInfo}>
                         <div className={classes.stationHeader}>
-                          <Typography className={classes.stationTitle}>
+                          <Typography
+                            className={classes.stationTitle}
+                            onClick={() => {
+                              handleItemClick(club.daoAddress, club.networkId);
+                            }}>
                             {club?.name}{" "}
                             <span className={classes.stationBadge}>
                               {club?.tokenType == "erc721"
@@ -661,8 +711,32 @@ const StationsPage = () => {
                           )}
                         </Typography>
                       </div>
-                      <SlOptionsVertical className={classes.option} />
-                    </button>
+                      <div className={classes.option} ref={dropdownRef}>
+                        {selectedIndex === key && (
+                          <div className={classes.optionDropdown}>
+                            <button
+                              className={classes.optionDropdownButton}
+                              onClick={() => {}}>
+                              Joining Page
+                            </button>
+                            <button
+                              className={classes.optionDropdownButton}
+                              onClick={() => {}}>
+                              Copy Treasury Address
+                            </button>
+                          </div>
+                        )}
+                        <button
+                          className={classes.optionButton}
+                          onClick={() => {
+                            setSelectedIndex((prevIndex) =>
+                              prevIndex === key ? null : key,
+                            );
+                          }}>
+                          <SlOptionsVertical />
+                        </button>
+                      </div>
+                    </div>
                   );
                 })
             ) : (
