@@ -55,7 +55,7 @@ const DepositDetails = () => {
         </div>
         <div className={classes.detailCard}>
           <Typography fontSize={14} fontWeight={400} color={"#707070"}>
-            Owner
+            Admin(s)
           </Typography>
           <Typography
             fontSize={16}
