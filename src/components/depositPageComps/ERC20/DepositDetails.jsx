@@ -7,12 +7,13 @@ import { useRouter } from "next/router";
 import classes from "../../claims/Claim.module.scss";
 import { formatNumbers } from "utils/helper";
 import { CHAIN_CONFIG } from "utils/constants";
-
+import { Avatar } from "antd";
 const DepositDetails = () => {
   const clubData = useSelector((state) => {
     return state.club.clubData;
   });
   const adminAddresses = clubData?.adminAddresses;
+
   const router = useRouter();
   const [_, networkId = "0x89"] = router?.query?.slug ?? [];
   const blockExplorerUrl = CHAIN_CONFIG[networkId]?.blockExplorerUrl;
@@ -63,7 +64,17 @@ const DepositDetails = () => {
             fontWeight={600}
             color={"white"}
             variant="inherit">
-            <div className="f-d f-gap-8">
+            <Avatar.Group
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation(); // stop propagation main button
+              }}
+              size="small"
+              max={{
+                count: 3,
+                style: { color: "#f56a00", backgroundColor: "#fde3cf" },
+                popover: { trigger: "null" },
+              }}>
               {adminAddresses &&
                 adminAddresses.map((addr, ind) => {
                   return (
@@ -79,7 +90,7 @@ const DepositDetails = () => {
                     </Tooltip>
                   );
                 })}
-            </div>
+            </Avatar.Group>
           </Typography>
         </div>
       </div>
