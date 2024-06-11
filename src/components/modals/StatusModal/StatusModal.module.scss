@@ -6,6 +6,10 @@
   background-color: #151515;
   border-radius: 8px;
 
+  @media (max-width: 768px) {
+    width: 350px;
+  }
+
   .image {
     display: flex;
     justify-content: center;
