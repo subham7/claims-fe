@@ -43,6 +43,7 @@
     "@web3modal/ui": "^4.2.1",
     "@web3modal/wagmi": "^4.2.1",
     "@zkmelabs/widget": "^0.1.7",
+    "antd": "^5.18.0",
     "axios": "^0.26.0",
     "bignumber.js": "^9.1.2",
     "classnames": "^2.3.2",
