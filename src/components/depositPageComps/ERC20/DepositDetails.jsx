@@ -22,6 +22,8 @@ const DepositDetails = () => {
     maxDepositAmountFormatted,
     depositTokenSymbol,
   } = clubData;
+
+  console.log("Minor bug");
   return (
     <div>
       <div className={classes.detailContainer}>
