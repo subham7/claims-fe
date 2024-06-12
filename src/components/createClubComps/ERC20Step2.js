@@ -92,9 +92,12 @@ export default function ERC20Step2(props) {
                   <MenuItem value={CHAIN_CONFIG[props.networkId].usdcAddress}>
                     USDC
                   </MenuItem>
-                  <MenuItem value={CHAIN_CONFIG[props.networkId].usdtAddress}>
-                    USDT
-                  </MenuItem>
+
+                  {CHAIN_CONFIG[props.networkId].usdtAddress.length ? (
+                    <MenuItem value={CHAIN_CONFIG[props.networkId].usdtAddress}>
+                      USDT
+                    </MenuItem>
+                  ) : null}
                   <MenuItem value={CHAIN_CONFIG[props.networkId].nativeToken}>
                     {" "}
                     {CHAIN_CONFIG[props.networkId].nativeCurrency.symbol}

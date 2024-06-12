@@ -8,7 +8,7 @@ export const getTokenSymbolFromAddress = (props) => {
   if (depositToken === usdcAddress) {
     return "USDC";
   } else if (depositToken === nativeToken) {
-    return nativeToken.symbol;
+    return CHAIN_CONFIG[props.networkId].nativeCurrency.name;
   } else if (depositToken === usdtAddress) {
     return "USDT";
   }

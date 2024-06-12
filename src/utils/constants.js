@@ -215,6 +215,7 @@ export const CHAIN_CONFIG = {
     covalentNetworkName: "base-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    usdtAddress: "",
     airdropContractAddress: "0x9aeF8F840FED23502506CC988c0057F24638C00E",
     blockExplorerUrl: "https://explorer.base.org",
     disburseContractAddress: "0x66AB805f4bc0FCbFFC3240C80ecECE452aa9d94f",
@@ -323,6 +324,7 @@ export const CHAIN_CONFIG = {
     factoryContractAddress: "0x8a1D0Be1fe8b1D7A5C3051Da5d6b3A2690E12CAC",
     airdropContractAddress: "0xc72aDc4F927384Aff6cA479900e788ba4eFa9aB7",
     usdcAddress: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+    usdtAddress: "",
     stationSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-bsc-cc/prod/gn",
     claimFactoryAddress: "0x80e1429430cfB717187BD37eb5Bd0076d77dcE85",
