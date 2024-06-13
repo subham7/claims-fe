@@ -37,12 +37,7 @@ const Stations = ({ clubListData }) => {
 
   return (
     <div className={classes.container}>
-      <div className={classes.header}>
-        <h1 className={classes.title}>GM, anon!</h1>
-        <button className={classes.button} onClick={handleCreateButtonClick}>
-          <GoPlus size={22} /> Create station
-        </button>
-      </div>
+      <h1 className={classes.title}>GM, anon!</h1>
       <FilterStations
         searchQuery={searchQuery}
         selectedNetworks={selectedNetworks}
@@ -51,19 +46,36 @@ const Stations = ({ clubListData }) => {
       />
       <div className={classes.section}>
         <span className={classes.sectionHeader}>
-          <h2 className={classes.sectionTitle}>
-            My stations{" "}
-            {filteredClubs.length > 0 && (
-              <p className={classes.sectionSubtitle}>
-                ({filteredClubs.length})
-              </p>
-            )}
-          </h2>
-          {clubListData.length > 0 && (
-            <p className={classes.sectionSubtitle}>
-              Total Stations: {clubListData.length}
+          <span className={classes.sectionTitle}>
+            Space <h3 className={classes.sectionSubTitle}>Beta</h3>
+          </span>
+          <button className={classes.button} onClick={handleCreateButtonClick}>
+            <GoPlus size={22} /> Create space
+          </button>
+        </span>
+        <div className={classes.stations}>
+          {!walletAddress ? (
+            <p>SPACE STATION</p>
+          ) : (
+            <p
+              style={{
+                color: "#707070",
+                fontWeight: "300",
+                textAlign: "center",
+              }}>
+              You don&apos;t own any space(s) yet. Get started by creating one.
             </p>
           )}
+        </div>
+      </div>
+      <div className={classes.section}>
+        <span className={classes.sectionHeader}>
+          <h2 className={classes.sectionTitle}>
+            Stations {filteredClubs.length > 0 && `: ${filteredClubs.length}`}
+          </h2>
+          <button className={classes.button} onClick={handleCreateButtonClick}>
+            <GoPlus size={22} /> Create station
+          </button>
         </span>
         <div className={classes.stations}>
           {walletAddress && filteredClubs.length ? (

@@ -36,32 +36,28 @@
   }
 }
 
-.header {
-  display: flex;
-  width: 100%;
-  align-items: end;
-  justify-content: space-between;
-}
-
 .title {
+  text-align: start;
+  width: 100%;
   font-size: 2rem;
   font-weight: 700;
-  line-height: 0.5;
 }
 
 .button {
   display: flex;
   flex-direction: row;
-  padding: 0.625rem 1.25rem;
+  padding: 0.525rem 1.25rem;
   gap: 0.4rem;
-  background-color: $white;
-  color: $background-color-dark;
+  background-color: $border-color;
+  color: $white;
+  font-size: 0.925rem;
+  letter-spacing: 0.025em;
   border: 0px;
-  border-radius: 0.6375rem;
+  border-radius: 1.5rem;
   align-items: center;
   cursor: pointer;
   &:hover {
-    background-color: #e5e5e5;
+    background-color: $background-station;
   }
 }
 
@@ -181,15 +177,18 @@
 
 .sectionTitle {
   display: flex;
-  gap: 0.4rem;
   align-items: center;
-  justify-content: space-between;
+  gap: 0.5rem;
+  color: $gray;
+  text-transform: uppercase;
   font-size: 1.2rem;
   font-weight: 300;
 }
 
-.sectionSubtitle {
-  color: $gray;
+.sectionSubTitle {
+  color: $white;
+  font-size: 0.8rem;
+  font-weight: 500;
 }
 
 .stations {
