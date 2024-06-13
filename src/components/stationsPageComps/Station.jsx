@@ -15,6 +15,7 @@ import useAppContractMethods from "hooks/useAppContractMethods";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { BigNumber } from "bignumber.js";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
+import { setAlertData } from "redux/reducers/alert";
 
 const Station = ({
   networkId,
@@ -230,6 +231,13 @@ const Station = ({
               onClick={() => {
                 setSelectedIndex(null);
                 navigator.clipboard.writeText(gnosisAddress);
+                dispatch(
+                  setAlertData({
+                    open: true,
+                    message: "Copied!",
+                    severity: "success",
+                  }),
+                );
               }}>
               Copy Treasury Address
             </button>
