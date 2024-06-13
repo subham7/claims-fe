@@ -35,7 +35,6 @@
     "@reduxjs/toolkit": "^1.8.1",
     "@safe-global/api-kit": "^1.0.1",
     "@safe-global/protocol-kit": "^0.1.1",
-    "@safe-global/safe-apps-sdk": "^7.11.0",
     "@safe-global/safe-core-sdk-types": "^1.9.1",
     "@sentry/nextjs": "^7.88.0",
     "@tanstack/react-query": "^5.32.0",
@@ -69,7 +68,7 @@
     "sass": "^1.63.6",
     "sharp": "^0.33.3",
     "viem": "^2.9.31",
-    "wagmi": "2.6.0",
+    "wagmi": "2.9.11",
     "web3": "^1.9.0",
     "yup": "^1.0.2"
   },
