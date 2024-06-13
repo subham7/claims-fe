@@ -25,6 +25,7 @@ const Station = ({
   membersCount,
   totalAmountRaised,
   depositTokenAddress,
+  gnosisAddress,
   key,
 }) => {
   const dispatch = useDispatch();
@@ -224,7 +225,12 @@ const Station = ({
               }}>
               Joining Page
             </button>
-            <button className={classes.optionDropdownButton} onClick={() => {}}>
+            <button
+              className={classes.optionDropdownButton}
+              onClick={() => {
+                setSelectedIndex(null);
+                navigator.clipboard.writeText(gnosisAddress);
+              }}>
               Copy Treasury Address
             </button>
           </div>

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Layout from "@components/layouts/layout";
 import Stations from "@components/stationsPageComps/Stations";
-import axios from "axios";
 import { getReferralCode } from "api/invite/invite";
 import BackdropLoader from "@components/common/BackdropLoader";
 import { queryStationListFromSubgraph } from "utils/stationsSubgraphHelper";
@@ -12,13 +11,6 @@ const StationsPage = () => {
   const [isUserWhitelisted, setIsUserWhitelisted] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [clubListData, setClubListData] = useState([]);
-
-  const getImage = async (daoAddress) => {
-    const imageData = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_HOST}club/${daoAddress}/file`,
-    );
-    return imageData;
-  };
 
   useEffect(() => {
     (async () => {
@@ -41,22 +33,11 @@ const StationsPage = () => {
     const fetchClubs = async () => {
       try {
         setIsLoading(true);
-        const stations = await queryStationListFromSubgraph(walletAddress);
+        const stations = await queryStationListFromSubgraph(
+          "0x66264a63FcE8BAcF52E36a4f005179D71514aD8e",
+        );
 
         if (stations?.data?.clubs) setClubListData(stations.data.clubs);
-
-        const imageData = await Promise.all(
-          stations.data.clubs.map((club) => getImage(club.daoAddress)),
-        );
-        const filteredImageData = imageData.filter((image) => image.data);
-        setClubListData((prev) =>
-          prev.map((club, index) => {
-            return {
-              ...club,
-              imageUrl: filteredImageData[index]?.data[0]?.imageUrl,
-            };
-          }),
-        );
 
         setIsLoading(false);
       } catch (error) {
