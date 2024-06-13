@@ -8,12 +8,14 @@ import { useRouter } from "next/router";
 import { GoPlus } from "react-icons/go";
 import FilterStations from "./Filter";
 import Station from "./Station";
+import CreateSpaceModal from "@components/modals/CreateSpaceModal/CreateSpaceModal";
 
 const Stations = ({ clubListData }) => {
   const { address: walletAddress } = useAccount();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedNetworks, setSelectedNetworks] = useState([]);
+  const [showCreateSpaceModal, setShowCreateSpaceModal] = useState(false);
 
   const handleCreateButtonClick = async () => {
     const { pathname } = router;
@@ -49,7 +51,9 @@ const Stations = ({ clubListData }) => {
           <span className={classes.sectionTitle}>
             Space <h3 className={classes.sectionSubTitle}>Beta</h3>
           </span>
-          <button className={classes.button} onClick={handleCreateButtonClick}>
+          <button
+            className={classes.button}
+            onClick={() => setShowCreateSpaceModal(true)}>
             <GoPlus size={22} /> Create space
           </button>
         </span>
@@ -120,6 +124,9 @@ const Stations = ({ clubListData }) => {
           )}
         </div>
       </div>
+      {showCreateSpaceModal && (
+        <CreateSpaceModal setShowCreateSpaceModal={setShowCreateSpaceModal} />
+      )}
     </div>
   );
 };
