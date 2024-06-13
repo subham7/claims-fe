@@ -73,13 +73,14 @@ const Stations = ({ clubListData }) => {
                 return (
                   <Station
                     networkId={club.networkId}
-                    imageUrl={club.imageUrl}
+                    imageUrl={club.clubLogoUrl}
                     daoAddress={club.daoAddress}
                     name={club.name}
                     tokenType={club.tokenType}
                     membersCount={club.membersCount}
                     totalAmountRaised={club.totalAmountRaised}
                     depositTokenAddress={club.depositTokenAddress}
+                    gnosisAddress={club.gnosisAddress}
                     key={key}
                   />
                 );
