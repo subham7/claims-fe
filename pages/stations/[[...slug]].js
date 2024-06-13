@@ -33,9 +33,7 @@ const StationsPage = () => {
     const fetchClubs = async () => {
       try {
         setIsLoading(true);
-        const stations = await queryStationListFromSubgraph(
-          "0x66264a63FcE8BAcF52E36a4f005179D71514aD8e",
-        );
+        const stations = await queryStationListFromSubgraph(walletAddress);
 
         if (stations?.data?.clubs) setClubListData(stations.data.clubs);
 
