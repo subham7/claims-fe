@@ -58,8 +58,8 @@ const Stations = ({ clubListData }) => {
           </button>
         </span>
         <div className={classes.stations}>
-          {!walletAddress ? (
-            <p>SPACE STATION</p>
+          {walletAddress ? (
+            <p>Your spaces will appear here.</p>
           ) : (
             <p
               style={{
