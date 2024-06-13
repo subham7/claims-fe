@@ -46,7 +46,6 @@ const ProposalItem = ({
   });
 
   const [amount, setAmount] = useState("");
-  const [amount2, setAmount2] = useState("");
   const [txHash, setTxHash] = useState("");
   const [members, setMembers] = useState([]);
   const [transactionLoading, setTransactionLoading] = useState(false);
