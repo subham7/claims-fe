@@ -126,7 +126,7 @@ const DepositInput = ({
                   height={25}
                   src={getTokenImageFromAddress({
                     tokenAddress: clubData?.depositTokenAddress,
-                    networkId,
+                    networkId: routeNetworkId,
                   })}
                 />
                 <Typography mt={0.5} variant="inherit">
