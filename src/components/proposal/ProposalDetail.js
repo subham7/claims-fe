@@ -35,7 +35,6 @@ import CurrentResults from "@components/proposalComps/CurrentResults";
 import ProposalVotes from "@components/proposalComps/ProposalVotes";
 import { getSafeSdk, handleSignMessage } from "utils/helper";
 import { retrieveNftListing } from "api/assets";
-import SafeAppsSDK from "@safe-global/safe-apps-sdk";
 import { useAccount, useChainId, useSignMessage } from "wagmi";
 import {
   createRejectSafeTx,
@@ -63,11 +62,6 @@ const ProposalDetail = ({ pid, daoAddress, routeNetworkId }) => {
   const chain = useChainId();
   const networkId = "0x" + chain?.toString(16);
   const dispatch = useDispatch();
-
-  const sdk = new SafeAppsSDK({
-    allowedDomains: [/gnosis-safe.io$/, /safe.global$/, /5afe.dev$/],
-    debug: true,
-  });
 
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
