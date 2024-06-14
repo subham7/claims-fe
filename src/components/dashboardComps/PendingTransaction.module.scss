@@ -1,0 +1,77 @@
+@import "../../../styles/variables.scss";
+
+.pendingTransactionItem{
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 12px;
+    padding-bottom: 16px;
+    border-bottom: 0.5px solid $divider-color;
+}
+
+.imageInfo{
+    display: flex;
+    gap: 4px ;
+    align-items: center;
+    background: #1e1e1e;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.signSection{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.signInfo{
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding:4px 12px;
+    border-radius: 50px;
+    background-color: $active-background;
+    width: fit-content;
+
+    .signText{
+        color: $active-text;
+        font-size: 12px;
+
+    }
+}
+
+.signButton{
+    background-color: #1e1e1e;
+    padding:6px;
+    width: 100px;
+    border: 0.5px solid $divider-color;
+    color: white;
+    font-family: inherit;
+    border-radius: 8px;
+    cursor: pointer;
+
+    &:disabled{
+        background-color: #1E1E1E;
+        color: #707070;
+        cursor: not-allowed;
+        
+        &:hover{
+        background-color: #1E1E1E;
+    }
+    }
+    
+    &:hover{
+        background-color: #282828;
+    }
+}
+
+.executeButton{
+    @extend .signButton;
+    background-color: white;
+    color: black;
+
+    &:hover{
+        color: black;
+        background-color: white;
+    }
+}

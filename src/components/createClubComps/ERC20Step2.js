@@ -288,9 +288,7 @@ export default function ERC20Step2(props) {
               <Typography fontWeight={600} variant="body" className="text-blue">
                 Price per token
               </Typography>
-              <Tooltip
-                placement="bottom"
-                title="Members receive shares as per their contribution to the station. These shares represent an onchain captable of members’ ownership inside the station.">
+              <Tooltip placement="bottom" title="Price of your station's token">
                 <div>
                   <MdInfo size={14} style={{ cursor: "pointer" }} />
                 </div>
