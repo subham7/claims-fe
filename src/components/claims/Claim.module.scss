@@ -19,7 +19,7 @@
     justify-content: center;
   }
 
-  .kycContainer{
+  .kycContainer {
     margin-top: 16px;
     border-radius: 12px;
     background-color: $border-color;
@@ -27,29 +27,28 @@
     padding: 16px;
     justify-content: space-between;
     align-items: center;
-    
-    div{
+
+    div {
       display: flex;
       gap: 8px;
       align-items: center;
 
-      .action{
-        background-color:#ffb74d30;
-        color:#ffb74d;
+      .action {
+        background-color: #ffb74d30;
+        color: #ffb74d;
         padding: 0px 12px;
         border-radius: 50px;
       }
 
-      .completed{
-        background-color:$active-background;
-        color:$active-text;
+      .completed {
+        background-color: $active-background;
+        color: $active-text;
         padding: 0px 12px;
         border-radius: 50px;
       }
-
     }
 
-    div.kycButton{
+    div.kycButton {
       cursor: pointer;
     }
   }
@@ -154,6 +153,16 @@
         font-size: 32px;
         padding: 10px 4px;
         border-radius: 20px;
+
+        @media (max-width: 768px) {
+          width: 180px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .input {
+          width: 180px;
+        }
       }
 
       .tokenContainer {
@@ -243,22 +252,20 @@
       padding-bottom: 4px;
       border-bottom: 1px solid $divider-color;
       margin-bottom: 20px;
-
-      
     }
 
     .whoCanClaimContainer {
       margin: 24px 0;
 
-      .tokenList{
+      .tokenList {
         display: flex;
         flex-wrap: wrap;
         gap: 12px;
         padding: 4px;
         margin-top: 12px;
 
-        .tokenContainer{
-          padding:12px 40px;
+        .tokenContainer {
+          padding: 12px 40px;
           font-weight: 600;
           border-radius: 50px;
           background-color: $dark-gray;
@@ -370,6 +377,7 @@
   gap: 10px;
   font-size: 24px;
   color: $gray;
+  margin-top: 28px;
 
   svg {
     &:hover {
@@ -384,7 +392,7 @@
   border-radius: 12px;
 }
 
-.primaryButton{
+.primaryButton {
   width: 100%;
   padding: 12px 0;
   margin: 10px 0;
@@ -398,42 +406,37 @@
   font-weight: 500;
   text-transform: uppercase;
 
-  &:hover{
+  &:hover {
     background-color: whitesmoke;
   }
 
-  &:disabled{
+  &:disabled {
     cursor: not-allowed;
     background-color: $gray;
 
-    &:hover{
-    background-color: $gray;
+    &:hover {
+      background-color: $gray;
     }
   }
-  
-  
 }
 
-.createStationDiv{
+.createStationDiv {
   display: flex;
   align-items: center;
   justify-content: center;
   margin-top: 28px;
+  margin-bottom: 28px;
   gap: 12px;
   cursor: pointer;
 
-.createStationText{
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  // padding-top: 28px;
-  background: linear-gradient(to right, #FF279C, #2E55FF);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-
-
-
+  .createStationText {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    // padding-top: 28px;
+    background: linear-gradient(to right, #ff279c, #2e55ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 }

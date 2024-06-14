@@ -8,6 +8,7 @@ import { ClaimsInsightStyles } from "./claimsInsightStyles";
 const ClaimEligibility = ({
   minWhitelistTokenValue,
   whitelistTokenAddress,
+  routeNetworkId,
 }) => {
   const [whitelistTokenData, setWhitelistTokenData] = useState({
     decimals: 0,
@@ -16,12 +17,23 @@ const ClaimEligibility = ({
 
   const theme = useTheme();
   const classes = ClaimsInsightStyles(theme);
-  const { getDecimals, getTokenSymbol } = useCommonContractMethods();
+  const { getDecimals, getTokenSymbol, checkTokenIsErc1155, getTokenName } =
+    useCommonContractMethods({ routeNetworkId });
 
   useEffect(() => {
     const fetchWhiteListTokenDetails = async () => {
-      const symbol = await getTokenSymbol(whitelistTokenAddress);
-      const decimals = await getDecimals(whitelistTokenAddress);
+      const tokenIsErc1155 = await checkTokenIsErc1155(whitelistTokenAddress);
+      const symbol = tokenIsErc1155
+        ? await getTokenName(whitelistTokenAddress)
+        : await getTokenSymbol(whitelistTokenAddress);
+
+      let decimals;
+
+      try {
+        decimals = await getDecimals(whitelistTokenAddress);
+      } catch (error) {
+        console.log(error);
+      }
 
       setWhitelistTokenData({
         decimals: decimals,
@@ -51,10 +63,12 @@ const ClaimEligibility = ({
         <>
           <div className={classes.eligibleToken}>
             <p>
-              {convertFromWeiGovernance(
-                minWhitelistTokenValue,
-                whitelistTokenData.decimals,
-              )}
+              {whitelistTokenData?.decimals
+                ? convertFromWeiGovernance(
+                    minWhitelistTokenValue,
+                    whitelistTokenData.decimals,
+                  )
+                : minWhitelistTokenValue}
             </p>
 
             <p>{whitelistTokenData.symbol}</p>

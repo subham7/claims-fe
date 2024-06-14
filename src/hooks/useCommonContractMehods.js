@@ -10,6 +10,7 @@ import { CHAIN_CONFIG, ZERO_ADDRESS } from "utils/constants";
 import { getPublicClient } from "utils/viemConfig";
 import Web3 from "web3";
 import { factoryContractCCABI } from "abis/factoryContractCC";
+import { erc1155ABI } from "abis/erc1155ABI";
 
 const useCommonContractMethods = (params) => {
   const walletClient = useWalletClient();
@@ -60,9 +61,9 @@ const useCommonContractMethods = (params) => {
   const getTokenName = async (contractAddress) => {
     try {
       const name = localStorage.getItem(
-        `stationx-${contractAddress}-${networkId}--name`,
+        `stationx-${contractAddress}-${networkId}-name`,
       );
-      if (name !== "undefined") {
+      if (name !== "undefined" && name !== null) {
         return name;
       } else if (isNative(contractAddress, networkId)) {
         localStorage.setItem(
@@ -154,6 +155,46 @@ const useCommonContractMethods = (params) => {
     } catch (error) {
       console.error(error);
       return 0;
+    }
+  };
+
+  const getBalanceErc1155 = async (contractAddress, tokenId) => {
+    try {
+      if (contractAddress) {
+        const response = await readContractFunction({
+          address: contractAddress,
+          abi: erc1155ABI,
+          functionName: "balanceOf",
+          args: [walletAddress, tokenId],
+          networkId,
+        });
+
+        return response ? Number(response) : 0;
+      } else {
+        return 0;
+      }
+    } catch (error) {
+      console.error(error);
+      return 0;
+    }
+  };
+
+  const checkTokenIsErc1155 = async (contractAddress) => {
+    try {
+      if (contractAddress) {
+        const response = await readContractFunction({
+          address: contractAddress,
+          abi: erc1155ABI,
+          functionName: "supportsInterface",
+          args: ["0xd9b67a26"],
+          networkId,
+        });
+
+        return response;
+      }
+    } catch (error) {
+      console.error(error);
+      throw error;
     }
   };
 
@@ -297,6 +338,8 @@ const useCommonContractMethods = (params) => {
     checkCurrentAllowance,
     getCreateFees,
     getDepositFees,
+    getBalanceErc1155,
+    checkTokenIsErc1155,
   };
 };
 

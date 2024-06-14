@@ -22,6 +22,7 @@ import TwitterSharingModal from "@components/modals/TwitterSharingModal";
 import { setAlertData } from "redux/reducers/alert";
 import { useDispatch } from "react-redux";
 import { convertToFullNumber, processAmount } from "utils/helper";
+import { getErc1155TokenId } from "api/token";
 
 const ClaimInputComponent = ({
   claimInputProps,
@@ -63,6 +64,9 @@ const ClaimInputComponent = ({
 const Claim = ({ claimAddress }) => {
   const [claimsData, setClaimsData] = useState();
   const [loading, setLoading] = useState(false);
+  const [erc1155TokenId, setErc1155TokenId] = useState(0);
+  const [isTokenErc1155, setIsTokenErc1155] = useState();
+  const [whitelistTokenBalance, setWhitelistTokenBalance] = useState(0);
   const dispatch = useDispatch();
 
   const [tokenDetails, setTokenDetails] = useState({
@@ -70,7 +74,7 @@ const Claim = ({ claimAddress }) => {
     tokenSymbol: "",
     tokenAddress: "",
     whitelistTokenSymbol: "",
-    whitelistTokenDecimal: 1,
+    whitelistTokenDecimal: 0,
   });
   const [activityDetails, setActivityDetails] = useState({
     claimedAmt: "",
@@ -96,8 +100,15 @@ const Claim = ({ claimAddress }) => {
   const chain = useChainId();
   const networkId = "0x" + chain?.toString(16);
 
-  const { getDecimals, getTokenSymbol, getBalance, encode } =
-    useCommonContractMethods();
+  const {
+    getDecimals,
+    getTokenSymbol,
+    getBalance,
+    encode,
+    checkTokenIsErc1155,
+    getBalanceErc1155,
+    getTokenName,
+  } = useCommonContractMethods();
 
   const { claimSettings, claimBalance, claimAmount, claim } =
     useDropsContractMethods();
@@ -115,17 +126,28 @@ const Claim = ({ claimAddress }) => {
       const tokenDecimal = await getDecimals(claims[0].airdropToken);
       const tokenSymbol = await getTokenSymbol(claims[0].airdropToken);
 
-      const whitelistTokenSymbol = await getTokenSymbol(
-        claims[0].whitelistToken,
-      );
-      const whitelistTokenDecimal = await getDecimals(claims[0].whitelistToken);
+      let whitelistTokenSymbol;
+
+      try {
+        whitelistTokenSymbol = await getTokenName(claims[0].whitelistToken);
+      } catch (error) {
+        console.log(error);
+      }
+
+      let whitelistTokenDecimal = 0;
+
+      try {
+        whitelistTokenDecimal = await getDecimals(claims[0].whitelistToken);
+      } catch (error) {
+        console.log(error);
+      }
 
       setTokenDetails({
         tokenDecimal: tokenDecimal,
         tokenSymbol,
         tokenAddress: claims[0].airdropToken,
         whitelistTokenSymbol: whitelistTokenSymbol,
-        whitelistTokenDecimal,
+        whitelistTokenDecimal: whitelistTokenDecimal,
       });
 
       setLoading(false);
@@ -269,7 +291,17 @@ const Claim = ({ claimAddress }) => {
     try {
       switch (permission) {
         case "0": {
-          const whitelistTokenBalance = await getBalance(dropsData?.daoToken);
+          let whitelistTokenBalance;
+          if (isTokenErc1155) {
+            whitelistTokenBalance = await getBalanceErc1155(
+              dropsData?.daoToken,
+              erc1155TokenId,
+            );
+          } else {
+            whitelistTokenBalance = await getBalance(dropsData?.daoToken);
+          }
+
+          setWhitelistTokenBalance(whitelistTokenBalance);
 
           if (
             Number(whitelistTokenBalance) >= Number(dropsData?.tokenGatingValue)
@@ -335,6 +367,7 @@ const Claim = ({ claimAddress }) => {
           walletAddress,
           proof,
           encodedLeaf,
+          erc1155TokenId,
         );
 
         const claimedAmt = await claimAmount(claimAddress, walletAddress);
@@ -361,6 +394,7 @@ const Claim = ({ claimAddress }) => {
           walletAddress,
           [],
           "",
+          erc1155TokenId,
         );
 
         fetchContractData();
@@ -448,6 +482,15 @@ const Claim = ({ claimAddress }) => {
     checkDropIsActive();
   }, [dropsData?.endTime, dropsData?.startTime, currentTime, networkId]);
 
+  const fetchErc1155TokenId = async () => {
+    const tokenId = await getErc1155TokenId(walletAddress, dropsData?.daoToken);
+
+    const isTokenErc1155 = await checkTokenIsErc1155(dropsData?.daoToken);
+    setIsTokenErc1155(isTokenErc1155);
+
+    setErc1155TokenId(tokenId);
+  };
+
   useEffect(() => {
     if (claimAddress && networkId) {
       fetchClaimDetails();
@@ -460,10 +503,20 @@ const Claim = ({ claimAddress }) => {
   }, [tokenDetails, claimAddress, networkId]);
 
   useEffect(() => {
+    if (dropsData?.daoToken && walletAddress) fetchErc1155TokenId();
+  }, [dropsData?.daoToken, walletAddress]);
+
+  useEffect(() => {
     if (dropsData?.permission) {
       setClaimAmountByType(dropsData.permission);
     }
-  }, [dropsData?.permission, dropsData, networkId]);
+  }, [
+    dropsData?.permission,
+    dropsData,
+    networkId,
+    erc1155TokenId,
+    isTokenErc1155,
+  ]);
 
   useEffect(() => {
     if (claimAddress) fetchBannerDetails();
@@ -492,6 +545,7 @@ const Claim = ({ claimAddress }) => {
               setClaimInput: setClaimInput,
               tokenDetails: tokenDetails,
               claimsData: claimsData,
+              whitelistTokenBalance,
             }}
             alreadyClaimed={alreadyClaimed}
             buttonProps={{

@@ -41,14 +41,14 @@ const ClaimInsight = ({ claimAddress, routeNetworkId }) => {
     useDropsContractMethods();
 
   const { getDecimals, getTokenSymbol, approveDeposit } =
-    useCommonContractMethods();
+    useCommonContractMethods({ routeNetworkId });
 
   const fetchClaimDetails = async () => {
     setLoading(true);
     try {
       const { claims } = await queryDropDetailsFromSubgraph(
         claimAddress,
-        networkId,
+        routeNetworkId,
       );
 
       if (claims.length) setClaimsData(claims);
@@ -228,8 +228,8 @@ const ClaimInsight = ({ claimAddress, routeNetworkId }) => {
   };
 
   useEffect(() => {
-    if (claimAddress && networkId) fetchClaimDetails();
-  }, [claimAddress, networkId]);
+    if (claimAddress && routeNetworkId) fetchClaimDetails();
+  }, [claimAddress, routeNetworkId]);
 
   return (
     <>
@@ -270,13 +270,18 @@ const ClaimInsight = ({ claimAddress, routeNetworkId }) => {
               rollbackTokensHandler={rollbackTokensHandler}
               airdropTokenDetails={airdropTokenDetails}
               modifyStartAndEndTimeHandler={modifyStartAndEndTimeHandler}
-              endTime={dayjs(Number(claimsData[0]?.endTime) * 1000)}
-              startTime={dayjs(Number(claimsData[0]?.startTime) * 1000)}
+              endTime={dayjs(Number(claimsData[0]?.endTime) * 1000).locale(
+                "en",
+              )}
+              startTime={dayjs(Number(claimsData[0]?.startTime) * 1000).locale(
+                "en",
+              )}
               hasAllowanceMechanism={claimsData[0]?.hasAllowanceMechanism}
             />
             <ClaimEligibility
               whitelistTokenAddress={claimsData[0]?.whitelistToken}
               minWhitelistTokenValue={claimsData[0]?.minWhitelistTokenValue}
+              routeNetworkId={routeNetworkId}
             />
           </div>
         </div>
@@ -285,6 +290,7 @@ const ClaimInsight = ({ claimAddress, routeNetworkId }) => {
           airdropTokenDetails={airdropTokenDetails}
           claimAddress={claimAddress}
           maxClaimAmount={claimsData[0]?.maxClaimableAmount}
+          routeNetworkId={routeNetworkId}
         />
       </section>
 

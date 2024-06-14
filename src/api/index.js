@@ -15,6 +15,7 @@ export const USDC_FAUCET_ADDRESS = process.env.NEXT_PUBLIC_USDC_FAUCET_ADDRESS;
 
 // API KEY
 export const COVALENT_API = process.env.NEXT_PUBLIC_COVALENT_API_KEY;
+export const NFT_SCAN_KEY = process.env.NEXT_PUBLIC_NFT_SCAN_API_KEY;
 
 // Subgraph URL
 

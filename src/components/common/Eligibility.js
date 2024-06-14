@@ -16,10 +16,12 @@ const Eligibility = ({
   const getClaimInfo = (claimType, contractData, tokenDetails) => {
     switch (claimType) {
       case "0":
-        const minValue = convertFromWeiGovernance(
-          contractData?.minWhitelistTokenValue,
-          tokenDetails?.whitelistTokenDecimal,
-        );
+        const minValue = tokenDetails?.whitelistTokenDecimal
+          ? convertFromWeiGovernance(
+              contractData?.minWhitelistTokenValue,
+              tokenDetails?.whitelistTokenDecimal,
+            )
+          : contractData?.minWhitelistTokenValue;
         return {
           displayText: `${minValue} ${tokenDetails?.whitelistTokenSymbol}`,
           description: "Hold these token(s) to participate in this drop.",

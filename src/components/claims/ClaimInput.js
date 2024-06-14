@@ -13,6 +13,7 @@ const ClaimInput = ({
   claimRemaining,
   maxHandler,
   claimsData,
+  whitelistTokenBalance,
 }) => {
   const ClaimInputShimmer = () => {
     return (
@@ -52,12 +53,16 @@ const ClaimInput = ({
             </Typography>
             <Typography variant="inherit" className={classes.smallFont}>
               Available:{" "}
-              {Number(
-                convertFromWeiGovernance(
-                  convertToFullNumber(claimRemaining + ""),
-                  tokenDetails.tokenDecimal,
-                ),
-              ).toFixed(4)}
+              {Number(claimsData?.minWhitelistTokenValue) &&
+              Number(claimsData?.minWhitelistTokenValue) >
+                Number(whitelistTokenBalance)
+                ? 0
+                : Number(
+                    convertFromWeiGovernance(
+                      convertToFullNumber(claimRemaining + ""),
+                      tokenDetails.tokenDecimal,
+                    ),
+                  ).toFixed(4)}
               <span onClick={maxHandler}>Max</span>
             </Typography>
           </div>

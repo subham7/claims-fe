@@ -156,8 +156,8 @@ const CreateClaim = () => {
       description: "",
       // rollbackAddress: "",
       numberOfTokens: "",
-      startDate: dayjs(Date.now() + 300000),
-      endDate: dayjs(Date.now() + 600000),
+      startDate: dayjs(Date.now() + 300000).locale("en"),
+      endDate: dayjs(Date.now() + 600000).locale("en"),
       selectedToken: "", // token Name
       recieveTokens: "immediately", // immediately or later
       walletAddress: "",
@@ -306,8 +306,13 @@ const CreateClaim = () => {
 
         const loadClaimsContractFactoryData_Token = async () => {
           try {
-            let tokenGatingDecimals = 1;
-            tokenGatingDecimals = await getDecimals(data?.daoTokenAddress);
+            let tokenGatingDecimals;
+
+            try {
+              tokenGatingDecimals = await getDecimals(data?.daoTokenAddress);
+            } catch (error) {
+              console.log(error);
+            }
 
             // if airdroping from contract then approve erc20
             if (!hasAllowanceMechanism) {
@@ -326,11 +331,13 @@ const CreateClaim = () => {
               data.walletAddress.toLowerCase(),
               data.airdropTokenAddress,
               data.daoTokenAddress,
-              data.daoTokenAddress !== ZERO_ADDRESS
+              data.daoTokenAddress !== ZERO_ADDRESS && tokenGatingDecimals
                 ? convertToWeiGovernance(
                     data.tokenGatingAmt,
                     tokenGatingDecimals,
                   )
+                : data.daoTokenAddress !== ZERO_ADDRESS
+                ? data.tokenGatingAmt
                 : 0,
               new Date(data.startDate).getTime() / 1000,
               new Date(data.endDate).getTime() / 1000,

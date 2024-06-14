@@ -6,8 +6,9 @@ import Backdrop from "../Backdrop/Backdrop";
 const Modal = ({ children, className, onClose }) => {
   return (
     <>
-      <Backdrop onClose={onClose} />
-      <div className={classNames(classes.modal, className)}>{children}</div>
+      <Backdrop onClose={onClose}>
+        <div className={classNames(classes.modal, className)}>{children}</div>
+      </Backdrop>
     </>
   );
 };

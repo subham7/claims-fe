@@ -27,6 +27,7 @@ import Image from "next/image";
 import Modal from "@components/common/Modal/Modal";
 import { Typography } from "@mui/material";
 import classes from "@components/modals/StatusModal/StatusModal.module.scss";
+import { CC_NETWORKS } from "utils/networkConstants";
 
 const DepositInputComponents = ({ depositPreRequisitesProps, mintProps }) => {
   return (
@@ -195,10 +196,19 @@ const ERC721 = ({
   const approveERC721Handler = async () => {
     setLoading(true);
     try {
+      const adminFee = CC_NETWORKS.includes(routeNetworkId)
+        ? (clubData?.ownerFeePerDepositPercent *
+            Number(
+              Number(clubData.pricePerTokenFormatted.formattedValue) * count,
+            )) /
+          10000
+        : 0;
+
       await approveDeposit(
         clubData.depositTokenAddress,
         CHAIN_CONFIG[networkId].factoryContractAddress,
-        Number(clubData.pricePerTokenFormatted.formattedValue) * count,
+        Number(clubData.pricePerTokenFormatted.formattedValue) * count +
+          adminFee,
         tokenDetails.tokenDecimal,
       );
 
@@ -227,16 +237,22 @@ const ERC721 = ({
     try {
       setLoading(true);
 
+      const depositAmountNative =
+        clubData?.pricePerTokenFormatted.bigNumberValue.times(count);
+
+      const adminFee = CC_NETWORKS.includes(routeNetworkId)
+        ? depositAmountNative
+            .times(clubData?.ownerFeePerDepositPercent)
+            .dividedBy(10000)
+        : 0;
+
       await buyGovernanceTokenERC721DAO(
         clubData?.imgUrl,
         count,
         whitelistUserData?.proof ? whitelistUserData.proof : [],
         clubData.depositTokenAddress.toLowerCase() ===
           CHAIN_CONFIG[networkId].nativeToken.toLowerCase()
-          ? clubData?.pricePerTokenFormatted.bigNumberValue
-              .times(count)
-              .integerValue()
-              .toFixed()
+          ? depositAmountNative.plus(adminFee).integerValue().toFixed()
           : "0",
       );
       await whitelistOnDeposit(walletAddress);
