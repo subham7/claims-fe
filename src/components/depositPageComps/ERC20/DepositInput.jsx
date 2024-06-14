@@ -13,6 +13,8 @@ import { useAccount, useChainId } from "wagmi";
 import classes from "../../claims/Claim.module.scss";
 import Image from "next/image";
 import DepositCardModal from "@components/modals/DepositCardModal/DepositCardModal";
+import { getTokenImageFromAddress } from "utils/tokenHelper";
+import { useSelector } from "react-redux";
 
 const ClaimInputShimmer = () => {
   return (
@@ -38,6 +40,10 @@ const DepositInput = ({
   const chain = useChainId();
   const networkId = "0x" + chain?.toString(16);
   const [loading, setLoading] = useState(false);
+
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
+  });
 
   const connectWalletHandler = async () => {
     try {
@@ -118,11 +124,10 @@ const DepositInput = ({
                   }}
                   width={25}
                   height={25}
-                  src={
-                    tokenDetails?.isNativeToken
-                      ? CHAIN_CONFIG[routeNetworkId]?.nativeCurrency?.image
-                      : "/assets/icons/usd.png"
-                  }
+                  src={getTokenImageFromAddress({
+                    tokenAddress: clubData?.depositTokenAddress,
+                    networkId: routeNetworkId,
+                  })}
                 />
                 <Typography mt={0.5} variant="inherit">
                   {tokenDetails?.tokenSymbol}

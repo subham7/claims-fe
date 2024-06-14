@@ -24,19 +24,30 @@ const DepositCardModal = ({
 }) => {
   const [fees, setFees] = useState(0);
   const [isChecked, setIsChecked] = useState(false);
+  const [depositTokenSymbol, setDepositTokenSymbol] = useState("");
   const iconStyle = { fontWeight: 800, marginRight: "4px" };
   const club = useSelector((state) => state.club.clubData);
   const adminFee = (club.ownerFeePerDepositPercent * amount) / 10000 ?? 0;
-  const { getDepositFees } = useCommonContractMethods();
+  const { getDepositFees, getTokenSymbol } = useCommonContractMethods();
+
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
+  });
 
   useEffect(() => {
     if (CC_NETWORKS.includes(networkId)) {
       (async () => {
         const depositFees = await getDepositFees(false);
+
         setFees(depositFees);
       })();
     }
-  }, [networkId]);
+
+    (async () => {
+      const tokenSymbol = await getTokenSymbol(clubData?.depositTokenAddress);
+      setDepositTokenSymbol(tokenSymbol);
+    })();
+  }, [networkId, clubData?.depositTokenAddress]);
 
   return (
     <Modal className={classes.modal}>
@@ -49,9 +60,7 @@ const DepositCardModal = ({
             CC_NETWORKS.includes(routeNetworkId)
               ? Number(amount + adminFee).toFixed(4)
               : amount
-          } ${
-            isNative ? CHAIN_CONFIG[networkId]?.nativeCurrency?.symbol : "USDC"
-          }`}
+          } ${depositTokenSymbol}`}
         />
       </div>
 
@@ -62,18 +71,14 @@ const DepositCardModal = ({
             CC_NETWORKS.includes(routeNetworkId)
               ? amount
               : Number(amount - adminFee).toFixed(4)
-          } ${
-            isNative ? CHAIN_CONFIG[networkId]?.nativeCurrency?.symbol : "USDC"
-          }`}
+          } ${depositTokenSymbol}`}
           icon={<PiArrowElbowDownRightBold style={iconStyle} />}
         />
         <AmountInfo
           title={`Admin Fee (${
             Number(club?.ownerFeePerDepositPercent) / 100
           }%)`}
-          amount={`${adminFee} ${
-            isNative ? CHAIN_CONFIG[networkId]?.nativeCurrency?.symbol : "USDC"
-          }`}
+          amount={`${adminFee} ${depositTokenSymbol}`}
           icon={<PiArrowElbowDownRightBold style={iconStyle} />}
         />
 
