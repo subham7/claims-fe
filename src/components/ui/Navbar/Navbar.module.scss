@@ -6,7 +6,7 @@
   justify-content: space-between;
   padding: 8px 20px;
   position: fixed;
-  // z-index: 10;
+  z-index: 10;
   height: 8vh;
   align-items: center;
   background-color: $background-color-dark;
@@ -27,7 +27,7 @@
       .wallet{
         position: absolute;
         z-index: 1000;
-        background-color: #00000050;
+        background-color: #161616;
         padding: 4px;
         border-radius: 50px;
         top: 20px;

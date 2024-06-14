@@ -214,9 +214,7 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
           onClose={() => setIsActionCreated(null)}
           buttonText="View & Sign Transaction"
           onButtonClick={() => {
-            router.push(
-              `/proposals/${daoAddress}/${routeNetworkId}/${proposalId}`,
-            );
+            router.push(`/newProposals/${daoAddress}/${routeNetworkId}`);
           }}
         />
       ) : isActionCreated === "failure" ? (

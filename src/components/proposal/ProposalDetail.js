@@ -155,42 +155,43 @@ const ProposalDetail = ({ pid, daoAddress, routeNetworkId }) => {
 
       const proposalData = await getProposalDetail(pid);
 
-      if (proposalData.data[0]?.cancelProposalId) {
-        const proposalTxHash = getProposalTxHash(
-          proposalData.data[0]?.cancelProposalId,
-        );
-        proposalTxHash.then(async (result) => {
-          if (
-            result.status !== 200 ||
-            (result.status === 200 && result.data.length === 0)
-          ) {
-            setCancelTxHash("");
-          } else {
-            setCancelTxHash(result.data[0].txHash);
-            const tx = await safeService.getTransaction(result.data[0].txHash);
-            const ownerAddresses = tx.confirmations.map(
-              (confirmOwners) => confirmOwners.owner,
-            );
-            if (ownerAddresses.length) {
-              setIsRejectTxnSigned(true);
-            }
-            const pendingTxs = await safeService.getPendingTransactions(
-              Web3.utils.toChecksumAddress(gnosisAddress),
-            );
-            setPendingTxHash(
-              pendingTxs?.results[pendingTxs.count - 1]?.safeTxHash,
-            );
+      // if (proposalData.data[0]?.cancelProposalId) {
+      //   const proposalTxHash = getProposalTxHash(
+      //     proposalData.data[0]?.cancelProposalId,
+      //   );
+      //   proposalTxHash.then(async (result) => {
+      //     if (
+      //       result.status !== 200 ||
+      //       (result.status === 200 && result.data.length === 0)
+      //     ) {
+      //       setCancelTxHash("");
+      //     } else {
+      //       setCancelTxHash(result.data[0].txHash);
+      //       const tx = await safeService.getTransaction(result.data[0].txHash);
+      //       const ownerAddresses = tx.confirmations.map(
+      //         (confirmOwners) => confirmOwners.owner,
+      //       );
+      //       if (ownerAddresses.length) {
+      //         setIsRejectTxnSigned(true);
+      //       }
+      //       const pendingTxs = await safeService.getPendingTransactions(
+      //         Web3.utils.toChecksumAddress(gnosisAddress),
+      //       );
+      //       setPendingTxHash(
+      //         pendingTxs?.results[pendingTxs.count - 1]?.safeTxHash,
+      //       );
 
-            setSignedOwners(ownerAddresses);
-            if (ownerAddresses.includes(walletAddress)) {
-              setIsCancelSigned(true);
-            }
-            if (ownerAddresses.length >= threshold) {
-              setIsCancelExecutionReady(true);
-            }
-          }
-        });
-      }
+      //       setSignedOwners(ownerAddresses);
+      //       if (ownerAddresses.includes(walletAddress)) {
+      //         setIsCancelSigned(true);
+      //       }
+      //       if (ownerAddresses.length >= threshold) {
+      //         setIsCancelExecutionReady(true);
+      //       }
+      //     }
+      //   });
+      // }
+
       const proposalTxHash = getProposalTxHash(pid);
       proposalTxHash.then(async (result) => {
         if (
