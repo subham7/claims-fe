@@ -936,6 +936,41 @@ export const dropsNetworksChaindId = [
   },
 ];
 
+export const supportedNetworksChaindId = [
+  {
+    chainId: 137,
+    networkId: "0x89",
+  },
+  {
+    chainId: 8453,
+    networkId: "0x2105",
+  },
+  {
+    chainId: 42161,
+    networkId: "0xa4b1",
+  },
+  {
+    chainId: 59144,
+    networkId: "0xe708",
+  },
+  {
+    chainId: 56,
+    networkId: "0x38",
+  },
+  {
+    chainId: 534352,
+    networkId: "0x82750",
+  },
+  {
+    chainId: 1,
+    networkId: "0x1",
+  },
+  {
+    chainId: 43114,
+    networkId: "0xa86a",
+  },
+];
+
 export const stationNetworksChainId = [
   arbitrum,
   avalanche,
@@ -955,4 +990,19 @@ export const ALLOWED_NETWORKS_FOR_STATION = [
   "0x82750",
   "0x38",
   "0x2105",
+];
+
+export const GRADIENT_BUCKET = [
+  "linear-gradient(to top left, #ffafbd, #ffc3a0)",
+  "linear-gradient(to top left, #d9d9d9, #737373)",
+  "linear-gradient(to top left, #2193b0, #6dd5ed)",
+  "linear-gradient(to top left, #cc2b5e, #753a88)",
+  "linear-gradient(to top left, #ee9ca7, #ffdde1)",
+  "linear-gradient(to top left, #de6262, #ffb88c)",
+  "linear-gradient(to top left, #06beb6, #48b1bf)",
+  "linear-gradient(to top left, #56ab2f, #a8e063)",
+  "linear-gradient(to top left, #eecda3, #ef629f)",
+  "linear-gradient(to top left, #000428, #004e92)",
+  "linear-gradient(to top left, #ddd6f3, #faaca8)",
+  "linear-gradient(to top left, #4568dc, #b06ab3)",
 ];

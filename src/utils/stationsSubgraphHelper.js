@@ -1,11 +1,11 @@
 import { CHAIN_CONFIG } from "./constants";
 import { subgraphQuery } from "./subgraphs";
+import axios from "axios";
 import {
   IS_STATION_MEMBER,
   QUERY_ALL_MEMBERS,
   QUERY_LATEST_MEMBERS,
   QUERY_PAGINATED_MEMBERS,
-  QUERY_STATIONS_LIST,
   QUERY_STATION_DETAILS,
 } from "api/graphql/stationQueries";
 
@@ -22,14 +22,10 @@ export const queryStationDataFromSubgraph = async (daoAddress, networkId) => {
   }
 };
 
-export const queryStationListFromSubgraph = async (
-  walletAddress,
-  networkId,
-) => {
+export const queryStationListFromSubgraph = async (walletAddress) => {
   try {
-    const data = await subgraphQuery(
-      CHAIN_CONFIG[networkId]?.stationSubgraphUrl,
-      QUERY_STATIONS_LIST(walletAddress),
+    const data = await axios.get(
+      `${process.env.NEXT_PUBLIC_CLUB_API_HOST}user/${walletAddress}/clubs-multichain`,
     );
 
     return data ?? {};
