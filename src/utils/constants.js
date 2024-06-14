@@ -991,3 +991,18 @@ export const ALLOWED_NETWORKS_FOR_STATION = [
   "0x38",
   "0x2105",
 ];
+
+export const GRADIENT_BUCKET = [
+  "linear-gradient(to top left, #ffafbd, #ffc3a0)",
+  "linear-gradient(to top left, #d9d9d9, #737373)",
+  "linear-gradient(to top left, #2193b0, #6dd5ed)",
+  "linear-gradient(to top left, #cc2b5e, #753a88)",
+  "linear-gradient(to top left, #ee9ca7, #ffdde1)",
+  "linear-gradient(to top left, #de6262, #ffb88c)",
+  "linear-gradient(to top left, #06beb6, #48b1bf)",
+  "linear-gradient(to top left, #56ab2f, #a8e063)",
+  "linear-gradient(to top left, #eecda3, #ef629f)",
+  "linear-gradient(to top left, #000428, #004e92)",
+  "linear-gradient(to top left, #ddd6f3, #faaca8)",
+  "linear-gradient(to top left, #4568dc, #b06ab3)",
+];
