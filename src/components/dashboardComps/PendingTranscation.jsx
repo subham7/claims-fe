@@ -1,13 +1,14 @@
 import React from "react";
 import classes from "./Dashboard.module.scss";
 import { Typography } from "@mui/material";
-import ProposalItem from "@components/(proposal)/ProposalItem";
+import PendingTransactionItem from "./PendingTransactionItem";
 
 const PendingTranscation = ({
   daoAddress,
   executionId,
   proposal,
   routeNetworkId,
+  onProposalUpdate,
 }) => {
   return (
     <div className={classes.pendingTranscationContainer}>
@@ -15,13 +16,24 @@ const PendingTranscation = ({
         Pending Transaction
       </Typography>
 
-      <ProposalItem
-        daoAddress={daoAddress}
-        executionId={executionId}
-        proposal={proposal}
-        routeNetworkId={routeNetworkId}
-        type={"signed"}
-      />
+      {proposal ? (
+        <PendingTransactionItem
+          daoAddress={daoAddress}
+          executionId={executionId}
+          proposal={proposal}
+          routeNetworkId={routeNetworkId}
+          onProposalUpdate={onProposalUpdate}
+        />
+      ) : (
+        <Typography
+          variant="inherit"
+          py={4}
+          sx={{
+            textAlign: "center",
+          }}>
+          No active proposal.
+        </Typography>
+      )}
     </div>
   );
 };

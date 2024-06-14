@@ -12,6 +12,10 @@ const DashboardActivities = ({ proposals, daoAddress, networkId }) => {
     setProposal(data?.data[0]);
   };
 
+  const refreshProposals = async () => {
+    await loadExecutableLatestProposal();
+  };
+
   useEffect(() => {
     if (daoAddress) loadExecutableLatestProposal();
   }, [daoAddress]);
@@ -24,6 +28,7 @@ const DashboardActivities = ({ proposals, daoAddress, networkId }) => {
         daoAddress={daoAddress}
         proposal={proposal}
         executionId={proposal?.commands[0]?.executionId}
+        onProposalUpdate={refreshProposals}
       />
     </div>
   );

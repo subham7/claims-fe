@@ -45,6 +45,10 @@ const ProposalItem = ({
     return state.club.clubData.gnosisAddress;
   });
 
+  const isAdmin = useSelector((state) => {
+    return state.gnosis.adminUser;
+  });
+
   const [amount, setAmount] = useState("");
   const [txHash, setTxHash] = useState("");
   const [members, setMembers] = useState([]);
@@ -223,33 +227,35 @@ const ProposalItem = ({
             </>
           ) : null}
 
-          <Typography variant="inherit" fontSize={16}>
-            {proposalItemVerb(executionId)}
-          </Typography>
+          <>
+            <Typography variant="inherit" fontSize={16}>
+              {proposalItemVerb(executionId)}
+            </Typography>
 
-          {getProposalImage(executionId).length ||
-          proposalItemObject({
-            executionId,
-            proposal,
-          }) ? (
-            <div className={classes.imageInfo}>
-              <Image
-                style={{
-                  borderRadius: "25px",
-                }}
-                src={
-                  getProposalImage(executionId) ?? "/assets/icons/avatar2.png"
-                }
-                height={15}
-                width={15}
-                alt="image"
-              />
+            {getProposalImage(executionId).length ||
+            proposalItemObject({
+              executionId,
+              proposal,
+            }) ? (
+              <div className={classes.imageInfo}>
+                <Image
+                  style={{
+                    borderRadius: "25px",
+                  }}
+                  src={
+                    getProposalImage(executionId) ?? "/assets/icons/avatar2.png"
+                  }
+                  height={15}
+                  width={15}
+                  alt="image"
+                />
 
-              <Typography variant="inherit" fontSize={14}>
-                {proposalItemObject({ executionId, proposal })}
-              </Typography>
-            </div>
-          ) : null}
+                <Typography variant="inherit" fontSize={14}>
+                  {proposalItemObject({ executionId, proposal })}
+                </Typography>
+              </div>
+            ) : null}
+          </>
         </div>
 
         {type === "executed" ? (
@@ -290,6 +296,7 @@ const ProposalItem = ({
 
             {signedOwners?.includes(walletAddress) && type === "execute" ? (
               <button
+                disabled={!isAdmin}
                 onClick={() => signHandler("executed")}
                 className={classes.executeButton}>
                 Execute
@@ -300,6 +307,7 @@ const ProposalItem = ({
               </button>
             ) : (
               <button
+                disabled={!isAdmin}
                 onClick={() => signHandler("passed")}
                 className={classes.signButton}>
                 Sign
