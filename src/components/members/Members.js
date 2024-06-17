@@ -1,4 +1,3 @@
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import {
   CircularProgress,
   Grid,
@@ -10,7 +9,6 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import { Button } from "@components/ui";
@@ -21,7 +19,6 @@ import {
   customToFixedAutoPrecision,
   getAllEntities,
   isNative,
-  shortAddress,
 } from "utils/helper";
 import { useFormik } from "formik";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -39,6 +36,7 @@ import BackdropLoader from "@components/common/BackdropLoader";
 import ComponentHeader from "@components/common/ComponentHeader";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import BigNumber from "bignumber.js";
+import MemberAddress from "./MemberAddress";
 
 const Members = ({ daoAddress, routeNetworkId }) => {
   const chain = useChainId();
@@ -365,33 +363,11 @@ const Members = ({ daoAddress, routeNetworkId }) => {
                     sx={{
                       "&:last-child td, &:last-child th": { border: 0 },
                     }}>
-                    <TableCell
-                      sx={{
-                        fontFamily: "inherit",
-                        fontSize: "16px",
-                        background: "#111111",
-                      }}
-                      align="left">
-                      <Typography variant="inherit">
-                        <Tooltip title={data.userAddress}>
-                          <div
-                            className="f-d f-v-c f-gap-8 c-pointer"
-                            onClick={(e) => {
-                              handleAddressClick(e, data.userAddress);
-                            }}>
-                            {memberProfiles?.has(data.userAddress) &&
-                            memberProfiles?.get(data.userAddress) !== undefined
-                              ? memberProfiles?.get(data.userAddress)
-                              : shortAddress(data.userAddress)}
-                            <OpenInNewIcon
-                              sx={{
-                                fontSize: "14px",
-                              }}
-                            />
-                          </div>
-                        </Tooltip>
-                      </Typography>
-                    </TableCell>
+                    <MemberAddress
+                      handleAddressClick={handleAddressClick}
+                      memberProfiles={memberProfiles}
+                      userAddress={data.userAddress}
+                    />
 
                     <TableCell
                       sx={{
