@@ -1,3 +1,14 @@
+import {
+  arbitrum,
+  avalanche,
+  base,
+  bsc,
+  linea,
+  mainnet,
+  polygon,
+  scroll,
+} from "viem/chains";
+
 import { createCallAbi } from "abis/gnosis-abis/createCallAbi";
 import { fallbackHandlerAbi } from "abis/gnosis-abis/fallbackHandlerAbi";
 import { safeMasterCopyAbi } from "abis/gnosis-abis/safeMasterCopyAbi";
@@ -10,16 +21,6 @@ import { signMessageLibAbi } from "abis/gnosis-abis/signMessageLibAbi";
 import { simulateTxAccessorAbi } from "abis/gnosis-abis/simulateTxAccessorAbi";
 import { renzoStakingPoolABI } from "abis/renzo/renzoStakingPoolContract";
 import { renzoStakingPoolABILinea } from "abis/renzo/renzoStakingPoolLinea";
-import {
-  arbitrum,
-  avalanche,
-  base,
-  bsc,
-  linea,
-  mainnet,
-  polygon,
-  scroll,
-} from "viem/chains";
 
 export const BLOCK_CONFIRMATIONS = 4;
 export const BLOCK_TIMEOUT = 240000;
@@ -990,6 +991,7 @@ export const ALLOWED_NETWORKS_FOR_STATION = [
   "0x82750",
   "0x38",
   "0x2105",
+  "0xa4b1",
 ];
 
 export const GRADIENT_BUCKET = [
