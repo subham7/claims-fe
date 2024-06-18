@@ -1,0 +1,53 @@
+@import "../../../../styles/variables.scss";
+
+.card{
+    width: 320px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+
+    .bannerImage{
+        border-radius: 10px 0 0;
+    }
+
+    .infoContainer{
+        background-color: #0d0d0d;
+        padding: 20px;
+        color: white;
+
+        button{
+            width: 100%;
+            background-color: $border-color;
+            border: none;
+            outline: none;
+            padding: 12px;
+            font-family: inherit;
+            font-size: 14px;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+
+
+            &:hover{
+                background-color: $gray;
+            }
+        }
+    }
+}
+
+.erc721Card{
+    @extend .card;
+    padding: 20px;
+    width: 305px;
+    background-color: #0d0d0d;
+
+    .infoContainer{
+        padding: 0;
+        margin-top: 12px;
+
+        button{
+            margin-top: 4px;
+        }
+    }
+}

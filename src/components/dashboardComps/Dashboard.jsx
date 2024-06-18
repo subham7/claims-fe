@@ -364,6 +364,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
               title={item.title}
               value={item.value}
               isOwnership={item.isOwnership}
+              routeNetworkId={routeNetworkId}
             />
           ))}
         </div>

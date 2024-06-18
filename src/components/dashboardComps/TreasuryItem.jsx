@@ -4,6 +4,7 @@ import classes from "./Dashboard.module.scss";
 import { addTokenToWallet } from "utils/walletHelper";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const TreasuryItem = ({
   containerClass,
@@ -12,6 +13,7 @@ const TreasuryItem = ({
   title,
   value,
   isOwnership = false,
+  routeNetworkId,
 }) => {
   const router = useRouter();
   const params = router.asPath.split("/");
@@ -20,8 +22,14 @@ const TreasuryItem = ({
     return state.club.clubData;
   });
 
+  const background = CHAIN_CONFIG[routeNetworkId]?.theme?.background;
+
   return (
-    <div className={containerClass}>
+    <div
+      style={{
+        background: title === "Balance" && background,
+      }}
+      className={containerClass}>
       <div className={classes.treasury}>
         <div>
           <Typography className={classes.title} variant="inherit">

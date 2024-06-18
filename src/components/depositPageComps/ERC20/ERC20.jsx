@@ -59,7 +59,7 @@ const DepositInputComponents = ({
         allowanceValue={allowanceValue}
         ownerAddress={clubData?.ownerAddress}
       />
-      <DepositDetails />
+      <DepositDetails routeNetworkId={routeNetworkId} />
     </>
   );
 };
@@ -434,6 +434,7 @@ const ERC20 = ({
       <PublicPageLayout
         clubData={clubData}
         tokenDetails={tokenDetails}
+        routeNetworkId={routeNetworkId}
         headerProps={{
           daoAddress: daoAddress,
           contractData: clubData,
