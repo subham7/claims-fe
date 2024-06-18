@@ -35,19 +35,3 @@
         }
     }
 }
-
-.erc721Card{
-    @extend .card;
-    padding: 20px;
-    width: 305px;
-    background-color: #0d0d0d;
-
-    .infoContainer{
-        padding: 0;
-        margin-top: 12px;
-
-        button{
-            margin-top: 4px;
-        }
-    }
-}

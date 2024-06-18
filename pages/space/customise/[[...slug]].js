@@ -1,5 +1,5 @@
+import Customise from "@components/(spaces)/Customise";
 import Footer from "@components/(spaces)/Footer";
-import Spaces from "@components/(spaces)/Spaces";
 import Navbar from "@components/ui/Navbar/Navbar";
 import { useRouter } from "next/router";
 
@@ -10,7 +10,7 @@ const Space = () => {
   return (
     <div>
       <Navbar />
-      <Spaces spaceId={spaceId} />
+      <Customise spaceId={spaceId} />
       <Footer />
     </div>
   );

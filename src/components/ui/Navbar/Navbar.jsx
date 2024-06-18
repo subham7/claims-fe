@@ -19,6 +19,7 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
   const [walletIcon, setWalletIcon] = useState("");
 
   const router = useRouter();
+  const [spaceId] = router?.query?.slug ?? [];
   const { address } = useAccount();
   const { walletInfo } = useWalletInfo();
   const chain = useChainId();
@@ -72,7 +73,15 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
               </Typography>
             </div>
           ) : null}
-
+          {router.pathname.includes("space") && (
+            <button
+              className={classes.customise}
+              onClick={() => {
+                router.push(`/space/customise/${spaceId}`);
+              }}>
+              Customise
+            </button>
+          )}
           <w3m-network-button />
           <div className={classes.connectedWallet}>
             {walletIcon && address && (

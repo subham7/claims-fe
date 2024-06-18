@@ -1,42 +1,31 @@
-import React, { useState } from "react";
+/* eslint-disable @next/next/no-img-element */
 import classes from "./Spaces.module.scss";
 import Image from "next/image";
 import { Typography } from "@mui/material";
 import StatItem from "./Stats/StatItem";
 
-const SpacesHeader = () => {
-  const [bgImageUrl, setBgImageUrl] = useState(
-    "/assets/images/spacesHeader.png",
-  );
-
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const uploadedImageUrl = URL.createObjectURL(file);
-      setBgImageUrl(uploadedImageUrl);
-    }
-  };
-
+const SpacesHeader = ({ spaceData }) => {
   const headerStyle = {
-    backgroundImage: `linear-gradient(180deg, rgba(30, 30, 30, 0) 0%, rgba(24, 24, 24, 0.6) 39.11%, #111111 86.57%), url(${bgImageUrl})`,
+    backgroundImage: `linear-gradient(180deg, rgba(30, 30, 30, 0) 0%, rgba(24, 24, 24, 0.6) 39.11%, #111111 86.57%), url(${"/assets/images/spacePlaceholder.svg"})`,
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
     backgroundSize: "cover",
     display: "flex",
-    height: "50vh",
+    height: "60vh",
   };
 
   return (
     <div className={classes.headerImage} style={headerStyle}>
       <div className={classes.spaceInfoContainer}>
-        <Image
-          src={"/assets/networks/0xe708.png"}
-          height={80}
-          width={80}
+        <img
+          alt={spaceData?.name}
+          src={spaceData?.logo ?? "/assets/images/nft.png"}
+          height={50}
+          width={50}
           className={classes.logo}
         />
         <Typography className={classes.name} variant="inherit">
-          Linea Space
+          {spaceData?.name}
         </Typography>
 
         <div>
@@ -48,23 +37,19 @@ const SpacesHeader = () => {
               alt="avatar"
             />
             <Typography className={classes.walletAddress} variant="inherit">
-              stationxnetwork.eth
+              {spaceData?.creator}
             </Typography>
           </div>
 
           <div className={classes.infoContainer}>
             <Typography variant="inherit" className={classes.details}>
-              Get exposure to best Linea Ecosystem Projects curated by Linea and
-              StationX For Ecosystem Investment Partners & LXP holders.
+              {spaceData?.description}
             </Typography>
 
             <div className={classes.spaceDetails}>
-              <StatItem primaryText={"11"} secondaryText={"Stations"} />
-              <StatItem primaryText={"$297,792"} secondaryText={"Space AUM"} />
-              <StatItem
-                primaryText={"2,312"}
-                secondaryText={"Members (unique)"}
-              />
+              <StatItem primaryText={"0"} secondaryText={"Stations"} />
+              <StatItem primaryText={"$0"} secondaryText={"Space AUM"} />
+              <StatItem primaryText={"0"} secondaryText={"Members (unique)"} />
             </div>
           </div>
         </div>

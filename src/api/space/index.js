@@ -14,3 +14,16 @@ export const createSpace = async (data) => {
     console.log(error);
   }
 };
+
+export const getSpace = async (spaceId) => {
+  try {
+    const res = await axios.get(`${SPACE_API_URL}api/space/${spaceId}`, {
+      headers: {
+        accept: "application/json",
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};

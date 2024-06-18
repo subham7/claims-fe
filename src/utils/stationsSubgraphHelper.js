@@ -25,7 +25,7 @@ export const queryStationDataFromSubgraph = async (daoAddress, networkId) => {
 export const queryStationListFromSubgraph = async (walletAddress) => {
   try {
     const data = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_HOST}user/${walletAddress}/clubs-multichain`,
+      `${process.env.NEXT_PUBLIC_CLUB_API_HOST}user/${walletAddress}/clubs-multichain`,
     );
 
     return data ?? {};
