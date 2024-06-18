@@ -5,7 +5,7 @@ import classes from "./Stations.module.scss";
 import Image from "next/image";
 import Web3 from "web3";
 import { SlOptionsVertical } from "react-icons/sl";
-import { CHAIN_CONFIG } from "utils/constants";
+import { CHAIN_CONFIG, GRADIENT_BUCKET } from "utils/constants";
 import { useDispatch } from "react-redux";
 import { addClubData } from "redux/reducers/club";
 import { queryStationDataFromSubgraph } from "utils/stationsSubgraphHelper";
@@ -35,6 +35,7 @@ const Station = ({
   const router = useRouter();
   const { getDaoDetails } = useAppContractMethods();
   const { getDecimals, getTokenSymbol } = useCommonContractMethods();
+  const randomIndex = Math.floor(Math.random() * 12);
 
   const handleItemClick = async (daoAddress, networkId) => {
     try {
@@ -180,7 +181,14 @@ const Station = ({
           className={classes.stationImage}
         />
       ) : (
-        <span className={classes.stationImage}></span>
+        <span
+          style={{
+            width: "3.5rem",
+            height: "3.5rem",
+            background: GRADIENT_BUCKET[randomIndex],
+            borderRadius: "0.6375rem",
+            objectFit: "cover",
+          }}></span>
       )}
       <div className={classes.stationInfo}>
         <div className={classes.stationHeader}>

@@ -10,6 +10,8 @@ import { useAccount } from "wagmi";
 import { IoIosArrowRoundForward } from "react-icons/io";
 import { IoCheckmark } from "react-icons/io5";
 import { getClubData } from "api/club";
+import { useSelector } from "react-redux";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const HeaderShimmer = () => {
   return (
@@ -39,6 +41,10 @@ const Header = ({
   const [loading, setLoading] = useState(true);
   const [kycEnabled, setKycEnabled] = useState(false);
   const { address } = useAccount();
+
+  const clubData = useSelector((state) => {
+    return state.club.clubData;
+  });
 
   const getStatusText = () => {
     if (isDeposit) {
@@ -128,7 +134,10 @@ const Header = ({
       </div>
 
       {(networkId === "0x89" || networkId === "0xa4b1") &&
-        !tokenDetails?.isNativeToken && <SwapInfo networkId={networkId} />}
+        clubData?.depositTokenAddress ===
+          CHAIN_CONFIG[networkId].usdcAddress && (
+          <SwapInfo networkId={networkId} />
+        )}
 
       {open ? (
         <ZkMe

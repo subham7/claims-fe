@@ -91,8 +91,34 @@ export async function createProposalTxHash(data) {
 
 export async function getProposalByDaoAddress(daoAddress) {
   try {
-    return await axios.get(MAIN_API_URL + `proposal/station/${daoAddress}`, {});
+    return await axios.get(MAIN_API_URL + `proposal/station/${daoAddress}`);
   } catch (error) {
     console.log(error);
   }
 }
+
+export async function getPaginatedProposalList(
+  daoAddress,
+  limit = 10,
+  offset,
+  status = "passed",
+) {
+  try {
+    return await axios.get(
+      MAIN_API_URL +
+        `proposal/station/${daoAddress}?limit=${limit}&offset=${offset}&status=["${status}"]`,
+    );
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const getLatesExecutableProposal = async (daoAddress) => {
+  try {
+    return await axios.get(
+      MAIN_API_URL + `proposal/station/latest/${daoAddress}`,
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};

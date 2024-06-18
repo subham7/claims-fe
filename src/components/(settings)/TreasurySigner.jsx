@@ -84,11 +84,6 @@ const TreasurySigner = ({
             : Number(currentSafeThreshold) + 1,
         actionCommand: type === "add" ? 6 : 7,
         title: type === "add" ? "Add signer" : "Remove sginer",
-        note: `${
-          type === "add"
-            ? `Add signer - ${newArr[newArr.length - 1]}`
-            : `Remove signer - ${newArr[clickedIndex]}`
-        }`,
       };
 
       let commands = await getProposalCommands({
@@ -127,7 +122,7 @@ const TreasurySigner = ({
 
       const request = await createProposal(isGovernanceActive, {
         ...payload,
-        description: values.note,
+        description: "",
         signature,
       });
       setLoading(false);

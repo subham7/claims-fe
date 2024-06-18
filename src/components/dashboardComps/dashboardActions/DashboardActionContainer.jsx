@@ -79,7 +79,7 @@ const DashboardActionContainer = ({
           onClose={() => setIsActionCreated(null)}
           buttonText="View & Sign Transaction"
           onButtonClick={() => {
-            router.push(`/proposals/${daoAddress}/${networkId}/${proposalId}`);
+            router.push(`/newProposals/${daoAddress}/${networkId}`);
           }}
         />
       ) : isActionCreated === "failure" ? (

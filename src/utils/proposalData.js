@@ -2256,11 +2256,17 @@ export const createOrUpdateSafeTransaction = async ({
   let rejectionTransaction;
 
   if (executionId === 6) {
-    safeTransaction = await safeSdk.createAddOwnerTx(transaction);
+    safeTransaction = await safeSdk.createAddOwnerTx(transaction, {
+      nonce,
+    });
   } else if (executionId === 7) {
-    safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
+    safeTransaction = await safeSdk.createRemoveOwnerTx(transaction, {
+      nonce,
+    });
   } else if (executionId === 62) {
-    safeTransaction = await safeSdk.createChangeThresholdTx(transaction);
+    safeTransaction = await safeSdk.createChangeThresholdTx(transaction, {
+      nonce,
+    });
   } else {
     safeTransaction = await safeSdk.createTransaction({
       safeTransactionData: createSafeTransactionData({
@@ -2294,4 +2300,6 @@ export const signAndConfirmTransaction = async ({
     executionStatus === "cancel" ? rejectionTransaction : safeTransaction;
   const senderSignature = await safeSdk.signTypedData(transactionToSign, "v4");
   await safeService.confirmTransaction(safeTxHash, senderSignature.data);
+
+  return senderSignature;
 };

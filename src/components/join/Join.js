@@ -178,7 +178,7 @@ const Join = ({ daoAddress, routeNetworkId }) => {
   const fetchCurrentAllowance = async () => {
     try {
       const currentAllowance = await checkCurrentAllowance(
-        CHAIN_CONFIG[networkId]?.usdcAddress,
+        clubData?.depositTokenAddress,
         CHAIN_CONFIG[networkId]?.factoryContractAddress,
       );
 
@@ -285,14 +285,14 @@ const Join = ({ daoAddress, routeNetworkId }) => {
   }, [daoAddress, walletAddress, networkId]);
 
   useEffect(() => {
-    if (walletAddress) {
+    if (walletAddress && clubData?.depositTokenAddress) {
       fetchCurrentAllowance();
     }
   }, [
-    CHAIN_CONFIG[networkId]?.usdcAddress,
     CHAIN_CONFIG[networkId]?.factoryContractAddress,
     networkId,
     walletAddress,
+    clubData?.depositTokenAddress,
   ]);
 
   useEffect(() => {

@@ -1,3 +1,14 @@
+import {
+  arbitrum,
+  avalanche,
+  base,
+  bsc,
+  linea,
+  mainnet,
+  polygon,
+  scroll,
+} from "viem/chains";
+
 import { createCallAbi } from "abis/gnosis-abis/createCallAbi";
 import { fallbackHandlerAbi } from "abis/gnosis-abis/fallbackHandlerAbi";
 import { safeMasterCopyAbi } from "abis/gnosis-abis/safeMasterCopyAbi";
@@ -10,16 +21,6 @@ import { signMessageLibAbi } from "abis/gnosis-abis/signMessageLibAbi";
 import { simulateTxAccessorAbi } from "abis/gnosis-abis/simulateTxAccessorAbi";
 import { renzoStakingPoolABI } from "abis/renzo/renzoStakingPoolContract";
 import { renzoStakingPoolABILinea } from "abis/renzo/renzoStakingPoolLinea";
-import {
-  arbitrum,
-  avalanche,
-  base,
-  bsc,
-  linea,
-  mainnet,
-  polygon,
-  scroll,
-} from "viem/chains";
 
 export const BLOCK_CONFIRMATIONS = 4;
 export const BLOCK_TIMEOUT = 240000;
@@ -78,6 +79,7 @@ export const CHAIN_CONFIG = {
     covalentNetworkName: "matic-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+    usdtAddress: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
     airdropContractAddress: "0x0DF19560f74749a42215A16C3FC22FfAA1c4029A",
     aavePoolAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
     aaveMaticPoolAddress: "0x1e4b7A6b903680eab0c5dAbcb8fD429cD2a9598c",
@@ -165,6 +167,8 @@ export const CHAIN_CONFIG = {
     covalentNetworkName: "eth-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    // usdtAddress: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+    usdtAddress: "",
     blockExplorerUrl: "https://etherscan.io",
     disburseContractAddress: "0xeC0898bDB39280ECa6290FB6F06f27d8f0f85975",
     gnosisTxUrl: "https://safe-transaction-mainnet.safe.global/",
@@ -213,6 +217,7 @@ export const CHAIN_CONFIG = {
     covalentNetworkName: "base-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    usdtAddress: "",
     airdropContractAddress: "0x9aeF8F840FED23502506CC988c0057F24638C00E",
     blockExplorerUrl: "https://explorer.base.org",
     disburseContractAddress: "0x66AB805f4bc0FCbFFC3240C80ecECE452aa9d94f",
@@ -239,6 +244,7 @@ export const CHAIN_CONFIG = {
     stationSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-arbitrum/prod/gn",
     usdcAddress: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+    usdtAddress: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
     covalentNetworkName: "arbitrum-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     blockExplorerUrl: "https://arbiscan.io",
@@ -267,6 +273,7 @@ export const CHAIN_CONFIG = {
     covalentNetworkName: "linea-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0x176211869cA2b568f2A7D4EE941E073a821EE1ff",
+    usdtAddress: "0xA219439258ca9da29E9Cc4cE5596924745e12B93",
     airdropContractAddress: "0xd9b4bCCD76E4c35AFa4b473af723fBb19B3E65e8",
     blockExplorerUrl: "https://lineascan.build",
     disburseContractAddress: "0xb6a15A4eaD9A15cD987e247AAF0d4283B9547A4D",
@@ -319,6 +326,7 @@ export const CHAIN_CONFIG = {
     factoryContractAddress: "0x8a1D0Be1fe8b1D7A5C3051Da5d6b3A2690E12CAC",
     airdropContractAddress: "0xc72aDc4F927384Aff6cA479900e788ba4eFa9aB7",
     usdcAddress: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+    usdtAddress: "",
     stationSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-bsc-cc/prod/gn",
     claimFactoryAddress: "0x80e1429430cfB717187BD37eb5Bd0076d77dcE85",
@@ -395,6 +403,7 @@ export const CHAIN_CONFIG = {
     covalentNetworkName: "scroll-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
+    usdtAddress: "0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df",
     airdropContractAddress: "0xa65A4497526F07c3a92281695774F4D04e9c131A",
     blockExplorerUrl: "https://blockscout.scroll.io/",
     disburseContractAddress: "0x7633897a740Eb546c6DAAd0556Fb717b25D86F16",
@@ -550,6 +559,7 @@ export const CHAIN_CONFIG = {
     covalentNetworkName: "avalanche-mainnet",
     nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     usdcAddress: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+    usdtAddress: "0xc7198437980c041c805A1EDcbA50c1Ce5db95118",
     airdropContractAddress: "0x80e1429430cfB717187BD37eb5Bd0076d77dcE85",
     aavePoolAddress: "",
     aaveMaticPoolAddress: "",
@@ -981,4 +991,20 @@ export const ALLOWED_NETWORKS_FOR_STATION = [
   "0x82750",
   "0x38",
   "0x2105",
+  "0xa4b1",
+];
+
+export const GRADIENT_BUCKET = [
+  "linear-gradient(to top left, #ffafbd, #ffc3a0)",
+  "linear-gradient(to top left, #d9d9d9, #737373)",
+  "linear-gradient(to top left, #2193b0, #6dd5ed)",
+  "linear-gradient(to top left, #cc2b5e, #753a88)",
+  "linear-gradient(to top left, #ee9ca7, #ffdde1)",
+  "linear-gradient(to top left, #de6262, #ffb88c)",
+  "linear-gradient(to top left, #06beb6, #48b1bf)",
+  "linear-gradient(to top left, #56ab2f, #a8e063)",
+  "linear-gradient(to top left, #eecda3, #ef629f)",
+  "linear-gradient(to top left, #000428, #004e92)",
+  "linear-gradient(to top left, #ddd6f3, #faaca8)",
+  "linear-gradient(to top left, #4568dc, #b06ab3)",
 ];

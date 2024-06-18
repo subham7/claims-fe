@@ -147,14 +147,8 @@ const ActionModal = ({
 
         const request = await createProposal(isGovernanceActive, {
           ...payload,
-          description: values.note
-            ? values.note
-            : `${type?.charAt(0)?.toUpperCase() + type?.slice(1)} ${
-                values.airDropAmount
-              } ${values.airdropToken?.symbol} to ${
-                type === "distribute" ? "members" : values.recipient
-              }`,
-          signature,
+          description: values.note ?? "",
+          signature: signature,
         });
 
         onClose();
