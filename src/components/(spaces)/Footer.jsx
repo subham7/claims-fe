@@ -2,16 +2,18 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import classes from "./Spaces.module.scss";
+import { useRouter } from "next/router";
 
 const Footer = () => {
+  const router = useRouter();
   return (
     <footer className={classes.footer}>
       <div className={classes.topContainer}>
         <div className={classes.linksContainer}>
-          <Image
-            src="/assets/images/monogram.png"
-            height="28"
-            width="28"
+          <img
+            src="/assets/images/logo.png"
+            height={20}
+            width={120}
             alt="monogram"
             onClick={() => {
               router.push("/");

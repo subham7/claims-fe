@@ -19,7 +19,7 @@ const SpacesHeader = ({ spaceData }) => {
       <div className={classes.spaceInfoContainer}>
         <img
           alt={spaceData?.name}
-          src={spaceData?.logo ?? "/assets/images/nft.png"}
+          src={spaceData?.logo ? spaceData?.logo : "/assets/images/nft.png"}
           height={50}
           width={50}
           className={classes.logo}

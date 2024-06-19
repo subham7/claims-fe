@@ -118,10 +118,6 @@
   padding-inline: 4rem;
   color: $white;
 
-  @media (max-width: $breakpoint-md) {
-    padding-inline: 4rem;
-  }
-
   @media (max-width: $breakpoint-sm) {
     padding-inline: 2rem;
   }
@@ -169,6 +165,11 @@
     padding-bottom: 1.5rem;
     border-bottom: 0.5px solid $divider-color;
 
+    @media (max-width: $breakpoint-xxl) {
+      display: grid;
+      grid-template-columns: 4fr 10fr;
+    }
+
     @media (max-width: $breakpoint-xl) {
       display: grid;
       grid-template-columns: 4fr 10fr;
@@ -209,6 +210,10 @@
       outline: none;
     }
 
+    @media (max-width: $breakpoint-xxl) {
+      width: 45%;
+    }
+
     @media (max-width: $breakpoint-xl) {
       width: 45%;
     }
@@ -232,7 +237,7 @@
     width: 100%;
 
     @media (max-width: $breakpoint-xxl) {
-      width: 40%;
+      width: 45%;
     }
 
     @media (max-width: $breakpoint-xl) {
