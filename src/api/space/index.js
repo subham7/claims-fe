@@ -27,3 +27,21 @@ export const getSpace = async (spaceId) => {
     console.log(error);
   }
 };
+
+export const updateSpace = async (spaceId, data) => {
+  try {
+    const res = await axios.patch(
+      `${SPACE_API_URL}api/space/${spaceId}`,
+      data,
+      {
+        headers: {
+          accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};

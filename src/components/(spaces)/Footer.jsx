@@ -18,10 +18,6 @@ const Footer = () => {
             }}
             style={{ cursor: "pointer" }}
           />
-
-          <Link href={"/"}>What&apos;s New</Link>
-          <Link href={"/"}>About</Link>
-          <Link href={"/"}>Help</Link>
         </div>
 
         <div className={classes.socials}>

@@ -1,14 +1,114 @@
 /* eslint-disable @next/next/no-img-element */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import classes from "./Spaces.module.scss";
 import useSpaceFetch from "hooks/useSpaceFetch";
 import BackdropLoader from "@components/common/BackdropLoader";
+import { useAccount } from "wagmi";
+import { useDispatch } from "react-redux";
+import { updateSpace } from "api/space";
+import { uploadFileToAWS } from "utils/helper";
+import { setAlertData } from "redux/reducers/alert";
+import { generateAlertData } from "utils/globalFunctions";
 
 const Customise = ({ spaceId }) => {
   const { spaceData, isLoading } = useSpaceFetch(spaceId);
   const [activeTab, setActiveTab] = useState(0);
   const [spaceName, setSpaceName] = useState("");
+  const [description, setDescription] = useState("");
   const [logo, setLogo] = useState("");
+  const [farcaster, setFarcaster] = useState("");
+  const [telegram, setTelegram] = useState("");
+  const [twitter, setTwitter] = useState("");
+  const [discord, setDiscord] = useState("");
+  const [reddit, setReddit] = useState("");
+  const [instagram, setInstagram] = useState("");
+  const [website, setWebsite] = useState("");
+  const [isSaveLoading, setIsSaveLoading] = useState(false);
+  const { address } = useAccount();
+  const dispatch = useDispatch();
+
+  const formatURL = (url, path) => {
+    if (url.startsWith(path)) {
+      return url.slice(path.length);
+    }
+    return "";
+  };
+
+  const handleUploadFile = async (file) => {
+    const response = await uploadFileToAWS(file);
+    setLogo(response);
+  };
+
+  const handleUpdateSpace = async () => {
+    if (address) {
+      const spaceData = {
+        name: spaceName,
+        description: description,
+        logo: logo,
+        creator: address,
+        managers: [],
+        stations: [],
+        isPrivate: false,
+        isActive: true,
+        allowlistId: "",
+        tokenGating: {
+          isActive: true,
+          operator: "and",
+          tokens: [
+            {
+              address: "",
+              quantity: 1,
+            },
+          ],
+        },
+        links: {
+          warpcast: `https://warpcast.com/${farcaster}`,
+          twitter: `https://twitter.com/${twitter}`,
+          telegram: `https://t.me/${telegram}`,
+          website: `https://${website}`,
+          discord: `https://discord.com/${discord}`,
+          instagram: `https://instagram.com/${instagram}`,
+          reddit: `https://reddit.com/${reddit}`,
+        },
+      };
+      const response = await updateSpace(spaceId, spaceData);
+      dispatch(
+        setAlertData(
+          generateAlertData("Space updated successfully!", "success"),
+        ),
+      );
+      setIsSaveLoading(false);
+    } else {
+      setIsSaveLoading(false);
+      dispatch(
+        setAlertData(
+          generateAlertData(
+            "Only creator is allowed to customise it.",
+            "error",
+          ),
+        ),
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (spaceData) {
+      setSpaceName(spaceData?.name);
+      setDescription(spaceData?.description);
+      setLogo(spaceData?.logo);
+      setFarcaster(
+        formatURL(spaceData?.links?.warpcast, "https://warpcast.com/"),
+      );
+      setTelegram(formatURL(spaceData?.links?.telegram, "https://t.me/"));
+      setTwitter(formatURL(spaceData?.links?.twitter, "https://twitter.com/"));
+      setDiscord(formatURL(spaceData?.links?.discord, "https://discord.com/"));
+      setReddit(formatURL(spaceData?.links?.reddit, "https://reddit.com/"));
+      setInstagram(
+        formatURL(spaceData?.links?.instagram, "https://instagram.com/"),
+      );
+      setWebsite(formatURL(spaceData?.links?.website, "https://"));
+    }
+  }, [spaceData]);
 
   if (isLoading) {
     return <BackdropLoader isOpen={true} showLoading={true} />;
@@ -55,7 +155,7 @@ const Customise = ({ spaceId }) => {
           className={classes.input}
           placeholder="Space name"
           value={spaceName}
-          onChange={(e) => setSpaceName(e.target.value)}
+          onChange={(event) => setSpaceName(event.target.value)}
         />
       </div>
       <div className={classes.form}>
@@ -69,8 +169,8 @@ const Customise = ({ spaceId }) => {
         <textarea
           className={classes.input}
           placeholder="Tell more about your space here"
-          value={spaceName}
-          onChange={(e) => setSpaceName(e.target.value)}
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
           style={{
             height: "7rem",
           }}
@@ -96,9 +196,9 @@ const Customise = ({ spaceId }) => {
               className={classes.input}
               name="upload"
               type="file"
-              onChange={(e) => {
-                const image = URL.createObjectURL(e.target.files[0]);
-                setLogo(image);
+              onChange={(event) => {
+                setLogo(URL.createObjectURL(event.target.files[0]));
+                handleUploadFile(event.target.files[0]);
               }}
               accept="image/*"
             />
@@ -129,8 +229,8 @@ const Customise = ({ spaceId }) => {
           <input
             className={classes.socialInput}
             placeholder="stationx"
-            value={spaceName}
-            onChange={(e) => setSpaceName(e.target.value)}
+            value={farcaster}
+            onChange={(event) => setFarcaster(event.target.value)}
           />
         </div>
       </div>
@@ -143,8 +243,8 @@ const Customise = ({ spaceId }) => {
           <input
             className={classes.socialInput}
             placeholder="spaces"
-            value={spaceName}
-            onChange={(e) => setSpaceName(e.target.value)}
+            value={telegram}
+            onChange={(event) => setTelegram(event.target.value)}
           />
         </div>
       </div>
@@ -153,17 +253,81 @@ const Customise = ({ spaceId }) => {
           <p>Twitter / X</p>
         </div>
         <div className={classes.inputPrefix}>
-          <span className={classes.prefix}>x.com/</span>
+          <span className={classes.prefix}>twitter.com/</span>
           <input
             className={classes.socialInput}
             placeholder="stationxnetwork"
-            value={spaceName}
-            onChange={(e) => setSpaceName(e.target.value)}
+            value={twitter}
+            onChange={(event) => setTwitter(event.target.value)}
+          />
+        </div>
+      </div>
+      <div className={classes.form}>
+        <div className={classes.subHeader}>
+          <p>Discord</p>
+        </div>
+        <div className={classes.inputPrefix}>
+          <span className={classes.prefix}>discord.com/</span>
+          <input
+            className={classes.socialInput}
+            placeholder="stationxnetwork"
+            value={discord}
+            onChange={(event) => setDiscord(event.target.value)}
+          />
+        </div>
+      </div>
+      <div className={classes.form}>
+        <div className={classes.subHeader}>
+          <p>Reddit</p>
+        </div>
+        <div className={classes.inputPrefix}>
+          <span className={classes.prefix}>reddit.com/</span>
+          <input
+            className={classes.socialInput}
+            placeholder="stationxnetwork"
+            value={reddit}
+            onChange={(event) => setReddit(event.target.value)}
+          />
+        </div>
+      </div>
+      <div className={classes.form}>
+        <div className={classes.subHeader}>
+          <p>Instagram</p>
+        </div>
+        <div className={classes.inputPrefix}>
+          <span className={classes.prefix}>instagram.com/</span>
+          <input
+            className={classes.socialInput}
+            placeholder="stationxnetwork"
+            value={instagram}
+            onChange={(event) => setInstagram(event.target.value)}
+          />
+        </div>
+      </div>
+      <div className={classes.form}>
+        <div className={classes.subHeader}>
+          <p>Website</p>
+        </div>
+        <div className={classes.inputPrefix}>
+          <span className={classes.prefix}>https://</span>
+          <input
+            className={classes.socialInput}
+            placeholder="stationx.network"
+            value={website}
+            onChange={(event) => setWebsite(event.target.value)}
           />
         </div>
       </div>
       <div className={classes.save}>
-        <button className={classes.button}>Save</button>
+        <button
+          className={classes.button}
+          onClick={() => {
+            setIsSaveLoading(true);
+            handleUpdateSpace();
+          }}
+          disabled={isSaveLoading}>
+          {isSaveLoading ? "Saving..." : "Save"}
+        </button>
       </div>
     </div>
   );

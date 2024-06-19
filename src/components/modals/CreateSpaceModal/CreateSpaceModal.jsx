@@ -7,12 +7,14 @@ import { useAccount } from "wagmi";
 import { createSpace } from "api/space";
 import { setAlertData } from "redux/reducers/alert";
 import { generateAlertData } from "utils/globalFunctions";
+import { useRouter } from "next/router";
 
 const CreateSpaceModal = ({ setShowCreateSpaceModal }) => {
   const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const { address } = useAccount();
+  const router = useRouter();
 
   const handleCreateSpace = async () => {
     if (name) {
@@ -32,22 +34,21 @@ const CreateSpaceModal = ({ setShowCreateSpaceModal }) => {
           tokens: [
             {
               address: "",
-              quantity: 1,
+              quantity: 0,
             },
           ],
         },
         links: {
-          warpcast: "http://warpcast.com",
-          twitter: "http://twitter.com/",
-          telegram: "http://telegram.com/",
-          website: "http://space.com",
-          discord: "http://discord.com/",
-          instagram: "http://instagram.com/",
-          reddit: "http://reddit.com/",
+          warpcast: "",
+          twitter: "",
+          telegram: "",
+          website: "",
+          discord: "",
+          instagram: "",
+          reddit: "",
         },
       };
       const response = await createSpace(spaceData);
-      console.log(response);
       dispatch(
         setAlertData(
           generateAlertData("Space created successfully!", "success"),
@@ -55,6 +56,7 @@ const CreateSpaceModal = ({ setShowCreateSpaceModal }) => {
       );
       setIsLoading(false);
       setShowCreateSpaceModal(false);
+      router.push(`/space/${response?.spaceId}`);
     } else {
       setIsLoading(false);
       dispatch(setAlertData(generateAlertData("Please enter a name", "error")));
