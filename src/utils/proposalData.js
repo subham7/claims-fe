@@ -2255,11 +2255,7 @@ export const createOrUpdateSafeTransaction = async ({
   let safeTransaction;
   let rejectionTransaction;
 
-  if (executionId === 6) {
-    safeTransaction = await safeSdk.createAddOwnerTx(transaction);
-  } else if (executionId === 7) {
-    safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
-  } else if (executionId === 62) {
+  if (executionId === 62) {
     safeTransaction = await safeSdk.createChangeThresholdTx(transaction);
   } else {
     safeTransaction = await safeSdk.createTransaction({

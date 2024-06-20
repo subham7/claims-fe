@@ -647,6 +647,7 @@ const useAppContractMethods = (params) => {
       networkId,
       membersArray,
       airDropAmountArray,
+      safeSdk,
     });
     const txHash = await getTransactionHash(pid);
     const tx = txHash ? await safeService.getTransaction(txHash) : null;
@@ -715,10 +716,7 @@ const useAppContractMethods = (params) => {
               safeSdk,
               executionId,
               transaction:
-                executionId === 6 ||
-                executionId === 7 ||
-                executionId === 4 ||
-                executionId === 62
+                executionId === 4 || executionId === 62
                   ? transaction
                   : approvalTransaction && stakeETHTransaction
                   ? tx.dataDecoded.parameters[0].valueDecoded[2]
