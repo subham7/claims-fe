@@ -1764,55 +1764,71 @@ export const getTransaction = async ({
       };
       return { transaction };
     case 6:
-      const addOwnerTx = await safeSdk.createAddOwnerTx({
-        ownerAddress,
-        threshold: safeThreshold,
-      });
+      if (networkId !== "0x1" && networkId !== "0x89") {
+        transaction = {
+          ownerAddress,
+          threshold: safeThreshold,
+        };
+        return { transaction };
+      } else {
+        const addOwnerTx = await safeSdk.createAddOwnerTx({
+          ownerAddress,
+          threshold: safeThreshold,
+        });
 
-      approvalTransaction = {
-        to: addOwnerTx?.data?.to,
-        data: addOwnerTx?.data?.data,
-        value: addOwnerTx?.data?.value,
-      };
+        approvalTransaction = {
+          to: addOwnerTx?.data?.to,
+          data: addOwnerTx?.data?.data,
+          value: addOwnerTx?.data?.value,
+        };
 
-      transaction = {
-        to: Web3.utils.toChecksumAddress(factoryContractAddress),
-        data: emitSignerChanged({
-          daoAddress,
-          isAdded: true,
-          signer: ownerAddress,
-          web3Call,
-          factoryContractAddress,
-        }),
-        value: "0",
-      };
+        transaction = {
+          to: Web3.utils.toChecksumAddress(factoryContractAddress),
+          data: emitSignerChanged({
+            daoAddress,
+            isAdded: true,
+            signer: ownerAddress,
+            web3Call,
+            factoryContractAddress,
+          }),
+          value: "0",
+        };
 
-      return { approvalTransaction, transaction };
+        return { approvalTransaction, transaction };
+      }
     case 7:
-      const removeOwnerTx = await safeSdk.createRemoveOwnerTx({
-        ownerAddress,
-        threshold: safeThreshold,
-      });
+      if (networkId !== "0x1" && networkId !== "0x89") {
+        transaction = {
+          ownerAddress,
+          threshold: safeThreshold,
+        };
+        return { transaction };
+      } else {
+        const removeOwnerTx = await safeSdk.createRemoveOwnerTx({
+          ownerAddress,
+          threshold: safeThreshold,
+        });
 
-      approvalTransaction = {
-        to: removeOwnerTx?.data?.to,
-        data: removeOwnerTx?.data?.data,
-        value: removeOwnerTx?.data?.value,
-      };
+        approvalTransaction = {
+          to: removeOwnerTx?.data?.to,
+          data: removeOwnerTx?.data?.data,
+          value: removeOwnerTx?.data?.value,
+        };
 
-      transaction = {
-        to: Web3.utils.toChecksumAddress(factoryContractAddress),
-        data: emitSignerChanged({
-          daoAddress,
-          isAdded: false,
-          signer: ownerAddress,
-          web3Call,
-          factoryContractAddress,
-        }),
-        value: "0",
-      };
+        transaction = {
+          to: Web3.utils.toChecksumAddress(factoryContractAddress),
+          data: emitSignerChanged({
+            daoAddress,
+            isAdded: false,
+            signer: ownerAddress,
+            web3Call,
+            factoryContractAddress,
+          }),
+          value: "0",
+        };
 
-      return { approvalTransaction, transaction };
+        return { approvalTransaction, transaction };
+      }
 
     case 62:
       transaction = safeThreshold;
