@@ -87,21 +87,75 @@
       }
     }
 
-    .erc20List {
+    .stations {
       display: flex;
       flex-wrap: wrap;
-      gap: 24px;
-      align-items: center;
-    }
+      gap: 1rem;
 
-    .banner {
-      background-color: $dark-gray;
-      padding: 6rem;
-      color: $gray;
-      align-items: center;
-      justify-items: center;
-      text-align: center;
-      border-radius: 0.8rem;
+      .stationCard {
+        display: flex;
+        flex-direction: column;
+        width: 20rem;
+        gap: 0.5rem;
+        position: relative;
+        padding: 2rem;
+        background-color: #0d0d0d;
+        border: 1px solid $border-color;
+        border-radius: 20px;
+
+        @media (max-width: $breakpoint-sm) {
+          width: 100%;
+        }
+
+        .stationImage {
+          width: 3.5rem;
+          height: 3.5rem;
+          background: linear-gradient(to top left, #d9d9d9, #737373);
+          border-radius: 0.6375rem;
+          object-fit: cover;
+        }
+
+        .networkImage {
+          position: absolute;
+          width: 1.2rem;
+          height: 1.2rem;
+          background-color: $white;
+          top: 1.5rem;
+          left: 1.5rem;
+          border-radius: 1rem;
+        }
+
+        .stationMembers {
+          color: #c4c4c4;
+        }
+
+        .join {
+          padding-block: 0.8rem;
+          padding-inline: 1rem;
+          margin-top: 10px;
+          cursor: pointer;
+          background-color: $border-color;
+          font-size: 1rem;
+          font-weight: 400;
+          letter-spacing: 0.5px;
+          color: $white;
+          border-radius: 0.6rem;
+          border: none;
+          align-items: center;
+          text-align: center;
+        }
+      }
+
+      .banner {
+        width: 100%;
+        background-color: $dark-gray;
+        padding: 6rem;
+        color: $gray;
+        align-items: center;
+        justify-items: center;
+        text-align: center;
+        border-radius: 0.8rem;
+      }
     }
   }
 }
@@ -120,6 +174,26 @@
 
   @media (max-width: $breakpoint-sm) {
     padding-inline: 2rem;
+  }
+
+  .backButton {
+    background-color: transparent;
+    border: none;
+    width: fit-content;
+    display: flex;
+    color: $white;
+    font-size: large;
+    gap: 0.5rem;
+    align-items: center;
+    cursor: pointer;
+
+    .arrow {
+      transition: transform 0.3s ease;
+    }
+
+    &:hover .arrow {
+      transform: translateX(-4px);
+    }
   }
 
   .header {
@@ -144,18 +218,6 @@
   .description {
     width: 70%;
     color: $gray;
-  }
-
-  .subHeader {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    justify-content: center;
-
-    .title {
-      font-size: 1.5rem;
-      font-weight: 500;
-    }
   }
 
   .form {
@@ -188,6 +250,18 @@
     @media (max-width: $breakpoint-sm) {
       display: flex;
       flex-direction: column;
+    }
+
+    .subHeader {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      justify-content: center;
+
+      .title {
+        font-size: 1.5rem;
+        font-weight: 500;
+      }
     }
   }
 
@@ -297,6 +371,16 @@
       width: 4rem;
       height: 4rem;
       background-color: $dark-gray;
+      border: 2px solid $dark-gray;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+
+    .banner {
+      width: 10rem;
+      height: 4rem;
+      background-color: $dark-gray;
+      border: 2px solid $dark-gray;
       border-radius: 10px;
       object-fit: cover;
     }
@@ -333,6 +417,101 @@
         border-radius: 20px;
         cursor: pointer;
         z-index: 50;
+      }
+    }
+  }
+
+  .addButton {
+    display: flex;
+    width: fit-content;
+    height: fit-content;
+    padding-inline: 2rem;
+    padding-block: 0.8rem;
+    font-size: 1rem;
+    font-weight: 400;
+    border-radius: 2rem;
+    gap: 1rem;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .stations {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    .defaultStations {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 5rem;
+      gap: 1rem;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border-bottom: 0.5px solid $divider-color;
+
+      @media (max-width: $breakpoint-sm) {
+        padding: 3rem;
+        padding-bottom: 5rem;
+      }
+    }
+
+    .stationCard {
+      display: flex;
+      flex-direction: column;
+      width: 18rem;
+      gap: 0.5rem;
+      position: relative;
+      padding: 2rem;
+      background-color: #0d0d0d;
+      border: 1px solid $border-color;
+      border-radius: 20px;
+
+      @media (max-width: $breakpoint-sm) {
+        width: 100%;
+      }
+
+      .stationImage {
+        width: 3.5rem;
+        height: 3.5rem;
+        background: linear-gradient(to top left, #d9d9d9, #737373);
+        border-radius: 0.6375rem;
+        object-fit: cover;
+      }
+
+      .networkImage {
+        position: absolute;
+        width: 1.2rem;
+        height: 1.2rem;
+        background-color: $white;
+        top: 1.5rem;
+        left: 1.5rem;
+        border-radius: 1rem;
+      }
+
+      .stationMembers {
+        color: #c4c4c4;
+      }
+
+      .close {
+        position: absolute;
+        width: fit-content;
+        top: 1.5rem;
+        right: 1.5rem;
+        padding-top: 2px;
+        padding-inline: 2px;
+        cursor: pointer;
+        background-color: #ff000020;
+        color: red;
+        border-radius: 100%;
+        border: none;
+        align-items: center;
+        justify-items: center;
+
+        &:hover {
+          color: $white;
+        }
       }
     }
   }

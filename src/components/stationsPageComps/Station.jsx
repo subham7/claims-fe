@@ -17,18 +17,7 @@ import { BigNumber } from "bignumber.js";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { setAlertData } from "redux/reducers/alert";
 
-const Station = ({
-  networkId,
-  imageUrl,
-  daoAddress,
-  name,
-  tokenType,
-  membersCount,
-  totalAmountRaised,
-  depositTokenAddress,
-  gnosisAddress,
-  key,
-}) => {
+const Station = ({ club, key }) => {
   const dispatch = useDispatch();
   const [selectedIndex, setSelectedIndex] = useState(null);
   const dropdownRef = useRef(null);
@@ -166,15 +155,15 @@ const Station = ({
   return (
     <div className={classes.station} key={key}>
       <Image
-        src={CHAIN_CONFIG[networkId]?.logoUri}
-        alt={CHAIN_CONFIG[networkId]?.shortName}
+        src={CHAIN_CONFIG[club.networkId]?.logoUri}
+        alt={CHAIN_CONFIG[club.networkId]?.shortName}
         width={10}
         height={10}
         className={classes.chainIcon}
       />
-      {imageUrl ? (
+      {club?.clubLogoUrl ? (
         <img
-          src={imageUrl}
+          src={club.clubLogoUrl}
           alt="stationImage"
           width={50}
           height={50}
@@ -195,20 +184,21 @@ const Station = ({
           <h1
             className={classes.stationTitle}
             onClick={() => {
-              handleItemClick(daoAddress, networkId);
+              handleItemClick(club.daoAddress, club.networkId);
             }}>
-            {name}{" "}
+            {club.name}{" "}
             <span className={classes.stationBadge}>
-              {tokenType == "erc721" ? "NFT" : tokenType}
+              {club.tokenType === "erc721" ? "NFT" : club.tokenType}
             </span>
           </h1>
           <p className={classes.stationMetadata}>
-            {membersCount} {membersCount > 1 ? "members" : "member"}
+            {club.isAdmin && "⚡️ Admin •"} {`${club.tokenTicker} •`}{" "}
+            {club.membersCount} {club.membersCount > 1 ? "members" : "member"}
           </p>
         </div>
         <p className={classes.stationFunding}>
-          {totalAmountRaised}{" "}
-          {depositTokenAddress !==
+          {club.totalAmountRaised}{" "}
+          {club.depositTokenAddress !==
           "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" ? (
             <p>ETH</p>
           ) : (
@@ -230,7 +220,7 @@ const Station = ({
               className={classes.optionDropdownButton}
               onClick={() => {
                 setSelectedIndex(null);
-                router.push(`/join/${daoAddress}/${networkId}`);
+                router.push(`/join/${club.daoAddress}/${club.networkId}`);
               }}>
               Joining Page
             </button>
@@ -238,7 +228,7 @@ const Station = ({
               className={classes.optionDropdownButton}
               onClick={() => {
                 setSelectedIndex(null);
-                navigator.clipboard.writeText(gnosisAddress);
+                navigator.clipboard.writeText(club.gnosisAddress);
                 dispatch(
                   setAlertData({
                     open: true,

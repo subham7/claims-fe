@@ -6,7 +6,7 @@ import StatItem from "./Stats/StatItem";
 
 const SpacesHeader = ({ spaceData }) => {
   const headerStyle = {
-    backgroundImage: `linear-gradient(180deg, rgba(30, 30, 30, 0) 0%, rgba(24, 24, 24, 0.6) 39.11%, #111111 86.57%), url(${"/assets/images/spacePlaceholder.svg"})`,
+    backgroundImage: `linear-gradient(180deg, rgba(30, 30, 30, 0) 0%, rgba(24, 24, 24, 0.6) 39.11%, #111111 86.57%), url(${"/assets/images/spaceBanner.jpg"})`,
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
     backgroundSize: "cover",
@@ -19,7 +19,9 @@ const SpacesHeader = ({ spaceData }) => {
       <div className={classes.spaceInfoContainer}>
         <img
           alt={spaceData?.name}
-          src={spaceData?.logo ? spaceData?.logo : "/assets/images/nft.png"}
+          src={
+            spaceData?.logo ? spaceData?.logo : "/assets/images/spaceLogo.png"
+          }
           height={50}
           width={50}
           className={classes.logo}
@@ -47,9 +49,11 @@ const SpacesHeader = ({ spaceData }) => {
             </Typography>
 
             <div className={classes.spaceDetails}>
-              <StatItem primaryText={"0"} secondaryText={"Stations"} />
+              <StatItem
+                primaryText={spaceData?.stations.length}
+                secondaryText={"Stations"}
+              />
               <StatItem primaryText={"$0"} secondaryText={"Space AUM"} />
-              <StatItem primaryText={"0"} secondaryText={"Members (unique)"} />
             </div>
           </div>
         </div>

@@ -46,4 +46,66 @@
     border-radius: 1.5rem;
     cursor: pointer;
   }
+
+  .menu {
+    display: flex;
+    position: relative;
+    padding-inline: 0.5rem;
+    padding-block: 0.5rem;
+    align-items: center;
+    background-color: $dark-gray;
+    border: 1px solid #383838;
+    border-radius: 0.6rem;
+    cursor: pointer;
+
+    .menuOptions {
+      position: absolute;
+      top: 3rem;
+      right: 0;
+      width: 20rem;
+      background-color: $background-color-dark;
+      border: 1px solid #383838;
+      border-radius: 0.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding-block: 1.5rem;
+      padding-inline: 2rem;
+      z-index: 1000;
+      color: $white;
+      align-items: start;
+
+      .header {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .defaultStations {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        padding: 1rem;
+        gap: 1rem;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .createSpace {
+        display: flex;
+        width: 100%;
+        gap: 8px;
+        font-weight: 600;
+        align-items: center;
+        justify-content: center;
+        padding-block: 0.6rem;
+        padding-inline: 2rem;
+        border-radius: 2rem;
+        background-color: $white;
+        border: none;
+        cursor: pointer;
+      }
+    }
+  }
 }

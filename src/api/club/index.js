@@ -1,7 +1,18 @@
 import axios from "axios";
-import { MAIN_API_URL } from "../index";
+import { MAIN_API_URL, STATIONS_API_URL } from "../index";
 import { getJwtToken } from "../../utils/auth";
 import { AWS_API_URL } from "utils/constants";
+
+export const getClubsData = async (daoAddress) => {
+  try {
+    const response = await axios.get(
+      `${STATIONS_API_URL}?daoAddress=${daoAddress}`,
+    );
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 export const getClubData = async (daoAddress) => {
   try {

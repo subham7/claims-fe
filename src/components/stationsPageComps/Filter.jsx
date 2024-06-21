@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import classes from "./Stations.module.scss";
 import { HiSearch } from "react-icons/hi";
@@ -16,6 +16,7 @@ const FilterStations = ({
   setSelectedNetworks,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   const handleToggleNetwork = (networkId) => {
     setSelectedNetworks((prev) =>
@@ -24,6 +25,19 @@ const FilterStations = ({
         : [...prev, networkId],
     );
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className={classes.filter}>
@@ -38,11 +52,11 @@ const FilterStations = ({
           }}
         />
       </div>
-      <div className={classes.chainFilter}>
+      <div className={classes.chainFilter} ref={dropdownRef}>
         <button
           className={classes.filterButton}
           onClick={() => {
-            setIsOpen((prev) => !prev);
+            setIsOpen(true);
           }}>
           <RiFilter3Fill size={25} />
           Chains

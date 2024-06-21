@@ -1,8 +1,9 @@
 import Image from "next/image";
 import classes from "./Navbar.module.scss";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import NetworkSwitcher from "@components/modals/NetworkSwitcher/NetworkSwitcher";
+import CreateSpaceModal from "@components/modals/CreateSpaceModal/CreateSpaceModal";
 import { dropsNetworksChaindId, stationNetworksChainId } from "utils/constants";
 import { useAccount, useChainId } from "wagmi";
 import { Typography } from "@mui/material";
@@ -11,15 +12,20 @@ import { useSelector } from "react-redux";
 import { useWalletInfo } from "@web3modal/wagmi/react";
 import { getConnections } from "@wagmi/core";
 import { config } from "config";
+import Menu from "./Menu";
+import useSpaceFetch from "hooks/useSpaceFetch";
 
 const Navbar = ({ daoAddress, routeNetworkId }) => {
   const [showEditDetails, setShowEditDetails] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showCreateSpaceModal, setShowCreateSpaceModal] = useState(false);
   const [networksSupported, setNetworkSupported] = useState();
   const [walletIcon, setWalletIcon] = useState("");
-
+  const dropdownRef = useRef(null);
   const router = useRouter();
   const [spaceId] = router?.query?.slug ?? [];
+  const { spaceData, isLoading } = useSpaceFetch(spaceId);
   const { address } = useAccount();
   const { walletInfo } = useWalletInfo();
   const chain = useChainId();
@@ -47,6 +53,19 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
     if (address && networkId) fetchCurrentWalletIcon();
   }, [networkId, address]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <>
       <nav className={classes.nav}>
@@ -73,15 +92,17 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
               </Typography>
             </div>
           ) : null}
-          {router.pathname.includes("space") && (
-            <button
-              className={classes.customise}
-              onClick={() => {
-                router.push(`/space/customise/${spaceId}`);
-              }}>
-              Customise
-            </button>
-          )}
+          {router.pathname.includes("space") &&
+            !isLoading &&
+            spaceData.creator === address && (
+              <button
+                className={classes.customise}
+                onClick={() => {
+                  router.push(`/space/customise/${spaceId}`);
+                }}>
+                Customise
+              </button>
+            )}
           <w3m-network-button />
           <div className={classes.connectedWallet}>
             {walletIcon && address && (
@@ -96,15 +117,11 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
             <w3m-button label="Connect" />
           </div>
           {address && (
-            <Image
-              onClick={() => router.push(`/profile/${address}`)}
-              src="/assets/icons/astronaut_icon.svg"
-              alt="profile image"
-              height={20}
-              width={20}
-              style={{
-                cursor: "pointer",
-              }}
+            <Menu
+              showMenu={showMenu}
+              setShowMenu={setShowMenu}
+              dropdownRef={dropdownRef}
+              setShowCreateSpaceModal={setShowCreateSpaceModal}
             />
           )}
         </div>
@@ -117,6 +134,10 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
           }}
           supportedNetworks={networksSupported}
         />
+      )}
+
+      {showCreateSpaceModal && (
+        <CreateSpaceModal setShowCreateSpaceModal={setShowCreateSpaceModal} />
       )}
 
       <EditDetails
