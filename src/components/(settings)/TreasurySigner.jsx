@@ -12,6 +12,7 @@ import { handleSignMessage } from "utils/helper";
 import { createProposal } from "api/proposal";
 import { useSelector } from "react-redux";
 import { GoPencil } from "react-icons/go";
+import { isMember } from "utils/stationsSubgraphHelper";
 
 const TreasurySigner = ({
   clubData,
@@ -27,6 +28,7 @@ const TreasurySigner = ({
   const [showSaveButton, setShowSaveButton] = useState(false);
   const [showDeleteIcons, setShowDeleteIcons] = useState(false);
   const [clickedIndex, setClickedIndex] = useState(null);
+  const [showErrorText, setShowErrorText] = useState(false);
   const [type, setType] = useState(null);
 
   const { adminAddresses, currentSafeThreshold } = clubData;
@@ -54,6 +56,26 @@ const TreasurySigner = ({
   const submitHandler = async () => {
     try {
       setLoading(true);
+
+      if (
+        routeNetworkId !== "0x1" &&
+        routeNetworkId !== "0x89" &&
+        type === "add"
+      ) {
+        const isStationMember = await isMember(
+          newArr[newArr.length - 1],
+          daoAddress,
+          routeNetworkId,
+        );
+
+        if (!isStationMember?.users?.length > 0) {
+          setShowErrorText(true);
+          setLoading(false);
+          return;
+        } else {
+          setShowErrorText(false);
+        }
+      }
 
       const values = {
         ownerAddress:
@@ -173,6 +195,17 @@ const TreasurySigner = ({
           )}
         </div>
       ))}
+
+      {showErrorText && (
+        <Typography
+          variant="inherit"
+          fontSize={12}
+          color={"red"}
+          ml={1}
+          mt={0.5}>
+          Address is not a member of station
+        </Typography>
+      )}
 
       {isAdmin && showEditButton && adminAddresses?.length && (
         <button
