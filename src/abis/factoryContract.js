@@ -259,6 +259,29 @@ export const factoryContractABI = [
     inputs: [
       {
         internalType: "address",
+        name: "_dao",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_signer",
+        type: "address",
+      },
+      {
+        internalType: "bool",
+        name: "_isAdded",
+        type: "bool",
+      },
+    ],
+    name: "emitSignerChanged",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
         name: "_newOwner",
         type: "address",
       },
