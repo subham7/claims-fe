@@ -19,6 +19,10 @@
     justify-content: center;
     gap: 8px;
 
+    @media (max-width: $breakpoint-sm) {
+      gap: 2px;
+    }
+
     .connectedWallet {
       position: relative;
       height: fit-content;
@@ -45,6 +49,19 @@
     border: 1px solid #383838;
     border-radius: 1.5rem;
     cursor: pointer;
+
+    @media (max-width: $breakpoint-sm) {
+      padding-inline: 0.8rem;
+      padding-block: 0.5rem;
+    }
+  }
+
+  .network {
+    display: flex;
+
+    @media (max-width: $breakpoint-sm) {
+      display: none;
+    }
   }
 
   .menu {

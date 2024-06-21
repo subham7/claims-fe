@@ -103,7 +103,9 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
                 Customise
               </button>
             )}
-          <w3m-network-button />
+          <div className={classes.network}>
+            <w3m-network-button />
+          </div>
           <div className={classes.connectedWallet}>
             {walletIcon && address && (
               <Image

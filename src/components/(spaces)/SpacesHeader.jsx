@@ -1,10 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
+import { useEffect, useState } from "react";
 import classes from "./Spaces.module.scss";
 import Image from "next/image";
 import { Typography } from "@mui/material";
 import StatItem from "./Stats/StatItem";
+import { publicClient } from "config";
 
 const SpacesHeader = ({ spaceData }) => {
+  const [ensName, setEnsName] = useState("");
   const headerStyle = {
     backgroundImage: `linear-gradient(180deg, rgba(30, 30, 30, 0) 0%, rgba(24, 24, 24, 0.6) 39.11%, #111111 86.57%), url(${"/assets/images/spaceBanner.jpg"})`,
     backgroundPosition: "center",
@@ -13,6 +16,17 @@ const SpacesHeader = ({ spaceData }) => {
     display: "flex",
     height: "60vh",
   };
+
+  useEffect(() => {
+    const getENSAddress = async () => {
+      const ensName = await publicClient.getEnsName({
+        address: spaceData.creator,
+      });
+      setEnsName(ensName);
+    };
+
+    if (spaceData.creator) getENSAddress();
+  }, [spaceData.creator]);
 
   return (
     <div className={classes.headerImage} style={headerStyle}>
@@ -39,7 +53,7 @@ const SpacesHeader = ({ spaceData }) => {
               alt="avatar"
             />
             <Typography className={classes.walletAddress} variant="inherit">
-              {spaceData?.creator}
+              {ensName ? ensName : spaceData?.creator}
             </Typography>
           </div>
 

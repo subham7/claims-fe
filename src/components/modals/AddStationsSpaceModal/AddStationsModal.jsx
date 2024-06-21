@@ -2,8 +2,8 @@ import Modal from "@components/common/Modal/Modal";
 import classes from "./AddStationsModal.module.scss";
 import { RxCross2 } from "react-icons/rx";
 import Station from "./Station";
-import { useAccount } from "wagmi";
-import { OMIT_DAOS } from "utils/constants";
+import { useAccount, useChainId } from "wagmi";
+import { CHAIN_CONFIG, OMIT_DAOS } from "utils/constants";
 import { useState } from "react";
 
 const AddStationsModal = ({
@@ -14,6 +14,7 @@ const AddStationsModal = ({
   setSelectedStations,
 }) => {
   const { address } = useAccount();
+  const chainId = useChainId();
   const [stationURL, setStationURL] = useState("");
 
   const handleAddStation = () => {
@@ -29,6 +30,15 @@ const AddStationsModal = ({
       }
     }
   };
+
+  const initialChainClubs = clubs.filter(
+    (club) => CHAIN_CONFIG[club.networkId].chainId === chainId,
+  );
+  const clubsWithoutInitialChain = clubs.filter(
+    (club) => CHAIN_CONFIG[club.networkId].chainId !== chainId,
+  );
+  const sortedClubs = [...initialChainClubs, ...clubsWithoutInitialChain];
+
   return (
     <Modal className={classes.createModal}>
       <div className={classes.add}>
@@ -81,8 +91,8 @@ const AddStationsModal = ({
               }}>
               Fetching stations...
             </p>
-          ) : address && clubs.length ? (
-            clubs
+          ) : address && sortedClubs.length ? (
+            sortedClubs
               ?.filter((club) => !OMIT_DAOS.includes(club.daoAddress))
               .map((club, key) => {
                 return (
