@@ -473,6 +473,7 @@ const ERC20 = ({
           isWhitelist: whitelistUserData?.setWhitelist,
           routeNetworkId,
         }}
+        depositConfig={depositConfig}
         members={members}
         loading={loading}
       />
