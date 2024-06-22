@@ -27,6 +27,7 @@ const PublicPageLayout = ({
   nftMinted,
   depositConfig,
 }) => {
+  console.log("xxx", depositConfig);
   return (
     <div className={classes.main}>
       <div className={classes.leftContainer}>
@@ -86,7 +87,7 @@ const PublicPageLayout = ({
           {!isDeposit ? <h1>{claimDescription}</h1> : null}
         </div>
 
-        {isDeposit && depositConfig?.toggleRaise ? (
+        {isDeposit && depositConfig?.toggleRaise !== false ? (
           <>
             {isDeposit ? (
               clubData?.tokenType === "erc721" &&
