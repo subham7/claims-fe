@@ -1,7 +1,5 @@
 import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
 import { stationNetworksChainId } from "utils/constants";
-import { createPublicClient, http } from "viem";
-import { mainnet } from "viem/chains";
 import { cookieStorage, createStorage } from "wagmi";
 
 // Get projectId at https://cloud.walletconnect.com
@@ -26,9 +24,4 @@ export const config = defaultWagmiConfig({
   storage: createStorage({
     storage: cookieStorage,
   }),
-});
-
-export const publicClient = createPublicClient({
-  chain: mainnet,
-  transport: http(),
 });

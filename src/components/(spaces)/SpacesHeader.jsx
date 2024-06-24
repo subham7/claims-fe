@@ -4,7 +4,7 @@ import classes from "./Spaces.module.scss";
 import Image from "next/image";
 import { Typography } from "@mui/material";
 import StatItem from "./Stats/StatItem";
-import { publicClient } from "config";
+import { getPublicClient } from "utils/viemConfig";
 
 const SpacesHeader = ({ spaceData }) => {
   const [ensName, setEnsName] = useState("");
@@ -19,7 +19,8 @@ const SpacesHeader = ({ spaceData }) => {
 
   useEffect(() => {
     const getENSAddress = async () => {
-      const ensName = await publicClient.getEnsName({
+      const client = getPublicClient("0x1");
+      const ensName = await client.getEnsName({
         address: spaceData.creator,
       });
       setEnsName(ensName);
