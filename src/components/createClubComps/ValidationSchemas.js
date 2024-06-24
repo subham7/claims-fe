@@ -6,6 +6,7 @@ import { isMember } from "utils/stationsSubgraphHelper";
 import { getPublicClient } from "utils/viemConfig";
 import * as yup from "yup";
 import { BigNumber } from "bignumber.js";
+import { isValidReciptentAddress } from "utils/helper";
 
 export const step1ValidationSchema = yup.object({
   clubName: yup
@@ -801,6 +802,14 @@ export const actionModalValidation = ({
       actionType === "send"
         ? yup
             .string("Enter recipient address")
+            .test(
+              "is-valid-address",
+              "Invalid recipient address",
+              async (value) => {
+                if (!value) return false;
+                return await isValidReciptentAddress(value);
+              },
+            )
             .required("Recipient address is required")
         : yup.string().notRequired(),
     airDropAmount: yup

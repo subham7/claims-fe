@@ -29,7 +29,7 @@ import { useAccount, useSignMessage } from "wagmi";
 import BackdropLoader from "@components/common/BackdropLoader";
 import { actionModalValidation } from "@components/createClubComps/ValidationSchemas";
 import { MdInfo } from "react-icons/md";
-
+import { debouncedWalletAddressToEns } from "utils/helper";
 const ActionModal = ({
   type,
   onClose,
@@ -43,7 +43,6 @@ const ActionModal = ({
   const [loading, setLoading] = useState(false);
   const [validationSchema, setValidationSchema] = useState();
   const [showFeesAmount, setShowFeesAmount] = useState(false);
-
   const { address: walletAddress } = useAccount();
 
   const tokenType = useSelector((state) => {
@@ -75,7 +74,6 @@ const ActionModal = ({
       showFeesAmount,
     });
   };
-
   const formik = useFormik({
     initialValues: {
       airdropToken: {
@@ -166,6 +164,17 @@ const ActionModal = ({
       }
     },
   });
+  async function getAddress(recipient) {
+    try {
+      const address = await debouncedWalletAddressToEns(recipient);
+      formik.values.recipient = address;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  useEffect(() => {
+    getAddress(formik?.values?.recipient?.trim());
+  }, [formik.values.recipient]);
 
   const fetchTokens = useCallback(async () => {
     if (daoAddress && gnosisAddress && networkId) {
@@ -299,7 +308,7 @@ const ActionModal = ({
             )}
             displayEmpty>
             {/* <MenuItem disabled>Choose asset to send</MenuItem> */}
-            {tokenData.map((token) => (
+            {tokenData?.map((token) => (
               <MenuItem value={token} key={token.symbol}>
                 <div
                   style={{
