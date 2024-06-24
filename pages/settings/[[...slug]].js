@@ -25,11 +25,16 @@ const SettingPage2 = () => {
   const tabChangeHandler = (event, newValue) => {
     setSettingsType(newValue);
   };
+  const settingIsLoading = Boolean(clubData?.adminAddresses?.length);
 
   return (
     <Layout daoAddress={daoAddress} networkId={networkId} showSidebar={true}>
       <div className={classes.settings}>
-        <Header clubName={clubData?.name} clubSymbol={clubData?.symbol} />
+        <Header
+          clubName={clubData?.name}
+          clubSymbol={clubData?.symbol}
+          settingIsLoading={settingIsLoading}
+        />
 
         <TabSelection settingsType={settingsType} onChange={tabChangeHandler} />
 
@@ -38,6 +43,7 @@ const SettingPage2 = () => {
             daoAddress={daoAddress}
             clubData={clubData}
             routeNetworkId={networkId}
+            settingIsLoading={settingIsLoading}
           />
         ) : (
           <DepositSettings

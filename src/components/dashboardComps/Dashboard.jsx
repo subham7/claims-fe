@@ -131,6 +131,10 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
   const tokenDetailsIsloading = useSelector((state) =>
     isLoading(state, "token-details"),
   );
+  const treasuryAmountIsloading = useSelector((state) =>
+    isLoading(state, "treasury-amount"),
+  );
+
   const nftIsloading = useSelector((state) => isLoading(state, "nft"));
   const fetchClubDetails = async () => {
     try {
@@ -142,6 +146,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
 
           if (myBalance === 0) {
             setMyShare(0);
+            dispatch(stopLoading("share-percent"));
             return;
           }
 
@@ -210,6 +215,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
   };
 
   const fetchTreasuryDetails = async () => {
+    dispatch(startLoading("treasury-amount"));
     try {
       if (networkId !== "undefined") {
         const assetsData = await getTotalTreasuryAmount(
@@ -221,6 +227,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
     } catch (error) {
       console.log(error);
     }
+    dispatch(stopLoading("treasury-amount"));
   };
 
   const handleChange = (event, newValue) => {
@@ -295,6 +302,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
       altText: "Balance",
       title: "Balance",
       value: `$${customToFixedAutoPrecision(treasuryAmount)}`,
+      loading: treasuryAmountIsloading,
     },
     {
       containerClass: classes.ownershipContainer,
@@ -304,6 +312,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
       value: customToFixedAutoPrecision(myShare),
       tokenName: symbol,
       isOwnership: true,
+      loading: treasuryAmountIsloading,
     },
     {
       containerClass: classes.ownershipContainer,
@@ -311,6 +320,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
       altText: "Members",
       title: "Members",
       value: clubData?.membersCount,
+      loading: treasuryAmountIsloading,
     },
   ];
 
@@ -379,6 +389,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
               title={item.title}
               value={item.value}
               isOwnership={item.isOwnership}
+              loading={item.loading}
             />
           ))}
         </div>
