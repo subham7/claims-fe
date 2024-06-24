@@ -483,36 +483,14 @@ export const formatNumbers = (number) => {
 
 export const isValidReciptentAddress = async (value) => {
   try {
-    getAddress(value);
-    return true;
+    const val = getAddress(value);
+    return val;
   } catch (error) {
     return false;
   }
 };
 
-function debounce(func, wait) {
-  let timeout;
-  return function (...args) {
-    const context = this;
-    return new Promise((resolve, reject) => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        try {
-          const result = func.apply(context, args);
-          if (result instanceof Promise) {
-            result.then(resolve).catch(reject);
-          } else {
-            resolve(result);
-          }
-        } catch (error) {
-          reject(error);
-        }
-      }, wait);
-    });
-  };
-}
-
-const walletAddressToEns = async (ens) => {
+export const walletAddressToEns = async (ens) => {
   if (!ens?.includes(".eth")) {
     return ens;
   }
@@ -526,5 +504,3 @@ const walletAddressToEns = async (ens) => {
     console.error(error);
   }
 };
-
-export const debouncedWalletAddressToEns = debounce(walletAddressToEns, 300);

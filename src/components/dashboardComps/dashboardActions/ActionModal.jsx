@@ -29,7 +29,8 @@ import { useAccount, useSignMessage } from "wagmi";
 import BackdropLoader from "@components/common/BackdropLoader";
 import { actionModalValidation } from "@components/createClubComps/ValidationSchemas";
 import { MdInfo } from "react-icons/md";
-import { debouncedWalletAddressToEns } from "utils/helper";
+import { walletAddressToEns } from "utils/helper";
+
 const ActionModal = ({
   type,
   onClose,
@@ -94,7 +95,9 @@ const ActionModal = ({
           usdcTokenDecimal: 6,
           usdcGovernanceTokenDecimal: 18,
         };
+
         if (type === "send") {
+          let recipientAddress = await walletAddressToEns(values.recipient);
           commands = {
             customToken: values.airdropToken.address,
             customTokenAmounts: [
@@ -103,7 +106,7 @@ const ActionModal = ({
                 values.airdropToken.decimals,
               ).toString(),
             ],
-            customTokenAddresses: [values.recipient],
+            customTokenAddresses: [recipientAddress],
             executionId: 4,
             ...commands,
           };
@@ -164,17 +167,6 @@ const ActionModal = ({
       }
     },
   });
-  async function getAddress(recipient) {
-    try {
-      const address = await debouncedWalletAddressToEns(recipient);
-      formik.values.recipient = address;
-    } catch (error) {
-      console.error(error);
-    }
-  }
-  useEffect(() => {
-    getAddress(formik?.values?.recipient?.trim());
-  }, [formik.values.recipient]);
 
   const fetchTokens = useCallback(async () => {
     if (daoAddress && gnosisAddress && networkId) {

@@ -7,7 +7,7 @@ import { getPublicClient } from "utils/viemConfig";
 import * as yup from "yup";
 import { BigNumber } from "bignumber.js";
 import { isValidReciptentAddress } from "utils/helper";
-
+import { walletAddressToEns } from "utils/helper";
 export const step1ValidationSchema = yup.object({
   clubName: yup
     .string("Enter club name")
@@ -805,9 +805,22 @@ export const actionModalValidation = ({
             .test(
               "is-valid-address",
               "Invalid recipient address",
-              async (value) => {
+              async function (value) {
                 if (!value) return false;
-                return await isValidReciptentAddress(value);
+                try {
+                  const resolvedAddress = await walletAddressToEns(
+                    value.trim(),
+                  );
+                  if (!resolvedAddress) return false;
+                  const verifyAddress = await isValidReciptentAddress(
+                    resolvedAddress,
+                  );
+                  if (!verifyAddress) return false;
+                  this.parent.recipient = resolvedAddress;
+                  return true;
+                } catch (error) {
+                  return false;
+                }
               },
             )
             .required("Recipient address is required")
