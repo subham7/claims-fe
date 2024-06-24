@@ -369,6 +369,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
 
         <div className={classes.headerContainer}>
           <ComponentHeader
+            loading={treasuryAmountIsloading}
             title={clubData?.name}
             subtext={`$${clubData?.symbol}`}
             showButton={routeNetworkId === "0xe708" ? true : false}
