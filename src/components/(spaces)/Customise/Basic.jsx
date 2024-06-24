@@ -9,15 +9,15 @@ const Basic = ({
   setDescription,
   logo,
   setLogo,
-  banner,
-  setBanner,
+  coverPic,
+  setCoverPic,
 }) => {
   const handleUploadFile = async (file, attribute) => {
     const response = await uploadFileToAWS(file);
     if (attribute === "logo") {
       setLogo(response);
     } else {
-      setBanner(response);
+      setCoverPic(response);
     }
   };
   return (
@@ -92,15 +92,15 @@ const Basic = ({
       </div>
       <div className={classes.form}>
         <div className={classes.subHeader}>
-          <p>Banner</p>
+          <p>Cover Banner</p>
           <p className={classes.description}>
             Add an attractive banner on your space.
           </p>
         </div>
         <div className={classes.spaceImage}>
           <img
-            src={banner ? banner : "/assets/images/spaceBanner.jpg"}
-            alt="banner"
+            src={coverPic ? coverPic : "/assets/images/spaceBanner.jpg"}
+            alt="coverPic"
             className={classes.banner}
           />
           <button className={classes.uploadButton}>
@@ -111,8 +111,8 @@ const Basic = ({
               name="upload"
               type="file"
               onChange={(event) => {
-                setBanner(URL.createObjectURL(event.target.files[0]));
-                handleUploadFile(event.target.files[0], "banner");
+                setCoverPic(URL.createObjectURL(event.target.files[0]));
+                handleUploadFile(event.target.files[0], "cover");
               }}
               accept="image/*"
             />

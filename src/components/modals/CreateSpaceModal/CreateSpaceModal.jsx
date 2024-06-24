@@ -23,7 +23,7 @@ const CreateSpaceModal = ({ setShowCreateSpaceModal }) => {
         description: "",
         logo: "",
         creator: address,
-        managers: [],
+        managers: [address],
         stations: [],
         isPrivate: false,
         isActive: true,

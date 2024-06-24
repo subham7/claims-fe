@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Image from "next/image";
 import classes from "./Navbar.module.scss";
 import { useRouter } from "next/router";
@@ -14,6 +15,7 @@ import { getConnections } from "@wagmi/core";
 import { config } from "config";
 import Menu from "./Menu";
 import useSpaceFetch from "hooks/useSpaceFetch";
+import { getSpaceByManager } from "api/space";
 
 const Navbar = ({ daoAddress, routeNetworkId }) => {
   const [showEditDetails, setShowEditDetails] = useState(false);
@@ -22,6 +24,7 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
   const [showCreateSpaceModal, setShowCreateSpaceModal] = useState(false);
   const [networksSupported, setNetworkSupported] = useState();
   const [walletIcon, setWalletIcon] = useState("");
+  const [spaces, setSpaces] = useState();
   const dropdownRef = useRef(null);
   const router = useRouter();
   const [spaceId] = router?.query?.slug ?? [];
@@ -48,6 +51,15 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
     const connector = getConnections(config)[0]?.connector;
     setWalletIcon(connector?.icon);
   };
+
+  const fetchSpaces = async () => {
+    const data = await getSpaceByManager(address);
+    setSpaces(data);
+  };
+
+  useEffect(() => {
+    if (address) fetchSpaces();
+  }, [address]);
 
   useEffect(() => {
     if (address && networkId) fetchCurrentWalletIcon();
@@ -120,6 +132,7 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
           </div>
           {address && (
             <Menu
+              spaces={spaces}
               showMenu={showMenu}
               setShowMenu={setShowMenu}
               dropdownRef={dropdownRef}

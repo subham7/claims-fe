@@ -23,7 +23,7 @@ const Customise = ({ spaceId }) => {
   const [spaceName, setSpaceName] = useState("");
   const [description, setDescription] = useState("");
   const [logo, setLogo] = useState("");
-  const [banner, setBanner] = useState("");
+  const [coverPic, setCoverPic] = useState("");
   const [farcaster, setFarcaster] = useState("");
   const [telegram, setTelegram] = useState("");
   const [twitter, setTwitter] = useState("");
@@ -31,6 +31,7 @@ const Customise = ({ spaceId }) => {
   const [reddit, setReddit] = useState("");
   const [instagram, setInstagram] = useState("");
   const [website, setWebsite] = useState("");
+  const [managers, setManagers] = useState([]);
   const [isSaveLoading, setIsSaveLoading] = useState(false);
   const [showAddStationsModal, setShowAddStationsModal] = useState(false);
   const [selectedStations, setSelectedStations] = useState([]);
@@ -54,8 +55,9 @@ const Customise = ({ spaceId }) => {
         name: spaceName,
         description: description,
         logo: logo,
+        coverPic: coverPic,
         creator: address,
-        managers: [],
+        managers: managers,
         stations: selectedStations,
         isPrivate: false,
         isActive: true,
@@ -118,6 +120,8 @@ const Customise = ({ spaceId }) => {
       setSpaceName(spaceData?.name);
       setDescription(spaceData?.description);
       setLogo(spaceData?.logo);
+      setCoverPic(spaceData?.coverPic);
+      setManagers(spaceData?.managers);
       setSelectedStations(spaceData?.stations);
       setFarcaster(
         formatURL(spaceData?.links?.warpcast, "https://warpcast.com/"),
@@ -155,8 +159,8 @@ const Customise = ({ spaceId }) => {
         setDescription={setDescription}
         logo={logo}
         setLogo={setLogo}
-        banner={banner}
-        setBanner={setBanner}
+        coverPic={coverPic}
+        setCoverPic={setCoverPic}
       />
       <Social
         farcaster={farcaster}

@@ -9,7 +9,9 @@ import { getPublicClient } from "utils/viemConfig";
 const SpacesHeader = ({ spaceData }) => {
   const [ensName, setEnsName] = useState("");
   const headerStyle = {
-    backgroundImage: `linear-gradient(180deg, rgba(30, 30, 30, 0) 0%, rgba(24, 24, 24, 0.6) 39.11%, #111111 86.57%), url(${"/assets/images/spaceBanner.jpg"})`,
+    backgroundImage: `linear-gradient(180deg, rgba(30, 30, 30, 0) 0%, rgba(24, 24, 24, 0.6) 39.11%, #111111 86.57%), url(${
+      spaceData.coverPic ? spaceData.coverPic : "/assets/images/spaceBanner.jpg"
+    })`,
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
     backgroundSize: "cover",
