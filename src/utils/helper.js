@@ -528,3 +528,5 @@ const walletAddressToEns = async (ens) => {
 };
 
 export const debouncedWalletAddressToEns = debounce(walletAddressToEns, 300);
+
+console.log("test-console");
