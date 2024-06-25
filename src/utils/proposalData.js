@@ -2251,29 +2251,50 @@ export const createOrUpdateSafeTransaction = async ({
   nonce,
   executionStatus,
   approvalTransaction2,
+  networkId,
 }) => {
   let safeTransaction;
   let rejectionTransaction;
 
-  if (executionId === 6) {
-    safeTransaction = await safeSdk.createAddOwnerTx(transaction);
-  } else if (executionId === 7) {
-    safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
-  } else if (executionId === 62) {
-    safeTransaction = await safeSdk.createChangeThresholdTx(transaction);
+  if (networkId !== "0x89" && networkId !== "0x1") {
+    if (executionId === 6) {
+      safeTransaction = await safeSdk.createAddOwnerTx(transaction);
+    } else if (executionId === 7) {
+      safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
+    } else if (executionId === 62) {
+      safeTransaction = await safeSdk.createChangeThresholdTx(transaction);
+    } else {
+      safeTransaction = await safeSdk.createTransaction({
+        safeTransactionData: createSafeTransactionData({
+          approvalTransaction,
+          stakeETHTransaction,
+          transaction,
+          nonce,
+          executionId,
+          approvalTransaction2,
+        }),
+      });
+      if (executionStatus === "cancel") {
+        rejectionTransaction = await safeSdk.createRejectionTransaction(nonce);
+      }
+    }
   } else {
-    safeTransaction = await safeSdk.createTransaction({
-      safeTransactionData: createSafeTransactionData({
-        approvalTransaction,
-        stakeETHTransaction,
-        transaction,
-        nonce,
-        executionId,
-        approvalTransaction2,
-      }),
-    });
-    if (executionStatus === "cancel") {
-      rejectionTransaction = await safeSdk.createRejectionTransaction(nonce);
+    if (executionId === 62) {
+      safeTransaction = await safeSdk.createChangeThresholdTx(transaction);
+    } else {
+      safeTransaction = await safeSdk.createTransaction({
+        safeTransactionData: createSafeTransactionData({
+          approvalTransaction,
+          stakeETHTransaction,
+          transaction,
+          nonce,
+          executionId,
+          approvalTransaction2,
+        }),
+      });
+      if (executionStatus === "cancel") {
+        rejectionTransaction = await safeSdk.createRejectionTransaction(nonce);
+      }
     }
   }
 

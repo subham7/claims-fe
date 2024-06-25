@@ -647,6 +647,7 @@ const useAppContractMethods = (params) => {
       networkId,
       membersArray,
       airDropAmountArray,
+      safeSdk,
     });
     const txHash = await getTransactionHash(pid);
     const tx = txHash ? await safeService.getTransaction(txHash) : null;
@@ -664,6 +665,7 @@ const useAppContractMethods = (params) => {
             nonce,
             proposalStatus,
             approvalTransaction2,
+            networkId,
           });
 
         const payload = { proposalId: pid, txHash: safeTxHash };
@@ -698,6 +700,7 @@ const useAppContractMethods = (params) => {
               stakeETHTransaction: tx.dataDecoded.parameters[0].valueDecoded[3],
               nonce: tx.nonce,
               executionStatus: proposalStatus,
+              networkId,
             });
 
           await signAndConfirmTransaction({
@@ -710,21 +713,36 @@ const useAppContractMethods = (params) => {
           });
           return tx;
         } else {
+          let transactionToBeExecuted;
+
+          if (networkId === "0x1" || networkId === "0x89") {
+            transactionToBeExecuted =
+              executionId === 4 || executionId === 62
+                ? transaction
+                : approvalTransaction && stakeETHTransaction
+                ? tx.dataDecoded.parameters[0].valueDecoded[2]
+                : approvalTransaction && !stakeETHTransaction
+                ? tx.dataDecoded.parameters[0].valueDecoded[1]
+                : tx;
+          } else {
+            transactionToBeExecuted =
+              executionId === 4 ||
+              executionId === 62 ||
+              executionId === 6 ||
+              executionId === 7
+                ? transaction
+                : approvalTransaction && stakeETHTransaction
+                ? tx.dataDecoded.parameters[0].valueDecoded[2]
+                : approvalTransaction && !stakeETHTransaction
+                ? tx.dataDecoded.parameters[0].valueDecoded[1]
+                : tx;
+          }
+
           const { safeTransaction, rejectionTransaction, safeTxHash } =
             await createOrUpdateSafeTransaction({
               safeSdk,
               executionId,
-              transaction:
-                executionId === 6 ||
-                executionId === 7 ||
-                executionId === 4 ||
-                executionId === 62
-                  ? transaction
-                  : approvalTransaction && stakeETHTransaction
-                  ? tx.dataDecoded.parameters[0].valueDecoded[2]
-                  : approvalTransaction && !stakeETHTransaction
-                  ? tx.dataDecoded.parameters[0].valueDecoded[1]
-                  : tx,
+              transaction: transactionToBeExecuted,
               approvalTransaction:
                 approvalTransaction && stakeETHTransaction
                   ? tx.dataDecoded.parameters[0].valueDecoded[1]
@@ -737,6 +755,7 @@ const useAppContractMethods = (params) => {
                   : undefined,
               nonce: tx.nonce,
               executionStatus: proposalStatus,
+              networkId,
             });
 
           await signAndConfirmTransaction({

@@ -60,7 +60,11 @@ const TreasurySigner = ({
     try {
       setLoading(true);
 
-      if (type === "add") {
+      if (
+        routeNetworkId !== "0x1" &&
+        routeNetworkId !== "0x89" &&
+        type === "add"
+      ) {
         const isStationMember = await isMember(
           newArr[newArr.length - 1],
           daoAddress,
