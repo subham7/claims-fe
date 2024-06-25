@@ -186,7 +186,14 @@ const Station = ({ club, key }) => {
             onClick={() => {
               handleItemClick(club.daoAddress, club.networkId);
             }}>
-            {club.name}{" "}
+            <p
+              style={{
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}>
+              {club.name}
+            </p>{" "}
             <span className={classes.stationBadge}>
               {club.tokenType === "erc721" ? "NFT" : club.tokenType}
             </span>
@@ -197,8 +204,14 @@ const Station = ({ club, key }) => {
           </p>
         </div>
         <p className={classes.stationFunding}>
-          {club.totalAmountRaised}{" "}
-          {club.depositTokenAddress !==
+          {club.depositTokenAddress?.toLowerCase() ===
+          "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+            ? convertFromWeiGovernance(
+                Number(club.totalAmountRaised.replace(/,/g, "")),
+                18,
+              )
+            : Number(club.totalAmountRaised.replace(/,/g, "")).toFixed(2)}{" "}
+          {club.depositTokenAddress?.toLowerCase() ===
           "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" ? (
             <p>ETH</p>
           ) : (
