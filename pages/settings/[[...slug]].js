@@ -50,6 +50,7 @@ const SettingPage2 = () => {
             daoAddress={daoAddress}
             clubData={clubData}
             routeNetworkId={networkId}
+            settingIsLoading={settingIsLoading}
           />
         )}
       </div>

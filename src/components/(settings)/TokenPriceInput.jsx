@@ -10,6 +10,7 @@ const TokenPriceInput = ({
   prevAmount,
   handleActionComplete,
   setLoading,
+  settingIsLoading,
 }) => {
   return (
     <div className={classes.tokenPriceContainer}>
@@ -26,6 +27,7 @@ const TokenPriceInput = ({
         className={classes.tokenPriceInput}
         setLoading={setLoading}
         handleActionComplete={handleActionComplete}
+        settingIsLoading={settingIsLoading}
       />
     </div>
   );
