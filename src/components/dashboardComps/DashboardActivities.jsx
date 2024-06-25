@@ -2,7 +2,7 @@ import SafeImage from "@components/common/SafeImage";
 import { Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import {
   customToFixedAutoPrecision,
@@ -12,10 +12,12 @@ import Web3 from "web3";
 import classes from "./Dashboard.module.scss";
 import { getTransactionsByNetworkId } from "api/transactions";
 import CopyLinkContainer from "./CopyLinkContainer";
+import { isLoading } from "../../redux/loader/selectors";
+import { startLoading, stopLoading } from "redux/loader/actions";
+import CustomSkeleton from "@components/skeleton/CustomSkeleton";
 
 const ActivityItem = ({ item, daoAddress, networkId }) => {
   const router = useRouter();
-
   const daysRemaining = getDaysDifferenceDescription(item.votingDuration);
 
   return (
@@ -84,12 +86,20 @@ const TransactionItem = ({ item }) => {
 
 const DashboardActivities = ({ proposals, daoAddress, networkId }) => {
   const [allTransactions, setAllTransactions] = useState([]);
+  const dispatch = useDispatch();
+  const proposalIsloading = useSelector((state) =>
+    isLoading(state, "proposal"),
+  );
+  const transactionIsLoading = useSelector((state) =>
+    isLoading(state, "transactions"),
+  );
 
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
 
   const fetchTransactions = async () => {
+    dispatch(startLoading("transactions"));
     try {
       const { transfers } = await getTransactionsByNetworkId(
         Web3.utils.toChecksumAddress(gnosisAddress),
@@ -99,6 +109,7 @@ const DashboardActivities = ({ proposals, daoAddress, networkId }) => {
     } catch (err) {
       console.error(err);
     }
+    dispatch(stopLoading("transactions"));
   };
 
   useEffect(() => {
@@ -133,10 +144,29 @@ const DashboardActivities = ({ proposals, daoAddress, networkId }) => {
           <Typography className={classes.heading} variant="inherit">
             {title}
           </Typography>
+
           <div
             className={
               isTransaction ? classes.transactionList : classes.proposalList
             }>
+            {isTransaction
+              ? transactionIsLoading && (
+                  <CustomSkeleton
+                    marginTop={"20px"}
+                    width={"95%"}
+                    height={30}
+                    length={7}
+                  />
+                )
+              : proposalIsloading && (
+                  <CustomSkeleton
+                    marginTop={"20px"}
+                    width={"95%"}
+                    height={30}
+                    length={7}
+                  />
+                )}
+
             {data?.length ? (
               data.map((item, index) =>
                 isTransaction ? (

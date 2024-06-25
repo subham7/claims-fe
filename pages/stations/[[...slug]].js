@@ -16,11 +16,11 @@ import { getReferralCode } from "api/invite/invite";
 import { OMIT_DAOS } from "utils/constants";
 import { convertToFullNumber, shortAddress } from "utils/helper";
 import { useRouter } from "next/router";
-import BackdropLoader from "@components/common/BackdropLoader";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { BigNumber } from "bignumber.js";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
+import CustomSkeleton from "@components/skeleton/CustomSkeleton";
 
 const useStyles = makeStyles({
   container: {
@@ -289,19 +289,19 @@ const StationsPage = () => {
 
     if (walletAddress && networkId) fetchClubs();
   }, [networkId, walletAddress]);
+  const isStationLoading = isUserWhitelisted === null || isLoading;
+  // if (isUserWhitelisted === null || isLoading) {
+  //   return (
+  //     <Layout showSidebar={false} faucet={false}>
+  //     <CustomSkeleton marginTop={'10px'} width={"50%"} height={100} length={15}/>
+  //    </Layout>
 
-  if (isUserWhitelisted === null || isLoading) {
-    return (
-      <Layout showSidebar={false} faucet={false}>
-        <BackdropLoader isOpen={true} showLoading={true} />
-      </Layout>
-    );
-  }
+  //   );
+  // }
 
   return (
     <Layout showSidebar={false} faucet={false}>
       <div className={classes.container}>
-        {/* {isUserWhitelisted ? ( */}
         <Grid
           container
           direction="row"
@@ -320,6 +320,16 @@ const StationsPage = () => {
                 </Grid>
               </div>
               <Divider className={classes.divider} />
+              {isStationLoading && (
+                <>
+                  <CustomSkeleton
+                    marginTop={"20px"}
+                    width={"100%"}
+                    height={80}
+                    length={15}
+                  />
+                </>
+              )}
               <div>
                 <div style={{ overflowY: "scroll", maxHeight: "60vh" }}>
                   {walletAddress && clubListData.length ? (

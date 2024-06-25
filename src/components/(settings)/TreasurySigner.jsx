@@ -13,6 +13,8 @@ import { createProposal } from "api/proposal";
 import { useSelector } from "react-redux";
 import { GoPencil } from "react-icons/go";
 import { isMember } from "utils/stationsSubgraphHelper";
+import { Box } from "@mui/material";
+import CustomSkeleton from "@components/skeleton/CustomSkeleton";
 
 const TreasurySigner = ({
   clubData,
@@ -20,6 +22,7 @@ const TreasurySigner = ({
   routeNetworkId,
   setLoading,
   handleActionComplete,
+  settingIsLoading,
 }) => {
   const { signMessageAsync } = useSignMessage();
   const [newArr, setNewArr] = useState([]);
@@ -148,115 +151,128 @@ const TreasurySigner = ({
   }, [adminAddresses]);
 
   return (
-    <div className={classes.treasurySignerContainer}>
-      {newArr?.map((signer, index) => (
-        <div key={index} className={classes.copyTextContainer}>
-          <input
-            onChange={(e) => {
-              const address = e.target.value;
-              const list = [...newArr];
-              list[index] = address;
-              setNewArr(list);
-            }}
-            placeholder="0x"
-            className={classes.input}
-            value={newArr[index]}
-            disabled={adminAddresses[index]}
-            style={{
-              margin: "4px 0",
-            }}
+    <>
+      {!settingIsLoading ? (
+        <Box sx={{ width: "400px" }}>
+          <CustomSkeleton
+            marginTop={"20px"}
+            width={"100%"}
+            height={40}
+            length={1}
           />
+        </Box>
+      ) : (
+        <div className={classes.treasurySignerContainer}>
+          {newArr?.map((signer, index) => (
+            <div key={index} className={classes.copyTextContainer}>
+              <input
+                onChange={(e) => {
+                  const address = e.target.value;
+                  const list = [...newArr];
+                  list[index] = address;
+                  setNewArr(list);
+                }}
+                placeholder="0x"
+                className={classes.input}
+                value={newArr[index]}
+                disabled={adminAddresses[index]}
+                style={{
+                  margin: "4px 0",
+                }}
+              />
 
-          {showDeleteIcons && (
-            <RxCross2
-              key={index}
-              onClick={() => {
-                setClickedIndex(index);
-              }}
-              className={
-                clickedIndex === index
-                  ? classNames(classes.icon, classes.delete)
-                  : classes.icon
-              }
-            />
+              {showDeleteIcons && (
+                <RxCross2
+                  key={index}
+                  onClick={() => {
+                    setClickedIndex(index);
+                  }}
+                  className={
+                    clickedIndex === index
+                      ? classNames(classes.icon, classes.delete)
+                      : classes.icon
+                  }
+                />
+              )}
+
+              {!adminAddresses[index] && (
+                <RxCross2
+                  className={classNames(classes.icon, classes.delete)}
+                  onClick={() => {
+                    const list = [...newArr];
+                    list.splice(index, 1);
+                    setNewArr(list);
+                    setShowSaveButton(false);
+                    setShowAddDeleteButtons(true);
+                  }}
+                />
+              )}
+            </div>
+          ))}
+
+          {showErrorText && (
+            <Typography
+              variant="inherit"
+              fontSize={12}
+              color={"red"}
+              ml={1}
+              mt={0.5}>
+              Address is not a member of station
+            </Typography>
           )}
 
-          {!adminAddresses[index] && (
-            <RxCross2
-              className={classNames(classes.icon, classes.delete)}
-              onClick={() => {
-                const list = [...newArr];
-                list.splice(index, 1);
-                setNewArr(list);
-                setShowSaveButton(false);
-                setShowAddDeleteButtons(true);
-              }}
-            />
-          )}
-        </div>
-      ))}
-
-      {showErrorText && (
-        <Typography
-          variant="inherit"
-          fontSize={12}
-          color={"red"}
-          ml={1}
-          mt={0.5}>
-          Address is not a member of station
-        </Typography>
-      )}
-
-      {isAdmin && showEditButton && adminAddresses?.length && (
-        <button
-          onClick={() => {
-            setShowAddDeleteButtons(true);
-            setShowEditButton(false);
-          }}>
-          <Typography variant="inherit" mr={0.5} fontSize={14}>
-            Edit
-          </Typography>
-          <GoPencil size={12} />
-        </button>
-      )}
-
-      {showAddDeleteButtons ? (
-        <div
-          style={{
-            display: "flex",
-            gap: "12px",
-          }}>
-          <button
-            onClick={() => {
-              setNewArr([...newArr, ""]);
-              setShowAddDeleteButtons(false);
-              setShowSaveButton(true);
-              setType("add");
-            }}>
-            <Typography variant="inherit">Add</Typography>
-            <BiPlus size={15} />
-          </button>
-
-          {newArr?.length > 1 ? (
+          {isAdmin && showEditButton && adminAddresses?.length && (
             <button
               onClick={() => {
-                setShowAddDeleteButtons(false);
-                setShowDeleteIcons(true);
-                setShowSaveButton(true);
-                setType("delete");
+                setShowAddDeleteButtons(true);
+                setShowEditButton(false);
               }}>
-              <Typography variant="inherit">Delete</Typography>
+              <Typography variant="inherit" mr={0.5} fontSize={14}>
+                Edit
+              </Typography>
+              <GoPencil size={12} />
             </button>
-          ) : null}
-        </div>
-      ) : null}
+          )}
 
-      {showSaveButton && (
-        <button onClick={submitHandler}>
-          <Typography variant="inherit">Save</Typography>
-        </button>
+          {showAddDeleteButtons ? (
+            <div
+              style={{
+                display: "flex",
+                gap: "12px",
+              }}>
+              <button
+                onClick={() => {
+                  setNewArr([...newArr, ""]);
+                  setShowAddDeleteButtons(false);
+                  setShowSaveButton(true);
+                  setType("add");
+                }}>
+                <Typography variant="inherit">Add</Typography>
+                <BiPlus size={15} />
+              </button>
+
+              {newArr?.length > 1 ? (
+                <button
+                  onClick={() => {
+                    setShowAddDeleteButtons(false);
+                    setShowDeleteIcons(true);
+                    setShowSaveButton(true);
+                    setType("delete");
+                  }}>
+                  <Typography variant="inherit">Delete</Typography>
+                </button>
+              ) : null}
+            </div>
+          ) : null}
+
+          {showSaveButton && (
+            <button onClick={submitHandler}>
+              <Typography variant="inherit">Save</Typography>
+            </button>
+          )}
+        </div>
       )}
-    </div>
+    </>
   );
 };
 

@@ -5,7 +5,7 @@ import DocsCard from "@components/common/DocsCard";
 import { fetchProposals } from "utils/proposal";
 import { useRouter } from "next/router";
 import ProposalCard from "./ProposalCard";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { makeStyles } from "@mui/styles";
 import Web3 from "web3";
 import { getProposalByDaoAddress, getProposalTxHash } from "api/proposal";
@@ -15,7 +15,9 @@ import { useAccount, useChainId } from "wagmi";
 import BackdropLoader from "@components/common/BackdropLoader";
 import SelectActionDialog from "@components/proposalComps/SelectActionDialog";
 import ComponentHeader from "@components/common/ComponentHeader";
-
+import { isLoading } from "../../redux/loader/selectors";
+import { startLoading, stopLoading } from "redux/loader/actions";
+import CustomSkeleton from "@components/skeleton/CustomSkeleton";
 const useStyles = makeStyles({
   noProposal_heading: {
     fontSize: "18px",
@@ -57,6 +59,11 @@ const useStyles = makeStyles({
 const Proposal = ({ daoAddress, routeNetworkId }) => {
   const router = useRouter();
   const chain = useChainId();
+  const dispatch = useDispatch();
+  const proposalListIsloading = useSelector((state) =>
+    isLoading(state, "proposal-list"),
+  );
+
   const { address: walletAddress } = useAccount();
   const networkId = "0x" + chain?.toString(16);
   const classes = useStyles();
@@ -122,8 +129,10 @@ const Proposal = ({ daoAddress, routeNetworkId }) => {
   };
 
   const fetchProposalList = async (type = "all") => {
+    dispatch(startLoading("proposal-list"));
     const data = await fetchProposals(daoAddress, type);
     setProposalList(data);
+    dispatch(stopLoading("proposal-list"));
   };
 
   const handleFilterChange = (event) => {
@@ -168,6 +177,7 @@ const Proposal = ({ daoAddress, routeNetworkId }) => {
     }
   };
   const fetchOwners = async () => {
+    dispatch(startLoading("signators"));
     try {
       const { safeSdk } = await getSafeSdk(
         gnosisAddress,
@@ -186,6 +196,7 @@ const Proposal = ({ daoAddress, routeNetworkId }) => {
     } catch (error) {
       console.log(error);
     }
+    dispatch(stopLoading("signators"));
   };
 
   useEffect(() => {
@@ -245,6 +256,14 @@ const Proposal = ({ daoAddress, routeNetworkId }) => {
               </Select> */}
             </div>
             <Grid container spacing={3}>
+              {proposalListIsloading && (
+                <CustomSkeleton
+                  width={"95%"}
+                  height={120}
+                  length={10}
+                  marginTop={"25px"}
+                />
+              )}
               {proposalList?.length > 0 ? (
                 <>
                   {executionTransaction && (

@@ -10,7 +10,12 @@ import UpdateAmountTextfield from "./UpdateAmountTextfield";
 import classes from "@components/(settings)/Settings.module.scss";
 // import EnableKYC from "./EnableKyc";
 
-const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
+const GeneralSettings = ({
+  clubData,
+  routeNetworkId,
+  daoAddress,
+  settingIsLoading,
+}) => {
   const [loading, setLoading] = useState(false);
   const [proposalId, setProposalId] = useState("");
   const [isActionCreated, setIsActionCreated] = useState(null);
@@ -33,6 +38,7 @@ const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
         <CopyText
           type="share"
           value={`${window.location.origin}/join/${daoAddress}/${routeNetworkId}`}
+          settingIsLoading={settingIsLoading}
         />
       ),
     },
@@ -46,6 +52,7 @@ const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
           setLoading={setLoading}
           daoAddress={daoAddress}
           clubData={clubData}
+          settingIsLoading={settingIsLoading}
         />
       ),
       // isHidden: CC_NETWORKS.includes(routeNetworkId),
@@ -60,6 +67,7 @@ const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
           routeNetworkId={routeNetworkId}
           type="daoAddress"
           value={gnosisAddress}
+          settingIsLoading={settingIsLoading}
         />
       ),
     },
@@ -75,6 +83,7 @@ const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
           routeNetworkId={routeNetworkId}
           setLoading={setLoading}
           handleActionComplete={handleActionComplete}
+          settingIsLoading={settingIsLoading}
         />
       ),
     },
@@ -93,9 +102,11 @@ const GeneralSettings = ({ clubData, routeNetworkId, daoAddress }) => {
           setLoading={setLoading}
           type={"signators"}
           prevAmount={Number(currentSafeThreshold)}
+          settingIsLoading={settingIsLoading}
         />
       ),
     },
+
     // {
     //   key: "enableKYC",
     //   heading: "KYC",
