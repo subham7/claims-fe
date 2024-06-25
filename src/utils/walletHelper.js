@@ -39,3 +39,5 @@ export const addTokenToWallet = async (
     return false;
   }
 };
+
+console.log("test");
