@@ -8,6 +8,7 @@ import { createSpace } from "api/space";
 import { setAlertData } from "redux/reducers/alert";
 import { generateAlertData } from "utils/globalFunctions";
 import { useRouter } from "next/router";
+import useAuth from "hooks/useAuth";
 
 const CreateSpaceModal = ({ setShowCreateSpaceModal }) => {
   const [name, setName] = useState("");
@@ -15,6 +16,7 @@ const CreateSpaceModal = ({ setShowCreateSpaceModal }) => {
   const dispatch = useDispatch();
   const { address } = useAccount();
   const router = useRouter();
+  const authToken = useAuth();
 
   const handleCreateSpace = async () => {
     if (name) {
@@ -48,7 +50,7 @@ const CreateSpaceModal = ({ setShowCreateSpaceModal }) => {
           reddit: "",
         },
       };
-      const response = await createSpace(spaceData);
+      const response = await createSpace(spaceData, authToken);
       dispatch(
         setAlertData(
           generateAlertData("Space created successfully!", "success"),

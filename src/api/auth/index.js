@@ -1,5 +1,19 @@
 import axios from "axios";
-import { MAIN_API_URL } from "../index";
+import { MAIN_API_URL, SPACE_API_URL } from "../index";
+
+export const authToken = async (data) => {
+  try {
+    const res = await axios.post(`${SPACE_API_URL}api/v1/auth`, data, {
+      headers: {
+        accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 export async function loginToken(userAddress) {
   try {

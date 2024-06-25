@@ -16,6 +16,7 @@ import { config } from "config";
 import Menu from "./Menu";
 import useSpaceFetch from "hooks/useSpaceFetch";
 import { getSpaceByManager } from "api/space";
+import useAuth from "hooks/useAuth";
 
 const Navbar = ({ daoAddress, routeNetworkId }) => {
   const [showEditDetails, setShowEditDetails] = useState(false);
@@ -33,6 +34,7 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
   const { walletInfo } = useWalletInfo();
   const chain = useChainId();
   const networkId = "0x" + chain?.toString(16);
+  const authToken = useAuth();
 
   const clubData = useSelector((state) => {
     return state.club.clubData;

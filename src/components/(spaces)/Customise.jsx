@@ -17,9 +17,11 @@ import { FaArrowLeft } from "react-icons/fa";
 import AddStationsModal from "@components/modals/AddStationsSpaceModal/AddStationsModal";
 import useAllClubsFetch from "hooks/useAllClubsFetch";
 import useStationFetch from "hooks/useStationFetch";
+import useAuth from "hooks/useAuth";
 
 const Customise = ({ spaceId }) => {
   const { spaceData, isLoading } = useSpaceFetch(spaceId);
+  const authToken = useAuth();
   const [spaceName, setSpaceName] = useState("");
   const [description, setDescription] = useState("");
   const [logo, setLogo] = useState("");
@@ -82,7 +84,7 @@ const Customise = ({ spaceId }) => {
           reddit: `https://reddit.com/${reddit}`,
         },
       };
-      const response = await updateSpace(spaceId, spaceData);
+      const response = await updateSpace(spaceId, spaceData, authToken);
       dispatch(
         setAlertData(
           generateAlertData("Space updated successfully!", "success"),

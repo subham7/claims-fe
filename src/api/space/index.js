@@ -1,12 +1,13 @@
 import axios from "axios";
 import { SPACE_API_URL } from "../index";
 
-export const createSpace = async (data) => {
+export const createSpace = async (data, authToken) => {
   try {
     const res = await axios.post(`${SPACE_API_URL}api/v1/space`, data, {
       headers: {
         accept: "application/json",
         "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
       },
     });
     return res.data;
@@ -44,7 +45,7 @@ export const getSpaceByManager = async (address) => {
   }
 };
 
-export const updateSpace = async (spaceId, data) => {
+export const updateSpace = async (spaceId, data, authToken) => {
   try {
     const res = await axios.patch(
       `${SPACE_API_URL}api/v1/space/${spaceId}`,
@@ -53,6 +54,7 @@ export const updateSpace = async (spaceId, data) => {
         headers: {
           accept: "application/json",
           "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
         },
       },
     );
