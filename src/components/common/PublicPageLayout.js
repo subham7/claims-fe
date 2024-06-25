@@ -27,7 +27,6 @@ const PublicPageLayout = ({
   nftMinted,
   depositConfig,
 }) => {
-  console.log("xxx", depositConfig);
   return (
     <div className={classes.main}>
       <div className={classes.leftContainer}>

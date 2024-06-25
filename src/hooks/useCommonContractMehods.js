@@ -11,6 +11,7 @@ import { getPublicClient } from "utils/viemConfig";
 import Web3 from "web3";
 import { factoryContractCCABI } from "abis/factoryContractCC";
 import { erc1155ABI } from "abis/erc1155ABI";
+import { erc20TokenABIETH } from "abis/erc20TokenABIETH";
 
 const useCommonContractMethods = (params) => {
   const walletClient = useWalletClient();
@@ -243,7 +244,7 @@ const useCommonContractMethods = (params) => {
         try {
           const res = await writeContractFunction({
             address: contractAddress,
-            abi: erc20TokenABI,
+            abi: networkId === "0x1" ? erc20TokenABIETH : erc20TokenABI,
             functionName: "approve",
             args: [approvalContract, value],
             account: walletAddress,
