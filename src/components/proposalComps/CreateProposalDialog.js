@@ -213,7 +213,6 @@ const CreateProposalDialog = ({ daoAddress, routeNetworkId }) => {
     onSubmit: async (values) => {
       try {
         setLoaderOpen(true);
-
         let commands = await getProposalCommands({
           values,
           tokenData,

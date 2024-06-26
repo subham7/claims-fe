@@ -6,8 +6,8 @@ import { isMember } from "utils/stationsSubgraphHelper";
 import { getPublicClient } from "utils/viemConfig";
 import * as yup from "yup";
 import { BigNumber } from "bignumber.js";
-import { isValidReciptentAddress } from "utils/helper";
-import { walletAddressToEns } from "utils/helper";
+import { validateWalletAddress } from "utils/helper";
+
 export const step1ValidationSchema = yup.object({
   clubName: yup
     .string("Enter club name")
@@ -419,13 +419,17 @@ export const getProposalValidationSchema = ({
 
     recieverAddress: yup
       .string("Please enter reciever address")
+
       .when("actionCommand", {
-        is: 4,
+        is: (actionCommand) => actionCommand === 4 || actionCommand === 5,
         then: () =>
           yup
             .string("Enter reciever address")
-            .matches(/^0x[a-zA-Z0-9]+/gm, " Proper wallet address is required")
-            .required("Reciever address is required"),
+            // .matches(/^0x[a-zA-Z0-9]+/gm, " Proper wallet address is required")
+            .required("Reciever address is required")
+            .test("is-valid-address", "Invalid wallet address", (value) =>
+              validateWalletAddress(value),
+            ),
       }),
 
     safeThreshold: yup.number("Enter threshold").when(["actionCommand"], {
@@ -438,6 +442,9 @@ export const getProposalValidationSchema = ({
     }),
     ownerAddress: yup
       .string()
+      .test("is-valid-address", "Invalid wallet address", (value) =>
+        validateWalletAddress(value),
+      )
       .test(
         "validate-owner",
         "Address is not a member of a club",
@@ -452,7 +459,6 @@ export const getProposalValidationSchema = ({
                 daoAddress,
                 networkId,
               );
-
               if (isStationMember?.users?.length > 0) {
                 return true;
               } else return false;
@@ -802,26 +808,8 @@ export const actionModalValidation = ({
       actionType === "send"
         ? yup
             .string("Enter recipient address")
-            .test(
-              "is-valid-address",
-              "Invalid recipient address",
-              async function (value) {
-                if (!value) return false;
-                try {
-                  const resolvedAddress = await walletAddressToEns(
-                    value.trim(),
-                  );
-                  if (!resolvedAddress) return false;
-                  const verifyAddress = await isValidReciptentAddress(
-                    resolvedAddress,
-                  );
-                  if (!verifyAddress) return false;
-                  this.parent.recipient = resolvedAddress;
-                  return true;
-                } catch (error) {
-                  return false;
-                }
-              },
+            .test("is-valid-address", "Invalid recipient address", (value) =>
+              validateWalletAddress(value),
             )
             .required("Recipient address is required")
         : yup.string().notRequired(),

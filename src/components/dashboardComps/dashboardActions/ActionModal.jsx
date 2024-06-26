@@ -97,7 +97,7 @@ const ActionModal = ({
         };
 
         if (type === "send") {
-          let recipientAddress = await walletAddressToEns(values.recipient);
+          let recipientAddress = await walletAddressToEns(values?.recipient);
           commands = {
             customToken: values.airdropToken.address,
             customTokenAmounts: [

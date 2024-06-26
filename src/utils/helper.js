@@ -504,3 +504,16 @@ export const walletAddressToEns = async (ens) => {
     console.error(error);
   }
 };
+
+export const validateWalletAddress = async (value) => {
+  if (!value) return false;
+  try {
+    const resolvedAddress = await walletAddressToEns(value.trim());
+    if (!resolvedAddress) return false;
+    const verifyAddress = await isValidReciptentAddress(resolvedAddress);
+    if (!verifyAddress) return false;
+    return true;
+  } catch (error) {
+    return false;
+  }
+};

@@ -13,7 +13,8 @@ import { createProposal } from "api/proposal";
 import { useSelector } from "react-redux";
 import { GoPencil } from "react-icons/go";
 import { isMember } from "utils/stationsSubgraphHelper";
-
+import { walletAddressToEns } from "utils/helper";
+import { isValidReciptentAddress } from "utils/helper";
 const TreasurySigner = ({
   clubData,
   daoAddress,
@@ -30,7 +31,7 @@ const TreasurySigner = ({
   const [clickedIndex, setClickedIndex] = useState(null);
   const [showErrorText, setShowErrorText] = useState(false);
   const [type, setType] = useState(null);
-
+  const [errText, setErrText] = useState("");
   const { adminAddresses, currentSafeThreshold } = clubData;
   const { address: walletAddress } = useAccount();
 
@@ -56,7 +57,16 @@ const TreasurySigner = ({
   const submitHandler = async () => {
     try {
       setLoading(true);
-
+      let ownerAddress = await walletAddressToEns(newArr[newArr.length - 1]);
+      let isValid = await isValidReciptentAddress(ownerAddress);
+      if (!isValid) {
+        setErrText("Invalid address");
+        setShowErrorText(true);
+        setLoading(false);
+        return;
+      } else {
+        setShowErrorText(false);
+      }
       if (
         routeNetworkId !== "0x1" &&
         routeNetworkId !== "0x89" &&
@@ -69,6 +79,7 @@ const TreasurySigner = ({
         );
 
         if (!isStationMember?.users?.length > 0) {
+          setErrText("Address is not a member of station");
           setShowErrorText(true);
           setLoading(false);
           return;
@@ -76,10 +87,8 @@ const TreasurySigner = ({
           setShowErrorText(false);
         }
       }
-
       const values = {
-        ownerAddress:
-          type === "add" ? newArr[newArr.length - 1] : newArr[clickedIndex],
+        ownerAddress: type === "add" ? ownerAddress : newArr[clickedIndex],
         safeThreshold:
           type !== "add"
             ? Number(currentSafeThreshold) > 1
@@ -87,7 +96,7 @@ const TreasurySigner = ({
               : Number(currentSafeThreshold)
             : Number(currentSafeThreshold) + 1,
         actionCommand: type === "add" ? 6 : 7,
-        title: type === "add" ? "Add signer" : "Remove sginer",
+        title: type === "add" ? "Add signer" : "Remove siginer",
         note: `${
           type === "add"
             ? `Add signer - ${newArr[newArr.length - 1]}`
@@ -101,6 +110,7 @@ const TreasurySigner = ({
         daoAddress,
         networkId: routeNetworkId,
       });
+
       const blockNum = await fetchLatestBlockNumber(routeNetworkId);
       commands = {
         executionId: values.actionCommand,
@@ -203,7 +213,8 @@ const TreasurySigner = ({
           color={"red"}
           ml={1}
           mt={0.5}>
-          Address is not a member of station
+          {/* Address is not a member of station */}
+          {errText}
         </Typography>
       )}
 

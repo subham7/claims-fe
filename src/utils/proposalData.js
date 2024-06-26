@@ -24,6 +24,7 @@ import { proposalActionCommands } from "./proposalConstants";
 import { getProposalTxHash } from "api/proposal";
 import { createSafeTransactionData } from "./proposal";
 import { CHAIN_CONFIG } from "./constants";
+import { walletAddressToEns } from "utils/helper";
 
 export const proposalData = ({
   data,
@@ -1635,6 +1636,8 @@ export const getProposalCommands = async ({
   networkId,
 }) => {
   const executionId = values.actionCommand;
+  const recieverAddress = await walletAddressToEns(values?.recieverAddress);
+  const ownerAddress = await walletAddressToEns(values?.ownerAddress);
   let data;
   let followersAddresses;
   let merkleRoot;
@@ -1686,20 +1689,20 @@ export const getProposalCommands = async ({
         customTokenAmounts: [
           convertToWeiGovernance(values.amountToSend, tokenDecimal),
         ],
-        customTokenAddresses: [values.recieverAddress],
+        customTokenAddresses: [recieverAddress],
       };
 
     case 5:
       return {
         customNft: values.customNft,
         customNftToken: values.customNftToken,
-        customTokenAddresses: [values.recieverAddress],
+        customTokenAddresses: [recieverAddress],
       };
 
     case 6:
     case 7:
       return {
-        ownerAddress: values.ownerAddress,
+        ownerAddress: ownerAddress,
         safeThreshold: values.safeThreshold,
       };
 
