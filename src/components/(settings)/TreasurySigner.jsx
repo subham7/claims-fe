@@ -13,7 +13,7 @@ import { createProposal } from "api/proposal";
 import { useSelector } from "react-redux";
 import { GoPencil } from "react-icons/go";
 import { isMember } from "utils/stationsSubgraphHelper";
-import { walletAddressToEns } from "utils/helper";
+import { ensToWalletAddress } from "utils/helper";
 import { isValidReciptentAddress } from "utils/helper";
 const TreasurySigner = ({
   clubData,
@@ -57,7 +57,7 @@ const TreasurySigner = ({
   const submitHandler = async () => {
     try {
       setLoading(true);
-      let ownerAddress = await walletAddressToEns(newArr[newArr.length - 1]);
+      let ownerAddress = await ensToWalletAddress(newArr[newArr.length - 1]);
       let isValid = await isValidReciptentAddress(ownerAddress);
       if (!isValid) {
         setErrText("Invalid address");

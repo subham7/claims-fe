@@ -29,7 +29,7 @@ import { useAccount, useSignMessage } from "wagmi";
 import BackdropLoader from "@components/common/BackdropLoader";
 import { actionModalValidation } from "@components/createClubComps/ValidationSchemas";
 import { MdInfo } from "react-icons/md";
-import { walletAddressToEns } from "utils/helper";
+import { ensToWalletAddress } from "utils/helper";
 
 const ActionModal = ({
   type,
@@ -97,7 +97,7 @@ const ActionModal = ({
         };
 
         if (type === "send") {
-          let recipientAddress = await walletAddressToEns(values?.recipient);
+          let recipientAddress = await ensToWalletAddress(values?.recipient);
           commands = {
             customToken: values.airdropToken.address,
             customTokenAmounts: [

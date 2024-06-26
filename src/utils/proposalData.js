@@ -24,7 +24,7 @@ import { proposalActionCommands } from "./proposalConstants";
 import { getProposalTxHash } from "api/proposal";
 import { createSafeTransactionData } from "./proposal";
 import { CHAIN_CONFIG } from "./constants";
-import { walletAddressToEns } from "utils/helper";
+import { ensToWalletAddress } from "utils/helper";
 
 export const proposalData = ({
   data,
@@ -1636,8 +1636,8 @@ export const getProposalCommands = async ({
   networkId,
 }) => {
   const executionId = values.actionCommand;
-  const recieverAddress = await walletAddressToEns(values?.recieverAddress);
-  const ownerAddress = await walletAddressToEns(values?.ownerAddress);
+  const recieverAddress = await ensToWalletAddress(values?.recieverAddress);
+  const ownerAddress = await ensToWalletAddress(values?.ownerAddress);
   let data;
   let followersAddresses;
   let merkleRoot;

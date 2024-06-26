@@ -490,7 +490,7 @@ export const isValidReciptentAddress = async (value) => {
   }
 };
 
-export const walletAddressToEns = async (ens) => {
+export const ensToWalletAddress = async (ens) => {
   if (!ens?.includes(".eth")) {
     return ens;
   }
@@ -508,7 +508,7 @@ export const walletAddressToEns = async (ens) => {
 export const validateWalletAddress = async (value) => {
   if (!value) return false;
   try {
-    const resolvedAddress = await walletAddressToEns(value.trim());
+    const resolvedAddress = await ensToWalletAddress(value.trim());
     if (!resolvedAddress) return false;
     const verifyAddress = await isValidReciptentAddress(resolvedAddress);
     if (!verifyAddress) return false;
