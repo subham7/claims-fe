@@ -6,6 +6,7 @@ import ProposalSigners from "./ProposalSigners";
 import SelectActionDialog from "@components/proposalComps/SelectActionDialog";
 import BackdropLoader from "@components/common/BackdropLoader";
 import ProposalList from "./ProposalList";
+import Link from "next/link";
 
 const ProposalSection = ({ daoAddress, routeNetworkId }) => {
   const [showActionsModal, setShowActionsModal] = useState(false);
@@ -38,8 +39,21 @@ const ProposalSection = ({ daoAddress, routeNetworkId }) => {
             What&apos;s an action?
           </Typography>
           <Typography variant="inherit" fontSize={15} color={"#707070"}>
-            Each action helps you get done with day-to-day stuff inside your
-            station. Please begin by executing the top most action in the queue.
+            Actions help you manage the day-to-day activities inside your
+            station.{" "}
+            <Link
+              style={{
+                color: "#2196f3",
+                textDecoration: "underline",
+              }}
+              target="_blank"
+              href={
+                "https://stationxnetwork.gitbook.io/docs/managing-a-station/workflows-and-automations"
+              }>
+              Learn More
+            </Link>
+            <br />
+            <br /> Please begin by executing the top most action in the queue.
           </Typography>
         </div>
 

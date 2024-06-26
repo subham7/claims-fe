@@ -478,3 +478,5 @@ export const withHttps = (url) =>
 export const formatNumbers = (number) => {
   return number?.toLocaleString("en-US");
 };
+
+export const containsHtml = (str) => /<\/?[a-z][\s\S]*>/i.test(str);

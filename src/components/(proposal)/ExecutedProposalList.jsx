@@ -13,6 +13,7 @@ const ExecutedProposalList = ({
         executedProposals?.map((proposal, index) => (
           <div key={proposal.proposalId}>
             <ProposalItem
+              number={index + 1}
               proposal={proposal}
               executionId={proposal?.commands[0]?.executionId}
               type={"executed"}
