@@ -139,7 +139,7 @@ const Claim = ({ claimAddress }) => {
       try {
         whitelistTokenDecimal = await getDecimals(claims[0].whitelistToken);
       } catch (error) {
-        console.log(error);
+        console.log("error", error);
       }
 
       setTokenDetails({
