@@ -9,14 +9,20 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import { useSelector } from "react-redux";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import classes from "./Dashboard.module.scss";
 import { CHAIN_CONFIG } from "utils/constants";
 import { customToFixedAutoPrecision } from "utils/helper";
-
+import CustomSkeleton from "@components/skeleton/CustomSkeleton";
+import { isLoading } from "redux/loader/selectors";
 export const tableHeader = ["Name", "Holding", "Network", "Value in USD"];
 
 const AssetsTable = ({ tableData }) => {
+  const tokenDetailsIsloading = useSelector((state) =>
+    isLoading(state, "token-details"),
+  );
+  // console.log(tokenDetailsIsloading)
   return (
     <div className={classes.tokensContainer}>
       <TableContainer component={Paper}>
@@ -30,7 +36,24 @@ const AssetsTable = ({ tableData }) => {
               ))}
             </TableRow>
           </TableHead>
+
           <TableBody>
+            {tokenDetailsIsloading &&
+              tableHeader.map((_, i) => {
+                return (
+                  <TableCell key={i} className={classes.tableCell}>
+                    {
+                      <CustomSkeleton
+                        width={"100%"}
+                        height={30}
+                        length={10}
+                        marginTop={"25px"}
+                      />
+                    }
+                  </TableCell>
+                );
+              })}
+
             {tableData.map((token, index) => (
               <>
                 {token.name && (

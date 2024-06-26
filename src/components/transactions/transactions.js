@@ -12,7 +12,6 @@ import {
   TableRow,
   TableCell,
   Tooltip,
-  CircularProgress,
   Chip,
   TablePagination,
   TableContainer,
@@ -23,6 +22,7 @@ import { CHAIN_CONFIG } from "utils/constants";
 import ComponentHeader from "@components/common/ComponentHeader";
 import { getTransactionsByNetworkId } from "api/transactions";
 import { customToFixedAutoPrecision } from "utils/helper";
+import TableSkeleton from "@components/skeleton/TableSkeleton";
 
 dayjs.extend(relativeTime);
 
@@ -104,7 +104,7 @@ const Transactions = ({ networkId }) => {
           {/* Loader */}
           {loading ? (
             <div className="tb-pad-2 f-d f-h-c f-v-c">
-              <CircularProgress />
+              <TableSkeleton column={6} />
             </div>
           ) : !loading && !transactions?.transfers?.length ? (
             <div className="tb-pad-2 f-d f-h-c f-v-c">
