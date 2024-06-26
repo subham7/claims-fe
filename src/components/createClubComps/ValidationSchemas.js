@@ -425,11 +425,10 @@ export const getProposalValidationSchema = ({
         then: () =>
           yup
             .string("Enter reciever address")
-
+            .required("Reciever address is required")
             .test("is-valid-address", "Invalid wallet address", (value) =>
               validateWalletAddress(value),
-            )
-            .required("Reciever address is required"),
+            ),
       }),
 
     safeThreshold: yup.number("Enter threshold").when(["actionCommand"], {
@@ -445,6 +444,7 @@ export const getProposalValidationSchema = ({
       then: () =>
         yup
           .string()
+          .required("Reciever address is required")
           .test("is-valid-address", "Invalid wallet address", (value) =>
             validateWalletAddress(value),
           )
