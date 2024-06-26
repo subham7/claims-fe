@@ -425,7 +425,6 @@ export const getProposalValidationSchema = ({
         then: () =>
           yup
             .string("Enter reciever address")
-            // .matches(/^0x[a-zA-Z0-9]+/gm, " Proper wallet address is required")
             .required("Reciever address is required")
             .test("is-valid-address", "Invalid wallet address", (value) =>
               validateWalletAddress(value),
