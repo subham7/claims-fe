@@ -345,11 +345,15 @@ export const proposalFormData = ({
               disabled
               value={file?.name}
               error={
-                formik.touched.mintGTAmounts &&
-                Boolean(formik.errors.mintGTAmounts)
+                (formik.touched.mintGTAddresses &&
+                  Boolean(formik.errors.mintGTAddresses)) ||
+                (formik.touched.mintGTAmounts &&
+                  Boolean(formik.errors.mintGTAmounts))
               }
               helperText={
-                formik.touched.mintGTAmounts && formik.errors.mintGTAmounts
+                (formik.touched.mintGTAddresses &&
+                  formik.errors.mintGTAddresses) ||
+                (formik.touched.mintGTAmounts && formik.errors.mintGTAmounts)
               }
             />
             <Button onClick={handleClick} variant="contained">

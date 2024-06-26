@@ -234,6 +234,26 @@ export const getProposalValidationSchema = ({
           return true;
         },
       ),
+
+    mintGTAddresses: yup
+      .array()
+      .test(
+        "is-valid-address",
+        "Invalid wallet address",
+        async function (values) {
+          try {
+            const validateAddress = await Promise.all(
+              values.map((address) => validateWalletAddress(address)),
+            );
+            const checkAddress = validateAddress.some((isValid) => !isValid);
+            if (checkAddress) return false;
+            else return true;
+          } catch (error) {
+            return false;
+          }
+        },
+      ),
+
     mintGTAmounts: yup
       .array()
       .test(
