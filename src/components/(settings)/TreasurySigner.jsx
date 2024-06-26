@@ -96,7 +96,7 @@ const TreasurySigner = ({
               : Number(currentSafeThreshold)
             : Number(currentSafeThreshold) + 1,
         actionCommand: type === "add" ? 6 : 7,
-        title: type === "add" ? "Add signer" : "Remove siginer",
+        title: type === "add" ? "Add signer" : "Remove signer",
         note: `${
           type === "add"
             ? `Add signer - ${newArr[newArr.length - 1]}`
