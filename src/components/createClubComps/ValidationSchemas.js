@@ -425,10 +425,11 @@ export const getProposalValidationSchema = ({
         then: () =>
           yup
             .string("Enter reciever address")
-            .required("Reciever address is required")
+
             .test("is-valid-address", "Invalid wallet address", (value) =>
               validateWalletAddress(value),
-            ),
+            )
+            .required("Reciever address is required"),
       }),
 
     safeThreshold: yup.number("Enter threshold").when(["actionCommand"], {
@@ -439,37 +440,42 @@ export const getProposalValidationSchema = ({
           .required("Safe Threshold is required")
           .moreThan(0, "Safe threshold can't be less than 1"),
     }),
-    ownerAddress: yup
-      .string()
-      .test("is-valid-address", "Invalid wallet address", (value) =>
-        validateWalletAddress(value),
-      )
-      .test(
-        "validate-owner",
-        "Address is not a member of a club",
-        async (value, context) => {
-          const { actionCommand } = context.parent;
+    ownerAddress: yup.string().when("actionCommand", {
+      is: (actionCommand) => actionCommand === 6 || actionCommand === 7,
+      then: () =>
+        yup
+          .string()
+          .test("is-valid-address", "Invalid wallet address", (value) =>
+            validateWalletAddress(value),
+          )
+          .test(
+            "validate-owner",
+            "Address is not a member of a club",
+            async function (value) {
+              const { actionCommand } = this.parent;
+              if (actionCommand === 6) {
+                try {
+                  // Make your API call here and check the response
+                  const isStationMember = await isMember(
+                    value,
+                    daoAddress,
+                    networkId,
+                  );
+                  if (isStationMember?.users?.length > 0) {
+                    return true;
+                  } else {
+                    return false;
+                  }
+                } catch (error) {
+                  console.error(error);
+                  return false; // Return false for any error
+                }
+              }
+              return true; // Return true for other cases or successful API response
+            },
+          ),
+    }),
 
-          if (actionCommand === 6) {
-            try {
-              // Make your API call here and check the response
-              const isStationMember = await isMember(
-                value,
-                daoAddress,
-                networkId,
-              );
-              if (isStationMember?.users?.length > 0) {
-                return true;
-              } else return false;
-            } catch (error) {
-              console.error(error);
-              return false; // Return false for any error
-            }
-          }
-
-          return true; // Return true for other cases or successful API response
-        },
-      ),
     nftLink: yup.string("Please enter nft Link").when("actionCommand", {
       is: 8,
       then: () => yup.string("Enter nft link").required("Nft link is required"),
