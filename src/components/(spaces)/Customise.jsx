@@ -75,13 +75,13 @@ const Customise = ({ spaceId }) => {
           ],
         },
         links: {
-          warpcast: `https://warpcast.com/${farcaster}`,
-          twitter: `https://twitter.com/${twitter}`,
-          telegram: `https://t.me/${telegram}`,
-          website: `https://${website}`,
-          discord: `https://discord.com/${discord}`,
-          instagram: `https://instagram.com/${instagram}`,
-          reddit: `https://reddit.com/${reddit}`,
+          warpcast: farcaster ? `https://warpcast.com/${farcaster}` : "",
+          twitter: twitter ? `https://twitter.com/${twitter}` : "",
+          telegram: telegram ? `https://t.me/${telegram}` : "",
+          website: website ? `https://${website}` : "",
+          discord: discord ? `https://discord.com/${discord}` : "",
+          instagram: instagram ? `https://instagram.com/${instagram}` : "",
+          reddit: reddit ? `https://reddit.com/${reddit}` : "",
         },
       };
       const response = await updateSpace(spaceId, spaceData, authToken);
