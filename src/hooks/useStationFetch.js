@@ -10,7 +10,7 @@ const useStationFetch = (daoAddress) => {
     const fetchStation = async () => {
       try {
         const data = await getClubsData(daoAddress);
-        setStationData(data.clubs);
+        setStationData(data);
         setIsLoading(false);
       } catch (err) {
         setError(err);

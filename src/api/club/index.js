@@ -1,12 +1,13 @@
 import axios from "axios";
-import { MAIN_API_URL, STATIONS_API_URL } from "../index";
+import { CLUB_API_URL, MAIN_API_URL } from "../index";
 import { getJwtToken } from "../../utils/auth";
 import { AWS_API_URL } from "utils/constants";
 
 export const getClubsData = async (daoAddress) => {
   try {
+    const clubs = encodeURIComponent(`${daoAddress}`);
     const response = await axios.get(
-      `${STATIONS_API_URL}?daoAddress=${daoAddress}`,
+      `${CLUB_API_URL}club/details/?daoAddress=${clubs}`,
     );
     return response.data;
   } catch (error) {
