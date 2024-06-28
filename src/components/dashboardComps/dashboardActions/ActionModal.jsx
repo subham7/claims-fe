@@ -495,7 +495,7 @@ const ActionModal = ({
           Cancel
         </button>
         <button onClick={formik.handleSubmit} className={classes.stake}>
-          Done
+          {type === "distribute" ? "Distribute" : "Send"}
         </button>
       </div>
 
