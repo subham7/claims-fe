@@ -57,6 +57,14 @@ const TreasurySigner = ({
   const isGovernanceActive =
     tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
 
+  const thresholdValue =
+    type === "add"
+      ? Number(currentSafeThreshold)
+      : Number(currentSafeThreshold) === adminAddresses?.length &&
+        adminAddresses?.length > 1
+      ? Number(currentSafeThreshold) - 1
+      : Number(currentSafeThreshold);
+
   const submitHandler = async () => {
     try {
       setLoading(true);
@@ -92,12 +100,16 @@ const TreasurySigner = ({
       }
       const values = {
         ownerAddress: type === "add" ? ownerAddress : newArr[clickedIndex],
-        safeThreshold:
-          type !== "add"
-            ? Number(currentSafeThreshold) > 1
-              ? Number(currentSafeThreshold) - 1
-              : Number(currentSafeThreshold)
-            : Number(currentSafeThreshold) + 1,
+        // safeThreshold:
+        //   type !== "add"
+        //     ? Number(currentSafeThreshold) > 1
+        //       ? Number(currentSafeThreshold) - 1
+        //       : Number(currentSafeThreshold)
+        //     : Number(currentSafeThreshold) + 1,
+        // ownerAddress:
+        //   type === "add" ? newArr[newArr.length - 1] : newArr[clickedIndex],
+        safeThreshold: thresholdValue,
+
         actionCommand: type === "add" ? 6 : 7,
         title: type === "add" ? "Add signer" : "Remove signer",
         note: `${

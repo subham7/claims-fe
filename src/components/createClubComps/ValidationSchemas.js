@@ -54,10 +54,10 @@ export const step3ValidationSchema = yup.object({
     .of(
       yup
         .string()
-        .test("Address", "Invalid address", (value) => {
-          return value && value.length === 42 && value.startsWith("0x");
-        })
-        .required("Wallet address is required"),
+        .required("Wallet address is required")
+        .test("is-valid-address", "Invalid recipient address", (value) =>
+          validateWalletAddress(value),
+        ),
     )
     .test("Duplicate address", "Duplicate address found", function (value) {
       if (value) {
