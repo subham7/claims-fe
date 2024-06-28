@@ -13,6 +13,7 @@ export const createSpace = async (data, authToken) => {
     return res.data;
   } catch (error) {
     console.log(error);
+    return false;
   }
 };
 
@@ -26,6 +27,7 @@ export const getSpace = async (spaceId) => {
     return res.data;
   } catch (error) {
     console.log(error);
+    return false;
   }
 };
 
@@ -42,6 +44,7 @@ export const getSpaceByManager = async (address) => {
     return res.data;
   } catch (error) {
     console.log(error);
+    return false;
   }
 };
 
@@ -61,5 +64,6 @@ export const updateSpace = async (spaceId, data, authToken) => {
     return res.data;
   } catch (error) {
     console.log(error);
+    return false;
   }
 };

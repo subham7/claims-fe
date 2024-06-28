@@ -12,6 +12,7 @@ export const authToken = async (data) => {
     return res.data;
   } catch (error) {
     console.log(error);
+    return false;
   }
 };
 
