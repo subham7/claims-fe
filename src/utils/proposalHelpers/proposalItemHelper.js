@@ -48,6 +48,8 @@ export const getProposalType = (executionId) => {
       return "Add signer";
     case 7:
       return "Remove signer";
+    case 10:
+      return "Allowlist users";
     case 13:
       return "Update price of token to";
     case 60:

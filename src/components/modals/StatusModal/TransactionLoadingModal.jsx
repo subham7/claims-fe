@@ -17,9 +17,24 @@ const TransactionLoadingModal = ({ heading, subheading, onClose }) => {
           alt="Success"
         />
       </div>
-      <Typography className={classes.heading} variant="inherit">
-        {heading}
-      </Typography>
+
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "4px",
+          justifyContent: "center",
+        }}>
+        <Typography className={classes.heading} variant="inherit">
+          {heading}
+        </Typography>
+        <Image
+          src={"/assets/icons/gifs/hourglass.gif"}
+          height={30}
+          width={30}
+          alt="time"
+        />
+      </div>
       <Typography className={classes.subheading} variant="inherit">
         {subheading}
       </Typography>

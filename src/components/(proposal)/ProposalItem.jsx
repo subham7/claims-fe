@@ -13,7 +13,7 @@ import {
 } from "utils/proposalHelpers/proposalItemHelper";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { useEffect } from "react";
-import { isNative, shortAddress } from "utils/helper";
+import { containsHtml, isNative, shortAddress } from "utils/helper";
 import { useDispatch, useSelector } from "react-redux";
 import { getProposalTxHash, patchProposalExecuted } from "api/proposal";
 import { useAccount } from "wagmi";
@@ -28,6 +28,7 @@ import TransactionLoadingModal from "@components/modals/StatusModal/TransactionL
 import { setAlertData } from "redux/reducers/alert";
 import { generateAlertData } from "utils/globalFunctions";
 import { CHAIN_CONFIG } from "utils/constants";
+import ReactHtmlParser from "react-html-parser";
 
 const ProposalItem = ({
   type,
@@ -36,6 +37,7 @@ const ProposalItem = ({
   daoAddress,
   routeNetworkId,
   onProposalUpdate,
+  number,
 }) => {
   const clubData = useSelector((state) => {
     return state.club.clubData;
@@ -180,7 +182,7 @@ const ProposalItem = ({
       <div className={classes.proposalItemContainer}>
         <div className={classes.proposalDetails}>
           <Typography variant="inherit" fontSize={16} fontWeight={600}>
-            {getProposalType(executionId)}
+            {proposal?.index}.{"  "} {getProposalType(executionId)}
           </Typography>
 
           {amount.length ? (
@@ -294,7 +296,9 @@ const ProposalItem = ({
               </Typography>
             </div>
 
-            {signedOwners?.includes(walletAddress) && type === "execute" ? (
+            {signedOwners?.includes(walletAddress) &&
+            signedOwners?.length === clubData?.currentSafeThreshold &&
+            type === "execute" ? (
               <button
                 disabled={!isAdmin}
                 onClick={() => signHandler("executed")}
@@ -319,9 +323,22 @@ const ProposalItem = ({
 
       {proposal?.description?.length ? (
         <div className={classes.notesContainer}>
-          <Typography className={classes.note}>
-            📝 {proposal?.description}
-          </Typography>
+          {containsHtml(ReactHtmlParser(proposal?.description)) ? (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+              }}
+              dangerouslySetInnerHTML={{
+                __html: "📝 " + ReactHtmlParser(proposal?.description),
+              }}
+            />
+          ) : (
+            <Typography className={classes.note}>
+              📝 {proposal?.description}
+            </Typography>
+          )}
         </div>
       ) : null}
 
@@ -329,7 +346,7 @@ const ProposalItem = ({
         <TransactionLoadingModal
           heading={`Proposal getting ${
             type === "sign" ? "signed" : "executed"
-          } ⏳`}
+          }`}
           subheading={
             "It’s all happening onchain so this may take a minute or two."
           }

@@ -11,8 +11,9 @@ const PassedProposalList = ({
     <div>
       {passedProposals?.length ? (
         passedProposals?.map((proposal, index) => (
-          <div key={index}>
+          <div key={proposal?.proposalId}>
             <ProposalItem
+              number={index + 1}
               proposal={proposal}
               executionId={proposal?.commands[0]?.executionId}
               type={"sign"}

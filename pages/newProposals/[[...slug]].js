@@ -13,8 +13,6 @@ const ProposalPageNew = () => {
     return null;
   }
 
-  console.log("bug");
-
   if (proposalId === "new") {
     return (
       <Layout daoAddress={daoAddress} networkId={networkId}>
