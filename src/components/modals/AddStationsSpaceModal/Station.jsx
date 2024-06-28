@@ -4,10 +4,16 @@ import classes from "./AddStationsModal.module.scss";
 import Image from "next/image";
 import { FiPlus } from "react-icons/fi";
 import { LuCheck } from "react-icons/lu";
+import { useDispatch, useSelector } from "react-redux";
+import { addSelectedStations } from "redux/reducers/space";
 import { CHAIN_CONFIG, GRADIENT_BUCKET } from "utils/constants";
 
-const Station = ({ club, selectedStations, setSelectedStations }) => {
+const Station = ({ club }) => {
   const randomIndex = Math.floor(Math.random() * 12);
+  const dispatch = useDispatch();
+  const selectedStations = useSelector((state) => {
+    return state.space.selectedStations;
+  });
 
   const handleAddStation = () => {
     const isSelected = selectedStations.some(
@@ -15,10 +21,12 @@ const Station = ({ club, selectedStations, setSelectedStations }) => {
     );
 
     if (!isSelected) {
-      setSelectedStations([...selectedStations, club.daoAddress]);
+      dispatch(addSelectedStations([...selectedStations, club.daoAddress]));
     } else {
-      setSelectedStations(
-        selectedStations.filter((station) => station !== club.daoAddress),
+      dispatch(
+        addSelectedStations(
+          selectedStations.filter((station) => station !== club.daoAddress),
+        ),
       );
     }
   };

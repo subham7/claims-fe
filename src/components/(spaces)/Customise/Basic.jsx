@@ -1,25 +1,33 @@
 /* eslint-disable @next/next/no-img-element */
 import { uploadFileToAWS } from "utils/helper";
 import classes from "../Spaces.module.scss";
+import { useDispatch, useSelector } from "react-redux";
+import { addSpaceBasicData } from "redux/reducers/space";
 
-const Basic = ({
-  spaceName,
-  setSpaceName,
-  description,
-  setDescription,
-  logo,
-  setLogo,
-  coverPic,
-  setCoverPic,
-}) => {
+const Basic = () => {
+  const dispatch = useDispatch();
+  const spaceBasicData = useSelector((state) => {
+    return state.space.spaceBasicData;
+  });
   const handleUploadFile = async (file, attribute) => {
     const response = await uploadFileToAWS(file);
     if (attribute === "logo") {
-      setLogo(response);
+      dispatch(
+        addSpaceBasicData({
+          ...spaceBasicData,
+          logo: response,
+        }),
+      );
     } else {
-      setCoverPic(response);
+      dispatch(
+        addSpaceBasicData({
+          ...spaceBasicData,
+          coverPic: response,
+        }),
+      );
     }
   };
+
   return (
     <>
       <div
@@ -39,8 +47,15 @@ const Basic = ({
         <input
           className={classes.input}
           placeholder="Space name"
-          value={spaceName}
-          onChange={(event) => setSpaceName(event.target.value)}
+          value={spaceBasicData.name}
+          onChange={(event) => {
+            dispatch(
+              addSpaceBasicData({
+                ...spaceBasicData,
+                name: event.target.value,
+              }),
+            );
+          }}
         />
       </div>
       <div className={classes.form}>
@@ -54,8 +69,15 @@ const Basic = ({
         <textarea
           className={classes.input}
           placeholder="Tell more about your space here"
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
+          value={spaceBasicData.description}
+          onChange={(event) => {
+            dispatch(
+              addSpaceBasicData({
+                ...spaceBasicData,
+                description: event.target.value,
+              }),
+            );
+          }}
           style={{
             height: "7rem",
           }}
@@ -70,7 +92,11 @@ const Basic = ({
         </div>
         <div className={classes.spaceImage}>
           <img
-            src={logo ? logo : "/assets/images/spaceLogo.png"}
+            src={
+              spaceBasicData.logo
+                ? spaceBasicData.logo
+                : "/assets/images/spaceLogo.png"
+            }
             alt="logo"
             className={classes.logo}
           />
@@ -82,7 +108,12 @@ const Basic = ({
               name="upload"
               type="file"
               onChange={(event) => {
-                setLogo(URL.createObjectURL(event.target.files[0]));
+                dispatch(
+                  addSpaceBasicData({
+                    ...spaceBasicData,
+                    logo: URL.createObjectURL(event.target.files[0]),
+                  }),
+                );
                 handleUploadFile(event.target.files[0], "logo");
               }}
               accept="image/*"
@@ -99,7 +130,11 @@ const Basic = ({
         </div>
         <div className={classes.spaceImage}>
           <img
-            src={coverPic ? coverPic : "/assets/images/spaceBanner.jpg"}
+            src={
+              spaceBasicData.coverPic
+                ? spaceBasicData.coverPic
+                : "/assets/images/spaceBanner.jpg"
+            }
             alt="coverPic"
             className={classes.banner}
           />
@@ -111,7 +146,12 @@ const Basic = ({
               name="upload"
               type="file"
               onChange={(event) => {
-                setCoverPic(URL.createObjectURL(event.target.files[0]));
+                dispatch(
+                  addSpaceBasicData({
+                    ...spaceBasicData,
+                    coverPic: URL.createObjectURL(event.target.files[0]),
+                  }),
+                );
                 handleUploadFile(event.target.files[0], "cover");
               }}
               accept="image/*"

@@ -4,7 +4,7 @@ import classes from "./Spaces.module.scss";
 import useSpaceFetch from "hooks/useSpaceFetch";
 import BackdropLoader from "@components/common/BackdropLoader";
 import { useAccount } from "wagmi";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateSpace } from "api/space";
 import { setAlertData } from "redux/reducers/alert";
 import { generateAlertData } from "utils/globalFunctions";
@@ -18,25 +18,30 @@ import AddStationsModal from "@components/modals/AddStationsSpaceModal/AddStatio
 import useAllClubsFetch from "hooks/useAllClubsFetch";
 import useStationFetch from "hooks/useStationFetch";
 import useAuth from "hooks/useAuth";
+import {
+  addManagers,
+  addSelectedStations,
+  addSpaceBasicData,
+  addSpaceSocialData,
+} from "redux/reducers/space";
 
 const Customise = ({ spaceId }) => {
   const { spaceData, isLoading } = useSpaceFetch(spaceId);
   const authToken = useAuth();
-  const [spaceName, setSpaceName] = useState("");
-  const [description, setDescription] = useState("");
-  const [logo, setLogo] = useState("");
-  const [coverPic, setCoverPic] = useState("");
-  const [farcaster, setFarcaster] = useState("");
-  const [telegram, setTelegram] = useState("");
-  const [twitter, setTwitter] = useState("");
-  const [discord, setDiscord] = useState("");
-  const [reddit, setReddit] = useState("");
-  const [instagram, setInstagram] = useState("");
-  const [website, setWebsite] = useState("");
-  const [managers, setManagers] = useState([]);
+  const spaceBasicData = useSelector((state) => {
+    return state.space.spaceBasicData;
+  });
+  const spaceSocialData = useSelector((state) => {
+    return state.space.spaceSocialData;
+  });
+  const managers = useSelector((state) => {
+    return state.space.managers;
+  });
+  const selectedStations = useSelector((state) => {
+    return state.space.selectedStations;
+  });
   const [isSaveLoading, setIsSaveLoading] = useState(false);
   const [showAddStationsModal, setShowAddStationsModal] = useState(false);
-  const [selectedStations, setSelectedStations] = useState([]);
   const { address } = useAccount();
   const dispatch = useDispatch();
   const router = useRouter();
@@ -54,10 +59,10 @@ const Customise = ({ spaceId }) => {
   const handleUpdateSpace = async () => {
     if (address) {
       const spaceData = {
-        name: spaceName,
-        description: description,
-        logo: logo,
-        coverPic: coverPic,
+        name: spaceBasicData.name,
+        description: spaceBasicData.description,
+        logo: spaceBasicData.logo,
+        coverPic: spaceBasicData.coverPic,
         creator: address,
         managers: managers,
         stations: selectedStations,
@@ -75,13 +80,27 @@ const Customise = ({ spaceId }) => {
           ],
         },
         links: {
-          warpcast: farcaster ? `https://warpcast.com/${farcaster}` : "",
-          twitter: twitter ? `https://twitter.com/${twitter}` : "",
-          telegram: telegram ? `https://t.me/${telegram}` : "",
-          website: website ? `https://${website}` : "",
-          discord: discord ? `https://discord.com/${discord}` : "",
-          instagram: instagram ? `https://instagram.com/${instagram}` : "",
-          reddit: reddit ? `https://reddit.com/${reddit}` : "",
+          warpcast: spaceSocialData.warpcast
+            ? `https://warpcast.com/${spaceSocialData.warpcast}`
+            : "",
+          twitter: spaceSocialData.twitter
+            ? `https://twitter.com/${spaceSocialData.twitter}`
+            : "",
+          telegram: spaceSocialData.telegram
+            ? `https://t.me/${spaceSocialData.telegram}`
+            : "",
+          website: spaceSocialData.website
+            ? `https://${spaceSocialData.website}`
+            : "",
+          discord: spaceSocialData.discord
+            ? `https://discord.com/${spaceSocialData.discord}`
+            : "",
+          instagram: spaceSocialData.instagram
+            ? `https://instagram.com/${spaceSocialData.instagram}`
+            : "",
+          reddit: spaceSocialData.reddit
+            ? `https://reddit.com/${spaceSocialData.reddit}`
+            : "",
         },
       };
       const response = await updateSpace(spaceId, spaceData, authToken);
@@ -119,23 +138,33 @@ const Customise = ({ spaceId }) => {
 
   useEffect(() => {
     if (spaceData) {
-      setSpaceName(spaceData?.name);
-      setDescription(spaceData?.description);
-      setLogo(spaceData?.logo);
-      setCoverPic(spaceData?.coverPic);
-      setManagers(spaceData?.managers);
-      setSelectedStations(spaceData?.stations);
-      setFarcaster(
-        formatURL(spaceData?.links?.warpcast, "https://warpcast.com/"),
+      dispatch(
+        addSpaceBasicData({
+          name: spaceData?.name,
+          description: spaceData?.description,
+          logo: spaceData?.logo,
+          coverPic: spaceData?.coverPic,
+        }),
       );
-      setTelegram(formatURL(spaceData?.links?.telegram, "https://t.me/"));
-      setTwitter(formatURL(spaceData?.links?.twitter, "https://twitter.com/"));
-      setDiscord(formatURL(spaceData?.links?.discord, "https://discord.com/"));
-      setReddit(formatURL(spaceData?.links?.reddit, "https://reddit.com/"));
-      setInstagram(
-        formatURL(spaceData?.links?.instagram, "https://instagram.com/"),
+      dispatch(
+        addSpaceSocialData({
+          warpcast: formatURL(
+            spaceData?.links?.warpcast,
+            "https://warpcast.com/",
+          ),
+          twitter: formatURL(spaceData?.links?.twitter, "https://twitter.com/"),
+          telegram: formatURL(spaceData?.links?.telegram, "https://t.me/"),
+          website: formatURL(spaceData?.links?.website, "https://"),
+          discord: formatURL(spaceData?.links?.discord, "https://discord.com/"),
+          instagram: formatURL(
+            spaceData?.links?.instagram,
+            "https://instagram.com/",
+          ),
+          reddit: formatURL(spaceData?.links?.reddit, "https://reddit.com/"),
+        }),
       );
-      setWebsite(formatURL(spaceData?.links?.website, "https://"));
+      dispatch(addManagers(spaceData?.managers));
+      dispatch(addSelectedStations(spaceData?.stations));
     }
   }, [spaceData]);
 
@@ -154,35 +183,9 @@ const Customise = ({ spaceId }) => {
       </button>
       <h1 className={classes.header}>Customise</h1>
       <Tabs />
-      <Basic
-        spaceName={spaceName}
-        setSpaceName={setSpaceName}
-        description={description}
-        setDescription={setDescription}
-        logo={logo}
-        setLogo={setLogo}
-        coverPic={coverPic}
-        setCoverPic={setCoverPic}
-      />
-      <Social
-        farcaster={farcaster}
-        setFarcaster={setFarcaster}
-        telegram={telegram}
-        setTelegram={setTelegram}
-        twitter={twitter}
-        setTwitter={setTwitter}
-        discord={discord}
-        setDiscord={setDiscord}
-        reddit={reddit}
-        setReddit={setReddit}
-        instagram={instagram}
-        setInstagram={setInstagram}
-        website={website}
-        setWebsite={setWebsite}
-      />
+      <Basic />
+      <Social />
       <Stations
-        selectedStations={selectedStations}
-        setSelectedStations={setSelectedStations}
         setShowAddStationsModal={setShowAddStationsModal}
         stationData={stationData}
       />
@@ -202,8 +205,6 @@ const Customise = ({ spaceId }) => {
           setShowAddStationsModal={setShowAddStationsModal}
           clubs={clubListData}
           isLoading={isClubLoading}
-          selectedStations={selectedStations}
-          setSelectedStations={setSelectedStations}
         />
       )}
     </div>

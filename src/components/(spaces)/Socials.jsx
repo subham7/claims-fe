@@ -3,158 +3,86 @@ import classes from "./Spaces.module.scss";
 import Link from "next/link";
 
 const Socials = ({ spaceData }) => {
+  const socialPlatforms = [
+    {
+      key: "warpcast",
+      backgroundColor: "#8B5CF6",
+      imageSrc: "/assets/socials/warpcast.svg",
+      alt: "farcaster",
+    },
+    {
+      key: "telegram",
+      backgroundColor: "#24A1DE",
+      imageSrc: "/assets/socials/telegram.svg",
+      alt: "telegram",
+    },
+    {
+      key: "twitter",
+      backgroundColor: "#000",
+      imageSrc: "/assets/socials/x.svg",
+      alt: "x",
+    },
+    {
+      key: "discord",
+      backgroundColor: "#5865F2",
+      imageSrc: "/assets/socials/discord.svg",
+      alt: "discord",
+    },
+    {
+      key: "instagram",
+      background:
+        "linear-gradient(120deg, #f9ce34 0%, #ee2a7b 75%, #6228d7 100%)",
+      imageSrc: "/assets/socials/instagram.svg",
+      alt: "instagram",
+    },
+    {
+      key: "reddit",
+      backgroundColor: "#FF6101",
+      imageSrc: "/assets/socials/reddit.svg",
+      alt: "reddit",
+    },
+    {
+      key: "website",
+      backgroundColor: "#1e1e1e",
+      imageSrc: "/assets/socials/website.svg",
+      alt: "website",
+    },
+  ];
   return (
     <div className={classes.socials}>
-      {spaceData?.links?.warpcast && (
-        <Link
-          style={{
-            width: 40,
-            height: 40,
-            padding: 10,
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: 10,
-            backgroundColor: "#8B5CF6",
-          }}
-          href={spaceData?.links?.warpcast ?? ""}
-          target="_blank"
-          passHref>
-          <Image
-            src="/assets/socials/warpcast.svg"
-            alt="farcaster"
-            width={20}
-            height={20}
-          />
-        </Link>
-      )}
-      {spaceData?.links?.telegram && (
-        <Link
-          style={{
-            width: 40,
-            height: 40,
-            padding: 10,
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: 10,
-            backgroundColor: "#24A1DE",
-          }}
-          href={spaceData?.links?.telegram ?? ""}
-          target="_blank"
-          passHref>
-          <Image
-            src="/assets/socials/telegram.svg"
-            alt="telegram"
-            width={20}
-            height={20}
-          />
-        </Link>
-      )}
-      {spaceData?.links?.twitter && (
-        <Link
-          style={{
-            width: 40,
-            height: 40,
-            padding: 10,
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: 10,
-            backgroundColor: "#000",
-          }}
-          href={spaceData?.links?.twitter ?? ""}
-          target="_blank"
-          passHref>
-          <Image src="/assets/socials/x.svg" alt="x" width={20} height={20} />
-        </Link>
-      )}
-      {spaceData?.links?.discord && (
-        <Link
-          style={{
-            width: 40,
-            height: 40,
-            padding: 10,
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: 10,
-            backgroundColor: "#5865F2",
-          }}
-          href={spaceData?.links?.discord ?? ""}
-          target="_blank"
-          passHref>
-          <Image
-            src="/assets/socials/discord.svg"
-            alt="x"
-            width={20}
-            height={20}
-          />
-        </Link>
-      )}
-      {spaceData?.links?.instagram && (
-        <Link
-          style={{
-            width: 40,
-            height: 40,
-            padding: 10,
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: 10,
-            background:
-              "linear-gradient(120deg, #f9ce34 0%, #ee2a7b 75%, #6228d7 100%)",
-          }}
-          href={spaceData?.links?.instagram ?? ""}
-          target="_blank"
-          passHref>
-          <Image
-            src="/assets/socials/instagram.svg"
-            alt="x"
-            width={20}
-            height={20}
-          />
-        </Link>
-      )}
-      {spaceData?.links?.reddit && (
-        <Link
-          style={{
-            width: 40,
-            height: 40,
-            padding: 10,
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: 10,
-            backgroundColor: "#FF6101",
-          }}
-          href={spaceData?.links?.reddit ?? ""}
-          target="_blank"
-          passHref>
-          <Image
-            src="/assets/socials/reddit.svg"
-            alt="x"
-            width={20}
-            height={20}
-          />
-        </Link>
-      )}
-      {spaceData?.links?.website && (
-        <Link
-          style={{
-            width: 40,
-            height: 40,
-            padding: 10,
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: 10,
-            backgroundColor: "#1e1e1e",
-          }}
-          href={spaceData?.links?.website ?? ""}
-          target="_blank"
-          passHref>
-          <Image
-            src="/assets/socials/website.svg"
-            alt="website"
-            width={20}
-            height={20}
-          />
-        </Link>
-      )}
+      {socialPlatforms.map((platform) => {
+        const link = spaceData?.links?.[platform.key];
+        if (!link) return null;
+
+        const style = {
+          width: 40,
+          height: 40,
+          padding: 10,
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: 10,
+          ...(platform.backgroundColor
+            ? { backgroundColor: platform.backgroundColor }
+            : {}),
+          ...(platform.background ? { background: platform.background } : {}),
+        };
+
+        return (
+          <Link
+            key={platform.key}
+            style={style}
+            href={link}
+            target="_blank"
+            passHref>
+            <Image
+              src={platform.imageSrc}
+              alt={platform.alt}
+              width={20}
+              height={20}
+            />
+          </Link>
+        );
+      })}
     </div>
   );
 };

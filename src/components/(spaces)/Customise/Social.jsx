@@ -1,21 +1,57 @@
+import { useDispatch, useSelector } from "react-redux";
 import classes from "../Spaces.module.scss";
+import { addSpaceSocialData } from "redux/reducers/space";
 
-const Social = ({
-  farcaster,
-  setFarcaster,
-  telegram,
-  setTelegram,
-  twitter,
-  setTwitter,
-  discord,
-  setDiscord,
-  reddit,
-  setReddit,
-  instagram,
-  setInstagram,
-  website,
-  setWebsite,
-}) => {
+const Social = () => {
+  const dispatch = useDispatch();
+  const spaceSocialData = useSelector((state) => {
+    return state.space.spaceSocialData;
+  });
+  const socialPlatforms = [
+    {
+      name: "Farcaster",
+      prefix: "warpcast.com/",
+      key: "warpcast",
+      placeholder: "stationx",
+    },
+    {
+      name: "Telegram",
+      prefix: "t.me/",
+      key: "telegram",
+      placeholder: "spaces",
+    },
+    {
+      name: "Twitter / X",
+      prefix: "twitter.com/",
+      key: "twitter",
+      placeholder: "stationxnetwork",
+    },
+    {
+      name: "Discord",
+      prefix: "discord.com/",
+      key: "discord",
+      placeholder: "stationxnetwork",
+    },
+    {
+      name: "Reddit",
+      prefix: "reddit.com/",
+      key: "reddit",
+      placeholder: "stationxnetwork",
+    },
+    {
+      name: "Instagram",
+      prefix: "instagram.com/",
+      key: "instagram",
+      placeholder: "stationxnetwork",
+    },
+    {
+      name: "Website",
+      prefix: "https://",
+      key: "website",
+      placeholder: "stationx.network",
+    },
+  ];
+
   return (
     <>
       <div
@@ -33,104 +69,29 @@ const Social = ({
           Display your social media links on your space.
         </p>
       </div>
-      <div className={classes.form}>
-        <div className={classes.subHeader}>
-          <p>Farcaster</p>
+      {socialPlatforms.map((platform) => (
+        <div className={classes.form} key={platform.key}>
+          <div className={classes.subHeader}>
+            <p>{platform.name}</p>
+          </div>
+          <div className={classes.inputPrefix}>
+            <span className={classes.prefix}>{platform.prefix}</span>
+            <input
+              className={classes.socialInput}
+              placeholder={platform.placeholder}
+              value={spaceSocialData[platform.key]}
+              onChange={(event) => {
+                dispatch(
+                  addSpaceSocialData({
+                    ...spaceSocialData,
+                    [platform.key]: event.target.value,
+                  }),
+                );
+              }}
+            />
+          </div>
         </div>
-        <div className={classes.inputPrefix}>
-          <span className={classes.prefix}>warpcast.com/</span>
-          <input
-            className={classes.socialInput}
-            placeholder="stationx"
-            value={farcaster}
-            onChange={(event) => setFarcaster(event.target.value)}
-          />
-        </div>
-      </div>
-      <div className={classes.form}>
-        <div className={classes.subHeader}>
-          <p>Telegram</p>
-        </div>
-        <div className={classes.inputPrefix}>
-          <span className={classes.prefix}>t.me/</span>
-          <input
-            className={classes.socialInput}
-            placeholder="spaces"
-            value={telegram}
-            onChange={(event) => setTelegram(event.target.value)}
-          />
-        </div>
-      </div>
-      <div className={classes.form}>
-        <div className={classes.subHeader}>
-          <p>Twitter / X</p>
-        </div>
-        <div className={classes.inputPrefix}>
-          <span className={classes.prefix}>twitter.com/</span>
-          <input
-            className={classes.socialInput}
-            placeholder="stationxnetwork"
-            value={twitter}
-            onChange={(event) => setTwitter(event.target.value)}
-          />
-        </div>
-      </div>
-      <div className={classes.form}>
-        <div className={classes.subHeader}>
-          <p>Discord</p>
-        </div>
-        <div className={classes.inputPrefix}>
-          <span className={classes.prefix}>discord.com/</span>
-          <input
-            className={classes.socialInput}
-            placeholder="stationxnetwork"
-            value={discord}
-            onChange={(event) => setDiscord(event.target.value)}
-          />
-        </div>
-      </div>
-      <div className={classes.form}>
-        <div className={classes.subHeader}>
-          <p>Reddit</p>
-        </div>
-        <div className={classes.inputPrefix}>
-          <span className={classes.prefix}>reddit.com/</span>
-          <input
-            className={classes.socialInput}
-            placeholder="stationxnetwork"
-            value={reddit}
-            onChange={(event) => setReddit(event.target.value)}
-          />
-        </div>
-      </div>
-      <div className={classes.form}>
-        <div className={classes.subHeader}>
-          <p>Instagram</p>
-        </div>
-        <div className={classes.inputPrefix}>
-          <span className={classes.prefix}>instagram.com/</span>
-          <input
-            className={classes.socialInput}
-            placeholder="stationxnetwork"
-            value={instagram}
-            onChange={(event) => setInstagram(event.target.value)}
-          />
-        </div>
-      </div>
-      <div className={classes.form}>
-        <div className={classes.subHeader}>
-          <p>Website</p>
-        </div>
-        <div className={classes.inputPrefix}>
-          <span className={classes.prefix}>https://</span>
-          <input
-            className={classes.socialInput}
-            placeholder="stationx.network"
-            value={website}
-            onChange={(event) => setWebsite(event.target.value)}
-          />
-        </div>
-      </div>
+      ))}
     </>
   );
 };

@@ -5,17 +5,17 @@ import Station from "./Station";
 import { useAccount, useChainId } from "wagmi";
 import { CHAIN_CONFIG, OMIT_DAOS } from "utils/constants";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addSelectedStations } from "redux/reducers/space";
 
-const AddStationsModal = ({
-  setShowAddStationsModal,
-  clubs,
-  isLoading,
-  selectedStations,
-  setSelectedStations,
-}) => {
+const AddStationsModal = ({ setShowAddStationsModal, clubs, isLoading }) => {
   const { address } = useAccount();
   const chainId = useChainId();
   const [stationURL, setStationURL] = useState("");
+  const dispatch = useDispatch();
+  const selectedStations = useSelector((state) => {
+    return state.space.selectedStations;
+  });
 
   const handleAddStation = () => {
     if (stationURL) {
@@ -24,7 +24,7 @@ const AddStationsModal = ({
 
       if (pathSegments.includes("join")) {
         const daoAddress = pathSegments[2];
-        setSelectedStations([...selectedStations, daoAddress]);
+        dispatch(addSelectedStations([...selectedStations, daoAddress]));
         setStationURL("");
         setShowAddStationsModal(false);
       }
@@ -95,14 +95,7 @@ const AddStationsModal = ({
             sortedClubs
               ?.filter((club) => !OMIT_DAOS.includes(club.daoAddress))
               .map((club, key) => {
-                return (
-                  <Station
-                    club={club}
-                    key={key}
-                    selectedStations={selectedStations}
-                    setSelectedStations={setSelectedStations}
-                  />
-                );
+                return <Station club={club} key={key} />;
               })
           ) : (
             <div

@@ -3,13 +3,14 @@ import { FiPlus } from "react-icons/fi";
 import classes from "../Spaces.module.scss";
 import { RxCross2 } from "react-icons/rx";
 import { CHAIN_CONFIG, GRADIENT_BUCKET } from "utils/constants";
+import { useDispatch, useSelector } from "react-redux";
+import { addSelectedStations } from "redux/reducers/space";
 
-const Stations = ({
-  setShowAddStationsModal,
-  selectedStations,
-  setSelectedStations,
-  stationData,
-}) => {
+const Stations = ({ setShowAddStationsModal, stationData }) => {
+  const dispatch = useDispatch();
+  const selectedStations = useSelector((state) => {
+    return state.space.selectedStations;
+  });
   return (
     <>
       <div className={classes.form}>
@@ -70,9 +71,12 @@ const Stations = ({
                 <button
                   className={classes.close}
                   onClick={() => {
-                    setSelectedStations(
-                      selectedStations.filter(
-                        (club) => club !== station.daoAddress,
+                    dispatch(
+                      addSelectedStations(
+                        selectedStations.filter(
+                          (selectedStation) =>
+                            selectedStation.stationId !== station.stationId,
+                        ),
                       ),
                     );
                   }}>
