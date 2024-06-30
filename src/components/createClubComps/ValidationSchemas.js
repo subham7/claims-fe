@@ -55,7 +55,7 @@ export const step3ValidationSchema = yup.object({
       yup
         .string()
         .required("Wallet address is required")
-        .test("is-valid-address", "Invalid recipient address", (value) =>
+        .test("is-valid-address", "Invalid wallet address", (value) =>
           validateWalletAddress(value),
         ),
     )
