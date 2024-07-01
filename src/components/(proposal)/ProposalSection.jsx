@@ -104,7 +104,15 @@ const ProposalSection = ({ daoAddress, routeNetworkId }) => {
         />
       )}
 
-      {showMintModal && <MintModal setShowMintModal={setShowMintModal} />}
+      {showMintModal && (
+        <MintModal
+          daoAddress={daoAddress}
+          gnosisAddress={gnosisAddress}
+          networkId={routeNetworkId}
+          onClose={() => setShowMintModal(false)}
+          onActionComplete={handleActionComplete}
+        />
+      )}
 
       {isActionCreated === "success" ? (
         <StatusModal

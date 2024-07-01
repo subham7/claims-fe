@@ -6,14 +6,25 @@ import Link from "next/link";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { setAlertData } from "redux/reducers/alert";
-import { generateAlertData } from "utils/globalFunctions";
+import {
+  fetchLatestBlockNumber,
+  generateAlertData,
+} from "utils/globalFunctions";
 import { getPublicClient } from "utils/viemConfig";
 import { getAddress } from "viem";
 import { normalize } from "viem/ens";
+import { useFormik } from "formik";
+import { createProposal } from "api/proposal";
+import { handleSignMessage } from "utils/helper";
+import { useAccount, useSignMessage } from "wagmi";
+import { mintValidationSchema } from "@components/createClubComps/ValidationSchemas";
 
-const MintModal = ({ setShowMintModal }) => {
+const MintModal = ({ daoAddress, networkId, onActionComplete, onClose }) => {
   const [data, setData] = useState("");
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  const { address: walletAddress } = useAccount();
+  const { signMessageAsync } = useSignMessage();
   const publicClient = getPublicClient("0x1");
   const dispatchAlert = (message, severity) => {
     dispatch(setAlertData(generateAlertData(message, severity)));
@@ -62,24 +73,31 @@ const MintModal = ({ setShowMintModal }) => {
 
   const normalizeData = async (input) => {
     const lines = input.split("\n");
-    const convertedLines = await Promise.all(
+    const mintAddresses = [];
+    const mintAmounts = [];
+    let totalAmount = 0;
+
+    await Promise.all(
       lines.map(async (line) => {
         const [addressOrEns, amount] = line
           .trim()
           .split(",")
           .map((s) => s.trim());
 
+        let resolvedAddress = addressOrEns;
+
         if (addressOrEns.endsWith(".eth")) {
-          const resolvedAddress = await resolveEns(addressOrEns);
-          if (resolvedAddress) {
-            return `${resolvedAddress}, ${amount}`;
-          }
+          resolvedAddress = await resolveEns(addressOrEns);
         }
-        return line;
+
+        mintAddresses.push(resolvedAddress);
+        const amountNumber = parseFloat(amount);
+        mintAmounts.push(amountNumber);
+        totalAmount += amountNumber;
       }),
     );
 
-    return convertedLines.filter((line) => line !== null).join("\n");
+    return { mintAddresses, mintAmounts, totalAmount };
   };
 
   const handleFileUpload = (event) => {
@@ -103,6 +121,63 @@ const MintModal = ({ setShowMintModal }) => {
     }
   };
 
+  const formik = useFormik({
+    initialValues: {
+      mintGTAddresses: [],
+      mintGTAmounts: [],
+    },
+    validationSchema: mintValidationSchema,
+    onSubmit: async (values) => {
+      try {
+        setLoading(true);
+
+        const { mintAddresses, mintAmounts, totalAmount } = await normalizeData(
+          data,
+        );
+
+        let commands = {
+          mintGTAddresses: mintAddresses,
+          mintGTAmounts: mintAmounts,
+        };
+        commands = {
+          executionId: 1,
+          ...commands,
+        };
+
+        const blockNum = await fetchLatestBlockNumber();
+
+        const payload = {
+          clubId: daoAddress,
+          name: `Mint Total Amount: ${totalAmount}`,
+          createdBy: walletAddress,
+          commands: [commands],
+          type: "action",
+          daoAddress: daoAddress,
+          block: blockNum,
+          networkId: networkId,
+        };
+
+        const { signature } = await handleSignMessage(
+          JSON.stringify(payload),
+          signMessageAsync,
+        );
+
+        const request = await createProposal(isGovernanceActive, {
+          ...payload,
+          description: values.note ?? "",
+          signature: signature,
+        });
+
+        setLoading(false);
+        onActionComplete("success", request.data?.proposalId);
+        onClose();
+      } catch (error) {
+        setLoading(false);
+        onActionComplete("failure");
+      }
+    },
+  });
+
   return (
     <Modal className={classes.modal}>
       <div className={classes.title}>
@@ -113,11 +188,7 @@ const MintModal = ({ setShowMintModal }) => {
           }}>
           Mint shares
         </h2>
-        <button
-          className={classes.closeButton}
-          onClick={() => {
-            setShowMintModal(false);
-          }}>
+        <button className={classes.closeButton} onClick={onClose()}>
           <RxCross2 size={25} />
         </button>
       </div>
@@ -153,19 +224,14 @@ const MintModal = ({ setShowMintModal }) => {
         </Link>
       </div>
       <div className={classes.buttonContainer}>
-        <button
-          onClick={() => {
-            setShowMintModal(false);
-          }}
-          className={classes.cancel}>
+        <button onClick={onClose()} className={classes.cancel}>
           Cancel
         </button>
         <button
           onClick={async () => {
             if (data) {
               if (await validateInput(data)) {
-                const normalizedData = await normalizeData(data);
-                console.log(normalizedData);
+                formik.handleSubmit();
               } else {
                 dispatchAlert("Data format is not valid", "error");
               }
@@ -173,7 +239,8 @@ const MintModal = ({ setShowMintModal }) => {
               dispatchAlert("Data is required", "error");
             }
           }}
-          className={classes.mint}>
+          className={classes.mint}
+          disabled={loading}>
           Mint
         </button>
       </div>
