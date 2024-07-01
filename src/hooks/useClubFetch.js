@@ -212,7 +212,7 @@ const useClubFetch = ({ daoAddress, routeNetworkId }) => {
         reduxClubData.gnosisAddress,
         walletAddress,
         CHAIN_CONFIG[networkId]?.gnosisTxUrl,
-        networkId,
+        routeNetworkId,
       );
 
       const safeThreshold = await safeSdk.getThreshold();
