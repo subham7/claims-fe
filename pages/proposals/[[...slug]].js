@@ -1,13 +1,12 @@
-import React from "react";
-import { useRouter } from "next/router";
 import Layout from "@components/layouts/layout";
-import Proposal from "@components/proposal/Proposal";
-import ProposalDetail from "@components/proposal/ProposalDetail";
+import React from "react";
+
+import { useRouter } from "next/router";
+import ProposalSection from "@components/(proposal)/ProposalSection";
 import CreateProposalDialog from "@components/proposalComps/CreateProposalDialog";
 
-const ProposalPage = () => {
+const ProposalPageNew = () => {
   const router = useRouter();
-
   const [daoAddress, networkId, proposalId] = router?.query?.slug ?? [];
 
   if (!daoAddress) {
@@ -16,25 +15,17 @@ const ProposalPage = () => {
 
   if (proposalId === "new") {
     return (
-      <Layout daoAddress={daoAddress} networkId={networkId} page={2}>
+      <Layout daoAddress={daoAddress} networkId={networkId}>
         <CreateProposalDialog daoAddress={daoAddress} />
       </Layout>
     );
   }
 
   return (
-    <Layout daoAddress={daoAddress} networkId={networkId} page={2}>
-      {proposalId ? (
-        <ProposalDetail
-          pid={proposalId}
-          daoAddress={daoAddress}
-          routeNetworkId={networkId}
-        />
-      ) : (
-        <Proposal daoAddress={daoAddress} routeNetworkId={networkId} />
-      )}
+    <Layout daoAddress={daoAddress} networkId={networkId}>
+      <ProposalSection daoAddress={daoAddress} routeNetworkId={networkId} />
     </Layout>
   );
 };
 
-export default ProposalPage;
+export default ProposalPageNew;

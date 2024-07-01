@@ -1,0 +1,84 @@
+@import "../../../../styles/variables.scss";
+
+.createModal {
+  width: 500px;
+  background-color: $background-color-dark;
+  border: 1px solid #333333;
+  border-radius: 0.925rem;
+
+  .createSpace {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 5;
+    align-items: end;
+  }
+
+  .closeButton {
+    display: flex;
+    background: none;
+    width: fit-content;
+    color: $gray;
+    border: none;
+    cursor: pointer;
+    &:hover {
+      color: $white;
+    }
+  }
+
+  .description {
+    color: $gray;
+    font-weight: 600;
+    margin-block: 5px;
+  }
+
+  .label {
+    font-size: 1rem;
+    margin-top: 15px;
+  }
+
+  .helper {
+    color: $gray;
+    margin-top: 5px;
+  }
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 10px;
+  }
+
+  .input {
+    width: 100%;
+    height: 3rem;
+    background-color: $background-color-dark;
+    border: 1px solid $dark-gray;
+    border-radius: 0.8rem;
+    padding: 0 1rem;
+    color: $typography-primary;
+    font-size: 1rem;
+    font-weight: 500;
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .button {
+    width: 100%;
+    height: 3rem;
+    background-color: $white;
+    border: none;
+    border-radius: 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    &:hover {
+      background-color: $typography-primary;
+    }
+  }
+
+  @media (max-width: 768px) {
+    width: 350px;
+  }
+}

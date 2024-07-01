@@ -16,6 +16,17 @@ export const calculateDays = (dateTime) => {
   return Math.round((new Date(dateTime) - new Date()) / (1000 * 60 * 60 * 24));
 };
 
+// function for handling big values
+export function formatNumber(number) {
+  if (number >= 1000000) {
+    return (number / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+  } else if (number >= 1000) {
+    return (number / 1000).toFixed(1).replace(/\.0$/, "") + "k";
+  } else {
+    return number.toString();
+  }
+}
+
 // function for converting the governance token amount from decimal to Wei format
 export const convertToWeiGovernance = (convertValue, decimal) => {
   if (decimal) {

@@ -1,0 +1,208 @@
+@import "../../../../styles/variables.scss";
+
+.createModal {
+  width: 40vw;
+  background-color: $background-color-dark;
+  border: 1px solid #333333;
+  border-radius: 0.925rem;
+
+  @media (max-width: $breakpoint-xl) {
+    width: 50vw;
+  }
+
+  @media (max-width: $breakpoint-lg) {
+    width: 60vw;
+  }
+
+  @media (max-width: $breakpoint-md) {
+    width: 80vw;
+  }
+
+  @media (max-width: $breakpoint-sm) {
+    width: 100%;
+  }
+
+  .add {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1rem;
+
+    @media (max-width: $breakpoint-sm) {
+      padding: 0;
+    }
+
+    .closeButton {
+      display: flex;
+      background: none;
+      width: fit-content;
+      color: $gray;
+      border: none;
+      cursor: pointer;
+      &:hover {
+        color: $white;
+      }
+    }
+
+    .search {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      justify-content: space-between;
+
+      .searchInput {
+        width: 80%;
+        height: fit-content;
+        padding-inline: 1.5rem;
+        padding-block: 0.8rem;
+        background-color: transparent;
+        border: 1px solid $divider-color;
+        border-radius: 0.6rem;
+        align-items: start;
+        justify-content: start;
+        text-align: start;
+        color: #cccccc;
+        ::placeholder {
+          color: $light-gray;
+        }
+        &:focus {
+          outline: none;
+        }
+      }
+
+      .addButton {
+        display: flex;
+        width: fit-content;
+        height: fit-content;
+        padding-inline: 2rem;
+        padding-block: 0.8rem;
+        font-size: 1rem;
+        font-weight: 400;
+        border-radius: 2rem;
+        align-items: center;
+        cursor: pointer;
+      }
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      position: absolute;
+      top: 13.5rem;
+      left: 0;
+      background-color: $divider-color;
+      border: none;
+    }
+
+    .header {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+      align-items: center;
+      justify-content: space-between;
+      color: $gray;
+    }
+  }
+
+  .stations {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    width: 100%;
+    overflow-y: scroll;
+    max-height: 45vh;
+
+    .station {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      gap: 0.8rem;
+      width: 100%;
+      background-color: transparent;
+      padding-block: 1.2rem;
+      padding-inline: 1.5rem;
+      border: 1px solid $border-color;
+      border-radius: 0.6375rem;
+      align-items: center;
+      justify-content: space-between;
+      &:hover {
+        background-color: $divider-color;
+      }
+    }
+
+    .stationImage {
+      width: 3.5rem;
+      height: 3.5rem;
+      background: linear-gradient(to top left, #d9d9d9, #737373);
+      border-radius: 0.6375rem;
+      object-fit: cover;
+    }
+
+    .chainIcon {
+      position: absolute;
+      width: 1.2rem;
+      height: 1.2rem;
+      background-color: $white;
+      top: 1rem;
+      left: 1rem;
+      border-radius: 1rem;
+    }
+
+    .stationInfo {
+      display: flex;
+      flex-direction: row;
+      width: 80%;
+      align-items: start;
+      justify-content: space-between;
+
+      .stationHeader {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 0.5rem;
+        align-items: start;
+      }
+
+      .stationTitle {
+        display: flex;
+        flex-direction: row;
+        gap: 0.5rem;
+        font-size: 1.2rem;
+        font-weight: 500;
+        line-height: 1.2;
+        align-items: center;
+        cursor: pointer;
+      }
+
+      .stationBadge {
+        width: fit-content;
+        padding-inline: 0.6rem;
+        padding-top: 0.2rem;
+        background-color: $border-color;
+        color: $gray;
+        text-transform: uppercase;
+        border-radius: 0.6375rem;
+        font-size: 0.75rem;
+      }
+
+      .stationMetadata {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: $gray;
+      }
+    }
+
+    .addStationButton {
+      display: flex;
+      width: fit-content;
+      height: fit-content;
+      padding-inline: 0.8rem;
+      padding-block: 0.8rem;
+      font-weight: 400;
+      border: none;
+      border-radius: 2rem;
+      align-items: center;
+      cursor: pointer;
+    }
+  }
+}

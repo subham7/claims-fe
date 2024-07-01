@@ -196,7 +196,7 @@ const StakingCard = ({
           onClose={() => setStakingResult(null)}
           buttonText="View & Sign Transaction"
           onButtonClick={() => {
-            router.push(`/proposals/${daoAddress}/${networkId}/${proposalId}`);
+            router.push(`/proposals/${daoAddress}/${networkId}`);
           }}
         />
       ) : stakingResult === "failure" ? (

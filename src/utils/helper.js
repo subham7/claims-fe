@@ -424,7 +424,7 @@ export const formatCash = (n) => {
 };
 
 export const getLinks = (daoAddress, networkId) => {
-  return baseLinks
+  return baseLinks(networkId)
     .filter((link) => !link?.hideNetworks?.includes(networkId))
     ?.map((link, index) => ({
       ...link,
@@ -480,6 +480,8 @@ export const withHttps = (url) =>
 export const formatNumbers = (number) => {
   return number?.toLocaleString("en-US");
 };
+
+export const containsHtml = (str) => /<\/?[a-z][\s\S]*>/i.test(str);
 
 export const isValidReciptentAddress = async (value) => {
   try {

@@ -148,7 +148,7 @@ const TreasurySigner = ({
 
       const request = await createProposal(isGovernanceActive, {
         ...payload,
-        description: values.note,
+        description: "",
         signature,
       });
       setLoading(false);

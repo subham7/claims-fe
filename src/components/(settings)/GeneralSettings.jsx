@@ -169,9 +169,7 @@ const GeneralSettings = ({
           }
           onButtonClick={() => {
             if (isActionCreated === "success") {
-              router.push(
-                `/proposals/${daoAddress}/${routeNetworkId}/${proposalId}`,
-              );
+              router.push(`/proposals/${daoAddress}/${routeNetworkId}`);
             } else {
               setIsActionCreated(null);
             }

@@ -1,193 +1,35 @@
-import SafeImage from "@components/common/SafeImage";
-import { Typography } from "@mui/material";
-import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { convertFromWeiGovernance } from "utils/globalFunctions";
-import {
-  customToFixedAutoPrecision,
-  getDaysDifferenceDescription,
-} from "utils/helper";
-import Web3 from "web3";
 import classes from "./Dashboard.module.scss";
-import { getTransactionsByNetworkId } from "api/transactions";
 import CopyLinkContainer from "./CopyLinkContainer";
-import { isLoading } from "../../redux/loader/selectors";
-import { startLoading, stopLoading } from "redux/loader/actions";
-import CustomSkeleton from "@components/skeleton/CustomSkeleton";
-
-const ActivityItem = ({ item, daoAddress, networkId }) => {
-  const router = useRouter();
-  const daysRemaining = getDaysDifferenceDescription(item.votingDuration);
-
-  return (
-    <div
-      onClick={() =>
-        router.push(`/proposals/${daoAddress}/${networkId}/${item.proposalId}`)
-      }
-      className={classes.proposal}>
-      <Typography className={classes.itemTitle} variant="inherit">
-        {item.name.length > 20 ? item.name.substring(0, 24) + ".." : item.name}
-      </Typography>
-      <Typography
-        className={
-          Number(daysRemaining) > 0 ? classes.proposalDate : classes.send
-        }
-        variant="inherit">
-        {`${
-          Number(daysRemaining) > 0
-            ? `${daysRemaining} day(s) left`
-            : "Finished"
-        } `}
-      </Typography>
-    </div>
-  );
-};
-
-const TransactionItem = ({ item }) => {
-  const logoUri = item?.tokenInfo?.logoUri;
-  const symbol = item?.tokenInfo?.name;
-  const value = convertFromWeiGovernance(
-    item?.value ?? 0,
-    item?.tokenInfo?.decimals ?? 0,
-  );
-
-  const gnosisAddress = useSelector((state) => {
-    return state.club.clubData.gnosisAddress;
-  });
-
-  return (
-    <div className={classes.transaction}>
-      <div>
-        <SafeImage
-          src={logoUri}
-          alt="logo"
-          fallbackSrc={"/assets/icons/testToken.png"}
-          height={25}
-          width={25}
-        />
-        <Typography className={classes.itemTitle} variant="inherit">
-          {symbol}
-        </Typography>
-      </div>
-      <Typography
-        className={
-          item.to.toLowerCase() === gnosisAddress?.toLowerCase()
-            ? classes.deposit
-            : classes.send
-        }
-        variant="inherit">
-        {item.to.toLowerCase() === gnosisAddress?.toLowerCase() ? "+" : "-"}
-        {customToFixedAutoPrecision(Number(value))}
-      </Typography>
-    </div>
-  );
-};
+import PendingTranscation from "./PendingTranscation";
+import { getLatesExecutableProposal } from "api/proposal";
+import { useEffect, useState } from "react";
 
 const DashboardActivities = ({ proposals, daoAddress, networkId }) => {
-  const [allTransactions, setAllTransactions] = useState([]);
-  const dispatch = useDispatch();
-  const proposalIsloading = useSelector((state) =>
-    isLoading(state, "proposal"),
-  );
-  const transactionIsLoading = useSelector((state) =>
-    isLoading(state, "transactions"),
-  );
+  const [proposal, setProposal] = useState();
 
-  const gnosisAddress = useSelector((state) => {
-    return state.club.clubData.gnosisAddress;
-  });
+  const loadExecutableLatestProposal = async () => {
+    const data = await getLatesExecutableProposal(daoAddress);
+    setProposal(data?.data[0]);
+  };
 
-  const fetchTransactions = async () => {
-    dispatch(startLoading("transactions"));
-    try {
-      const { transfers } = await getTransactionsByNetworkId(
-        Web3.utils.toChecksumAddress(gnosisAddress),
-        networkId,
-      );
-      setAllTransactions(transfers?.slice(0, 10));
-    } catch (err) {
-      console.error(err);
-    }
-    dispatch(stopLoading("transactions"));
+  const refreshProposals = async () => {
+    await loadExecutableLatestProposal();
   };
 
   useEffect(() => {
-    if (gnosisAddress) {
-      fetchTransactions();
-    }
-    // eslint-disable-next-line
-  }, [gnosisAddress]);
+    if (daoAddress) loadExecutableLatestProposal();
+  }, [daoAddress]);
 
   return (
     <div className={classes.rightContainer}>
       <CopyLinkContainer daoAddress={daoAddress} routeNetworkId={networkId} />
-      {[
-        {
-          title: "Latest Activity",
-          data: proposals,
-          isTransaction: false,
-        },
-        {
-          title: "Latest Transactions",
-          data: allTransactions,
-          isTransaction: true,
-        },
-      ].map(({ title, data, isTransaction }) => (
-        <div
-          className={
-            isTransaction
-              ? classes.transactionContainer
-              : classes.activityContainer
-          }
-          key={title}>
-          <Typography className={classes.heading} variant="inherit">
-            {title}
-          </Typography>
-
-          <div
-            className={
-              isTransaction ? classes.transactionList : classes.proposalList
-            }>
-            {isTransaction
-              ? transactionIsLoading && (
-                  <CustomSkeleton
-                    marginTop={"20px"}
-                    width={"95%"}
-                    height={30}
-                    length={7}
-                  />
-                )
-              : proposalIsloading && (
-                  <CustomSkeleton
-                    marginTop={"20px"}
-                    width={"95%"}
-                    height={30}
-                    length={7}
-                  />
-                )}
-
-            {data?.length ? (
-              data.map((item, index) =>
-                isTransaction ? (
-                  item && <TransactionItem key={index} item={item} />
-                ) : (
-                  <ActivityItem
-                    key={index}
-                    item={item}
-                    daoAddress={daoAddress}
-                    networkId={networkId}
-                  />
-                ),
-              )
-            ) : (
-              <Typography className={classes.noActivity} variant="inherit">
-                No {isTransaction ? "Transactions" : "Activity"} yet!
-              </Typography>
-            )}
-          </div>
-        </div>
-      ))}
+      <PendingTranscation
+        routeNetworkId={networkId}
+        daoAddress={daoAddress}
+        proposal={proposal}
+        executionId={proposal?.commands[0]?.executionId}
+        onProposalUpdate={refreshProposals}
+      />
     </div>
   );
 };

@@ -1,8 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Image from "next/image";
 import classes from "./Navbar.module.scss";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import NetworkSwitcher from "@components/modals/NetworkSwitcher/NetworkSwitcher";
+import CreateSpaceModal from "@components/modals/CreateSpaceModal/CreateSpaceModal";
 import { dropsNetworksChaindId, stationNetworksChainId } from "utils/constants";
 import { useAccount, useChainId } from "wagmi";
 import { Typography } from "@mui/material";
@@ -12,19 +14,30 @@ import { useWalletInfo } from "@web3modal/wagmi/react";
 import { getConnections } from "@wagmi/core";
 import { config } from "config";
 import { fetchClubByDaoAddress } from "api/club";
+import Menu from "./Menu";
+import useSpaceFetch from "hooks/useSpaceFetch";
+import { getSpaceByManager } from "api/space";
+import useAuth from "hooks/useAuth";
 
 const Navbar = ({ daoAddress, routeNetworkId }) => {
   const [showEditDetails, setShowEditDetails] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showCreateSpaceModal, setShowCreateSpaceModal] = useState(false);
   const [networksSupported, setNetworkSupported] = useState();
   const [walletIcon, setWalletIcon] = useState("");
   const [isToggleRaise, setIsToggleRaise] = useState(false);
+  const [spaces, setSpaces] = useState();
+  const dropdownRef = useRef(null);
 
   const router = useRouter();
+  const [spaceId] = router?.query?.slug ?? [];
+  const { spaceData, isLoading } = useSpaceFetch(spaceId);
   const { address } = useAccount();
   const { walletInfo } = useWalletInfo();
   const chain = useChainId();
   const networkId = "0x" + chain?.toString(16);
+  const authToken = useAuth();
 
   const clubData = useSelector((state) => {
     return state.club.clubData;
@@ -58,9 +71,31 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
     if (daoAddress) fetchClubData();
   }, [daoAddress]);
 
+  const fetchSpaces = async () => {
+    const data = await getSpaceByManager(address);
+    setSpaces(data);
+  };
+
+  useEffect(() => {
+    if (address) fetchSpaces();
+  }, [address]);
+
   useEffect(() => {
     if (address && networkId) fetchCurrentWalletIcon();
   }, [networkId, address]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <>
@@ -88,8 +123,20 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
               </Typography>
             </div>
           ) : null}
-
-          <w3m-network-button />
+          {router.pathname.includes("space") &&
+            !isLoading &&
+            spaceData.creator === address && (
+              <button
+                className={classes.customise}
+                onClick={() => {
+                  router.push(`/space/customise/${spaceId}`);
+                }}>
+                Customise
+              </button>
+            )}
+          <div className={classes.network}>
+            <w3m-network-button />
+          </div>
           <div className={classes.connectedWallet}>
             {walletIcon && address && (
               <Image
@@ -103,15 +150,12 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
             <w3m-button label="Connect" />
           </div>
           {address && (
-            <Image
-              onClick={() => router.push(`/profile/${address}`)}
-              src="/assets/icons/astronaut_icon.svg"
-              alt="profile image"
-              height={20}
-              width={20}
-              style={{
-                cursor: "pointer",
-              }}
+            <Menu
+              spaces={spaces}
+              showMenu={showMenu}
+              setShowMenu={setShowMenu}
+              dropdownRef={dropdownRef}
+              setShowCreateSpaceModal={setShowCreateSpaceModal}
             />
           )}
         </div>
@@ -124,6 +168,10 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
           }}
           supportedNetworks={networksSupported}
         />
+      )}
+
+      {showCreateSpaceModal && (
+        <CreateSpaceModal setShowCreateSpaceModal={setShowCreateSpaceModal} />
       )}
 
       <EditDetails

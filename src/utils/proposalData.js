@@ -2322,4 +2322,6 @@ export const signAndConfirmTransaction = async ({
     executionStatus === "cancel" ? rejectionTransaction : safeTransaction;
   const senderSignature = await safeSdk.signTypedData(transactionToSign, "v4");
   await safeService.confirmTransaction(safeTxHash, senderSignature.data);
+
+  return senderSignature;
 };

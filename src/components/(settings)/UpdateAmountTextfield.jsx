@@ -166,7 +166,7 @@ const UpdateAmountTextfield = ({
 
       const request = await createProposal(isGovernanceActive, {
         ...payload,
-        description: values.note,
+        description: "",
         signature,
       });
       setLoading(false);

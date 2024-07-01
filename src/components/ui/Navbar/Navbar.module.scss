@@ -19,15 +19,18 @@
     justify-content: center;
     gap: 8px;
 
-    .connectedWallet{
+    @media (max-width: $breakpoint-sm) {
+      gap: 2px;
+    }
+
+    .connectedWallet {
       position: relative;
       height: fit-content;
-     
 
-      .wallet{
+      .wallet {
         position: absolute;
         z-index: 1000;
-        background-color: #00000050;
+        background-color: #161616;
         padding: 4px;
         border-radius: 50px;
         top: 20px;
@@ -41,6 +44,134 @@
       border: 0.5px solid #3d3d3d;
       border-radius: 55px;
       cursor: pointer;
+    }
+  }
+
+  .customise {
+    display: flex;
+    padding-inline: 1.2rem;
+    padding-block: 0.7rem;
+    align-items: center;
+    color: $white;
+    background-color: $dark-gray;
+    border: 1px solid #383838;
+    border-radius: 1.5rem;
+    cursor: pointer;
+
+    @media (max-width: $breakpoint-sm) {
+      padding-inline: 0.8rem;
+      padding-block: 0.5rem;
+    }
+  }
+
+  .network {
+    display: flex;
+
+    @media (max-width: $breakpoint-sm) {
+      display: none;
+    }
+  }
+
+  .menu {
+    display: flex;
+    position: relative;
+    padding-inline: 0.5rem;
+    padding-block: 0.5rem;
+    align-items: center;
+    background-color: $dark-gray;
+    border: 1px solid #383838;
+    border-radius: 0.6rem;
+    cursor: pointer;
+
+    .menuOptions {
+      position: absolute;
+      top: 3rem;
+      right: 0;
+      width: 20rem;
+      background-color: $background-color-dark;
+      border: 1px solid #383838;
+      border-radius: 0.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding-block: 1.5rem;
+      padding-inline: 2rem;
+      z-index: 1000;
+      color: $white;
+      align-items: start;
+
+      .header {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .spaces {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        width: 100%;
+        max-height: 10rem;
+        overflow: auto;
+        overflow-y: scroll;
+        align-items: center;
+        justify-content: start;
+        text-align: center;
+      }
+
+      .space {
+        display: flex;
+        width: 100%;
+        gap: 1rem;
+        align-items: center;
+        justify-content: start;
+        padding-block: 0.6rem;
+        padding-inline: 1rem;
+        border-radius: 0.7rem;
+        background-color: transparent;
+        border: 1px solid $border-color;
+        cursor: pointer;
+
+        &:hover {
+          background-color: $dark-gray;
+        }
+
+        .spaceImage {
+          width: 2.5rem;
+          height: 2.5rem;
+          background: linear-gradient(to top left, #d9d9d9, #737373);
+          border: 1px solid $border-color;
+          border-radius: 0.4375rem;
+          object-fit: cover;
+        }
+      }
+
+      .defaultStations {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        padding-block: 1rem;
+        gap: 1rem;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .createSpace {
+        display: flex;
+        width: 100%;
+        gap: 8px;
+        font-weight: 600;
+        align-items: center;
+        justify-content: center;
+        padding-block: 0.6rem;
+        padding-inline: 2rem;
+        margin-top: 10px;
+        border-radius: 2rem;
+        background-color: $white;
+        border: none;
+        cursor: pointer;
+      }
     }
   }
 }
