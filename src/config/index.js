@@ -1,6 +1,5 @@
 import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
 import { stationNetworksChainId } from "utils/constants";
-
 import { cookieStorage, createStorage } from "wagmi";
 
 // Get projectId at https://cloud.walletconnect.com

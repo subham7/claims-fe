@@ -424,7 +424,7 @@ export const formatCash = (n) => {
 };
 
 export const getLinks = (daoAddress, networkId) => {
-  return baseLinks
+  return baseLinks(networkId)
     .filter((link) => !link?.hideNetworks?.includes(networkId))
     ?.map((link, index) => ({
       ...link,

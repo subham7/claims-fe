@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import classes from "./Stations.module.scss";
-import { useAccount } from "wagmi";
-import { OMIT_DAOS } from "utils/constants";
+import { useAccount, useChainId } from "wagmi";
+import { CHAIN_CONFIG, OMIT_DAOS } from "utils/constants";
 import { useRouter } from "next/router";
 import { GoPlus } from "react-icons/go";
 import FilterStations from "./Filter";
@@ -11,6 +11,7 @@ import Station from "./Station";
 
 const Stations = ({ clubListData }) => {
   const { address: walletAddress } = useAccount();
+  const chainId = useChainId();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedNetworks, setSelectedNetworks] = useState([]);
@@ -35,14 +36,17 @@ const Stations = ({ clubListData }) => {
       )
     : filteredSearchClubs;
 
+  const initialChainClubs = filteredClubs.filter(
+    (club) => CHAIN_CONFIG[club.networkId].chainId === chainId,
+  );
+  const clubsWithoutInitialChain = filteredClubs.filter(
+    (club) => CHAIN_CONFIG[club.networkId].chainId !== chainId,
+  );
+  const sortedClubs = [...initialChainClubs, ...clubsWithoutInitialChain];
+
   return (
     <div className={classes.container}>
-      <div className={classes.header}>
-        <h1 className={classes.title}>GM, anon!</h1>
-        <button className={classes.button} onClick={handleCreateButtonClick}>
-          <GoPlus size={22} /> Create station
-        </button>
-      </div>
+      <h3 className={classes.title}>GM, anon!</h3>
       <FilterStations
         searchQuery={searchQuery}
         selectedNetworks={selectedNetworks}
@@ -52,38 +56,18 @@ const Stations = ({ clubListData }) => {
       <div className={classes.section}>
         <span className={classes.sectionHeader}>
           <h2 className={classes.sectionTitle}>
-            My stations{" "}
-            {filteredClubs.length > 0 && (
-              <p className={classes.sectionSubtitle}>
-                ({filteredClubs.length})
-              </p>
-            )}
+            Stations {clubListData.length > 0 && `: ${clubListData.length}`}
           </h2>
-          {clubListData.length > 0 && (
-            <p className={classes.sectionSubtitle}>
-              Total Stations: {clubListData.length}
-            </p>
-          )}
+          <button className={classes.button} onClick={handleCreateButtonClick}>
+            <GoPlus size={22} /> Create station
+          </button>
         </span>
         <div className={classes.stations}>
-          {walletAddress && filteredClubs.length ? (
-            filteredClubs
+          {walletAddress && sortedClubs.length ? (
+            sortedClubs
               ?.filter((club) => !OMIT_DAOS.includes(club.daoAddress))
               .map((club, key) => {
-                return (
-                  <Station
-                    networkId={club.networkId}
-                    imageUrl={club.clubLogoUrl}
-                    daoAddress={club.daoAddress}
-                    name={club.name}
-                    tokenType={club.tokenType}
-                    membersCount={club.membersCount}
-                    totalAmountRaised={club.totalAmountRaised}
-                    depositTokenAddress={club.depositTokenAddress}
-                    gnosisAddress={club.gnosisAddress}
-                    key={key}
-                  />
-                );
+                return <Station club={club} key={key} />;
               })
           ) : (
             <div

@@ -355,6 +355,7 @@ const ERC721 = ({
       <PublicPageLayout
         clubData={clubData}
         tokenDetails={tokenDetails}
+        routeNetworkId={routeNetworkId}
         headerProps={{
           daoAddress: daoAddress,
           contractData: clubData,

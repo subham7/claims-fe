@@ -8,7 +8,9 @@ export const SEAPORT_CONTRACT_ADDRESS =
   "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC";
 
 // Global variables
-export const MAIN_API_URL = "https://vxyaeqhpzd.us-east-1.awsapprunner.com/v1/";
+export const MAIN_API_URL = process.env.NEXT_PUBLIC_API_HOST;
+export const SPACE_API_URL = process.env.NEXT_PUBLIC_SPACE_API_HOST;
+export const CLUB_API_URL = process.env.NEXT_PUBLIC_CLUB_API_HOST;
 
 // Faucet
 export const USDC_FAUCET_ADDRESS = process.env.NEXT_PUBLIC_USDC_FAUCET_ADDRESS;
