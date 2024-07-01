@@ -6,6 +6,7 @@ import React, { useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { CHAIN_CONFIG } from "utils/constants";
 import { proposalFormData } from "utils/proposalData";
+import { ensToWalletAddress } from "utils/helper";
 import Web3 from "web3";
 
 const useStyles = makeStyles({
@@ -83,7 +84,6 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
     const fileUploaded = event.target.files[0];
     setLoadingCsv(true);
     setFile(fileUploaded);
-
     // new instance of fileReader class
     const reader = new FileReader();
 
@@ -100,12 +100,19 @@ const ProposalActionForm = ({ formik, tokenData, nftData }) => {
           setLoadingCsv(false);
         } else {
           const { addresses, amounts } = csvToObjectForMintGT(csvData);
+          // const ownerAddress = await ensToWalletAddress("wevm.eth");
+          const ensToWalletAddresses = await Promise.all(
+            addresses.map(async (address) => {
+              return await ensToWalletAddress(address);
+            }),
+          );
+
           if (formik.values.actionCommand === 21) {
             formik.values.sendTokenAmounts = amounts;
             formik.values.sendTokenAddresses = addresses;
           } else {
             formik.values.mintGTAmounts = amounts;
-            formik.values.mintGTAddresses = addresses;
+            formik.values.mintGTAddresses = ensToWalletAddresses;
           }
 
           setLoadingCsv(false);

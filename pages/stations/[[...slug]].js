@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import Layout from "@components/layouts/layout";
 import Stations from "@components/stationsPageComps/Stations";
 import { getReferralCode } from "api/invite/invite";
-import BackdropLoader from "@components/common/BackdropLoader";
 import { queryStationListFromSubgraph } from "utils/stationsSubgraphHelper";
 import { useAccount } from "wagmi";
 
@@ -46,13 +45,8 @@ const StationsPage = () => {
     if (walletAddress) fetchClubs();
   }, [walletAddress]);
 
-  if (isUserWhitelisted === null || isLoading) {
-    return (
-      <Layout showSidebar={false} faucet={false}>
-        <BackdropLoader isOpen={true} showLoading={true} />
-      </Layout>
-    );
-  }
+  //   );
+  // }
 
   return (
     <Layout showSidebar={false} faucet={false}>

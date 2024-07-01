@@ -34,6 +34,7 @@ import { useAccount, useChainId } from "wagmi";
 import { ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import { NFT_STORAGE_TOKEN } from "api/token";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
+import { ensToWalletAddress } from "utils/helper";
 
 const Create = () => {
   const steps = ["Basic info", "Contribution rules", "Treasury"];
@@ -163,7 +164,11 @@ const Create = () => {
     onSubmit: async (values) => {
       setOpen(true);
       setLoader(true);
-
+      const ensToWalletAddresses = await Promise.all(
+        formikStep3.values.addressList.map(async (address) => {
+          return await ensToWalletAddress(address);
+        }),
+      );
       if (formikStep1.values.clubTokenType === "NFT") {
         // dispatch(setUploadNFTLoading(true));
         const client = new NFTStorage({
@@ -214,7 +219,7 @@ const Create = () => {
           initiateConnection(
             params,
             dispatch,
-            formikStep3.values.addressList,
+            ensToWalletAddresses,
             formikStep1.values.clubTokenType,
             metadata.url,
             formikStep1.values.useStationFor,
@@ -274,7 +279,7 @@ const Create = () => {
           initiateConnection(
             params,
             dispatch,
-            formikStep3.values.addressList,
+            ensToWalletAddresses,
             formikStep1.values.clubTokenType,
             "",
             formikStep1.values.useStationFor,

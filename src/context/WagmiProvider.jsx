@@ -8,7 +8,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { WagmiProvider } from "wagmi";
 import { projectId, config } from "config";
-import { polygon } from "viem/chains";
 
 // Setup queryClient
 const queryClient = new QueryClient();
@@ -20,7 +19,6 @@ createWeb3Modal({
   wagmiConfig: config,
   projectId,
   allowUnsupportedChain: false,
-  defaultChain: polygon,
   themeVariables: {
     "--w3m-accent": "#1e1e1e",
     "--w3m-font-family": "inherit",

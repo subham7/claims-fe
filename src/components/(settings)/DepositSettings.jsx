@@ -13,7 +13,7 @@ import KycSettings from "./KycSettings";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import { getClubData } from "api/club";
 
-const DepositSettings = ({ routeNetworkId, daoAddress }) => {
+const DepositSettings = ({ routeNetworkId, daoAddress, settingIsLoading }) => {
   const [loading, setLoading] = useState(false);
   const [proposalId, setProposalId] = useState("");
   const [isActionCreated, setIsActionCreated] = useState(null);
@@ -137,6 +137,7 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
           setLoading={setLoading}
           handleActionComplete={handleActionComplete}
           symbol={symbol}
+          settingIsLoading={settingIsLoading}
         />
       ),
     },
@@ -152,6 +153,7 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
           type="updateMinDeposit"
           setLoading={setLoading}
           handleActionComplete={handleActionComplete}
+          settingIsLoading={settingIsLoading}
         />
       ),
       isHidden: tokenType === "erc721",
@@ -168,6 +170,7 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
           type="updateMaxDeposit"
           setLoading={setLoading}
           handleActionComplete={handleActionComplete}
+          settingIsLoading={settingIsLoading}
         />
       ),
       isHidden: tokenType === "erc721",
@@ -184,6 +187,7 @@ const DepositSettings = ({ routeNetworkId, daoAddress }) => {
           setLoading={setLoading}
           handleActionComplete={handleActionComplete}
           prevAmount={Number(raiseAmountFormatted?.formattedValue)}
+          settingIsLoading={settingIsLoading}
         />
       ),
       isHidden: tokenType === "erc721",
