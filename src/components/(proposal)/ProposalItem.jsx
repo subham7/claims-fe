@@ -182,7 +182,8 @@ const ProposalItem = ({
       <div className={classes.proposalItemContainer}>
         <div className={classes.proposalDetails}>
           <Typography variant="inherit" fontSize={16} fontWeight={600}>
-            {proposal?.index}.{"  "} {getProposalType(executionId)}
+            {proposal?.index ? proposal?.index + "." : ""}
+            {"  "} {getProposalType(executionId)}
           </Typography>
 
           {amount.length ? (

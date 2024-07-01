@@ -83,7 +83,7 @@ const SelectActionDialog = ({ open, onClose, daoAddress, networkId }) => {
   const onProposalClick = (key) => {
     router.push({
       pathname:
-        window.location.origin + `/newProposals/${daoAddress}/${networkId}/new`,
+        window.location.origin + `/proposals/${daoAddress}/${networkId}/new`,
       query: { executionId: key },
     });
   };
