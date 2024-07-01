@@ -11,9 +11,10 @@ const useSpaceFetch = (spaceId) => {
       try {
         let data = await getSpace(spaceId);
         const response = await getDepositBySpaceId(spaceId);
+        console.log(response);
         data = {
           ...data,
-          deposit: response.totalDeposits ? response.totalDeposits : 0,
+          deposit: response?.totalDeposits ? response.totalDeposits : 0,
         };
         setSpaceData(data);
         setIsLoading(false);

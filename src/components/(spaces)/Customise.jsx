@@ -131,7 +131,6 @@ const Customise = ({ spaceId }) => {
   const checkForChanges = () => {
     const initialData = initialDataRef.current;
     if (!initialData) return;
-
     const currentData = {
       spaceBasicData,
       spaceSocialData,
@@ -160,16 +159,14 @@ const Customise = ({ spaceId }) => {
 
   useEffect(() => {
     if (spaceData) {
-      dispatch(
-        addSpaceBasicData({
+      const initialData = {
+        spaceBasicData: {
           name: spaceData?.name,
           description: spaceData?.description,
           logo: spaceData?.logo,
           coverPic: spaceData?.coverPic,
-        }),
-      );
-      dispatch(
-        addSpaceSocialData({
+        },
+        spaceSocialData: {
           warpcast: formatURL(
             spaceData?.links?.warpcast,
             "https://warpcast.com/",
@@ -183,10 +180,17 @@ const Customise = ({ spaceId }) => {
             "https://instagram.com/",
           ),
           reddit: formatURL(spaceData?.links?.reddit, "https://reddit.com/"),
-        }),
-      );
-      dispatch(addManagers(spaceData?.managers));
-      dispatch(addSelectedStations(spaceData?.stations));
+        },
+        managers: spaceData?.managers,
+        selectedStations: spaceData?.stations,
+      };
+
+      initialDataRef.current = initialData;
+
+      dispatch(addSpaceBasicData(initialData.spaceBasicData));
+      dispatch(addSpaceSocialData(initialData.spaceSocialData));
+      dispatch(addManagers(initialData.managers));
+      dispatch(addSelectedStations(initialData.selectedStations));
     }
   }, [spaceData]);
 

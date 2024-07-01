@@ -589,10 +589,12 @@
     border-radius: 2rem;
     text-align: center;
     cursor: pointer;
+    background-color: $white;
+    color: #111;
     &:disabled {
-      background-color: $white;
+      background-color: $light-gray;
       color: #111;
-      cursor: progress;
+      cursor: not-allowed;
     }
   }
 }
