@@ -29,6 +29,7 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
   const [isToggleRaise, setIsToggleRaise] = useState(false);
   const [spaces, setSpaces] = useState();
   const dropdownRef = useRef(null);
+
   const router = useRouter();
   const [spaceId] = router?.query?.slug ?? [];
   const { spaceData, isLoading } = useSpaceFetch(spaceId);
