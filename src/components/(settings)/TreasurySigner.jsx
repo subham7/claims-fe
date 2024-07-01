@@ -100,14 +100,6 @@ const TreasurySigner = ({
       }
       const values = {
         ownerAddress: type === "add" ? ownerAddress : newArr[clickedIndex],
-        // safeThreshold:
-        //   type !== "add"
-        //     ? Number(currentSafeThreshold) > 1
-        //       ? Number(currentSafeThreshold) - 1
-        //       : Number(currentSafeThreshold)
-        //     : Number(currentSafeThreshold) + 1,
-        // ownerAddress:
-        //   type === "add" ? newArr[newArr.length - 1] : newArr[clickedIndex],
         safeThreshold: thresholdValue,
 
         actionCommand: type === "add" ? 6 : 7,
