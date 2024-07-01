@@ -48,6 +48,23 @@ export const getSpaceByManager = async (address) => {
   }
 };
 
+export const getDepositBySpaceId = async (spaceId) => {
+  try {
+    const res = await axios.get(
+      `${SPACE_API_URL}api/v1/space/${spaceId}/stations`,
+      {
+        headers: {
+          accept: "application/json",
+        },
+      },
+    );
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
+
 export const updateSpace = async (spaceId, data, authToken) => {
   try {
     const res = await axios.patch(

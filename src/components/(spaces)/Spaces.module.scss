@@ -566,23 +566,33 @@
     }
   }
 
-  .save {
-    display: flex;
-    justify-content: end;
+  .fixedSaveButton {
+    position: fixed;
+    bottom: 10px;
+    right: 64px;
+    z-index: 100;
 
-    .button {
-      width: 10rem;
-      padding-block: 0.8rem;
-      font-size: 1rem;
-      font-weight: 400;
-      border-radius: 2rem;
-      text-align: center;
-      cursor: pointer;
-      &:disabled {
-        background-color: $white;
-        color: #111;
-        cursor: progress;
-      }
+    @media (max-width: $breakpoint-sm) {
+      right: 30px;
+    }
+  }
+
+  .staticSaveButton {
+    position: static;
+  }
+
+  .button {
+    width: 10rem;
+    padding-block: 0.8rem;
+    font-size: 1rem;
+    font-weight: 400;
+    border-radius: 2rem;
+    text-align: center;
+    cursor: pointer;
+    &:disabled {
+      background-color: $white;
+      color: #111;
+      cursor: progress;
     }
   }
 }

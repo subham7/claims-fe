@@ -1,4 +1,4 @@
-import { getSpace } from "api/space";
+import { getDepositBySpaceId, getSpace } from "api/space";
 import { useState, useEffect } from "react";
 
 const useSpaceFetch = (spaceId) => {
@@ -9,7 +9,12 @@ const useSpaceFetch = (spaceId) => {
   useEffect(() => {
     const fetchSpace = async () => {
       try {
-        const data = await getSpace(spaceId);
+        let data = await getSpace(spaceId);
+        const response = await getDepositBySpaceId(spaceId);
+        data = {
+          ...data,
+          deposit: response.totalDeposits ? response.totalDeposits : 0,
+        };
         setSpaceData(data);
         setIsLoading(false);
       } catch (err) {

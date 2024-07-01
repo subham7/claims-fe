@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 import classes from "./Spaces.module.scss";
 import SpacesHeader from "./SpacesHeader";
@@ -9,12 +10,30 @@ import { CHAIN_CONFIG, GRADIENT_BUCKET } from "utils/constants";
 import dayjs from "dayjs";
 import useStationFetch from "hooks/useStationFetch";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { getSpace } from "api/space";
+import { useRouter } from "next/router";
 
 const Spaces = ({ spaceId }) => {
+  const [isValidating, setIsValidating] = useState(true);
   const { spaceData, isLoading } = useSpaceFetch(spaceId);
   const { stationData } = useStationFetch(JSON.stringify(spaceData?.stations));
+  const router = useRouter();
 
-  if (isLoading) {
+  useEffect(() => {
+    const fetchSpace = async () => {
+      const response = await getSpace(spaceId);
+      if (!response) {
+        router.push("/");
+      }
+      setIsValidating(false);
+    };
+    if (spaceId) {
+      fetchSpace();
+    }
+  }, [spaceId]);
+
+  if (isLoading || isValidating) {
     return <BackdropLoader isOpen={true} showLoading={true} />;
   }
 

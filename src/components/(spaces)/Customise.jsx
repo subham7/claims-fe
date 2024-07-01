@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import classes from "./Spaces.module.scss";
 import useSpaceFetch from "hooks/useSpaceFetch";
 import BackdropLoader from "@components/common/BackdropLoader";
 import { useAccount } from "wagmi";
 import { useDispatch, useSelector } from "react-redux";
-import { updateSpace } from "api/space";
+import { getSpace, updateSpace } from "api/space";
 import { setAlertData } from "redux/reducers/alert";
 import { generateAlertData } from "utils/globalFunctions";
 import Tabs from "./Customise/Tabs";
@@ -48,6 +48,10 @@ const Customise = ({ spaceId }) => {
   const [id] = router?.query?.slug ?? [];
   const { clubListData, isLoading: isClubLoading } = useAllClubsFetch(address);
   const { stationData } = useStationFetch(JSON.stringify(selectedStations));
+  const [isFixed, setIsFixed] = useState(true);
+  const [isValidating, setIsValidating] = useState(true);
+  const [hasChanges, setHasChanges] = useState(false);
+  const initialDataRef = useRef();
 
   const formatURL = (url, path) => {
     if (url.startsWith(path)) {
@@ -124,6 +128,24 @@ const Customise = ({ spaceId }) => {
     }
   };
 
+  const checkForChanges = () => {
+    const initialData = initialDataRef.current;
+    if (!initialData) return;
+
+    const currentData = {
+      spaceBasicData,
+      spaceSocialData,
+      managers,
+      selectedStations,
+    };
+
+    setHasChanges(JSON.stringify(initialData) !== JSON.stringify(currentData));
+  };
+
+  useEffect(() => {
+    checkForChanges();
+  }, [spaceBasicData, spaceSocialData, managers, selectedStations]);
+
   useEffect(() => {
     if (address) {
       if (spaceData) {
@@ -168,7 +190,38 @@ const Customise = ({ spaceId }) => {
     }
   }, [spaceData]);
 
-  if (isLoading) {
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const triggerPosition = window.innerWidth < 768 ? 1400 : 1200;
+
+      if (scrollPosition > triggerPosition) {
+        setIsFixed(false);
+      } else {
+        setIsFixed(true);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    const fetchSpace = async () => {
+      const response = await getSpace(spaceId);
+      if (!response) {
+        router.push("/");
+      }
+      setIsValidating(false);
+    };
+    if (spaceId) {
+      fetchSpace();
+    }
+  }, [spaceId]);
+
+  if (isLoading || isValidating) {
     return <BackdropLoader isOpen={true} showLoading={true} />;
   }
 
@@ -189,14 +242,19 @@ const Customise = ({ spaceId }) => {
         setShowAddStationsModal={setShowAddStationsModal}
         stationData={stationData}
       />
-      <div className={classes.save}>
+      <div
+        className={isFixed ? classes.fixedSaveButton : classes.staticSaveButton}
+        style={{
+          display: "flex",
+          justifyContent: "end",
+        }}>
         <button
           className={classes.button}
           onClick={() => {
             setIsSaveLoading(true);
             handleUpdateSpace();
           }}
-          disabled={isSaveLoading}>
+          disabled={isSaveLoading || !hasChanges}>
           {isSaveLoading ? "Saving..." : "Save"}
         </button>
       </div>

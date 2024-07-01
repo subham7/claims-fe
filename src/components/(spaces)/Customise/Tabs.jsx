@@ -14,7 +14,7 @@ const Tabs = () => {
         onClick={() => setActiveTab(0)}>
         General
       </button>
-      <button
+      {/* <button
         className={classes.tab}
         onClick={() => setActiveTab(1)}
         style={{
@@ -23,7 +23,7 @@ const Tabs = () => {
         }}
         disabled>
         Permissions
-      </button>
+      </button> */}
     </div>
   );
 };

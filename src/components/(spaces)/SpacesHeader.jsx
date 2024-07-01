@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Typography } from "@mui/material";
 import StatItem from "./Stats/StatItem";
 import { getPublicClient } from "utils/viemConfig";
+import { formatNumber } from "utils/globalFunctions";
 
 const SpacesHeader = ({ spaceData }) => {
   const [ensName, setEnsName] = useState("");
@@ -67,10 +68,13 @@ const SpacesHeader = ({ spaceData }) => {
 
             <div className={classes.spaceDetails}>
               <StatItem
-                primaryText={spaceData?.stations.length}
+                primaryText={spaceData?.stations?.length}
                 secondaryText={"Stations"}
               />
-              <StatItem primaryText={"$0"} secondaryText={"Space AUM"} />
+              <StatItem
+                primaryText={`$${formatNumber(spaceData.deposit)}`}
+                secondaryText={"Space AUM"}
+              />
             </div>
           </div>
         </div>
