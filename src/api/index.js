@@ -10,7 +10,6 @@ export const SEAPORT_CONTRACT_ADDRESS =
 // Global variables
 export const MAIN_API_URL = process.env.NEXT_PUBLIC_API_HOST;
 export const SPACE_API_URL = process.env.NEXT_PUBLIC_SPACE_API_HOST;
-export const CLUB_API_URL = process.env.NEXT_PUBLIC_CLUB_API_HOST;
 
 // Faucet
 export const USDC_FAUCET_ADDRESS = process.env.NEXT_PUBLIC_USDC_FAUCET_ADDRESS;

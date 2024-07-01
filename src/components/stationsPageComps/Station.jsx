@@ -153,7 +153,12 @@ const Station = ({ club, key }) => {
   }, []);
 
   return (
-    <div className={classes.station} key={key}>
+    <div
+      className={classes.station}
+      key={key}
+      onClick={() => {
+        handleItemClick(club.daoAddress, club.networkId);
+      }}>
       <Image
         src={CHAIN_CONFIG[club.networkId]?.logoUri}
         alt={CHAIN_CONFIG[club.networkId]?.shortName}
@@ -181,11 +186,7 @@ const Station = ({ club, key }) => {
       )}
       <div className={classes.stationInfo}>
         <div className={classes.stationHeader}>
-          <h1
-            className={classes.stationTitle}
-            onClick={() => {
-              handleItemClick(club.daoAddress, club.networkId);
-            }}>
+          <h1 className={classes.stationTitle}>
             <p
               style={{
                 whiteSpace: "nowrap",
@@ -222,7 +223,8 @@ const Station = ({ club, key }) => {
       <div className={classes.option} ref={dropdownRef}>
         <button
           className={classes.optionButton}
-          onClick={() => {
+          onClick={(event) => {
+            event.stopPropagation();
             setSelectedIndex((prevIndex) => (prevIndex === key ? null : key));
           }}>
           <SlOptionsVertical />

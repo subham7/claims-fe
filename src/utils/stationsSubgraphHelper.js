@@ -8,6 +8,7 @@ import {
   QUERY_PAGINATED_MEMBERS,
   QUERY_STATION_DETAILS,
 } from "api/graphql/stationQueries";
+import { MAIN_API_URL } from "api";
 
 export const queryStationDataFromSubgraph = async (daoAddress, networkId) => {
   try {
@@ -25,7 +26,7 @@ export const queryStationDataFromSubgraph = async (daoAddress, networkId) => {
 export const queryStationListFromSubgraph = async (walletAddress) => {
   try {
     const data = await axios.get(
-      `${process.env.NEXT_PUBLIC_CLUB_API_HOST}user/${walletAddress}/clubs-multichain`,
+      `${MAIN_API_URL}user/${walletAddress}/clubs-multichain`,
     );
 
     return data ?? {};

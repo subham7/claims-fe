@@ -213,6 +213,7 @@
   border: 1px solid $border-color;
   border-radius: 0.6375rem;
   align-items: center;
+  cursor: pointer;
   justify-content: space-between;
   &:hover {
     background-color: $border-color;
@@ -251,7 +252,6 @@
   font-weight: 500;
   line-height: 1.2;
   align-items: center;
-  cursor: pointer;
 }
 
 .stationBadge {
