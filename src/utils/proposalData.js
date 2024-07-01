@@ -24,6 +24,7 @@ import { proposalActionCommands } from "./proposalConstants";
 import { getProposalTxHash } from "api/proposal";
 import { createSafeTransactionData } from "./proposal";
 import { CHAIN_CONFIG } from "./constants";
+import { ensToWalletAddress } from "utils/helper";
 
 export const proposalData = ({
   data,
@@ -344,11 +345,15 @@ export const proposalFormData = ({
               disabled
               value={file?.name}
               error={
-                formik.touched.mintGTAmounts &&
-                Boolean(formik.errors.mintGTAmounts)
+                (formik.touched.mintGTAddresses &&
+                  Boolean(formik.errors.mintGTAddresses)) ||
+                (formik.touched.mintGTAmounts &&
+                  Boolean(formik.errors.mintGTAmounts))
               }
               helperText={
-                formik.touched.mintGTAmounts && formik.errors.mintGTAmounts
+                (formik.touched.mintGTAddresses &&
+                  formik.errors.mintGTAddresses) ||
+                (formik.touched.mintGTAmounts && formik.errors.mintGTAmounts)
               }
             />
             <Button onClick={handleClick} variant="contained">
@@ -1635,6 +1640,8 @@ export const getProposalCommands = async ({
   networkId,
 }) => {
   const executionId = values.actionCommand;
+  const recieverAddress = await ensToWalletAddress(values?.recieverAddress);
+  const ownerAddress = await ensToWalletAddress(values?.ownerAddress);
   let data;
   let followersAddresses;
   let merkleRoot;
@@ -1686,20 +1693,20 @@ export const getProposalCommands = async ({
         customTokenAmounts: [
           convertToWeiGovernance(values.amountToSend, tokenDecimal),
         ],
-        customTokenAddresses: [values.recieverAddress],
+        customTokenAddresses: [recieverAddress],
       };
 
     case 5:
       return {
         customNft: values.customNft,
         customNftToken: values.customNftToken,
-        customTokenAddresses: [values.recieverAddress],
+        customTokenAddresses: [recieverAddress],
       };
 
     case 6:
     case 7:
       return {
-        ownerAddress: values.ownerAddress,
+        ownerAddress: ownerAddress,
         safeThreshold: values.safeThreshold,
       };
 

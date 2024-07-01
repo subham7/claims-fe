@@ -12,10 +12,12 @@ import {
   supportedChainsDrops,
 } from "./constants";
 import { getPublicClient } from "utils/viemConfig";
+import { normalize } from "viem/ens";
 import { uploadToAWS } from "api/club";
 import { baseLinks } from "data/dashboard";
 import SafeApiKit from "@safe-global/api-kit";
 import { config } from "config";
+import { getAddress } from "viem";
 
 export const getSafeSdk = async (
   gnosisAddress,
@@ -477,4 +479,41 @@ export const withHttps = (url) =>
 
 export const formatNumbers = (number) => {
   return number?.toLocaleString("en-US");
+};
+
+export const isValidReciptentAddress = async (value) => {
+  try {
+    const val = getAddress(value);
+    return val;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const ensToWalletAddress = async (ens) => {
+  if (!ens?.includes(".eth")) {
+    return ens;
+  }
+  try {
+    const publicClient = getPublicClient("0x1");
+    const ensAddress = await publicClient.getEnsAddress({
+      name: normalize(ens),
+    });
+    return ensAddress;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const validateWalletAddress = async (value) => {
+  if (!value) return false;
+  try {
+    const resolvedAddress = await ensToWalletAddress(value.trim());
+    if (!resolvedAddress) return false;
+    const verifyAddress = await isValidReciptentAddress(resolvedAddress);
+    if (!verifyAddress) return false;
+    return true;
+  } catch (error) {
+    return false;
+  }
 };
