@@ -612,157 +612,169 @@ const useAppContractMethods = (params) => {
     airDropAmountArray,
     transactionData = "",
   }) => {
-    try {
-      const { executionId, safeThreshold } = proposalData.commands[0];
-      const airdropContractAddress =
-        CHAIN_CONFIG[networkId].airdropContractAddress;
+    const { executionId, safeThreshold } = proposalData.commands[0];
+    const airdropContractAddress =
+      CHAIN_CONFIG[networkId].airdropContractAddress;
 
-      const factoryContractAddress =
-        CHAIN_CONFIG[networkId]?.factoryContractAddress;
-      const parameters = data;
+    const factoryContractAddress =
+      CHAIN_CONFIG[networkId]?.factoryContractAddress;
+    const parameters = data;
 
-      const { safeSdk, safeService } = await getSafeTransaction(
-        gnosisAddress,
-        walletAddress,
-        CHAIN_CONFIG[networkId]?.gnosisTxUrl,
-      );
+    const { safeSdk, safeService } = await getSafeTransaction(
+      gnosisAddress,
+      walletAddress,
+      CHAIN_CONFIG[networkId]?.gnosisTxUrl,
+    );
 
-      const {
-        transaction,
-        approvalTransaction,
-        stakeETHTransaction,
-        approvalTransaction2,
-      } = await getTransaction({
-        proposalData,
-        daoAddress,
-        walletAddress,
-        factoryContractAddress,
-        approvalData,
-        safeThreshold,
-        transactionData,
-        airdropContractAddress,
-        tokenData,
-        gnosisAddress,
-        parameters,
-        isAssetsStoredOnGnosis,
-        networkId,
-        membersArray,
-        airDropAmountArray,
-      });
-      const txHash = await getTransactionHash(pid);
-      const tx = txHash ? await safeService.getTransaction(txHash) : null;
+    const {
+      transaction,
+      approvalTransaction,
+      stakeETHTransaction,
+      approvalTransaction2,
+    } = await getTransaction({
+      proposalData,
+      daoAddress,
+      walletAddress,
+      factoryContractAddress,
+      approvalData,
+      safeThreshold,
+      transactionData,
+      airdropContractAddress,
+      tokenData,
+      gnosisAddress,
+      parameters,
+      isAssetsStoredOnGnosis,
+      networkId,
+      membersArray,
+      airDropAmountArray,
+      safeSdk,
+    });
+    const txHash = await getTransactionHash(pid);
+    const tx = txHash ? await safeService.getTransaction(txHash) : null;
 
-      if (proposalStatus !== "executed") {
-        if (txHash === "") {
-          const nonce = await safeService.getNextNonce(gnosisAddress);
-          const { safeTransaction, safeTxHash } =
+    if (proposalStatus !== "executed") {
+      if (txHash === "") {
+        const nonce = await safeService.getNextNonce(gnosisAddress);
+        const { safeTransaction, safeTxHash } =
+          await createOrUpdateSafeTransaction({
+            safeSdk,
+            executionId,
+            transaction,
+            approvalTransaction,
+            stakeETHTransaction,
+            nonce,
+            proposalStatus,
+            approvalTransaction2,
+            networkId,
+          });
+
+        const payload = { proposalId: pid, txHash: safeTxHash };
+        await createProposalTxHash(payload);
+
+        const proposeTxn = await safeService.proposeTransaction({
+          safeAddress: Web3.utils.toChecksumAddress(gnosisAddress),
+          safeTransactionData: safeTransaction.data,
+          safeTxHash: safeTxHash,
+          senderAddress: Web3.utils.toChecksumAddress(walletAddress),
+        });
+
+        await signAndConfirmTransaction({
+          safeSdk,
+          safeService,
+          safeTransaction,
+          rejectionTransaction: null,
+          executionStatus: proposalStatus,
+          safeTxHash,
+        });
+        return proposeTxn;
+      } else {
+        if (executionId === 63) {
+          const { safeTransaction, rejectionTransaction, safeTxHash } =
             await createOrUpdateSafeTransaction({
               safeSdk,
               executionId,
-              transaction,
-              approvalTransaction,
-              stakeETHTransaction,
-              nonce,
-              proposalStatus,
-              approvalTransaction2,
+              approvalTransaction: tx.dataDecoded.parameters[0].valueDecoded[0],
+              transaction: tx.dataDecoded.parameters[0].valueDecoded[1],
+              approvalTransaction2:
+                tx.dataDecoded.parameters[0].valueDecoded[2],
+              stakeETHTransaction: tx.dataDecoded.parameters[0].valueDecoded[3],
+              nonce: tx.nonce,
+              executionStatus: proposalStatus,
+              networkId,
             });
-
-          const payload = { proposalId: pid, txHash: safeTxHash };
-          await createProposalTxHash(payload);
-
-          const proposeTxn = await safeService.proposeTransaction({
-            safeAddress: Web3.utils.toChecksumAddress(gnosisAddress),
-            safeTransactionData: safeTransaction.data,
-            safeTxHash: safeTxHash,
-            senderAddress: Web3.utils.toChecksumAddress(walletAddress),
-          });
 
           await signAndConfirmTransaction({
             safeSdk,
             safeService,
             safeTransaction,
-            rejectionTransaction: null,
+            rejectionTransaction,
             executionStatus: proposalStatus,
             safeTxHash,
           });
-          return proposeTxn;
+          return tx;
         } else {
-          if (executionId === 63) {
-            const { safeTransaction, rejectionTransaction, safeTxHash } =
-              await createOrUpdateSafeTransaction({
-                safeSdk,
-                executionId,
-                approvalTransaction:
-                  tx.dataDecoded.parameters[0].valueDecoded[0],
-                transaction: tx.dataDecoded.parameters[0].valueDecoded[1],
-                approvalTransaction2:
-                  tx.dataDecoded.parameters[0].valueDecoded[2],
-                stakeETHTransaction:
-                  tx.dataDecoded.parameters[0].valueDecoded[3],
-                nonce: tx.nonce,
-                executionStatus: proposalStatus,
-              });
+          let transactionToBeExecuted;
 
-            await signAndConfirmTransaction({
-              safeSdk,
-              safeService,
-              safeTransaction,
-              rejectionTransaction,
-              executionStatus: proposalStatus,
-              safeTxHash,
-            });
-            return tx;
+          if (networkId === "0x1" || networkId === "0x89") {
+            transactionToBeExecuted =
+              executionId === 4 || executionId === 62
+                ? transaction
+                : approvalTransaction && stakeETHTransaction
+                ? tx.dataDecoded.parameters[0].valueDecoded[2]
+                : approvalTransaction && !stakeETHTransaction
+                ? tx.dataDecoded.parameters[0].valueDecoded[1]
+                : tx;
           } else {
-            const { safeTransaction, rejectionTransaction, safeTxHash } =
-              await createOrUpdateSafeTransaction({
-                safeSdk,
-                executionId,
-                transaction:
-                  executionId === 6 ||
-                  executionId === 7 ||
-                  executionId === 4 ||
-                  executionId === 62
-                    ? transaction
-                    : approvalTransaction && stakeETHTransaction
-                    ? tx.dataDecoded.parameters[0].valueDecoded[2]
-                    : approvalTransaction && !stakeETHTransaction
-                    ? tx.dataDecoded.parameters[0].valueDecoded[1]
-                    : tx,
-                approvalTransaction:
-                  approvalTransaction && stakeETHTransaction
-                    ? tx.dataDecoded.parameters[0].valueDecoded[1]
-                    : approvalTransaction && !stakeETHTransaction
-                    ? tx.dataDecoded.parameters[0].valueDecoded[0]
-                    : undefined,
-                stakeETHTransaction:
-                  approvalTransaction && stakeETHTransaction
-                    ? tx.dataDecoded.parameters[0].valueDecoded[0]
-                    : undefined,
-                nonce: tx.nonce,
-                executionStatus: proposalStatus,
-              });
-
-            await signAndConfirmTransaction({
-              safeSdk,
-              safeService,
-              safeTransaction,
-              rejectionTransaction,
-              executionStatus: proposalStatus,
-              safeTxHash,
-            });
-            return tx;
+            transactionToBeExecuted =
+              executionId === 4 ||
+              executionId === 62 ||
+              executionId === 6 ||
+              executionId === 7
+                ? transaction
+                : approvalTransaction && stakeETHTransaction
+                ? tx.dataDecoded.parameters[0].valueDecoded[2]
+                : approvalTransaction && !stakeETHTransaction
+                ? tx.dataDecoded.parameters[0].valueDecoded[1]
+                : tx;
           }
+
+          const { safeTransaction, rejectionTransaction, safeTxHash } =
+            await createOrUpdateSafeTransaction({
+              safeSdk,
+              executionId,
+              transaction: transactionToBeExecuted,
+              approvalTransaction:
+                approvalTransaction && stakeETHTransaction
+                  ? tx.dataDecoded.parameters[0].valueDecoded[1]
+                  : approvalTransaction && !stakeETHTransaction
+                  ? tx.dataDecoded.parameters[0].valueDecoded[0]
+                  : undefined,
+              stakeETHTransaction:
+                approvalTransaction && stakeETHTransaction
+                  ? tx.dataDecoded.parameters[0].valueDecoded[0]
+                  : undefined,
+              nonce: tx.nonce,
+              executionStatus: proposalStatus,
+              networkId,
+            });
+
+          await signAndConfirmTransaction({
+            safeSdk,
+            safeService,
+            safeTransaction,
+            rejectionTransaction,
+            executionStatus: proposalStatus,
+            safeTxHash,
+          });
+          return tx;
         }
-      } else {
-        const executeTxResponse = await safeSdk.executeTransaction(tx);
-        const receipt =
-          executeTxResponse.transactionResponse &&
-          (await executeTxResponse.transactionResponse.wait());
-        return executeTxResponse;
       }
-    } catch (error) {
-      console.log(error);
-      throw new Error(error?.message);
+    } else {
+      const executeTxResponse = await safeSdk.executeTransaction(tx);
+      const receipt =
+        executeTxResponse.transactionResponse &&
+        (await executeTxResponse.transactionResponse.wait());
+      return executeTxResponse;
     }
   };
 

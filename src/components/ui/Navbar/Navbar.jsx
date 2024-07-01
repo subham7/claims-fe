@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import { useWalletInfo } from "@web3modal/wagmi/react";
 import { getConnections } from "@wagmi/core";
 import { config } from "config";
+import { fetchClubByDaoAddress } from "api/club";
 import Menu from "./Menu";
 import useSpaceFetch from "hooks/useSpaceFetch";
 import { getSpaceByManager } from "api/space";
@@ -25,6 +26,7 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
   const [showCreateSpaceModal, setShowCreateSpaceModal] = useState(false);
   const [networksSupported, setNetworkSupported] = useState();
   const [walletIcon, setWalletIcon] = useState("");
+  const [isToggleRaise, setIsToggleRaise] = useState(false);
   const [spaces, setSpaces] = useState();
   const dropdownRef = useRef(null);
   const router = useRouter();
@@ -53,6 +55,20 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
     const connector = getConnections(config)[0]?.connector;
     setWalletIcon(connector?.icon);
   };
+
+  const fetchClubData = async () => {
+    const data = await fetchClubByDaoAddress(daoAddress);
+
+    setIsToggleRaise(
+      data?.data?.depositConfig?.toggleRaise
+        ? data?.data?.depositConfig?.toggleRaise
+        : false,
+    );
+  };
+
+  useEffect(() => {
+    if (daoAddress) fetchClubData();
+  }, [daoAddress]);
 
   const fetchSpaces = async () => {
     const data = await getSpaceByManager(address);
@@ -165,6 +181,7 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
         onClose={() => setShowEditDetails(false)}
         daoAddress={daoAddress}
         isErc721={clubData?.tokenType === "erc721"}
+        toggleRaise={isToggleRaise}
       />
     </>
   );

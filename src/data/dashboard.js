@@ -64,7 +64,7 @@ export const proposalDisplayOptions = [
 
 export const baseLinks = (routeNetworkId) => [
   { icon: "home_icon", title: "Dashboard", routeHeader: "dashboard" },
-  { icon: "workflows_icon", title: "Activity", routeHeader: "newProposals" },
+  { icon: "workflows_icon", title: "Activity", routeHeader: "proposals" },
   {
     icon: "stats",
     title: "Transactions",

@@ -2,7 +2,9 @@ import {
   CircularProgress,
   Dialog,
   DialogContent,
+  FormControlLabel,
   Grid,
+  Switch,
   Typography,
 } from "@mui/material";
 import { TextField } from "@components/ui";
@@ -23,6 +25,7 @@ import { uploadFileToAWS } from "utils/helper";
 import { setAlertData } from "redux/reducers/alert";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
+import { editDepositConfig } from "api/deposit";
 
 const useStyles = makeStyles((theme) => ({
   modalStyle: {
@@ -80,6 +83,12 @@ const useStyles = makeStyles((theme) => ({
     margin: "0.5rem 0",
     marginBottom: "30px",
   },
+  raiseInfo: {
+    display: "flex",
+    gap: "20px",
+    alignItems: "center",
+    margin: "20px 0",
+  },
 }));
 
 const EditDetails = ({
@@ -90,6 +99,7 @@ const EditDetails = ({
   daoAddress = "",
   isClaims = false,
   isErc721 = false,
+  toggleRaise,
 }) => {
   const router = useRouter();
   const theme = useTheme();
@@ -164,6 +174,11 @@ const EditDetails = ({
         tweetText: values.tweetText,
       });
     } else {
+      await editDepositConfig(
+        { toggleRaise: values.toggleRaise },
+        daoAddress.toLowerCase(),
+      );
+
       return await editInfo({
         daoAddress: daoAddress,
         bio: values.description,
@@ -215,6 +230,7 @@ const EditDetails = ({
       telegram: "",
       website: "",
       tweetText: "",
+      toggleRaise: "",
     },
     onSubmit: async (values) => {
       setLoaderOpen(true);
@@ -261,6 +277,7 @@ const EditDetails = ({
         discord: bannerData?.discord ?? "",
         telegram: bannerData?.telegram ?? "",
         warpcast: bannerData?.warpcast ?? "",
+        toggleRaise: toggleRaise ?? false,
       });
     }
   };
@@ -275,7 +292,7 @@ const EditDetails = ({
 
   useEffect(() => {
     setFormValuesFromBannerData(bannerData, formik);
-  }, [bannerData]);
+  }, [bannerData, toggleRaise]);
 
   return (
     <Dialog
@@ -413,6 +430,23 @@ const EditDetails = ({
               }
             />
           </Grid>
+
+          <div className={classes.raiseInfo}>
+            <Typography variant="inherit" className={classes.wrapTextIcon}>
+              Show raise information to users
+            </Typography>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={formik.values.toggleRaise}
+                  onChange={(value) => {
+                    formik.setFieldValue("toggleRaise", value.target.checked);
+                  }}
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+              }
+            />
+          </div>
 
           <Grid item md={6} mb={2}>
             <Typography variant="inherit" className={classes.wrapTextIcon}>

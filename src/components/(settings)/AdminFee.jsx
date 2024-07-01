@@ -8,8 +8,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { setAlertData } from "redux/reducers/alert";
 import { addClubData } from "redux/reducers/club";
 import { generateAlertData } from "utils/globalFunctions";
+import { Box } from "@mui/material";
+import CustomSkeleton from "@components/skeleton/CustomSkeleton";
 
-const AdminFee = ({ daoAddress, clubData, setLoading }) => {
+const AdminFee = ({ daoAddress, clubData, setLoading, settingIsLoading }) => {
   const [canEdit, setCanEdit] = useState(false);
   const [percentageValue, setPercentageValue] = useState(0);
   const inputRef = useRef(null);
@@ -81,43 +83,56 @@ const AdminFee = ({ daoAddress, clubData, setLoading }) => {
   }, [canEdit]);
 
   return (
-    <div className={classes.copyTextContainer}>
-      <input
-        disabled
-        value={ownerAddress}
-        className={classNames(classes.input, classes.address)}
-      />
-      <input
-        ref={inputRef}
-        onChange={(e) => {
-          setPercentageValue(e.target.value);
-        }}
-        value={percentageValue}
-        type="number"
-        placeholder="0.00%"
-        disabled={!canEdit}
-        onWheel={(e) => e.target.blur()}
-        className={classNames(classes.input, classes.percentage)}
-      />
+    <>
+      {!settingIsLoading ? (
+        <Box sx={{ width: "400px" }}>
+          <CustomSkeleton
+            marginTop={"20px"}
+            width={"100%"}
+            height={40}
+            length={1}
+          />
+        </Box>
+      ) : (
+        <div className={classes.copyTextContainer}>
+          <input
+            disabled
+            value={ownerAddress}
+            className={classNames(classes.input, classes.address)}
+          />
+          <input
+            ref={inputRef}
+            onChange={(e) => {
+              setPercentageValue(e.target.value);
+            }}
+            value={percentageValue}
+            type="number"
+            placeholder="0.00%"
+            disabled={!canEdit}
+            onWheel={(e) => e.target.blur()}
+            className={classNames(classes.input, classes.percentage)}
+          />
 
-      {isAdmin ? (
-        <>
-          {canEdit ? (
-            <IoMdCheckmark
-              onClick={adminFeeSubmitHandler}
-              className={classNames(classes.icon, checkMarkClass)}
-            />
-          ) : (
-            <GoPencil
-              onClick={() => {
-                setCanEdit(true);
-              }}
-              className={classes.icon}
-            />
-          )}
-        </>
-      ) : null}
-    </div>
+          {isAdmin ? (
+            <>
+              {canEdit ? (
+                <IoMdCheckmark
+                  onClick={adminFeeSubmitHandler}
+                  className={classNames(classes.icon, checkMarkClass)}
+                />
+              ) : (
+                <GoPencil
+                  onClick={() => {
+                    setCanEdit(true);
+                  }}
+                  className={classes.icon}
+                />
+              )}
+            </>
+          ) : null}
+        </div>
+      )}
+    </>
   );
 };
 

@@ -5,8 +5,6 @@ import { convertFromWeiGovernance } from "utils/globalFunctions";
 import { returnRemainingTime, shortAddress } from "utils/helper";
 import classes from "../claims/Claim.module.scss";
 import { useEnsName } from "wagmi";
-import { CHAIN_CONFIG } from "utils/constants";
-import Image from "next/image";
 
 const ClaimerActivity = ({ activity, tokenDetails }) => {
   const { data: ensName } = useEnsName({
@@ -33,7 +31,7 @@ const ClaimerActivity = ({ activity, tokenDetails }) => {
   );
 };
 
-const DepositorActivity = ({ member, routeNetworkId }) => {
+const DepositorActivity = ({ member }) => {
   const { data: ensName } = useEnsName({
     address: member?.userAddress,
     chainId: 1,
@@ -46,20 +44,10 @@ const DepositorActivity = ({ member, routeNetworkId }) => {
           display: "flex",
           gap: "8px",
         }}>
-        {CHAIN_CONFIG[routeNetworkId]?.theme?.metamask_icon ? (
-          <Image
-            src={CHAIN_CONFIG[routeNetworkId]?.theme?.metamask_icon}
-            height={20}
-            width={20}
-            alt="Avatar"
-          />
-        ) : (
-          <MetaMaskAvatar address={member?.userAddress} />
-        )}
-
+        <MetaMaskAvatar address={member?.userAddress} />
         <Typography variant="inherit">
-          {ensName ? ensName : shortAddress(member?.userAddress)} joined this{" "}
-          {CHAIN_CONFIG[routeNetworkId]?.theme?.stationType}
+          {ensName ? ensName : shortAddress(member?.userAddress)} joined this
+          station
         </Typography>
       </div>
       <Typography variant="inherit" className={classes.time}>
@@ -69,12 +57,7 @@ const DepositorActivity = ({ member, routeNetworkId }) => {
   );
 };
 
-const Activity = ({
-  activityDetails,
-  tokenDetails,
-  isDeposit = false,
-  routeNetworkId,
-}) => {
+const Activity = ({ activityDetails, tokenDetails, isDeposit = false }) => {
   return (
     <div>
       <h3 className={classes.header}>Activity</h3>
@@ -82,11 +65,7 @@ const Activity = ({
         {activityDetails.length ? (
           activityDetails.map((activity, index) =>
             isDeposit ? (
-              <DepositorActivity
-                routeNetworkId={routeNetworkId}
-                key={index}
-                member={activity}
-              />
+              <DepositorActivity key={index} member={activity} />
             ) : (
               <ClaimerActivity
                 key={index}

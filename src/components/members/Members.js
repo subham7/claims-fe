@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { Button } from "@components/ui";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { convertFromWeiGovernance } from "utils/globalFunctions";
 import {
   customToFixedAutoPrecision,
@@ -37,11 +37,15 @@ import ComponentHeader from "@components/common/ComponentHeader";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import BigNumber from "bignumber.js";
 import MemberAddress from "./MemberAddress";
+import CustomSkeleton from "@components/skeleton/CustomSkeleton";
+import { isLoading } from "../../redux/loader/selectors";
+import { startLoading, stopLoading } from "redux/loader/actions";
 
 const Members = ({ daoAddress, routeNetworkId }) => {
+  const dispatch = useDispatch();
   const chain = useChainId();
   const networkId = "0x" + chain?.toString(16);
-
+  const membersIsLoading = useSelector((state) => isLoading(state, "members"));
   const tokenType = useSelector((state) => {
     return state.club.clubData.tokenType;
   });
@@ -109,6 +113,7 @@ const Members = ({ daoAddress, routeNetworkId }) => {
     try {
       setLoading(true);
       const fetchData = async () => {
+        dispatch(startLoading("members"));
         const data = await queryPaginatedMembersFromSubgraph(
           daoAddress,
           20,
@@ -133,6 +138,7 @@ const Members = ({ daoAddress, routeNetworkId }) => {
           });
           setMemberProfiles(memberProfiles);
         }
+        dispatch(stopLoading("members"));
       };
 
       if (daoAddress && networkId && deployedTime) fetchData();
@@ -356,7 +362,21 @@ const Members = ({ daoAddress, routeNetworkId }) => {
                   })}
                 </TableRow>
               </TableHead>
+
               <TableBody>
+                {membersIsLoading &&
+                  Array.from({ length: 4 }).map((_, i) => {
+                    return (
+                      <TableCell key={i}>
+                        <CustomSkeleton
+                          width={"100%"}
+                          height={40}
+                          length={10}
+                          marginTop={"25px"}
+                        />
+                      </TableCell>
+                    );
+                  })}
                 {membersData?.map((data, key) => (
                   <TableRow
                     key={key}

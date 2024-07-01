@@ -25,7 +25,7 @@ const PublicPageLayout = ({
   claimDescription,
   members,
   nftMinted,
-  routeNetworkId,
+  depositConfig,
 }) => {
   return (
     <div className={classes.main}>
@@ -86,17 +86,21 @@ const PublicPageLayout = ({
           {!isDeposit ? <h1>{claimDescription}</h1> : null}
         </div>
 
-        {isDeposit ? (
-          clubData?.tokenType === "erc721" &&
-          clubData?.distributionAmountFormatted?.bigNumberValue.isEqualTo(
-            0,
-          ) ? null : (
-            <DepositProgress
-              clubData={clubData}
-              tokenDetails={tokenDetails}
-              nftMinted={nftMinted}
-            />
-          )
+        {isDeposit && depositConfig?.toggleRaise !== false ? (
+          <>
+            {isDeposit ? (
+              clubData?.tokenType === "erc721" &&
+              clubData?.distributionAmountFormatted?.bigNumberValue.isEqualTo(
+                0,
+              ) ? null : (
+                <DepositProgress
+                  clubData={clubData}
+                  tokenDetails={tokenDetails}
+                  nftMinted={nftMinted}
+                />
+              )
+            ) : null}
+          </>
         ) : null}
 
         {clubData && clubData.tokenType === "erc721" && (
@@ -113,7 +117,6 @@ const PublicPageLayout = ({
           isDeposit={isDeposit}
           activityDetails={members}
           tokenDetails={tokenDetails}
-          routeNetworkId={routeNetworkId}
         />
 
         {isDeposit && (
