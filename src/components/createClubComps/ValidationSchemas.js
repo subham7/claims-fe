@@ -6,6 +6,7 @@ import { isMember } from "utils/stationsSubgraphHelper";
 import { getPublicClient } from "utils/viemConfig";
 import * as yup from "yup";
 import { BigNumber } from "bignumber.js";
+import { validateWalletAddress } from "utils/helper";
 
 export const step1ValidationSchema = yup.object({
   clubName: yup
@@ -53,10 +54,10 @@ export const step3ValidationSchema = yup.object({
     .of(
       yup
         .string()
-        .test("Address", "Invalid address", (value) => {
-          return value && value.length === 42 && value.startsWith("0x");
-        })
-        .required("Wallet address is required"),
+        .required("Wallet address is required")
+        .test("is-valid-address", "Invalid wallet address", (value) =>
+          validateWalletAddress(value),
+        ),
     )
     .test("Duplicate address", "Duplicate address found", function (value) {
       if (value) {
@@ -233,6 +234,26 @@ export const getProposalValidationSchema = ({
           return true;
         },
       ),
+
+    mintGTAddresses: yup
+      .array()
+      .test(
+        "is-valid-address",
+        "Invalid wallet address",
+        async function (values) {
+          try {
+            const validateAddress = await Promise.all(
+              values.map((address) => validateWalletAddress(address)),
+            );
+            const checkAddress = validateAddress.some((isValid) => !isValid);
+            if (checkAddress) return false;
+            else return true;
+          } catch (error) {
+            return false;
+          }
+        },
+      ),
+
     mintGTAmounts: yup
       .array()
       .test(
@@ -418,13 +439,16 @@ export const getProposalValidationSchema = ({
 
     recieverAddress: yup
       .string("Please enter reciever address")
+
       .when("actionCommand", {
-        is: 4,
+        is: (actionCommand) => actionCommand === 4 || actionCommand === 5,
         then: () =>
           yup
             .string("Enter reciever address")
-            .matches(/^0x[a-zA-Z0-9]+/gm, " Proper wallet address is required")
-            .required("Reciever address is required"),
+            .required("Reciever address is required")
+            .test("is-valid-address", "Invalid wallet address", (value) =>
+              validateWalletAddress(value),
+            ),
       }),
 
     safeThreshold: yup.number("Enter threshold").when(["actionCommand"], {
@@ -435,35 +459,43 @@ export const getProposalValidationSchema = ({
           .required("Safe Threshold is required")
           .moreThan(0, "Safe threshold can't be less than 1"),
     }),
-    ownerAddress: yup
-      .string()
-      .test(
-        "validate-owner",
-        "Address is not a member of a club",
-        async (value, context) => {
-          const { actionCommand } = context.parent;
+    ownerAddress: yup.string().when("actionCommand", {
+      is: (actionCommand) => actionCommand === 6 || actionCommand === 7,
+      then: () =>
+        yup
+          .string()
+          .required("Reciever address is required")
+          .test("is-valid-address", "Invalid wallet address", (value) =>
+            validateWalletAddress(value),
+          )
+          .test(
+            "validate-owner",
+            "Address is not a member of a club",
+            async function (value) {
+              const { actionCommand } = this.parent;
+              if (actionCommand === 6) {
+                try {
+                  // Make your API call here and check the response
+                  const isStationMember = await isMember(
+                    value,
+                    daoAddress,
+                    networkId,
+                  );
+                  if (isStationMember?.users?.length > 0) {
+                    return true;
+                  } else {
+                    return false;
+                  }
+                } catch (error) {
+                  console.error(error);
+                  return false; // Return false for any error
+                }
+              }
+              return true; // Return true for other cases or successful API response
+            },
+          ),
+    }),
 
-          if (actionCommand === 6) {
-            try {
-              // Make your API call here and check the response
-              const isStationMember = await isMember(
-                value,
-                daoAddress,
-                networkId,
-              );
-
-              if (isStationMember?.users?.length > 0) {
-                return true;
-              } else return false;
-            } catch (error) {
-              console.error(error);
-              return false; // Return false for any error
-            }
-          }
-
-          return true; // Return true for other cases or successful API response
-        },
-      ),
     nftLink: yup.string("Please enter nft Link").when("actionCommand", {
       is: 8,
       then: () => yup.string("Enter nft link").required("Nft link is required"),
@@ -801,6 +833,9 @@ export const actionModalValidation = ({
       actionType === "send"
         ? yup
             .string("Enter recipient address")
+            .test("is-valid-address", "Invalid recipient address", (value) =>
+              validateWalletAddress(value),
+            )
             .required("Recipient address is required")
         : yup.string().notRequired(),
     airDropAmount: yup

@@ -6,11 +6,12 @@ import classNames from "classnames";
 import { useSelector } from "react-redux";
 import { getProposalCommands } from "utils/proposalData";
 import { useAccount, useSignMessage } from "wagmi";
-
 import dayjs from "dayjs";
 import { createProposal } from "api/proposal";
 import { handleSignMessage } from "utils/helper";
 import { fetchLatestBlockNumber } from "utils/globalFunctions";
+import CustomSkeleton from "@components/skeleton/CustomSkeleton";
+import { Box } from "@mui/material";
 
 const casesForInputType = (amount, symbol, type) => {
   switch (type) {
@@ -62,6 +63,7 @@ const UpdateAmountTextfield = ({
   type,
   setLoading,
   handleActionComplete,
+  settingIsLoading,
 }) => {
   const { signMessageAsync } = useSignMessage();
   const [canEdit, setCanEdit] = useState(false);
@@ -199,42 +201,55 @@ const UpdateAmountTextfield = ({
   }, [prevAmount]);
 
   return (
-    <div className={classes.copyTextContainer}>
-      <div className={classNames(classes.amountInputField, className)}>
-        <input
-          ref={inputRef}
-          type="number"
-          disabled={!canEdit}
-          className={classes.amountInput}
-          onChange={(e) => {
-            setAmount(e.target.value);
-          }}
-          value={amount}
-        />
-        <div>
-          {type === "signators"
-            ? `/${clubData?.adminAddresses?.length}`
-            : clubData?.depositTokenSymbol}
-        </div>
-      </div>
-      {isAdmin ? (
-        <>
-          {canEdit ? (
-            <IoMdCheckmark
-              onClick={submitHandler}
-              className={classNames(classes.icon, checkMarkClass)}
-            />
-          ) : (
-            <GoPencil
-              onClick={() => {
-                setCanEdit(true);
+    <>
+      {!settingIsLoading ? (
+        <Box sx={{ width: "400px" }}>
+          <CustomSkeleton
+            marginTop={"20px"}
+            width={"100%"}
+            height={40}
+            length={1}
+          />
+        </Box>
+      ) : (
+        <div className={classes.copyTextContainer}>
+          <div className={classNames(classes.amountInputField, className)}>
+            <input
+              ref={inputRef}
+              type="number"
+              disabled={!canEdit}
+              className={classes.amountInput}
+              onChange={(e) => {
+                setAmount(e.target.value);
               }}
-              className={classes.icon}
+              value={amount}
             />
-          )}
-        </>
-      ) : null}
-    </div>
+            <div>
+              {type === "signators"
+                ? `/${clubData?.adminAddresses?.length}`
+                : clubData?.depositTokenSymbol}
+            </div>
+          </div>
+          {isAdmin ? (
+            <>
+              {canEdit ? (
+                <IoMdCheckmark
+                  onClick={submitHandler}
+                  className={classNames(classes.icon, checkMarkClass)}
+                />
+              ) : (
+                <GoPencil
+                  onClick={() => {
+                    setCanEdit(true);
+                  }}
+                  className={classes.icon}
+                />
+              )}
+            </>
+          ) : null}
+        </div>
+      )}
+    </>
   );
 };
 

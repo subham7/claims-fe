@@ -5,6 +5,8 @@ import { getProposalByDaoAddress } from "api/proposal";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { startLoading, stopLoading } from "redux/loader/actions";
+import { isLoading } from "redux/loader/selectors";
 import { addNftsOwnedByDao } from "redux/reducers/club";
 import { customToFixedAutoPrecision, handleSignMessage } from "utils/helper";
 import { useAccount, useChainId, useSignMessage } from "wagmi";
@@ -48,6 +50,8 @@ import ChangeDepositParamsModal from "@components/modals/LineaCreateModal/Change
 import { BiSupport } from "react-icons/bi";
 import { IoIosArrowDropdownCircle } from "react-icons/io";
 import ActivateLXPLModal from "@components/modals/LineaCreateModal/ActivateLXPLModal";
+
+import TableSkeleton from "@components/skeleton/TableSkeleton";
 
 const Dashboard = ({ daoAddress, routeNetworkId }) => {
   const { signMessageAsync } = useSignMessage();
@@ -124,6 +128,14 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
     return state.gnosis.adminUser;
   });
 
+  const tokenDetailsIsloading = useSelector((state) =>
+    isLoading(state, "token-details"),
+  );
+  const treasuryAmountIsloading = useSelector((state) =>
+    isLoading(state, "treasury-amount"),
+  );
+
+  const nftIsloading = useSelector((state) => isLoading(state, "nft"));
   const fetchClubDetails = async () => {
     try {
       if (daoAddress && networkId) {
@@ -134,6 +146,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
 
           if (myBalance === 0) {
             setMyShare(0);
+            dispatch(stopLoading("share-percent"));
             return;
           }
 
@@ -159,6 +172,8 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
   };
 
   const fetchAssets = async () => {
+    dispatch(startLoading("token-details"));
+
     try {
       if (networkId !== "undefined") {
         const assetsData = await getAssetsOfWallet(
@@ -173,9 +188,11 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
     } catch (error) {
       console.log(error);
     }
+    dispatch(stopLoading("token-details"));
   };
 
   const fetchNfts = async () => {
+    dispatch(startLoading("nfts"));
     try {
       const nftsData = await getNFTsByWallet(currentEOAWallet.walletAddress);
       setNftData(nftsData?.data?.data);
@@ -183,18 +200,22 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
     } catch (error) {
       console.log(error);
     }
+    dispatch(stopLoading("nfts"));
   };
 
   const fetchProposals = async () => {
+    dispatch(startLoading("proposal"));
     try {
       const activeProposals = await getProposalByDaoAddress(daoAddress);
       setProposals(activeProposals?.data);
     } catch (error) {
       console.log(error);
     }
+    dispatch(stopLoading("proposal"));
   };
 
   const fetchTreasuryDetails = async () => {
+    dispatch(startLoading("treasury-amount"));
     try {
       if (networkId !== "undefined") {
         const assetsData = await getTotalTreasuryAmount(
@@ -206,6 +227,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
     } catch (error) {
       console.log(error);
     }
+    dispatch(stopLoading("treasury-amount"));
   };
 
   const handleChange = (event, newValue) => {
@@ -280,6 +302,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
       altText: "Balance",
       title: "Balance",
       value: `$${customToFixedAutoPrecision(treasuryAmount)}`,
+      loading: treasuryAmountIsloading,
     },
     {
       containerClass: classes.ownershipContainer,
@@ -289,6 +312,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
       value: customToFixedAutoPrecision(myShare),
       tokenName: symbol,
       isOwnership: true,
+      loading: treasuryAmountIsloading,
     },
     {
       containerClass: classes.ownershipContainer,
@@ -296,6 +320,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
       altText: "Members",
       title: "Members",
       value: clubData?.membersCount,
+      loading: treasuryAmountIsloading,
     },
   ];
 
@@ -344,6 +369,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
 
         <div className={classes.headerContainer}>
           <ComponentHeader
+            loading={treasuryAmountIsloading}
             title={clubData?.name}
             subtext={`$${clubData?.symbol}`}
             showButton={routeNetworkId === "0xe708" ? true : false}
@@ -364,6 +390,7 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
               title={item.title}
               value={item.value}
               isOwnership={item.isOwnership}
+              loading={item.loading}
             />
           ))}
         </div>
@@ -417,10 +444,15 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
               {tokenDetails?.tokenPriceList?.length ? (
                 <AssetsTable tableData={tokenDetails.tokenPriceList} />
               ) : (
-                <NoTokens
-                  title="No tokens in treasury"
-                  subtext="All tokens owned by your station appear here."
-                />
+                <>
+                  {tokenDetailsIsloading && <TableSkeleton column={4} />}
+                  {!tokenDetailsIsloading && (
+                    <NoTokens
+                      title="No tokens in treasury"
+                      subtext="All tokens owned by your station appear here."
+                    />
+                  )}
+                </>
               )}
             </>
           ) : (
@@ -450,10 +482,15 @@ const Dashboard = ({ daoAddress, routeNetworkId }) => {
                   });
                 })
               ) : (
-                <NoTokens
-                  title="No collectibles in treasury"
-                  subtext="All NFTs owned by your station appear here."
-                />
+                <>
+                  {nftIsloading && <TableSkeleton column={4} />}
+                  {!nftIsloading && (
+                    <NoTokens
+                      title="No collectibles in treasury"
+                      subtext="All NFTs owned by your station appear here."
+                    />
+                  )}
+                </>
               )}
             </div>
           )}
