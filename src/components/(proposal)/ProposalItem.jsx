@@ -297,8 +297,7 @@ const ProposalItem = ({
               </Typography>
             </div>
 
-            {signedOwners?.includes(walletAddress) &&
-            signedOwners?.length === clubData?.currentSafeThreshold &&
+            {signedOwners?.length >= clubData?.currentSafeThreshold &&
             type === "execute" ? (
               <button
                 disabled={!isAdmin}
@@ -312,7 +311,10 @@ const ProposalItem = ({
               </button>
             ) : (
               <button
-                disabled={!isAdmin}
+                disabled={
+                  !isAdmin ||
+                  signedOwners?.length >= clubData?.currentSafeThreshold
+                }
                 onClick={() => signHandler("passed")}
                 className={classes.signButton}>
                 Sign
