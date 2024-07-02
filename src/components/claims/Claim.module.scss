@@ -52,7 +52,26 @@
       cursor: pointer;
     }
   }
-
+  .avatarGroup{
+    display: flex;
+    justify-content: start;
+    position: relative,
+  }
+  .avatarAdditional {
+    border: 1px solid transparent;
+    background-color: #808080;
+    border-radius: 50%;
+    width: 27px;
+    height: 27px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    position: absolute;
+    left: 95px;
+    bottom: 6px;
+  }
+  
   @media (max-width: 768px) {
     display: flex;
     flex-direction: column;
