@@ -774,7 +774,7 @@ const useAppContractMethods = (params) => {
       const gasPrice = await getPublicClient(networkId).getGasPrice();
 
       const executeTxResponse = await safeSdk.executeTransaction(tx, {
-        gasPrice: Number(gasPrice) * 1.2,
+        gasPrice: Number(Number(gasPrice) * 1.2).toFixed(0),
       });
       const receipt =
         executeTxResponse.transactionResponse &&

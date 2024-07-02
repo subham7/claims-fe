@@ -348,7 +348,6 @@ const Claim = ({ claimAddress }) => {
   const claimHandler = async () => {
     setIsClaiming(true);
     try {
-      console.log("claim");
       if (dropsData?.merkleRoot !== ZERO_MERKLE_ROOT) {
         const data = await getUserProofAndBalance(
           dropsData?.merkleRoot,
