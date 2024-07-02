@@ -1,6 +1,6 @@
 export const THEME_CONFIG = (networkId) => {
   switch (networkId) {
-    case "0xa4b1":
+    case "0x138d4":
       return {
         background:
           "linear-gradient(95.07deg, #424951 0%, #DE4D00 48.5%, #FFA901 100%)",
