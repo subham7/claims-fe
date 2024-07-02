@@ -29,6 +29,7 @@ import {
 
 import { createProposalTxHash } from "../api/proposal";
 import useCommonContractMethods from "./useCommonContractMehods";
+import { getPublicClient } from "utils/viemConfig";
 
 const useAppContractMethods = (params) => {
   const walletClient = useWalletClient();
@@ -770,7 +771,11 @@ const useAppContractMethods = (params) => {
         }
       }
     } else {
-      const executeTxResponse = await safeSdk.executeTransaction(tx);
+      const gasPrice = await getPublicClient(networkId).getGasPrice();
+
+      const executeTxResponse = await safeSdk.executeTransaction(tx, {
+        gasPrice: Number(gasPrice) * 1.2,
+      });
       const receipt =
         executeTxResponse.transactionResponse &&
         (await executeTxResponse.transactionResponse.wait());
