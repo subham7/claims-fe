@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import classes from "../../claims/Claim.module.scss";
 import { formatNumbers } from "utils/helper";
 import { CHAIN_CONFIG } from "utils/constants";
-import { Avatar } from "antd";
+import AvatarGroup from "@mui/material/AvatarGroup";
 const DepositDetails = () => {
   const clubData = useSelector((state) => {
     return state.club.clubData;
@@ -22,6 +22,8 @@ const DepositDetails = () => {
     maxDepositAmountFormatted,
     depositTokenSymbol,
   } = clubData;
+  const displayAddresses = adminAddresses?.slice(0, 4);
+  const additionalCount = adminAddresses?.length - 4;
 
   return (
     <div>
@@ -64,15 +66,9 @@ const DepositDetails = () => {
             fontWeight={600}
             color={"white"}
             variant="inherit">
-            <Avatar.Group
-              size="small"
-              max={{
-                count: 3,
-                style: { color: "#f56a00", backgroundColor: "#fde3cf" },
-                popover: { trigger: "null" },
-              }}>
+            <AvatarGroup className={classes.avatarGroup}>
               {adminAddresses &&
-                adminAddresses.map((addr, ind) => {
+                displayAddresses.map((addr, ind) => {
                   return (
                     <Tooltip title={addr} key={ind}>
                       <div>
@@ -86,7 +82,12 @@ const DepositDetails = () => {
                     </Tooltip>
                   );
                 })}
-            </Avatar.Group>
+              {additionalCount > 0 && (
+                <div className={classes.avatarAdditional}>
+                  <p>+{additionalCount}</p>
+                </div>
+              )}
+            </AvatarGroup>
           </Typography>
         </div>
       </div>
