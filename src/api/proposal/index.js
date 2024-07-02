@@ -113,6 +113,21 @@ export async function getPaginatedProposalList(
   }
 }
 
+export async function getIndividualProposalList({
+  daoAddress,
+  status = "passed",
+  executionId,
+}) {
+  try {
+    return await axios.get(
+      MAIN_API_URL +
+        `proposal/station/${daoAddress}?limit=100&offset=0&status=["${status}"]&executionId=${executionId}`,
+    );
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export const getLatesExecutableProposal = async (daoAddress) => {
   try {
     return await axios.get(
