@@ -445,8 +445,8 @@ export const isNative = (depositTokenAddress, networkId) => {
         CHAIN_CONFIG[networkId]?.nativeToken?.toLowerCase()
       );
     }
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    console.log(error);
     return false;
   }
 };
