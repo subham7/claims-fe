@@ -20,9 +20,9 @@ export const getTokenImageFromAddress = ({ tokenAddress, networkId }) => {
 
   if (tokenAddress === usdcAddress) {
     return "/assets/icons/usd.png";
-  } else if (tokenAddress === usdtAddress) {
+  } else if (tokenAddress?.toLowerCase() === usdtAddress?.toLowerCase()) {
     return "/assets/icons/usdt.png";
-  } else if (tokenAddress === nativeToken) {
+  } else if (tokenAddress?.toLowerCase() === nativeToken?.toLowerCase()) {
     return CHAIN_CONFIG[networkId]?.nativeCurrency?.image;
   } else {
     return "";

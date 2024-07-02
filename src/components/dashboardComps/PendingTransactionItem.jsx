@@ -239,8 +239,7 @@ const PendingTransactionItem = ({
           </Typography>
         </div>
 
-        {signedOwners?.includes(walletAddress) &&
-        signedOwners?.length === clubData?.currentSafeThreshold ? (
+        {signedOwners?.length >= clubData?.currentSafeThreshold ? (
           <button
             disabled={!isAdmin}
             onClick={() => signHandler("executed")}
@@ -253,7 +252,9 @@ const PendingTransactionItem = ({
           </button>
         ) : (
           <button
-            disabled={!isAdmin}
+            disabled={
+              !isAdmin || signedOwners?.length >= clubData?.currentSafeThreshold
+            }
             onClick={() => signHandler("passed")}
             className={classes.signButton}>
             Sign

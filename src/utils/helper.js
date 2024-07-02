@@ -307,7 +307,6 @@ export const shortAddress = (address, length = 6) => {
 };
 
 export const uploadFileToAWS = async (file) => {
-  console.log("file");
   return new Promise(async (resolve, reject) => {
     const reader = new FileReader();
     reader.addEventListener("loadend", async () => {
