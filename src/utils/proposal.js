@@ -57,6 +57,7 @@ import { ezETH_ETH_PoolABI } from "abis/nile/ezETH_ETHPoolABI";
 import { LPStakePoolABI } from "abis/nile/ezETH_ETH_LPStakePoolABI";
 import { wethABI } from "abis/wethABI";
 import { clipFinanceEthPoolABI } from "abis/clip-finance/ethPoolAbi";
+import { erc20TokenABIETH } from "abis/erc20TokenABIETH";
 
 export const fetchProposals = async (daoAddress, type) => {
   let proposalData;
@@ -195,12 +196,12 @@ export const signRejectTx = async ({
 export const fetchABI = async (executionId, tokenType) => {
   switch (executionId) {
     case 0:
-    case 4:
       return [
         "function approve(address spender, uint256 amount)",
         "function contractCalls(address _to, bytes memory _data)",
         "function airDropToken(address _airdropTokenAddress,uint256[] memory _airdropAmountArray,address[] memory _members)",
       ];
+
     case 1:
     case 2:
     case 5:
@@ -353,27 +354,6 @@ export const getEncodedData = async ({
         daoAddress,
       ]);
       return { data };
-
-    case 4:
-      if (customToken === CHAIN_CONFIG[networkId].nativeToken) {
-        return {};
-      } else {
-        approvalData = iface.encodeFunctionData("approve", [
-          CHAIN_CONFIG[networkId]?.airdropContractAddress,
-          customTokenAmounts[0],
-        ]);
-
-        data = iface.encodeFunctionData("airDropToken", [
-          customToken,
-          customTokenAmounts,
-          customTokenAddresses,
-        ]);
-
-        membersArray = customTokenAddresses;
-        airDropAmountArray = customTokenAmounts;
-
-        return { data, approvalData, membersArray, airDropAmountArray };
-      }
 
     case 5:
       data = iface.encodeFunctionData("transferNft", [
@@ -1680,7 +1660,6 @@ export const getTransaction = async ({
 
   switch (executionId) {
     case 0:
-    case 4:
       if (tokenData === CHAIN_CONFIG[networkId].nativeToken) {
         transaction = {
           to: Web3.utils.toChecksumAddress(customTokenAddresses[0]),
@@ -1715,6 +1694,27 @@ export const getTransaction = async ({
 
         return { transaction, approvalTransaction };
       }
+
+    case 4:
+      if (tokenData === CHAIN_CONFIG[networkId].nativeToken) {
+        transaction = {
+          to: Web3.utils.toChecksumAddress(customTokenAddresses[0]),
+          data: "0x",
+          value: customTokenAmounts[0],
+        };
+      } else {
+        transaction = {
+          to: Web3.utils.toChecksumAddress(tokenData),
+          data: encodeFunctionData({
+            abi: networkId === "0x1" ? erc20TokenABIETH : erc20TokenABI,
+            functionName: "transfer",
+            args: [customTokenAddresses[0], customTokenAmounts[0]],
+          }),
+          value: "0",
+        };
+      }
+
+      return { transaction };
 
     case 1:
       transaction = {
