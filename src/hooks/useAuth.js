@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { authToken } from "api/auth";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { getPublicClient } from "utils/viemConfig";
 import { useAccount, useDisconnect, useSignMessage } from "wagmi";
 
@@ -10,19 +10,24 @@ const useAuth = () => {
   const { disconnect } = useDisconnect();
   const publicClient = getPublicClient("0x89");
   const [sessionToken, setSessionToken] = useState(null);
+  const [isChecking, setIsChecking] = useState(false);
+  const debounceTimeout = useRef(null);
 
-  // Check if sessionToken exists in session storage
+  // Check if sessionToken exists in local storage
   const getTokenFromSession = () => {
-    const sessionToken = sessionStorage.getItem("stationx_sessionToken");
-    if (sessionToken) {
-      const sessionExpiry = sessionStorage.getItem("stationx_sessionExpiry");
-      if (Date.now() < sessionExpiry) {
-        return sessionToken;
-      } else {
-        sessionStorage.removeItem("stationx_sessionToken");
-        sessionStorage.removeItem("stationx_sessionExpiry");
-      }
+    const sessionToken = localStorage.getItem("stationx_sessionToken");
+    const sessionExpiry = localStorage.getItem("stationx_sessionExpiry");
+
+    if (
+      sessionToken &&
+      sessionExpiry &&
+      Date.now() < parseInt(sessionExpiry, 10)
+    ) {
+      return sessionToken;
     }
+
+    localStorage.removeItem("stationx_sessionToken");
+    localStorage.removeItem("stationx_sessionExpiry");
     return null;
   };
 
@@ -36,25 +41,29 @@ const useAuth = () => {
     return valid;
   };
 
-  // Sign the message and store bearer token in session storage with 60 mins expiry
+  // Sign the message and store bearer token in local storage with 60 mins expiry
   // If user rejects request || !authToken || error then it disconnects the user
   const signMessage = async () => {
     try {
+      setIsChecking(true); // Prevent multiple sign requests
+
       const signature = await signMessageAsync({
         account: address,
         message: "Login to StationX",
       });
+
       if (signature) {
-        sessionStorage.setItem("stationx_signature", signature);
+        localStorage.setItem("stationx_signature", signature);
         const response = await authToken({
           user: address,
           signature: signature,
         });
+
         if (response) {
-          sessionStorage.setItem("stationx_sessionToken", response.accessToken);
-          sessionStorage.setItem(
+          localStorage.setItem("stationx_sessionToken", response.accessToken);
+          localStorage.setItem(
             "stationx_sessionExpiry",
-            Date.now() + 60 * 60 * 1000,
+            (Date.now() + 60 * 60 * 1000).toString(),
           );
           setSessionToken(response.accessToken);
         } else {
@@ -66,20 +75,46 @@ const useAuth = () => {
     } catch (error) {
       console.log(error);
       disconnect();
+    } finally {
+      setIsChecking(false);
     }
   };
 
+  const debouncedSignMessage = useCallback(() => {
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
+    }
+
+    debounceTimeout.current = setTimeout(() => {
+      signMessage();
+    }, 1000);
+  }, [address]);
+
   useEffect(() => {
+    const token = getTokenFromSession();
+    const signature = localStorage.getItem("stationx_signature");
+
     if (isConnected) {
-      const token = getTokenFromSession();
-      const signature = sessionStorage.getItem("stationx_signature");
       if (token && verifySignature(signature)) {
         setSessionToken(token);
-      } else {
-        signMessage();
+      } else if (!isChecking) {
+        debouncedSignMessage();
       }
     }
-  }, [isConnected, address]);
+  }, [isConnected, address, isChecking, debouncedSignMessage]);
+
+  // Check session on initial load
+  useEffect(() => {
+    const token = getTokenFromSession();
+    const signature = localStorage.getItem("stationx_signature");
+    if (address) {
+      if (token && verifySignature(signature)) {
+        setSessionToken(token);
+      } else if (isConnected && !isChecking) {
+        debouncedSignMessage();
+      }
+    }
+  }, []);
 
   return sessionToken;
 };
