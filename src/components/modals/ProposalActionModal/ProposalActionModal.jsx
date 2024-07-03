@@ -1,6 +1,7 @@
 import Modal from "@components/common/Modal/Modal";
 import classes from "./ProposalActionModal.module.scss";
 import { RxCross2 } from "react-icons/rx";
+import { Tooltip } from "@mui/material";
 
 const ProposalActionModal = ({
   setShowActionModal,
@@ -43,9 +44,11 @@ const ProposalActionModal = ({
           }}>
           Distribute
         </button>
-        <button className={classes.actionButton} onClick={() => {}}>
-          Swap
-        </button>
+        <Tooltip title="Coming soon">
+          <button className={classes.actionButton} disabled>
+            Swap
+          </button>
+        </Tooltip>
         <button
           className={classes.actionButton}
           onClick={() => {
