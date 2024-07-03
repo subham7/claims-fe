@@ -73,7 +73,12 @@ const CreateSpaceModal = ({ setShowCreateSpaceModal }) => {
           <IoClose size={25} />
         </button>
       </div>
-      <h2>Create a space</h2>
+      <h2
+        style={{
+          color: "white",
+        }}>
+        Create a space
+      </h2>
       <p className={classes.description}>
         Spaces allow you to bundle different stations together and feature them
         in one place.

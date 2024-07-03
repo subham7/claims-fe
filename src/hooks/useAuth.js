@@ -28,6 +28,7 @@ const useAuth = () => {
 
     localStorage.removeItem("stationx_sessionToken");
     localStorage.removeItem("stationx_sessionExpiry");
+    localStorage.removeItem("stationx_signature");
     return null;
   };
 
@@ -90,12 +91,12 @@ const useAuth = () => {
     }, 1000);
   }, [address]);
 
-  useEffect(() => {
+  const checkSession = useCallback(async () => {
     const token = getTokenFromSession();
     const signature = localStorage.getItem("stationx_signature");
 
     if (isConnected) {
-      if (token && verifySignature(signature)) {
+      if (token && (await verifySignature(signature))) {
         setSessionToken(token);
       } else if (!isChecking) {
         debouncedSignMessage();
@@ -103,17 +104,12 @@ const useAuth = () => {
     }
   }, [isConnected, address, isChecking, debouncedSignMessage]);
 
-  // Check session on initial load
   useEffect(() => {
-    const token = getTokenFromSession();
-    const signature = localStorage.getItem("stationx_signature");
-    if (address) {
-      if (token && verifySignature(signature)) {
-        setSessionToken(token);
-      } else if (isConnected && !isChecking) {
-        debouncedSignMessage();
-      }
-    }
+    checkSession();
+  }, [isConnected, address, checkSession]);
+
+  useEffect(() => {
+    checkSession();
   }, []);
 
   return sessionToken;
