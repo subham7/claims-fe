@@ -20,6 +20,20 @@ const ProposalSection = ({ daoAddress, routeNetworkId }) => {
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
+  const tokenType = useSelector((state) => {
+    return state.club.clubData.tokenType;
+  });
+
+  const isGovernanceERC20 = useSelector((state) => {
+    return state.club.erc20ClubDetails.isGovernanceActive;
+  });
+
+  const isGovernanceERC721 = useSelector((state) => {
+    return state.club.erc721ClubDetails.isGovernanceActive;
+  });
+
+  const isGovernanceActive =
+    tokenType === "erc20" ? isGovernanceERC20 : isGovernanceERC721;
 
   const handleActionComplete = (result, proposalId = "") => {
     setShowSendAssetsModal(false);
@@ -109,8 +123,10 @@ const ProposalSection = ({ daoAddress, routeNetworkId }) => {
           daoAddress={daoAddress}
           gnosisAddress={gnosisAddress}
           networkId={routeNetworkId}
+          tokenType={tokenType}
           onClose={() => setShowMintModal(false)}
           onActionComplete={handleActionComplete}
+          isGovernanceActive={isGovernanceActive}
         />
       )}
 

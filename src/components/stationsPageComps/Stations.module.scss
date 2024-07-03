@@ -49,8 +49,8 @@
   flex-direction: row;
   padding: 0.525rem 1.25rem;
   gap: 0.4rem;
-  background-color: $border-color;
-  color: $white;
+  background-color: $white;
+  color: $dark-gray;
   font-size: 0.925rem;
   letter-spacing: 0.025em;
   border: 0px;
@@ -58,7 +58,7 @@
   align-items: center;
   cursor: pointer;
   &:hover {
-    background-color: $background-station;
+    background-color: $typography-primary;
   }
 }
 

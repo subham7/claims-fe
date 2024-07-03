@@ -3,73 +3,33 @@ import classes from "./ProposalActionModal.module.scss";
 import { RxCross2 } from "react-icons/rx";
 import { MdOutlineFileUpload } from "react-icons/md";
 import Link from "next/link";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { setAlertData } from "redux/reducers/alert";
-import {
-  fetchLatestBlockNumber,
-  generateAlertData,
-} from "utils/globalFunctions";
-import { getPublicClient } from "utils/viemConfig";
-import { getAddress } from "viem";
-import { normalize } from "viem/ens";
+import { useCallback, useState } from "react";
+import { fetchLatestBlockNumber } from "utils/globalFunctions";
 import { useFormik } from "formik";
+import dayjs from "dayjs";
 import { createProposal } from "api/proposal";
-import { handleSignMessage } from "utils/helper";
+import {
+  csvToObjectForMintGT,
+  ensToWalletAddress,
+  handleSignMessage,
+} from "utils/helper";
+import { debounce } from "lodash";
 import { useAccount, useSignMessage } from "wagmi";
 import { mintValidationSchema } from "@components/createClubComps/ValidationSchemas";
 
-const MintModal = ({ daoAddress, networkId, onActionComplete, onClose }) => {
+const MintModal = ({
+  daoAddress,
+  networkId,
+  onActionComplete,
+  onClose,
+  isGovernanceActive,
+  tokenType,
+}) => {
   const [data, setData] = useState("");
-  const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch();
+  const [isMintloading, setIsMintLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { address: walletAddress } = useAccount();
   const { signMessageAsync } = useSignMessage();
-  const publicClient = getPublicClient("0x1");
-  const dispatchAlert = (message, severity) => {
-    dispatch(setAlertData(generateAlertData(message, severity)));
-  };
-
-  const resolveEns = async (ens) => {
-    const ensAddress = await publicClient.getEnsAddress({
-      name: normalize(ens),
-    });
-    return ensAddress;
-  };
-
-  const validateInput = async (input) => {
-    const lines = input.split("\n");
-    const regex = /^[a-zA-Z0-9_.-]+, ?\d+(\.\d+)?$/;
-
-    for (let line of lines) {
-      if (!regex.test(line.trim())) {
-        return false;
-      }
-
-      const [addressOrEns, amount] = line
-        .trim()
-        .split(",")
-        .map((s) => s.trim());
-
-      if (addressOrEns.endsWith(".eth")) {
-        const address = await resolveEns(addressOrEns);
-        if (!address) {
-          return false;
-        }
-      } else {
-        try {
-          const address = getAddress(addressOrEns);
-          if (!address) {
-            return false;
-          }
-        } catch (error) {
-          return false;
-        }
-      }
-    }
-
-    return true;
-  };
 
   const normalizeData = async (input) => {
     const lines = input.split("\n");
@@ -84,11 +44,7 @@ const MintModal = ({ daoAddress, networkId, onActionComplete, onClose }) => {
           .split(",")
           .map((s) => s.trim());
 
-        let resolvedAddress = addressOrEns;
-
-        if (addressOrEns.endsWith(".eth")) {
-          resolvedAddress = await resolveEns(addressOrEns);
-        }
+        const resolvedAddress = await ensToWalletAddress(addressOrEns);
 
         mintAddresses.push(resolvedAddress);
         const amountNumber = parseFloat(amount);
@@ -100,26 +56,44 @@ const MintModal = ({ daoAddress, networkId, onActionComplete, onClose }) => {
     return { mintAddresses, mintAmounts, totalAmount };
   };
 
-  const handleFileUpload = (event) => {
+  const handleChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
-        const text = e.target.result;
-        const lines = text
-          .split("\n")
-          .map((line) => line.trim())
-          .filter((line) => line.length > 0);
+      reader.onload = async (event) => {
+        setIsLoading(true);
+        const data = event.target.result;
+        setData(data);
+        const { addresses, amounts } = csvToObjectForMintGT(data);
+        const ensToWalletAddresses = await Promise.all(
+          addresses.map(async (address) => {
+            return await ensToWalletAddress(address);
+          }),
+        );
+        formik.values.mintGTAmounts = amounts;
+        formik.values.mintGTAddresses = ensToWalletAddresses;
 
-        if (validateInput(lines.join("\n"))) {
-          setData(lines.join("\n"));
-        } else {
-          dispatchAlert("Data format is not valid", "error");
-        }
+        setIsLoading(false);
       };
       reader.readAsText(file);
     }
   };
+
+  const handleInput = async (data) => {
+    setIsLoading(true);
+    const { addresses, amounts } = csvToObjectForMintGT(data);
+    const ensToWalletAddresses = await Promise.all(
+      addresses.map(async (address) => {
+        return await ensToWalletAddress(address);
+      }),
+    );
+    formik.values.mintGTAmounts = amounts;
+    formik.values.mintGTAddresses = ensToWalletAddresses;
+
+    setIsLoading(false);
+  };
+
+  const debouncedHandleInput = useCallback(debounce(handleInput, 500), []);
 
   const formik = useFormik({
     initialValues: {
@@ -129,29 +103,30 @@ const MintModal = ({ daoAddress, networkId, onActionComplete, onClose }) => {
     validationSchema: mintValidationSchema,
     onSubmit: async (values) => {
       try {
-        setLoading(true);
+        setIsMintLoading(true);
 
-        const { mintAddresses, mintAmounts, totalAmount } = await normalizeData(
-          data,
-        );
+        const { totalAmount } = await normalizeData(data);
 
         let commands = {
-          mintGTAddresses: mintAddresses,
-          mintGTAmounts: mintAmounts,
+          mintGTAddresses: values.mintGTAddresses,
+          mintGTAmounts: values.mintGTAmounts,
         };
         commands = {
           executionId: 1,
           ...commands,
         };
 
-        const blockNum = await fetchLatestBlockNumber();
+        const blockNum = await fetchLatestBlockNumber(networkId);
 
         const payload = {
           clubId: daoAddress,
-          name: `Mint Total Amount: ${totalAmount}`,
+          name: `Mint Total Amount` + totalAmount,
           createdBy: walletAddress,
+          votingDuration: dayjs().add(100, "year").unix(),
+          votingOptions: [{ text: "Yes" }, { text: "No" }, { text: "Abstain" }],
           commands: [commands],
           type: "action",
+          tokenType,
           daoAddress: daoAddress,
           block: blockNum,
           networkId: networkId,
@@ -164,15 +139,15 @@ const MintModal = ({ daoAddress, networkId, onActionComplete, onClose }) => {
 
         const request = await createProposal(isGovernanceActive, {
           ...payload,
-          description: values.note ?? "",
+          description: "",
           signature: signature,
         });
 
-        setLoading(false);
+        setIsMintLoading(false);
         onActionComplete("success", request.data?.proposalId);
         onClose();
       } catch (error) {
-        setLoading(false);
+        setIsMintLoading(false);
         onActionComplete("failure");
       }
     },
@@ -188,7 +163,7 @@ const MintModal = ({ daoAddress, networkId, onActionComplete, onClose }) => {
           }}>
           Mint shares
         </h2>
-        <button className={classes.closeButton} onClick={onClose()}>
+        <button className={classes.closeButton} onClick={onClose}>
           <RxCross2 size={25} />
         </button>
       </div>
@@ -205,6 +180,7 @@ const MintModal = ({ daoAddress, networkId, onActionComplete, onClose }) => {
           value={data}
           onChange={(event) => {
             setData(event.target.value);
+            debouncedHandleInput(event.target.value);
           }}
         />
         <button className={classes.uploadButton}>
@@ -215,33 +191,24 @@ const MintModal = ({ daoAddress, networkId, onActionComplete, onClose }) => {
             className={classes.uploadInput}
             name="upload"
             type="file"
-            onChange={handleFileUpload}
+            onChange={handleChange}
             accept=".csv"
           />
         </button>
-        <Link className={classes.link} href="">
+        <Link className={classes.link} href="/assets/csv/sample.csv">
           Download sample CSV file
         </Link>
       </div>
       <div className={classes.buttonContainer}>
-        <button onClick={onClose()} className={classes.cancel}>
+        <button onClick={onClose} className={classes.cancel}>
           Cancel
         </button>
         <button
-          onClick={async () => {
-            if (data) {
-              if (await validateInput(data)) {
-                formik.handleSubmit();
-              } else {
-                dispatchAlert("Data format is not valid", "error");
-              }
-            } else {
-              dispatchAlert("Data is required", "error");
-            }
-          }}
+          type="submit"
+          onClick={formik.handleSubmit}
           className={classes.mint}
-          disabled={loading}>
-          Mint
+          disabled={isMintloading || isLoading}>
+          {isMintloading ? "Minting..." : isLoading ? "Validating" : "Mint"}
         </button>
       </div>
     </Modal>
