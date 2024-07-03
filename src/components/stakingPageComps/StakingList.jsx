@@ -15,9 +15,9 @@ import { convertFromWeiGovernance } from "utils/globalFunctions";
 import useAppContractMethods from "hooks/useAppContractMethods";
 import StakingTabs from "./StakingTabs";
 import StakingPoolCard from "./StakingPoolCard";
-import { fetchProposals } from "utils/proposal";
 import { getPriceRate } from "api/assets";
 import BigNumber from "bignumber.js";
+import { getIndividualProposalList } from "api/proposal";
 
 const StakingList = ({ daoAddress, routeNetworkId }) => {
   const chain = useChainId();
@@ -225,17 +225,16 @@ const StakingList = ({ daoAddress, routeNetworkId }) => {
     let totalStakedToken1 = 0,
       totalStakedToken2 = 0;
 
-    const data = await fetchProposals(daoAddress, "all");
+    const data = await getIndividualProposalList({
+      daoAddress,
+      executionId: 63,
+      status: "executed",
+    });
 
-    data
-      .filter(
-        (item) =>
-          item?.commands[0]?.executionId === 63 && item?.status === "executed",
-      )
-      .map((item) => {
-        totalStakedToken1 += Number(item?.commands[0]?.stakeToken1Amount);
-        totalStakedToken2 += Number(item?.commands[0]?.stakeToken2Amount);
-      });
+    data?.data?.data?.map((item) => {
+      totalStakedToken1 += Number(item?.commands[0]?.stakeToken1Amount);
+      totalStakedToken2 += Number(item?.commands[0]?.stakeToken2Amount);
+    });
     setNileToken1Staked(totalStakedToken1.toFixed(6));
     setNileToken2Staked(totalStakedToken2.toFixed(6));
 

@@ -71,7 +71,7 @@ export const CHAIN_CONFIG = {
     },
     theme: THEME_CONFIG("0x89"),
     rpcUrls: ["https://polygon-rpc.com/"],
-    appRpcUrl: `https://wiser-capable-brook.matic.quiknode.pro/beed5a6d0a1701b83886684b9d741db680653ffe/`,
+    appRpcUrl: `https://white-special-gadget.matic.quiknode.pro/1f6418c03f4ae148f2bcd23caa69500465e1c30a/`,
     claimFactoryAddress: "0x47e6bFA71e490ADC8f0E33385aAdF85282E71002",
     factoryContractAddress: "0x726D3e4fBD321c4cD88769C16f5BAFfaC98D95Ad",
     stationSubgraphUrl:
@@ -158,7 +158,7 @@ export const CHAIN_CONFIG = {
     },
     theme: THEME_CONFIG("0x1"),
     rpcUrls: ["https://eth-rpc.gateway.pokt.network"],
-    appRpcUrl: `https://mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
+    appRpcUrl: `https://wiser-lively-firefly.quiknode.pro/f945ad26557182a99d2efa8f8e3cf046994f18c0/`,
     factoryContractAddress: "0x3b0496DdFdC063E880630252Cabff2eEa6e8AA9e",
     stationSubgraphUrl:
       "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-eth/prod/gn",
@@ -210,7 +210,7 @@ export const CHAIN_CONFIG = {
     },
     theme: THEME_CONFIG("0x2105"),
     rpcUrls: ["https://mainnet.base.org"],
-    appRpcUrl: `https://bitter-boldest-wildflower.base-mainnet.quiknode.pro/8a49dc99b84ffbba1daacc7b97d80f8a4f21681d/`,
+    appRpcUrl: `https://green-muddy-meme.base-mainnet.quiknode.pro/9960d37568ffdb6456a8eb194f267e45450b1e61/`,
     factoryContractAddress: "0xeb6FE72d1Df22D9936D4FA317D7948E643aF92CB",
     claimFactoryAddress: "0x50702Fd9086BAbDB0A3A576bFe22D4dD47b09937",
     claimsSubgraphUrl:
@@ -238,7 +238,7 @@ export const CHAIN_CONFIG = {
       image: "/assets/icons/eth.png",
     },
     rpcUrls: ["https://arb1.arbitrum.io/rpc"],
-    appRpcUrl: `https://snowy-wild-sponge.arbitrum-mainnet.quiknode.pro/b98f662572b97a6bd6530aa54f9860a5244d7b2d/`,
+    appRpcUrl: `https://spring-evocative-firefly.arbitrum-mainnet.quiknode.pro/dc25977072833c6d95e1d642d60e7a0db5319f44/`,
     factoryContractAddress: "0x7213172eAad75D3d94Bc09ff4E0008f7FF66b041",
     claimFactoryAddress: "0x28F06a3415A741367303Db36a6646C354cCE1340",
     airdropContractAddress: "0x63d5BaeA805Af5768105F38aE12f933f29c674a9",
@@ -328,7 +328,7 @@ export const CHAIN_CONFIG = {
     },
     theme: THEME_CONFIG("0x38"),
     rpcUrls: ["https://bsc.meowrpc.com"],
-    appRpcUrl: `https://delicate-orbital-sunset.bsc.quiknode.pro/e0773be7bcd4c69a6fc5429550dbcb571397b044/`,
+    appRpcUrl: `https://methodical-necessary-tree.bsc.quiknode.pro/02514938324adde5adb1776c4c9d0dba2bbf6596/`,
     factoryContractAddress: "0x8a1D0Be1fe8b1D7A5C3051Da5d6b3A2690E12CAC",
     airdropContractAddress: "0xc72aDc4F927384Aff6cA479900e788ba4eFa9aB7",
     usdcAddress: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
@@ -401,7 +401,7 @@ export const CHAIN_CONFIG = {
     },
     theme: THEME_CONFIG("0x82750"),
     rpcUrls: ["https://rpc.scroll.io"],
-    appRpcUrl: `https://delicate-chaotic-dream.scroll-mainnet.quiknode.pro/14d4911b0589e5e03f6527ea874ad980849f2156/`,
+    appRpcUrl: `https://floral-sparkling-asphalt.scroll-mainnet.quiknode.pro/e9492e4de25c1f0990030367e7c2fb42f2694f09/`,
     factoryContractAddress: "0xE4D8Aac495adafFF1cF59fB1A6b91f0E4c21C26e",
     claimFactoryAddress: "0x563993D2c56628cfBBdec3FC3B3fb94744BbA9A6",
     claimsSubgraphUrl:
@@ -562,7 +562,7 @@ export const CHAIN_CONFIG = {
     },
     theme: THEME_CONFIG("0xa86a"),
     rpcUrls: ["https://avalanche-mainnet.infura.io/"],
-    appRpcUrl: `https://broken-wild-ensemble.avalanche-mainnet.quiknode.pro/8cf2091ea8c0db99f7bd6c2e9394918ccb9ab923/ext/bc/C/rpc/`,
+    appRpcUrl: `https://intensive-delicate-theorem.avalanche-mainnet.quiknode.pro/adb85c440946baecd0c98c78f22484141f0eff4a/ext/bc/C/rpc/`,
     claimFactoryAddress: "",
     factoryContractAddress: "0xA242fb1dc2Baf4ca49371f11940cF8bF4DC909c3",
     stationSubgraphUrl:

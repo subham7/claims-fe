@@ -917,7 +917,7 @@ export const DEFI_PROPOSALS_PAIR_POOLS = ({
     {
       name: "The Nile (ezETH - ETH)",
       logo: "/assets/icons/nile.png",
-      APY: "27",
+      APY: "9.7",
       stakedToken1: {
         tokenName: "ezETH",
         stakedAmount: nileToken1Staked,
