@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import { Tooltip } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { MetaMaskAvatar } from "react-metamask-avatar";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
@@ -8,11 +8,15 @@ import classes from "../../claims/Claim.module.scss";
 import { formatNumbers } from "utils/helper";
 import { CHAIN_CONFIG } from "utils/constants";
 import AvatarGroup from "@mui/material/AvatarGroup";
+import { fetchSafeAdmins } from "api/safe";
+
 const DepositDetails = () => {
+  const [adminAddresses, setAdminAddresses] = useState([]);
+
   const clubData = useSelector((state) => {
     return state.club.clubData;
   });
-  const adminAddresses = clubData?.adminAddresses;
+
   const router = useRouter();
   const [_, networkId = "0x89"] = router?.query?.slug ?? [];
   const blockExplorerUrl = CHAIN_CONFIG[networkId]?.blockExplorerUrl;
@@ -24,6 +28,22 @@ const DepositDetails = () => {
   } = clubData;
   const displayAddresses = adminAddresses?.slice(0, 4);
   const additionalCount = adminAddresses?.length - 4;
+
+  const fetchStationAdmins = async () => {
+    try {
+      const admins = await fetchSafeAdmins({
+        gnosisAddress: clubData?.gnosisAddress,
+        networkId,
+      });
+      setAdminAddresses(admins);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (clubData?.gnosisAddress) fetchStationAdmins();
+  }, [clubData?.gnosisAddress]);
 
   return (
     <div>
