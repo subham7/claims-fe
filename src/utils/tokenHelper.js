@@ -18,7 +18,7 @@ export const getTokenSymbolFromAddress = (props) => {
 export const getTokenImageFromAddress = ({ tokenAddress, networkId }) => {
   const { usdcAddress, nativeToken, usdtAddress } = CHAIN_CONFIG[networkId];
 
-  if (tokenAddress === usdcAddress) {
+  if (tokenAddress?.toLowerCase() === usdcAddress?.toLowerCase()) {
     return "/assets/icons/usd.png";
   } else if (tokenAddress?.toLowerCase() === usdtAddress?.toLowerCase()) {
     return "/assets/icons/usdt.png";
