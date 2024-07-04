@@ -18,6 +18,7 @@ import { baseLinks } from "data/dashboard";
 import SafeApiKit from "@safe-global/api-kit";
 import { config } from "config";
 import { getAddress } from "viem";
+import { convertToWeiGovernance } from "./globalFunctions";
 
 export const getSafeSdk = async (
   gnosisAddress,
@@ -290,7 +291,7 @@ export const csvToObjectForMintGT = (csvString) => {
   for (const line of lines) {
     const [address, amount] = line.trim().split(",");
     addresses.push(address);
-    amounts.push(parseInt(amount, 10));
+    amounts.push(convertToWeiGovernance(amount, 18).toString());
   }
 
   return { addresses, amounts };

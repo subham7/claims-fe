@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import ActionModal from "@components/dashboardComps/dashboardActions/ActionModal";
 import StatusModal from "@components/modals/StatusModal/StatusModal";
 import MintModal from "@components/modals/ProposalActionModal/MintModal";
+import { useRouter } from "next/router";
 
 const ProposalSection = ({ daoAddress, routeNetworkId }) => {
   const [showActionsModal, setShowActionsModal] = useState(false);
@@ -17,6 +18,8 @@ const ProposalSection = ({ daoAddress, routeNetworkId }) => {
   const [showDistributeModal, setShowDistributeModal] = useState(false);
   const [showMintModal, setShowMintModal] = useState(false);
   const [isActionCreated, setIsActionCreated] = useState(null);
+
+  const router = useRouter();
   const gnosisAddress = useSelector((state) => {
     return state.club.clubData.gnosisAddress;
   });
@@ -138,7 +141,7 @@ const ProposalSection = ({ daoAddress, routeNetworkId }) => {
           onClose={() => setIsActionCreated(null)}
           buttonText="View & Sign Transaction"
           onButtonClick={() => {
-            router.push(`/newProposals/${daoAddress}/${routeNetworkId}`);
+            router.push(`/proposals/${daoAddress}/${routeNetworkId}`);
           }}
         />
       ) : isActionCreated === "failure" ? (
