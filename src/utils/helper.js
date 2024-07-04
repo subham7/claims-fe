@@ -291,7 +291,7 @@ export const csvToObjectForMintGT = (csvString) => {
   for (const line of lines) {
     const [address, amount] = line.trim().split(",");
     addresses.push(address);
-    amounts.push(convertToWeiGovernance(amount, 18).toString());
+    amounts.push(convertToWeiGovernance(amount, 18)?.toString());
   }
 
   return { addresses, amounts };

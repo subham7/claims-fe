@@ -1,10 +1,14 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Modal from "@components/common/Modal/Modal";
 import classes from "./ProposalActionModal.module.scss";
 import { RxCross2 } from "react-icons/rx";
 import { MdOutlineFileUpload } from "react-icons/md";
 import Link from "next/link";
 import { useCallback, useState } from "react";
-import { fetchLatestBlockNumber } from "utils/globalFunctions";
+import {
+  fetchLatestBlockNumber,
+  generateAlertData,
+} from "utils/globalFunctions";
 import { useFormik } from "formik";
 import dayjs from "dayjs";
 import { createProposal } from "api/proposal";
@@ -16,6 +20,8 @@ import {
 import { debounce } from "lodash";
 import { useAccount, useSignMessage } from "wagmi";
 import { mintValidationSchema } from "@components/createClubComps/ValidationSchemas";
+import { setAlertData } from "redux/reducers/alert";
+import { useDispatch } from "react-redux";
 
 const MintModal = ({
   daoAddress,
@@ -28,13 +34,15 @@ const MintModal = ({
   const [data, setData] = useState("");
   const [isMintloading, setIsMintLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch();
   const { address: walletAddress } = useAccount();
   const { signMessageAsync } = useSignMessage();
+  const dispatchAlert = (message, severity) => {
+    dispatch(setAlertData(generateAlertData(message, severity)));
+  };
 
-  const normalizeData = async (input) => {
+  const getTotalAmount = async (input) => {
     const lines = input.split("\n");
-    const mintAddresses = [];
-    const mintAmounts = [];
     let totalAmount = 0;
 
     await Promise.all(
@@ -44,16 +52,12 @@ const MintModal = ({
           .split(",")
           .map((s) => s.trim());
 
-        const resolvedAddress = await ensToWalletAddress(addressOrEns);
-
-        mintAddresses.push(resolvedAddress);
         const amountNumber = parseFloat(amount);
-        mintAmounts.push(amountNumber);
         totalAmount += amountNumber;
       }),
     );
 
-    return { mintAddresses, mintAmounts, totalAmount };
+    return totalAmount;
   };
 
   const handleChange = async (event) => {
@@ -64,16 +68,21 @@ const MintModal = ({
         setIsLoading(true);
         const data = event.target.result;
         setData(data);
-        const { addresses, amounts } = csvToObjectForMintGT(data);
-        const ensToWalletAddresses = await Promise.all(
-          addresses.map(async (address) => {
-            return await ensToWalletAddress(address);
-          }),
-        );
-        formik.values.mintGTAmounts = amounts;
-        formik.values.mintGTAddresses = ensToWalletAddresses;
+        try {
+          const { addresses, amounts } = csvToObjectForMintGT(data);
+          const ensToWalletAddresses = await Promise.all(
+            addresses.map(async (address) => {
+              return await ensToWalletAddress(address);
+            }),
+          );
 
-        setIsLoading(false);
+          formik.values.mintGTAmounts = amounts;
+          formik.values.mintGTAddresses = ensToWalletAddresses;
+          setIsLoading(false);
+        } catch {
+          setIsLoading(false);
+          dispatchAlert("Invalid data format. Please add valid data.", "error");
+        }
       };
       reader.readAsText(file);
     }
@@ -81,16 +90,21 @@ const MintModal = ({
 
   const handleInput = async (data) => {
     setIsLoading(true);
-    const { addresses, amounts } = csvToObjectForMintGT(data);
-    const ensToWalletAddresses = await Promise.all(
-      addresses.map(async (address) => {
-        return await ensToWalletAddress(address);
-      }),
-    );
-    formik.values.mintGTAmounts = amounts;
-    formik.values.mintGTAddresses = ensToWalletAddresses;
+    try {
+      const { addresses, amounts } = csvToObjectForMintGT(data);
+      const ensToWalletAddresses = await Promise.all(
+        addresses.map(async (address) => {
+          return await ensToWalletAddress(address);
+        }),
+      );
 
-    setIsLoading(false);
+      formik.values.mintGTAmounts = amounts;
+      formik.values.mintGTAddresses = ensToWalletAddresses;
+      setIsLoading(false);
+    } catch {
+      setIsLoading(false);
+      dispatchAlert("Invalid data format. Please enter valid data.", "error");
+    }
   };
 
   const debouncedHandleInput = useCallback(debounce(handleInput, 500), []);
@@ -105,7 +119,7 @@ const MintModal = ({
       try {
         setIsMintLoading(true);
 
-        const { totalAmount } = await normalizeData(data);
+        const totalAmount = await getTotalAmount(data);
 
         let commands = {
           mintGTAddresses: values.mintGTAddresses,
@@ -183,6 +197,19 @@ const MintModal = ({
             debouncedHandleInput(event.target.value);
           }}
         />
+        {Boolean(
+          formik.errors.mintGTAddresses || formik.errors.mintGTAmounts,
+        ) && (
+          <p
+            style={{
+              color: "red",
+              fontSize: "0.8rem",
+            }}>
+            {(formik.touched.mintGTAddresses &&
+              formik.errors.mintGTAddresses) ||
+              (formik.touched.mintGTAmounts && formik.errors.mintGTAmounts)}
+          </p>
+        )}
         <button className={classes.uploadButton}>
           <div className={classes.label}>
             <MdOutlineFileUpload size={20} /> Bulk Upload CSV
@@ -208,7 +235,7 @@ const MintModal = ({
           onClick={formik.handleSubmit}
           className={classes.mint}
           disabled={isMintloading || isLoading}>
-          {isMintloading ? "Minting..." : isLoading ? "Validating" : "Mint"}
+          {isMintloading ? "Minting..." : isLoading ? "Validating..." : "Mint"}
         </button>
       </div>
     </Modal>

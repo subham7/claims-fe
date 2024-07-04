@@ -156,7 +156,7 @@ export const mintValidationSchema = yup.object({
     .array()
     .test(
       "is-valid-address",
-      "Invalid wallet address",
+      "Invalid wallet address or ens",
       async function (values) {
         try {
           const validateAddress = await Promise.all(
