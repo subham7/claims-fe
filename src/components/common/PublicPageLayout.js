@@ -25,9 +25,8 @@ const PublicPageLayout = ({
   claimDescription,
   members,
   nftMinted,
-  depositConfig,
+  showRaiseBar,
 }) => {
-  let toggleDeposit = depositConfig?.toggleRaise;
   return (
     <div className={classes.main}>
       <div className={classes.leftContainer}>
@@ -86,7 +85,7 @@ const PublicPageLayout = ({
 
           {!isDeposit ? <h1>{claimDescription}</h1> : null}
         </div>
-        {isDeposit && toggleDeposit ? (
+        {isDeposit && showRaiseBar !== false ? (
           <>
             {isDeposit ? (
               clubData?.tokenType === "erc721" &&

@@ -75,6 +75,7 @@ const ERC20 = ({
   networkId,
   gatedTokenDetails,
   depositConfig,
+  showRaiseBar,
   allowanceValue,
   fetchCurrentAllowance,
   fetchErc20ContractDetails,
@@ -475,6 +476,7 @@ const ERC20 = ({
           routeNetworkId,
         }}
         depositConfig={depositConfig}
+        showRaiseBar={showRaiseBar}
         members={members}
         loading={loading}
       />
