@@ -32,6 +32,7 @@ const Join = ({ daoAddress, routeNetworkId }) => {
   const [remainingClaimAmount, setRemainingClaimAmount] = useState(0);
   const [whitelistUserData, setWhitelistUserData] = useState("");
   const [depositConfig, setDepositConfig] = useState({});
+  const [showRaiseBar, setShowRaiseBar] = useState(false);
   const [isSignable, setIsSignable] = useState(false);
   const [allowanceValue, setAllowanceValue] = useState(0);
   const [isMetamaskPresent, setIsMetamaskPresent] = useState(true);
@@ -191,6 +192,7 @@ const Join = ({ daoAddress, routeNetworkId }) => {
   const getDepositPreRequisites = async (daoAddress) => {
     const res = await fetchClubByDaoAddress(daoAddress?.toLowerCase());
     setDepositConfig(res?.data?.depositConfig);
+    setShowRaiseBar(res?.data?.depositConfig?.toggleRaise);
     setIsSignable(
       res?.data?.depositConfig &&
         (res?.data?.depositConfig?.subscriptionDocId !== null ||
@@ -338,6 +340,7 @@ const Join = ({ daoAddress, routeNetworkId }) => {
             networkId={networkId}
             gatedTokenDetails={gatedTokenDetails}
             depositConfig={depositConfig}
+            showRaiseBar={showRaiseBar}
             isSignable={isSignable}
             allowanceValue={allowanceValue}
             fetchCurrentAllowance={fetchCurrentAllowance}
@@ -356,6 +359,7 @@ const Join = ({ daoAddress, routeNetworkId }) => {
             networkId={networkId}
             gatedTokenDetails={gatedTokenDetails}
             depositConfig={depositConfig}
+            showRaiseBar={showRaiseBar}
             isSignable={isSignable}
             allowanceValue={allowanceValue}
             fetchCurrentAllowance={fetchCurrentAllowance}

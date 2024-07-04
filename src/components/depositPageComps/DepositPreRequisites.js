@@ -27,7 +27,6 @@ const DepositPreRequisites = ({
     const res = await fetchClubByDaoAddress(daoAddress?.toLowerCase());
     setDepositConfig(res?.data?.depositConfig);
   };
-
   const userSigned = async (
     docIdentifier,
     walletAddress,
