@@ -48,6 +48,7 @@ const ERC721 = ({
   networkId,
   gatedTokenDetails,
   depositConfig,
+  showRaiseBar,
   isSignable,
   allowanceValue,
   fetchCurrentAllowance,
@@ -404,6 +405,7 @@ const ERC721 = ({
         imgUrl={imgUrl}
         isDeposit={true}
         bio={clubInfo?.bio}
+        showRaiseBar={showRaiseBar}
         eligibilityProps={{
           gatedTokenDetails: gatedTokenDetails,
           isDeposit: true,
