@@ -15,8 +15,8 @@ export const createClaimCsv = async (jsonData, networkId) => {
 
     const data = await res.json();
     return data;
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    console.log(error);
   }
 };
 
