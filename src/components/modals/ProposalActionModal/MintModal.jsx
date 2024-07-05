@@ -107,7 +107,7 @@ const MintModal = ({
     }
   };
 
-  const debouncedHandleInput = useCallback(debounce(handleInput, 500), []);
+  const debouncedHandleInput = useCallback(debounce(handleInput, 1500), []);
 
   const formik = useFormik({
     initialValues: {
@@ -158,11 +158,10 @@ const MintModal = ({
         });
 
         setIsMintLoading(false);
-        onActionComplete("success", request.data?.proposalId);
-        onClose();
+        onActionComplete("success", request.data?.proposalId, "true");
       } catch (error) {
         setIsMintLoading(false);
-        onActionComplete("failure");
+        onActionComplete("failure", null, "false");
       }
     },
   });

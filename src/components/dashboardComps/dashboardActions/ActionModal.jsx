@@ -154,10 +154,10 @@ const ActionModal = ({
 
         onClose();
         setLoading(false);
-        onActionComplete("success", request.data?.proposalId);
+        onActionComplete("success", request.data?.proposalId, "false");
       } catch (error) {
         setLoading(false);
-        onActionComplete("failure");
+        onActionComplete("failure", null, "false");
       }
     },
   });
