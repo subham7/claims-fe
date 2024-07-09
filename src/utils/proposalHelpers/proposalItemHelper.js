@@ -236,7 +236,14 @@ export const getProposalAmount = async ({
         airdropTokenDecimal,
       )} ${airdropTokenSymbol}`;
     case 1:
-      return mintGTAmounts;
+      let mintGTTotalAmt = 0;
+
+      mintGTAmounts?.forEach((amount) => {
+        const convertedAmt = convertFromWeiGovernance(amount, 18);
+        mintGTTotalAmt += Number(convertedAmt);
+      });
+
+      return mintGTTotalAmt.toString();
     case 3:
       return `${totalDeposits} ${
         isNativeToken

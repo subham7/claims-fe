@@ -15,6 +15,20 @@
     span {
       color: $gray;
     }
+
+    .title {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+  
+      .closeButton {
+        width: fit-content;
+        background-color: transparent;
+        border: none;
+        color: $gray;
+        cursor: pointer;
+      }
+    }
   }
 
   .flexContainer {
@@ -101,6 +115,7 @@
 
     .stake {
       background-color: white;
+      font-weight: 700;
       color: #282828;
     }
   }

@@ -151,6 +151,71 @@ export const ERC721Step2ValidationSchema = yup.object({
     .required("Deposit close date is required"),
 });
 
+export const mintValidationSchema = yup.object({
+  mintGTAddresses: yup
+    .array()
+    .test(
+      "is-valid-address",
+      "Invalid wallet address or ens",
+      async function (values) {
+        try {
+          const validateAddress = await Promise.all(
+            values.map((address) => validateWalletAddress(address)),
+          );
+          const checkAddress = validateAddress.some((isValid) => !isValid);
+          if (checkAddress) return false;
+          else return true;
+        } catch (error) {
+          return false;
+        }
+      },
+    ),
+  mintGTAmounts: yup
+    .array()
+    .test(
+      "invalidMintGTAmount",
+      "Enter an amount less or equal to total supply",
+      async (value, context) => {
+        if (context.parent.actionCommand !== 1) return true;
+
+        try {
+          const { distributionAmountFormatted } = factoryData;
+          const totalAmount = value.reduce(
+            (partialSum, a) => partialSum + Number(a),
+            0,
+          );
+          if (totalAmount <= 0) return false;
+          let availableAmount;
+          if (tokenType === "erc20") {
+            const clubTokensMinted = await getERC20TotalSupply();
+
+            availableAmount = distributionAmountFormatted?.bigNumberValue
+              .minus(clubTokensMinted?.bigNumberValue)
+              .dividedBy(10 ** 18)
+              .integerValue()
+              .toString();
+          } else if (tokenType === "erc721") {
+            if (distributionAmountFormatted?.bigNumberValue?.isEqualTo(0))
+              return true;
+
+            const { bigNumberValue: clubTokensMinted } =
+              await getNftOwnersCount();
+            availableAmount = distributionAmountFormatted?.bigNumberValue
+              .minus(clubTokensMinted)
+              .integerValue()
+              .toString();
+          } else {
+            return true;
+          }
+
+          return Number(totalAmount) <= Number(availableAmount);
+        } catch (error) {
+          return false;
+        }
+      },
+    ),
+});
+
 export const getProposalValidationSchema = ({
   networkId,
   getBalance,

@@ -1,0 +1,146 @@
+@import "../../../../styles/variables.scss";
+
+.modal {
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+  background-color: $background-primary !important;
+  border-radius: 16px;
+  border: 1px solid #333333;
+  gap: 1.5rem;
+
+  .title {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+
+    .closeButton {
+      width: fit-content;
+      background-color: transparent;
+      border: none;
+      color: $gray;
+      cursor: pointer;
+    }
+  }
+
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+
+    .actionButton {
+      width: 100%;
+      padding: 1rem;
+      background-color: $dark-gray;
+      border: none;
+      border-radius: 12px;
+      color: $white;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s;
+
+      &:hover {
+        background-color: #333333;
+      }
+    }
+  }
+
+  .inputContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      padding: 1rem;
+      background-color: #282828;
+      color: $gray;
+      border: none;
+      border-radius: 12px;
+      color: $white;
+      font-size: 1rem;
+      resize: none;
+      &:focus {
+        outline: none;
+      }
+    }
+
+    .uploadButton {
+      padding: 0;
+      width: 160px;
+      display: block;
+      height: 40px;
+      position: relative;
+      border-radius: 20px;
+      color: $white;
+      background-color: $dark-gray;
+      border: 1px solid $blur-bg;
+      overflow: hidden;
+      cursor: pointer;
+
+      .label {
+        position: relative;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        font-weight: 500;
+      }
+
+      .uploadInput {
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        left: 0;
+        width: 160px;
+        height: 40px;
+        border-radius: 20px;
+        cursor: pointer;
+        z-index: 50;
+      }
+    }
+
+    .link {
+      color: $light-gray;
+      font-size: 0.9rem;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      width: fit-content;
+    }
+  }
+
+  .buttonContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    button {
+      background-color: #282828;
+      border: none;
+      outline: none;
+      padding: 16px 0;
+      width: 100%;
+      font-family: inherit;
+      border-radius: 8px;
+      font-weight: 500;
+      color: white;
+      cursor: pointer;
+    }
+
+    .cancel {
+      &:hover {
+        background: #4c4c4c;
+      }
+    }
+
+    .mint {
+      background-color: white;
+      font-weight: 700;
+      color: #282828;
+    }
+  }
+}

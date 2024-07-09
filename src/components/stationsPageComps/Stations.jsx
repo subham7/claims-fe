@@ -67,7 +67,7 @@ const Stations = ({ clubListData }) => {
             sortedClubs
               ?.filter((club) => !OMIT_DAOS.includes(club.daoAddress))
               .map((club, key) => {
-                return <Station club={club} key={key} />;
+                return <Station club={club} key={key} idx={key} />;
               })
           ) : (
             <div
