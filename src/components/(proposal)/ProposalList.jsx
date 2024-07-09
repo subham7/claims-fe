@@ -1,13 +1,7 @@
-import React, { useEffect, useState } from "react";
 import classes from "@components/(proposal)/Proposal.module.scss";
-
 import ProposalTabs from "./ProposalTabs";
 import { Pagination, Skeleton, Typography } from "@mui/material";
 import ProposalItem from "./ProposalItem";
-import {
-  getLatesExecutableProposal,
-  getPaginatedProposalList,
-} from "api/proposal";
 import ExecutedProposalList from "./ExecutedProposalList";
 import PassedProposalList from "./PassedProposalList";
 
@@ -32,16 +26,21 @@ export const PropsalLoadingShimmer = () => {
   );
 };
 
-const ProposalList = ({ daoAddress, routeNetworkId }) => {
-  const [tabType, setTabType] = useState("Queue");
-  const [executedProposals, setExecutedProposals] = useState([]);
-  const [passedProposals, setPassedProposals] = useState([]);
-  const [executableProposal, setExecutableProposal] = useState();
-  const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(1);
-
-  const limit = 10;
+const ProposalList = ({
+  daoAddress,
+  routeNetworkId,
+  tabType,
+  setTabType,
+  page,
+  setPage,
+  loading,
+  executableProposal,
+  passedProposals,
+  executedProposals,
+  refreshProposals,
+  totalCount,
+  limit,
+}) => {
   const pageCount = Math.ceil(totalCount / limit);
 
   const tabChangeHandler = (event, newValue) => {
@@ -52,52 +51,6 @@ const ProposalList = ({ daoAddress, routeNetworkId }) => {
   const handlePageChange = (event, value) => {
     setPage(value);
   };
-
-  const refreshProposals = async () => {
-    if (tabType === "Queue") {
-      await loadSignedProposals();
-      await loadExecutableLatestProposal();
-    } else {
-      await loadExecutedProposals();
-    }
-  };
-
-  const loadSignedProposals = async () => {
-    setLoading(true);
-    const offset = (page - 1) * limit;
-    const data = await getPaginatedProposalList(daoAddress, limit, offset);
-    setPassedProposals(data?.data?.data || []);
-    setTotalCount(data?.data?.total);
-    setLoading(false);
-  };
-
-  const loadExecutedProposals = async () => {
-    setLoading(true);
-    const offset = (page - 1) * limit;
-    const data = await getPaginatedProposalList(
-      daoAddress,
-      limit,
-      offset,
-      "executed",
-    );
-    setExecutedProposals(data?.data?.data || []);
-    setTotalCount(data?.data?.total);
-    setLoading(false);
-  };
-
-  const loadExecutableLatestProposal = async () => {
-    const data = await getLatesExecutableProposal(daoAddress);
-    setExecutableProposal(data?.data[0]);
-  };
-
-  useEffect(() => {
-    if (tabType === "Queue") {
-      loadSignedProposals();
-      loadExecutableLatestProposal();
-    } else {
-      loadExecutedProposals();
-    }
-  }, [page, tabType]);
 
   return (
     <div

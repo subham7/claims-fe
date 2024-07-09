@@ -30,6 +30,7 @@ import BackdropLoader from "@components/common/BackdropLoader";
 import { actionModalValidation } from "@components/createClubComps/ValidationSchemas";
 import { MdInfo } from "react-icons/md";
 import { ensToWalletAddress } from "utils/helper";
+import { RxCross2 } from "react-icons/rx";
 
 const ActionModal = ({
   type,
@@ -154,10 +155,10 @@ const ActionModal = ({
 
         onClose();
         setLoading(false);
-        onActionComplete("success", request.data?.proposalId);
+        onActionComplete("success", request.data?.proposalId, "false");
       } catch (error) {
         setLoading(false);
-        onActionComplete("failure");
+        onActionComplete("failure", null, "false");
       }
     },
   });
@@ -204,14 +205,21 @@ const ActionModal = ({
   }, [formik.values, showFeesAmount]);
 
   return (
-    <Modal className={classes.modal}>
+    <Modal className={classes.modal} onClose={onClose}>
       <div className={classes.nameContainer}>
         {type === "send" ? (
-          <div>
-            <Typography fontSize={20} fontWeight={500} variant="inherit">
-              Send <span>assets to another wallet</span>
-            </Typography>
-
+          <div
+            style={{
+              width: "100%",
+            }}>
+            <div className={classes.title}>
+              <Typography fontSize={20} fontWeight={500} variant="inherit">
+                Send <span>assets to another wallet</span>
+              </Typography>
+              <button className={classes.closeButton} onClick={onClose}>
+                <RxCross2 size={25} />
+              </button>
+            </div>
             <Typography
               color={"#707070"}
               fontSize={14}
@@ -221,11 +229,18 @@ const ActionModal = ({
             </Typography>
           </div>
         ) : (
-          <div>
-            <Typography fontSize={20} fontWeight={500} variant="inherit">
-              Distribute <span>to members</span>
-            </Typography>
-
+          <div
+            style={{
+              width: "100%",
+            }}>
+            <div className={classes.title}>
+              <Typography fontSize={20} fontWeight={500} variant="inherit">
+                Distribute <span>to members</span>
+              </Typography>
+              <button className={classes.closeButton} onClick={onClose}>
+                <RxCross2 size={25} />
+              </button>
+            </div>
             <Typography
               color={"#707070"}
               fontSize={14}
@@ -495,7 +510,7 @@ const ActionModal = ({
           Cancel
         </button>
         <button onClick={formik.handleSubmit} className={classes.stake}>
-          Done
+          {type === "distribute" ? "Distribute" : "Send"}
         </button>
       </div>
 

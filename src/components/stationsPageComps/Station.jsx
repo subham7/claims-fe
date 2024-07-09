@@ -17,7 +17,7 @@ import { BigNumber } from "bignumber.js";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import { setAlertData } from "redux/reducers/alert";
 
-const Station = ({ club, key }) => {
+const Station = ({ club, idx }) => {
   const dispatch = useDispatch();
   const [selectedIndex, setSelectedIndex] = useState(null);
   const dropdownRef = useRef(null);
@@ -155,7 +155,6 @@ const Station = ({ club, key }) => {
   return (
     <div
       className={classes.station}
-      key={key}
       onClick={() => {
         handleItemClick(club.daoAddress, club.networkId);
       }}>
@@ -204,7 +203,7 @@ const Station = ({ club, key }) => {
             {club.membersCount} {club.membersCount > 1 ? "members" : "member"}
           </p>
         </div>
-        <p className={classes.stationFunding}>
+        <span className={classes.stationFunding}>
           {club.depositTokenAddress?.toLowerCase() ===
           "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
             ? convertFromWeiGovernance(
@@ -218,18 +217,18 @@ const Station = ({ club, key }) => {
           ) : (
             <p>USDC</p>
           )}
-        </p>
+        </span>
       </div>
       <div className={classes.option} ref={dropdownRef}>
-        <button
+        <div
           className={classes.optionButton}
           onClick={(event) => {
             event.stopPropagation();
-            setSelectedIndex((prevIndex) => (prevIndex === key ? null : key));
+            setSelectedIndex((prevIndex) => (prevIndex === idx ? null : idx));
           }}>
           <SlOptionsVertical />
-        </button>
-        {selectedIndex === key && (
+        </div>
+        {selectedIndex === idx && (
           <div className={classes.optionDropdown}>
             <button
               className={classes.optionDropdownButton}
