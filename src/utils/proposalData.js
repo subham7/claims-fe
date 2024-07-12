@@ -2265,11 +2265,17 @@ export const createOrUpdateSafeTransaction = async ({
 
   if (networkId !== "0x89" && networkId !== "0x1") {
     if (executionId === 6) {
-      safeTransaction = await safeSdk.createAddOwnerTx(transaction);
+      safeTransaction = await safeSdk.createAddOwnerTx(transaction, {
+        nonce,
+      });
     } else if (executionId === 7) {
-      safeTransaction = await safeSdk.createRemoveOwnerTx(transaction);
+      safeTransaction = await safeSdk.createRemoveOwnerTx(transaction, {
+        nonce,
+      });
     } else if (executionId === 62) {
-      safeTransaction = await safeSdk.createChangeThresholdTx(transaction);
+      safeTransaction = await safeSdk.createChangeThresholdTx(transaction, {
+        nonce,
+      });
     } else {
       safeTransaction = await safeSdk.createTransaction({
         safeTransactionData: createSafeTransactionData({
@@ -2287,7 +2293,9 @@ export const createOrUpdateSafeTransaction = async ({
     }
   } else {
     if (executionId === 62) {
-      safeTransaction = await safeSdk.createChangeThresholdTx(transaction);
+      safeTransaction = await safeSdk.createChangeThresholdTx(transaction, {
+        nonce,
+      });
     } else {
       safeTransaction = await safeSdk.createTransaction({
         safeTransactionData: createSafeTransactionData({
