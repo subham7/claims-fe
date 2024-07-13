@@ -2,7 +2,6 @@ import { BigNumber } from "bignumber.js";
 import { useSelector } from "react-redux";
 import { encodeFunctionData, parseEther } from "viem";
 import { useAccount, useChainId, useWalletClient } from "wagmi";
-import Web3 from "web3";
 
 import { clipFinanceEthPoolABI } from "abis/clip-finance/ethPoolAbi";
 import { eigenContractABI } from "abis/eigenContract";
@@ -19,17 +18,7 @@ import {
 } from "utils/globalFunctions";
 import { readContractFunction, writeContractFunction } from "utils/helper";
 import { CC_NETWORKS } from "utils/networkConstants";
-import { getTransaction } from "utils/proposal";
-import {
-  createOrUpdateSafeTransaction,
-  getSafeTransaction,
-  getTransactionHash,
-  signAndConfirmTransaction,
-} from "utils/proposalData";
-
-import { createProposalTxHash } from "../api/proposal";
 import useCommonContractMethods from "./useCommonContractMehods";
-import { getPublicClient } from "utils/viemConfig";
 
 const useAppContractMethods = (params) => {
   const walletClient = useWalletClient();
@@ -601,188 +590,6 @@ const useAppContractMethods = (params) => {
     }
   };
 
-  const updateProposalAndExecution = async ({
-    data,
-    approvalData = "",
-    gnosisAddress = "",
-    pid,
-    tokenData,
-    proposalStatus,
-    proposalData,
-    membersArray,
-    airDropAmountArray,
-    transactionData = "",
-  }) => {
-    const { executionId, safeThreshold } = proposalData.commands[0];
-    const airdropContractAddress =
-      CHAIN_CONFIG[networkId].airdropContractAddress;
-
-    const factoryContractAddress =
-      CHAIN_CONFIG[networkId]?.factoryContractAddress;
-    const parameters = data;
-
-    const { safeSdk, safeService } = await getSafeTransaction(
-      gnosisAddress,
-      walletAddress,
-      CHAIN_CONFIG[networkId]?.gnosisTxUrl,
-    );
-
-    const {
-      transaction,
-      approvalTransaction,
-      stakeETHTransaction,
-      approvalTransaction2,
-    } = await getTransaction({
-      proposalData,
-      daoAddress,
-      walletAddress,
-      factoryContractAddress,
-      approvalData,
-      safeThreshold,
-      transactionData,
-      airdropContractAddress,
-      tokenData,
-      gnosisAddress,
-      parameters,
-      isAssetsStoredOnGnosis,
-      networkId,
-      membersArray,
-      airDropAmountArray,
-      safeSdk,
-    });
-    const txHash = await getTransactionHash(pid);
-    const tx = txHash ? await safeService.getTransaction(txHash) : null;
-
-    if (proposalStatus !== "executed") {
-      if (txHash === "") {
-        const nonce = await safeService.getNextNonce(gnosisAddress);
-        const { safeTransaction, safeTxHash } =
-          await createOrUpdateSafeTransaction({
-            safeSdk,
-            executionId,
-            transaction,
-            approvalTransaction,
-            stakeETHTransaction,
-            nonce,
-            proposalStatus,
-            approvalTransaction2,
-            networkId,
-          });
-
-        const payload = { proposalId: pid, txHash: safeTxHash };
-        await createProposalTxHash(payload);
-
-        const proposeTxn = await safeService.proposeTransaction({
-          safeAddress: Web3.utils.toChecksumAddress(gnosisAddress),
-          safeTransactionData: safeTransaction.data,
-          safeTxHash: safeTxHash,
-          senderAddress: Web3.utils.toChecksumAddress(walletAddress),
-        });
-
-        await signAndConfirmTransaction({
-          safeSdk,
-          safeService,
-          safeTransaction,
-          rejectionTransaction: null,
-          executionStatus: proposalStatus,
-          safeTxHash,
-        });
-        return proposeTxn;
-      } else {
-        if (executionId === 63) {
-          const { safeTransaction, rejectionTransaction, safeTxHash } =
-            await createOrUpdateSafeTransaction({
-              safeSdk,
-              executionId,
-              approvalTransaction: tx.dataDecoded.parameters[0].valueDecoded[0],
-              transaction: tx.dataDecoded.parameters[0].valueDecoded[1],
-              approvalTransaction2:
-                tx.dataDecoded.parameters[0].valueDecoded[2],
-              stakeETHTransaction: tx.dataDecoded.parameters[0].valueDecoded[3],
-              nonce: tx.nonce,
-              executionStatus: proposalStatus,
-              networkId,
-            });
-
-          await signAndConfirmTransaction({
-            safeSdk,
-            safeService,
-            safeTransaction,
-            rejectionTransaction,
-            executionStatus: proposalStatus,
-            safeTxHash,
-          });
-          return tx;
-        } else {
-          let transactionToBeExecuted;
-
-          if (networkId === "0x1" || networkId === "0x89") {
-            transactionToBeExecuted =
-              executionId === 4 || executionId === 62
-                ? transaction
-                : approvalTransaction && stakeETHTransaction
-                ? tx.dataDecoded.parameters[0].valueDecoded[2]
-                : approvalTransaction && !stakeETHTransaction
-                ? tx.dataDecoded.parameters[0].valueDecoded[1]
-                : tx;
-          } else {
-            transactionToBeExecuted =
-              executionId === 4 ||
-              executionId === 62 ||
-              executionId === 6 ||
-              executionId === 7
-                ? transaction
-                : approvalTransaction && stakeETHTransaction
-                ? tx.dataDecoded.parameters[0].valueDecoded[2]
-                : approvalTransaction && !stakeETHTransaction
-                ? tx.dataDecoded.parameters[0].valueDecoded[1]
-                : tx;
-          }
-
-          const { safeTransaction, rejectionTransaction, safeTxHash } =
-            await createOrUpdateSafeTransaction({
-              safeSdk,
-              executionId,
-              transaction: transactionToBeExecuted,
-              approvalTransaction:
-                approvalTransaction && stakeETHTransaction
-                  ? tx.dataDecoded.parameters[0].valueDecoded[1]
-                  : approvalTransaction && !stakeETHTransaction
-                  ? tx.dataDecoded.parameters[0].valueDecoded[0]
-                  : undefined,
-              stakeETHTransaction:
-                approvalTransaction && stakeETHTransaction
-                  ? tx.dataDecoded.parameters[0].valueDecoded[0]
-                  : undefined,
-              nonce: tx.nonce,
-              executionStatus: proposalStatus,
-              networkId,
-            });
-
-          await signAndConfirmTransaction({
-            safeSdk,
-            safeService,
-            safeTransaction,
-            rejectionTransaction,
-            executionStatus: proposalStatus,
-            safeTxHash,
-          });
-          return tx;
-        }
-      }
-    } else {
-      const gasPrice = await getPublicClient(networkId).getGasPrice();
-
-      const executeTxResponse = await safeSdk.executeTransaction(tx, {
-        gasPrice: Number(Number(gasPrice) * 1.2).toFixed(0),
-      });
-      const receipt =
-        executeTxResponse.transactionResponse &&
-        (await executeTxResponse.transactionResponse.wait());
-      return executeTxResponse;
-    }
-  };
-
   const fetchMendiUsdcExhcangeRate = async () => {
     try {
       const res = await readContractFunction({
@@ -831,7 +638,6 @@ const useAppContractMethods = (params) => {
     setupTokenGating,
     disableTokenGating,
     getTokenGatingDetails,
-    updateProposalAndExecution,
     toggleWhitelist,
     fetchEigenTokenBalance,
     fetchMendiUsdcExhcangeRate,

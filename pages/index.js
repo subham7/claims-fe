@@ -3,7 +3,7 @@ import { makeStyles } from "@mui/styles";
 import { useWalletInfo, useWeb3Modal } from "@web3modal/wagmi/react";
 import { useRouter } from "next/router";
 import { React, useState } from "react";
-import { BsFillPlayFill } from "react-icons/bs";
+// import { BsFillPlayFill } from "react-icons/bs";
 import { useChainId } from "wagmi";
 
 import {
@@ -13,7 +13,6 @@ import {
 
 import NewCard from "../src/components/cards/card";
 import Layout from "../src/components/layouts/layout";
-import VideoModal from "../src/components/modals/VideoModal";
 
 const useStyles = makeStyles({
   container: {
@@ -152,16 +151,16 @@ const App = () => {
               }
               buttonText="Enter App"
             />
-          </div> 
+          </div>
         </div>
 
-        {showVideoModal && (
+        {/* {showVideoModal && (
           <VideoModal
             onClose={() => {
               setShowVideoModal(false);
             }}
           />
-        )}
+        )} */}
 
         {showNetworkModal && (
           <NetworkSwitcher

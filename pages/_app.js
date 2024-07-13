@@ -1,6 +1,6 @@
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { ThemeProvider } from "@mui/material/styles";
-import { ConnectKitProvider } from "connectkit";
+// import { ConnectKitProvider } from "connectkit";
 import Script from "next/script";
 import React from "react";
 import { Provider } from "react-redux";
@@ -87,9 +87,9 @@ function MyApp({ Component, pageProps }) {
           {/* <WagmiConfig config={wagmiConfig}> */}
           <Web3ModalProvider initialState={initialState}>
             {/* <ConnectKitProvider> */}
-              <Provider store={store}>
-                <Component {...pageProps} />
-              </Provider>
+            <Provider store={store}>
+              <Component {...pageProps} />
+            </Provider>
             {/* </ConnectKitProvider> */}
           </Web3ModalProvider>
           {/* </WagmiConfig> */}

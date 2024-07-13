@@ -2,9 +2,9 @@ import PublicPageLayout from "@components/common/PublicPageLayout";
 import TwitterSharingModal from "@components/modals/TwitterSharingModal";
 import ProgressBar from "@components/progressbar";
 import Button from "@components/ui/button/Button";
-import { CircularProgress, Skeleton, Typography } from "@mui/material";
-import { IDKitWidget, ISuccessResult, useIDKit } from "@worldcoin/idkit";
-import { ConnectKitButton } from "connectkit";
+import { Skeleton, Typography } from "@mui/material";
+import { IDKitWidget } from "@worldcoin/idkit";
+// import { ConnectKitButton } from "connectkit";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useAccount, useChainId } from "wagmi";
@@ -15,8 +15,14 @@ import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useDropsContractMethods from "hooks/useDropsContractMethods";
 import { setAlertData } from "redux/reducers/alert";
 import { ZERO_MERKLE_ROOT } from "utils/constants";
-import { queryDropDetailsFromSubgraph, queryLatestTenDropsTransactionsFromSubgraph } from "utils/dropsSubgraphHelper";
-import { convertFromWeiGovernance, convertToWeiGovernance } from "utils/globalFunctions";
+import {
+  queryDropDetailsFromSubgraph,
+  queryLatestTenDropsTransactionsFromSubgraph,
+} from "utils/dropsSubgraphHelper";
+import {
+  convertFromWeiGovernance,
+  convertToWeiGovernance,
+} from "utils/globalFunctions";
 import { convertToFullNumber, processAmount } from "utils/helper";
 
 import classes from "./Claim.module.scss";

@@ -57,7 +57,6 @@ export const supportedChainsDrops = [
   "0x5",
   "0xa0c71fd",
   "0x13e31",
-  "0x14a34",
 ];
 
 export const CHAIN_CONFIG = {
@@ -227,32 +226,6 @@ export const CHAIN_CONFIG = {
     blockExplorerUrl: "https://explorer.base.org",
     disburseContractAddress: "0x66AB805f4bc0FCbFFC3240C80ecECE452aa9d94f",
     gnosisTxUrl: "https://safe-transaction-base.safe.global/",
-    logoUri: "/assets/networks/0x2105.png",
-  },
-  "0x14a34": {
-    chainName: "Base Sepolia",
-    shortName: "Base",
-    chainId: 84532,
-    nativeCurrency: {
-      name: "Base ETH",
-      decimals: 18,
-      symbol: "ETH",
-      image: "/assets/icons/eth.png",
-    },
-    theme: THEME_CONFIG("0x2105"),
-    rpcUrls: ["https://sepolia.base.org"],
-    appRpcUrl: `https://small-crimson-valley.base-sepolia.quiknode.pro/c2c81b8e4c5abb857da0cfe91e0bccc10d318e46/`,
-
-    claimFactoryAddress: "0x34e90BA3af6af98f0F2122981d8B9bB9d687D670",
-    claimsSubgraphUrl:
-      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-base-sepolia/0.0.1/gn",
-
-    covalentNetworkName: "base-sepolia-testnet",
-    nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-    usdcAddress: "",
-    usdtAddress: "",
-    blockExplorerUrl: "https://explorer.base.org",
-    disburseContractAddress: "",
     logoUri: "/assets/networks/0x2105.png",
   },
   "0xa4b1": {
@@ -927,10 +900,6 @@ export const dropsNetworksChaindId = [
     networkId: "0x2105",
   },
   {
-    chainId: 84532,
-    networkId: "0x14a34",
-  },
-  {
     chainId: 42161,
     networkId: "0xa4b1",
   },
@@ -991,10 +960,6 @@ export const supportedNetworksChaindId = [
     networkId: "0x2105",
   },
   {
-    chainId: 84532,
-    networkId: "0x14a34",
-  },
-  {
     chainId: 42161,
     networkId: "0xa4b1",
   },
@@ -1041,7 +1006,6 @@ export const ALLOWED_NETWORKS_FOR_STATION = [
   "0x38",
   "0x2105",
   "0xa4b1",
-  "0x14a34",
 ];
 
 export const GRADIENT_BUCKET = [

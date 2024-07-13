@@ -4,19 +4,14 @@ import classes from "./Navbar.module.scss";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import NetworkSwitcher from "@components/modals/NetworkSwitcher/NetworkSwitcher";
-import CreateSpaceModal from "@components/modals/CreateSpaceModal/CreateSpaceModal";
 import { dropsNetworksChaindId, stationNetworksChainId } from "utils/constants";
 import { useAccount, useChainId } from "wagmi";
 import { Typography } from "@mui/material";
-import EditDetails from "@components/settingsComps/modals/EditDetails";
 import { useSelector } from "react-redux";
 import { useWalletInfo } from "@web3modal/wagmi/react";
 import { getConnections } from "@wagmi/core";
 import { config } from "config";
 import { fetchClubByDaoAddress } from "api/club";
-import Menu from "./Menu";
-import useSpaceFetch from "hooks/useSpaceFetch";
-import { getSpaceByManager } from "api/space";
 import useAuth from "hooks/useAuth";
 
 const Navbar = ({ daoAddress, routeNetworkId }) => {
@@ -32,7 +27,6 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
 
   const router = useRouter();
   const [spaceId] = router?.query?.slug ?? [];
-  const { spaceData, isLoading } = useSpaceFetch(spaceId);
   const { address } = useAccount();
   const { walletInfo } = useWalletInfo();
   const chain = useChainId();
@@ -70,15 +64,6 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
   useEffect(() => {
     if (daoAddress) fetchClubData();
   }, [daoAddress]);
-
-  const fetchSpaces = async () => {
-    const data = await getSpaceByManager(address);
-    setSpaces(data);
-  };
-
-  useEffect(() => {
-    if (address) fetchSpaces();
-  }, [address]);
 
   useEffect(() => {
     if (address && networkId) fetchCurrentWalletIcon();
@@ -123,17 +108,7 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
               </Typography>
             </div>
           ) : null}
-          {router.pathname.includes("space") &&
-            !isLoading &&
-            spaceData.creator === address && (
-              <button
-                className={classes.customise}
-                onClick={() => {
-                  router.push(`/space/customise/${spaceId}`);
-                }}>
-                Customise
-              </button>
-            )}
+
           <div className={classes.network}>
             <w3m-network-button />
           </div>
@@ -149,15 +124,6 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
             )}
             <w3m-button label="Connect" />
           </div>
-          {address && (
-            <Menu
-              spaces={spaces}
-              showMenu={showMenu}
-              setShowMenu={setShowMenu}
-              dropdownRef={dropdownRef}
-              setShowCreateSpaceModal={setShowCreateSpaceModal}
-            />
-          )}
         </div>
       </nav>
 
@@ -169,21 +135,6 @@ const Navbar = ({ daoAddress, routeNetworkId }) => {
           supportedNetworks={networksSupported}
         />
       )}
-
-      {showCreateSpaceModal && (
-        <CreateSpaceModal setShowCreateSpaceModal={setShowCreateSpaceModal} />
-      )}
-
-      <EditDetails
-        networkId={routeNetworkId}
-        isClaims={false}
-        open={showEditDetails}
-        setOpen={setShowEditDetails}
-        onClose={() => setShowEditDetails(false)}
-        daoAddress={daoAddress}
-        isErc721={clubData?.tokenType === "erc721"}
-        toggleRaise={isToggleRaise}
-      />
     </>
   );
 };
