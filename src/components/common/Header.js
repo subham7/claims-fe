@@ -1,15 +1,14 @@
 import { Skeleton, Typography } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import classes from "../claims/Claim.module.scss";
 import { formatEpochTime } from "utils/helper";
 import Image from "next/image";
 import SwapInfo from "./SwapInfo";
-import ZkMe from "@components/zkMe/zkMe";
-import { verifyWithZkMeServices } from "@zkmelabs/widget";
+// import ZkMe from "@components/zkMe/zkMe";
+// import { verifyWithZkMeServices } from "@zkmelabs/widget";
 import { useAccount } from "wagmi";
 import { IoIosArrowRoundForward } from "react-icons/io";
 import { IoCheckmark } from "react-icons/io5";
-import { getClubData } from "api/club";
 import { useSelector } from "react-redux";
 import { CHAIN_CONFIG } from "utils/constants";
 
@@ -66,30 +65,30 @@ const Header = ({
     return classes.inactive;
   };
 
-  const getKycSetting = async () => {
-    try {
-      const response = await getClubData(daoAddress);
-      if (response) {
-        setKycEnabled(response.kyc.isKycEnabled);
-        if (response.kyc.isKycEnabled) {
-          setZkMeAppId(response.kyc.zkmeAppId);
-          const results = await verifyWithZkMeServices(
-            response.kyc.zkmeAppId,
-            address,
-          );
-          setIsVerified(results);
-        }
-        setLoading(false);
-      }
-    } catch (e) {
-      console.error(e);
-      setLoading(false);
-    }
-  };
+  // const getKycSetting = async () => {
+  //   try {
+  //     const response = await getClubData(daoAddress);
+  //     if (response) {
+  //       setKycEnabled(response.kyc.isKycEnabled);
+  //       if (response.kyc.isKycEnabled) {
+  //         setZkMeAppId(response.kyc.zkmeAppId);
+  //         const results = await verifyWithZkMeServices(
+  //           response.kyc.zkmeAppId,
+  //           address,
+  //         );
+  //         setIsVerified(results);
+  //       }
+  //       setLoading(false);
+  //     }
+  //   } catch (e) {
+  //     console.error(e);
+  //     setLoading(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    getKycSetting();
-  }, [address, daoAddress]);
+  // useEffect(() => {
+  //   getKycSetting();
+  // }, [address, daoAddress]);
 
   if (!tokenDetails?.tokenSymbol || !contractData) {
     return <HeaderShimmer />;
@@ -139,13 +138,13 @@ const Header = ({
           <SwapInfo networkId={networkId} />
         )}
 
-      {open ? (
+      {/* {open ? (
         <ZkMe
           daoAddress={daoAddress}
           zkMeAppId={zkMeAppId}
           routeNetworkId={routeNetworkId}
         />
-      ) : null}
+      ) : null} */}
       {/* {loading || isVerified ? null : (
         <Button
           onClick={() => setOpen(!open)}

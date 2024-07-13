@@ -57,7 +57,6 @@ export const supportedChainsDrops = [
   "0x5",
   "0xa0c71fd",
   "0x13e31",
-  "0x14a34",
 ];
 
 export const CHAIN_CONFIG = {
@@ -927,10 +926,6 @@ export const dropsNetworksChaindId = [
     networkId: "0x2105",
   },
   {
-    chainId: 84532,
-    networkId: "0x14a34",
-  },
-  {
     chainId: 42161,
     networkId: "0xa4b1",
   },
@@ -991,10 +986,6 @@ export const supportedNetworksChaindId = [
     networkId: "0x2105",
   },
   {
-    chainId: 84532,
-    networkId: "0x14a34",
-  },
-  {
     chainId: 42161,
     networkId: "0xa4b1",
   },
@@ -1041,7 +1032,6 @@ export const ALLOWED_NETWORKS_FOR_STATION = [
   "0x38",
   "0x2105",
   "0xa4b1",
-  "0x14a34",
 ];
 
 export const GRADIENT_BUCKET = [
