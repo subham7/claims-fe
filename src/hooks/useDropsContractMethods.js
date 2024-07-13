@@ -5,8 +5,7 @@ import { claimFactoryABI } from "abis/claimFactory.js";
 import { CHAIN_CONFIG } from "utils/constants";
 import { disburseContractABI } from "abis/disburseContract";
 import { decodeAbiParameters, parseAbiParameters } from "viem";
-import { ethers } from "ethers";
-import BigNumber from "bignumber.js";
+import { encodeFunctionData } from "viem";
 
 const useDropsContractMethods = () => {
   const walletClient = useWalletClient();
@@ -200,6 +199,23 @@ const useDropsContractMethods = () => {
     )[0];
     debugger;
     // console.log(signal, merkle_root, nullifier_hash, proof);
+    const encodedData1 = encodeFunctionData({
+      abi: claimContractABI,
+      functionName: "claim",
+      args: [
+        amount,
+        reciever,
+        merkleProof,
+        encodedData,
+        erc1155tokenId,
+        signal,
+        BigInt(merkle_root),
+        BigInt(nullifier_hash),
+        parsedProof,
+      ],
+    });
+
+    console.log(encodedData1);
 
     try {
       const res = await writeContractFunction({
@@ -223,6 +239,7 @@ const useDropsContractMethods = () => {
       });
       return res;
     } catch (error) {
+      console.log(error);
       throw error;
     }
   };

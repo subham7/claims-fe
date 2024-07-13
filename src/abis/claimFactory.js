@@ -1,487 +1,346 @@
 export const claimFactoryABI = [
+  { type: "receive", stateMutability: "payable" },
   {
-    inputs: [],
-    name: "InvalidAddress",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "InvalidAmount",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "InvalidTime",
-    type: "error",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint8",
-        name: "version",
-        type: "uint8",
-      },
-    ],
-    name: "Initialized",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "address",
-        name: "_newClaimContract",
-        type: "address",
-      },
-    ],
-    name: "NewClaimContract",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "bytes32",
-        name: "role",
-        type: "bytes32",
-      },
-      {
-        indexed: true,
-        internalType: "bytes32",
-        name: "previousAdminRole",
-        type: "bytes32",
-      },
-      {
-        indexed: true,
-        internalType: "bytes32",
-        name: "newAdminRole",
-        type: "bytes32",
-      },
-    ],
-    name: "RoleAdminChanged",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "bytes32",
-        name: "role",
-        type: "bytes32",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "sender",
-        type: "address",
-      },
-    ],
-    name: "RoleGranted",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "bytes32",
-        name: "role",
-        type: "bytes32",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "sender",
-        type: "address",
-      },
-    ],
-    name: "RoleRevoked",
-    type: "event",
-  },
-  {
-    inputs: [],
-    name: "DEFAULT_ADMIN_ROLE",
-    outputs: [
-      {
-        internalType: "bytes32",
-        name: "",
-        type: "bytes32",
-      },
-    ],
-    stateMutability: "view",
     type: "function",
+    name: "DEFAULT_ADMIN_ROLE",
+    inputs: [],
+    outputs: [{ name: "", type: "bytes32", internalType: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_newClaimFee",
-        type: "uint256",
-      },
-    ],
+    type: "function",
     name: "changeClaimFee",
+    inputs: [
+      { name: "_newClaimFee", type: "uint256", internalType: "uint256" },
+    ],
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
+    type: "function",
+    name: "changeClaimImplementation",
     inputs: [
       {
-        internalType: "address",
         name: "_newClaimImplementation",
         type: "address",
+        internalType: "address",
       },
     ],
-    name: "changeClaimImplementation",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
+    type: "function",
+    name: "changeClaimPrice",
     inputs: [
       {
-        internalType: "uint256",
         name: "_newClaimPrice",
         type: "uint256",
+        internalType: "uint256",
       },
     ],
-    name: "changeClaimPrice",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
-    inputs: [],
+    type: "function",
     name: "claimFee",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [],
-    name: "claimPrice",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
+    outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
     stateMutability: "view",
-    type: "function",
   },
   {
+    type: "function",
+    name: "claimPrice",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "deployClaimContract",
     inputs: [
       {
-        components: [
-          {
-            internalType: "string",
-            name: "name",
-            type: "string",
-          },
-          {
-            internalType: "address",
-            name: "creatorAddress",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "walletAddress",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "airdropToken",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "daoToken",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "tokenGatingValue",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "startTime",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "endTime",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "cooldownTime",
-            type: "uint256",
-          },
-          {
-            internalType: "bool",
-            name: "hasAllowanceMechanism",
-            type: "bool",
-          },
-          {
-            internalType: "bool",
-            name: "isEnabled",
-            type: "bool",
-          },
-          {
-            internalType: "bytes32",
-            name: "merkleRoot",
-            type: "bytes32",
-          },
-          {
-            internalType: "enum CLAIM_PERMISSION",
-            name: "permission",
-            type: "uint8",
-          },
-          {
-            components: [
-              {
-                internalType: "uint256",
-                name: "maxClaimable",
-                type: "uint256",
-              },
-              {
-                internalType: "uint256",
-                name: "totalClaimAmount",
-                type: "uint256",
-              },
-            ],
-            internalType: "struct ClaimAmountDetails",
-            name: "claimAmountDetails",
-            type: "tuple",
-          },
-        ],
-        internalType: "struct ClaimSettings",
         name: "_claimSettings",
         type: "tuple",
+        internalType: "struct ClaimSettings",
+        components: [
+          { name: "name", type: "string", internalType: "string" },
+          {
+            name: "creatorAddress",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "walletAddress",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "airdropToken",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "daoToken",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "tokenGatingValue",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "startTime",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          { name: "endTime", type: "uint256", internalType: "uint256" },
+          {
+            name: "cooldownTime",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "hasAllowanceMechanism",
+            type: "bool",
+            internalType: "bool",
+          },
+          { name: "isEnabled", type: "bool", internalType: "bool" },
+          {
+            name: "merkleRoot",
+            type: "bytes32",
+            internalType: "bytes32",
+          },
+          {
+            name: "permission",
+            type: "uint8",
+            internalType: "enum CLAIM_PERMISSION",
+          },
+          {
+            name: "claimAmountDetails",
+            type: "tuple",
+            internalType: "struct ClaimAmountDetails",
+            components: [
+              {
+                name: "maxClaimable",
+                type: "uint256",
+                internalType: "uint256",
+              },
+              {
+                name: "totalClaimAmount",
+                type: "uint256",
+                internalType: "uint256",
+              },
+            ],
+          },
+        ],
       },
       {
-        internalType: "uint256",
         name: "totalWallets",
         type: "uint256",
-      },
-      {
         internalType: "uint256",
-        name: "blockNumber",
-        type: "uint256",
       },
+      { name: "blockNumber", type: "uint256", internalType: "uint256" },
       {
-        internalType: "string",
         name: "whitelistNetwork",
         type: "string",
+        internalType: "string",
       },
     ],
-    name: "deployClaimContract",
     outputs: [],
     stateMutability: "payable",
-    type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "role",
-        type: "bytes32",
-      },
-    ],
+    type: "function",
     name: "getRoleAdmin",
-    outputs: [
-      {
-        internalType: "bytes32",
-        name: "",
-        type: "bytes32",
-      },
-    ],
+    inputs: [{ name: "role", type: "bytes32", internalType: "bytes32" }],
+    outputs: [{ name: "", type: "bytes32", internalType: "bytes32" }],
     stateMutability: "view",
-    type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "role",
-        type: "bytes32",
-      },
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-    ],
+    type: "function",
     name: "grantRole",
+    inputs: [
+      { name: "role", type: "bytes32", internalType: "bytes32" },
+      { name: "account", type: "address", internalType: "address" },
+    ],
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "role",
-        type: "bytes32",
-      },
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-    ],
+    type: "function",
     name: "hasRole",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
+    inputs: [
+      { name: "role", type: "bytes32", internalType: "bytes32" },
+      { name: "account", type: "address", internalType: "address" },
     ],
+    outputs: [{ name: "", type: "bool", internalType: "bool" }],
     stateMutability: "view",
-    type: "function",
   },
   {
+    type: "function",
+    name: "initialize",
     inputs: [
       {
-        internalType: "address",
         name: "claimImplementation",
         type: "address",
+        internalType: "address",
       },
-      {
-        internalType: "uint256",
-        name: "_claimFee",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "_claimPrice",
-        type: "uint256",
-      },
-      {
-        internalType: "bytes",
-        name: "networkId",
-        type: "bytes",
-      },
+      { name: "_claimFee", type: "uint256", internalType: "uint256" },
+      { name: "_claimPrice", type: "uint256", internalType: "uint256" },
+      { name: "networkId", type: "bytes", internalType: "bytes" },
     ],
-    name: "initialize",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "role",
-        type: "bytes32",
-      },
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-    ],
+    type: "function",
     name: "renounceRole",
+    inputs: [
+      { name: "role", type: "bytes32", internalType: "bytes32" },
+      { name: "account", type: "address", internalType: "address" },
+    ],
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
   },
   {
+    type: "function",
+    name: "revokeRole",
+    inputs: [
+      { name: "role", type: "bytes32", internalType: "bytes32" },
+      { name: "account", type: "address", internalType: "address" },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "setEmitter",
+    inputs: [{ name: "_emitter", type: "address", internalType: "address" }],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "supportsInterface",
+    inputs: [{ name: "interfaceId", type: "bytes4", internalType: "bytes4" }],
+    outputs: [{ name: "", type: "bool", internalType: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "withdrawFunds",
+    inputs: [
+      { name: "_receiver", type: "address", internalType: "address" },
+      { name: "_amount", type: "uint256", internalType: "uint256" },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "event",
+    name: "Initialized",
     inputs: [
       {
-        internalType: "bytes32",
+        name: "version",
+        type: "uint8",
+        indexed: false,
+        internalType: "uint8",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "NewClaimContract",
+    inputs: [
+      {
+        name: "_newClaimContract",
+        type: "address",
+        indexed: false,
+        internalType: "address",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "RoleAdminChanged",
+    inputs: [
+      {
         name: "role",
         type: "bytes32",
+        indexed: true,
+        internalType: "bytes32",
       },
       {
-        internalType: "address",
+        name: "previousAdminRole",
+        type: "bytes32",
+        indexed: true,
+        internalType: "bytes32",
+      },
+      {
+        name: "newAdminRole",
+        type: "bytes32",
+        indexed: true,
+        internalType: "bytes32",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "RoleGranted",
+    inputs: [
+      {
+        name: "role",
+        type: "bytes32",
+        indexed: true,
+        internalType: "bytes32",
+      },
+      {
         name: "account",
         type: "address",
-      },
-    ],
-    name: "revokeRole",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
+        indexed: true,
         internalType: "address",
-        name: "_emitter",
+      },
+      {
+        name: "sender",
         type: "address",
-      },
-    ],
-    name: "setEmitter",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes4",
-        name: "interfaceId",
-        type: "bytes4",
-      },
-    ],
-    name: "supportsInterface",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
+        indexed: true,
         internalType: "address",
-        name: "_receiver",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "_amount",
-        type: "uint256",
       },
     ],
-    name: "withdrawFunds",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
+    anonymous: false,
   },
   {
-    stateMutability: "payable",
-    type: "receive",
+    type: "event",
+    name: "RoleRevoked",
+    inputs: [
+      {
+        name: "role",
+        type: "bytes32",
+        indexed: true,
+        internalType: "bytes32",
+      },
+      {
+        name: "account",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "sender",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+    ],
+    anonymous: false,
   },
+  { type: "error", name: "InvalidAddress", inputs: [] },
+  { type: "error", name: "InvalidAmount", inputs: [] },
+  { type: "error", name: "InvalidTime", inputs: [] },
 ];
