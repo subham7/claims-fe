@@ -15,8 +15,14 @@ import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useDropsContractMethods from "hooks/useDropsContractMethods";
 import { setAlertData } from "redux/reducers/alert";
 import { ZERO_MERKLE_ROOT } from "utils/constants";
-import { queryDropDetailsFromSubgraph, queryLatestTenDropsTransactionsFromSubgraph } from "utils/dropsSubgraphHelper";
-import { convertFromWeiGovernance, convertToWeiGovernance } from "utils/globalFunctions";
+import {
+  queryDropDetailsFromSubgraph,
+  queryLatestTenDropsTransactionsFromSubgraph,
+} from "utils/dropsSubgraphHelper";
+import {
+  convertFromWeiGovernance,
+  convertToWeiGovernance,
+} from "utils/globalFunctions";
 import { convertToFullNumber, processAmount } from "utils/helper";
 
 import classes from "./Claim.module.scss";
@@ -190,6 +196,7 @@ const Claim = ({ claimAddress }) => {
   const fetchContractData = async () => {
     try {
       const data = await claimSettings(claimAddress);
+      console.log("dropsata", data);
       setDropsData(data);
 
       // remaining in contract
@@ -363,9 +370,12 @@ const Claim = ({ claimAddress }) => {
     }
   };
 
-  const claimHandler = async () => {
+  const claimHandler = async (wiproof) => {
+    console.log("claim handler", wiproof);
+
     setIsClaiming(true);
     try {
+      console.log(dropsData);
       if (dropsData?.merkleRoot !== ZERO_MERKLE_ROOT) {
         const data = await getUserProofAndBalance(
           dropsData?.merkleRoot,
@@ -386,6 +396,10 @@ const Claim = ({ claimAddress }) => {
           proof,
           encodedLeaf,
           erc1155TokenId,
+          walletAddress,
+          wiproof.merkle_root,
+          wiproof.nullifier_hash,
+          wiproof.proof,
         );
 
         const claimedAmt = await claimAmount(claimAddress, walletAddress);
@@ -413,6 +427,10 @@ const Claim = ({ claimAddress }) => {
           [],
           "",
           erc1155TokenId,
+          walletAddress,
+          wiproof.merkle_root,
+          wiproof.nullifier_hash,
+          wiproof.proof,
         );
 
         fetchContractData();

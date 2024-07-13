@@ -178,16 +178,6 @@ export const claimContractABI = [
           },
         ],
       },
-      {
-        name: "worldIdSettings",
-        type: "tuple",
-        internalType: "struct WorldIdSettings",
-        components: [
-          { name: "worldId", type: "address", internalType: "address" },
-          { name: "appId", type: "string", internalType: "string" },
-          { name: "actionId", type: "string", internalType: "string" },
-        ],
-      },
     ],
     stateMutability: "view",
   },
@@ -319,24 +309,6 @@ export const claimContractABI = [
                 name: "totalClaimAmount",
                 type: "uint256",
                 internalType: "uint256",
-              },
-            ],
-          },
-          {
-            name: "worldIdSettings",
-            type: "tuple",
-            internalType: "struct WorldIdSettings",
-            components: [
-              {
-                name: "worldId",
-                type: "address",
-                internalType: "address",
-              },
-              { name: "appId", type: "string", internalType: "string" },
-              {
-                name: "actionId",
-                type: "string",
-                internalType: "string",
               },
             ],
           },

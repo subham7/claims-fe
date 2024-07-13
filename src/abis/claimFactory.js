@@ -135,24 +135,6 @@ export const claimFactoryABI = [
               },
             ],
           },
-          {
-            name: "worldIdSettings",
-            type: "tuple",
-            internalType: "struct WorldIdSettings",
-            components: [
-              {
-                name: "worldId",
-                type: "address",
-                internalType: "address",
-              },
-              { name: "appId", type: "string", internalType: "string" },
-              {
-                name: "actionId",
-                type: "string",
-                internalType: "string",
-              },
-            ],
-          },
         ],
       },
       {

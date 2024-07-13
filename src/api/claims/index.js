@@ -66,6 +66,7 @@ export const getUserProofAndBalance = async (merkleRoot, userAddress) => {
       `${MAIN_API_URL}snapshot/user/${userAddress}?merkleRoot=${merkleRoot}`,
     );
     const data = await res.json();
+
     return data;
   } catch (error) {
     console.log(error);

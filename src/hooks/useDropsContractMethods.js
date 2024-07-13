@@ -4,6 +4,9 @@ import { claimContractABI } from "abis/claimContract.js";
 import { claimFactoryABI } from "abis/claimFactory.js";
 import { CHAIN_CONFIG } from "utils/constants";
 import { disburseContractABI } from "abis/disburseContract";
+import { decodeAbiParameters, parseAbiParameters } from "viem";
+import { ethers } from "ethers";
+import BigNumber from "bignumber.js";
 
 const useDropsContractMethods = () => {
   const walletClient = useWalletClient();
@@ -163,6 +166,22 @@ const useDropsContractMethods = () => {
     }
   };
 
+  function convertProofToUint256Array(proof) {
+    const cleanProof = proof.replace(/^0x/, "");
+    const segmentLength = 64;
+    const uint256Array = [];
+
+    for (let i = 0; i < 8; i++) {
+      const segment = cleanProof.slice(
+        i * segmentLength,
+        (i + 1) * segmentLength,
+      );
+      uint256Array.push(BigInt(`0x${segment}`));
+    }
+
+    return uint256Array;
+  }
+
   const claim = async (
     claimAddress,
     amount,
@@ -170,13 +189,34 @@ const useDropsContractMethods = () => {
     merkleProof,
     encodedData,
     erc1155tokenId = 0,
+    signal,
+    merkle_root,
+    nullifier_hash,
+    proof,
   ) => {
+    const parsedProof = decodeAbiParameters(
+      parseAbiParameters("uint256[8]"),
+      proof,
+    )[0];
+    debugger;
+    // console.log(signal, merkle_root, nullifier_hash, proof);
+
     try {
       const res = await writeContractFunction({
         address: claimAddress,
         abi: claimContractABI,
         functionName: "claim",
-        args: [amount, reciever, merkleProof, encodedData, erc1155tokenId],
+        args: [
+          amount,
+          reciever,
+          merkleProof,
+          encodedData,
+          erc1155tokenId,
+          signal,
+          BigInt(merkle_root),
+          BigInt(nullifier_hash),
+          parsedProof,
+        ],
         account: walletAddress,
         networkId,
         walletClient,
