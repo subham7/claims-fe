@@ -1,28 +1,26 @@
-import ProgressBar from "@components/progressbar";
-import Button from "@components/ui/button/Button";
-import useCommonContractMethods from "hooks/useCommonContractMehods";
-import React, { useEffect, useState } from "react";
-import {
-  queryDropDetailsFromSubgraph,
-  queryLatestTenDropsTransactionsFromSubgraph,
-} from "utils/dropsSubgraphHelper";
-import {
-  convertFromWeiGovernance,
-  convertToWeiGovernance,
-} from "utils/globalFunctions";
-import { useAccount, useChainId } from "wagmi";
-import classes from "./Claim.module.scss";
-import useDropsContractMethods from "hooks/useDropsContractMethods";
-import { CircularProgress, Skeleton, Typography } from "@mui/material";
-import { getClaimDetails, getUserProofAndBalance } from "api/claims";
-import ClaimInput from "./ClaimInput";
-import { ZERO_MERKLE_ROOT } from "utils/constants";
 import PublicPageLayout from "@components/common/PublicPageLayout";
 import TwitterSharingModal from "@components/modals/TwitterSharingModal";
-import { setAlertData } from "redux/reducers/alert";
+import ProgressBar from "@components/progressbar";
+import Button from "@components/ui/button/Button";
+import { CircularProgress, Skeleton, Typography } from "@mui/material";
+import { IDKitWidget, ISuccessResult, useIDKit } from "@worldcoin/idkit";
+import { ConnectKitButton } from "connectkit";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { convertToFullNumber, processAmount } from "utils/helper";
+import { useAccount, useChainId } from "wagmi";
+
+import { getClaimDetails, getUserProofAndBalance } from "api/claims";
 import { getErc1155TokenId } from "api/token";
+import useCommonContractMethods from "hooks/useCommonContractMehods";
+import useDropsContractMethods from "hooks/useDropsContractMethods";
+import { setAlertData } from "redux/reducers/alert";
+import { ZERO_MERKLE_ROOT } from "utils/constants";
+import { queryDropDetailsFromSubgraph, queryLatestTenDropsTransactionsFromSubgraph } from "utils/dropsSubgraphHelper";
+import { convertFromWeiGovernance, convertToWeiGovernance } from "utils/globalFunctions";
+import { convertToFullNumber, processAmount } from "utils/helper";
+
+import classes from "./Claim.module.scss";
+import ClaimInput from "./ClaimInput";
 
 const ClaimInputComponent = ({
   claimInputProps,
@@ -31,12 +29,32 @@ const ClaimInputComponent = ({
   isClaiming,
   alreadyClaimed,
   claimRemaining,
+  account,
 }) => {
+  console.log("**********", account);
   return (
     <>
       <ClaimInput {...claimInputProps} />
 
-      <Button {...buttonProps}>
+      <div>
+        <IDKitWidget
+          app_id="app_3066124e44753d8dffd50878d8498345"
+          action="claim"
+          signal={account}
+          onSuccess={buttonProps.onClick}
+          autoClose>
+          {({ open }) => (
+            <Button
+              onClick={open}
+              className={buttonProps.className}
+              variant={buttonProps.variant}>
+              <div>Verify with World ID</div>
+            </Button>
+          )}
+        </IDKitWidget>
+      </div>
+
+      {/* <Button {...buttonProps}>
         {isClaiming ? (
           <CircularProgress size={25} />
         ) : alreadyClaimed && +claimRemaining === 0 ? (
@@ -44,7 +62,7 @@ const ClaimInputComponent = ({
         ) : (
           "Claim"
         )}
-      </Button>
+      </Button> */}
 
       <div className={classes.progress}>
         {+claimedPercentage >= 0 ? (
@@ -557,6 +575,7 @@ const Claim = ({ claimAddress }) => {
             claimRemaining={claimRemaining}
             claimedPercentage={claimedPercentage}
             isClaiming={isClaiming}
+            account={walletAddress}
           />
         }
         socialData={claimGeneralInfo}

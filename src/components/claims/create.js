@@ -1,18 +1,13 @@
-import { useEffect, useState } from "react";
-import { useFormik } from "formik";
-import { Grid, FormHelperText } from "@mui/material";
-import ClaimStep1 from "../claimsPageComps/ClaimStep1";
-import ClaimStep2 from "../claimsPageComps/ClaimStep2";
-import dayjs from "dayjs";
+import { FormHelperText, Grid } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { convertToWeiGovernance } from "utils/globalFunctions";
-import { createClaimCsv, createSnapShot } from "api/claims";
+import dayjs from "dayjs";
+import { useFormik } from "formik";
 import { useRouter } from "next/router";
-import {
-  claimStep1ValidationSchema,
-  claimStep2ValidationSchema,
-} from "../createClubComps/ValidationSchemas";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useAccount, useChainId } from "wagmi";
+
+import { createClaimCsv, createSnapShot } from "api/claims";
 import {
   getTokensList,
   getTokensListBeraChain,
@@ -20,13 +15,20 @@ import {
   getTokensListBlastMainnet,
   getTokensListOfManta,
 } from "api/token";
-import { getUserTokenData } from "utils/helper";
-import { CHAIN_CONFIG, ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
 import useCommonContractMethods from "hooks/useCommonContractMehods";
 import useDropsContractMethods from "hooks/useDropsContractMethods";
-import { getPublicClient } from "utils/viemConfig";
-import { useDispatch } from "react-redux";
 import { setAlertData } from "redux/reducers/alert";
+import { CHAIN_CONFIG, ZERO_ADDRESS, ZERO_MERKLE_ROOT } from "utils/constants";
+import { convertToWeiGovernance } from "utils/globalFunctions";
+import { getUserTokenData } from "utils/helper";
+import { getPublicClient } from "utils/viemConfig";
+
+import ClaimStep1 from "../claimsPageComps/ClaimStep1";
+import ClaimStep2 from "../claimsPageComps/ClaimStep2";
+import {
+  claimStep1ValidationSchema,
+  claimStep2ValidationSchema,
+} from "../createClubComps/ValidationSchemas";
 
 const useStyles = makeStyles({
   container: {
@@ -362,6 +364,12 @@ const CreateClaim = () => {
                   data.numberOfTokens,
                   decimals,
                 ).toString(),
+              ],
+              // Extra parameter here for worldcoin setup
+              [
+                "0x42FF98C4E85212a5D31358ACbFe76a621b50fC02",
+                "app_3066124e44753d8dffd50878d8498345",
+                "claim",
               ],
             ];
 

@@ -1,18 +1,19 @@
-import { React, useState } from "react";
+import NetworkSwitcher from "@components/modals/NetworkSwitcher/NetworkSwitcher";
 import { makeStyles } from "@mui/styles";
+import { useWalletInfo, useWeb3Modal } from "@web3modal/wagmi/react";
 import { useRouter } from "next/router";
-
-import NewCard from "../src/components/cards/card";
-import Layout from "../src/components/layouts/layout";
+import { React, useState } from "react";
 import { BsFillPlayFill } from "react-icons/bs";
-import VideoModal from "../src/components/modals/VideoModal";
 import { useChainId } from "wagmi";
+
 import {
   ALLOWED_NETWORKS_FOR_STATION,
   stationNetworksChainId,
 } from "utils/constants";
-import NetworkSwitcher from "@components/modals/NetworkSwitcher/NetworkSwitcher";
-import { useWeb3Modal, useWalletInfo } from "@web3modal/wagmi/react";
+
+import NewCard from "../src/components/cards/card";
+import Layout from "../src/components/layouts/layout";
+import VideoModal from "../src/components/modals/VideoModal";
 
 const useStyles = makeStyles({
   container: {
@@ -144,18 +145,6 @@ const App = () => {
               gap: "30px",
             }}>
             <NewCard
-              onClick={showStationsHandler}
-              title={"Stations"}
-              subtitle={
-                "Seamlessly move capital with friends or community towards shared goals. Start onchain Syndicates, Venture DAOs, Collectives or DeFi Squads in less than 60 seconds."
-              }
-              buttonText={
-                ALLOWED_NETWORKS_FOR_STATION.includes(networkId)
-                  ? "Enter App"
-                  : "Switch to supported network"
-              }
-            />
-            <NewCard
               onClick={claimsHandler}
               title={"Drops"}
               subtitle={
@@ -163,36 +152,7 @@ const App = () => {
               }
               buttonText="Enter App"
             />
-          </div>
-          <div className={classes.secondContainer}>
-            <p
-              style={{
-                fontSize: "20px",
-                fontWeight: "400",
-                color: "#EFEFEF",
-                margin: 0,
-                padding: 0,
-                letterSpacing: ".8px",
-              }}>
-              Learn what communities can do with StationX
-            </p>
-            <button
-              onClick={() => {
-                setShowVideoModal(true);
-              }}
-              className={classes.watchBtn}>
-              <BsFillPlayFill color="#EFEFEF" size={30} />
-              <p
-                style={{
-                  fontSize: "18px",
-                  color: "#EFEFEF",
-                  margin: 0,
-                  padding: 0,
-                }}>
-                Watch video
-              </p>
-            </button>
-          </div>
+          </div> 
         </div>
 
         {showVideoModal && (

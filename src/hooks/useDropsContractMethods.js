@@ -36,6 +36,7 @@ const useDropsContractMethods = () => {
     blockNumber,
     whitelistNetwork,
   ) => {
+    console.log(claimSettings);
     try {
       const res = await writeContractFunction({
         address: claimFactoryAddress,

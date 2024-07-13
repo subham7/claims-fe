@@ -1,14 +1,18 @@
-import React from "react";
-import { ThemeProvider } from "@mui/material/styles";
-import theme from "../src/theme/theme";
-import store from "../src/redux/store";
-import { Provider } from "react-redux";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
-import { cookieToInitialState } from "wagmi";
-import "../styles/globals.scss";
+import { ThemeProvider } from "@mui/material/styles";
+import { ConnectKitProvider } from "connectkit";
 import Script from "next/script";
-import Web3ModalProvider from "context/WagmiProvider";
+import React from "react";
+import { Provider } from "react-redux";
+import { cookieToInitialState } from "wagmi";
+
 import { config } from "config";
+import Web3ModalProvider from "context/WagmiProvider";
+
+import store from "../src/redux/store";
+import theme from "../src/theme/theme";
+
+import "../styles/globals.scss";
 
 const API_URL = "https://api.lens.dev";
 
@@ -82,9 +86,11 @@ function MyApp({ Component, pageProps }) {
         <ApolloProvider client={apolloClient}>
           {/* <WagmiConfig config={wagmiConfig}> */}
           <Web3ModalProvider initialState={initialState}>
-            <Provider store={store}>
-              <Component {...pageProps} />
-            </Provider>
+            {/* <ConnectKitProvider> */}
+              <Provider store={store}>
+                <Component {...pageProps} />
+              </Provider>
+            {/* </ConnectKitProvider> */}
           </Web3ModalProvider>
           {/* </WagmiConfig> */}
         </ApolloProvider>
