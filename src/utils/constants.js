@@ -228,6 +228,32 @@ export const CHAIN_CONFIG = {
     gnosisTxUrl: "https://safe-transaction-base.safe.global/",
     logoUri: "/assets/networks/0x2105.png",
   },
+  "0x14a34": {
+    chainName: "Base Sepolia",
+    shortName: "Base",
+    chainId: 84532,
+    nativeCurrency: {
+      name: "Base ETH",
+      decimals: 18,
+      symbol: "ETH",
+      image: "/assets/icons/eth.png",
+    },
+    theme: THEME_CONFIG("0x2105"),
+    rpcUrls: ["https://sepolia.base.org"],
+    appRpcUrl: `https://small-crimson-valley.base-sepolia.quiknode.pro/c2c81b8e4c5abb857da0cfe91e0bccc10d318e46/`,
+
+    claimFactoryAddress: "0xf28539792bfB72A858224273542FEb2aFE2D6e98",
+    claimsSubgraphUrl:
+      "https://api.goldsky.com/api/public/project_clkur95905vrg38uwhvw24amx/subgraphs/stnx-claim-base-sepolia/0.0.3/gn",
+
+    covalentNetworkName: "base-sepolia-testnet",
+    nativeToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    usdcAddress: "",
+    usdtAddress: "",
+    blockExplorerUrl: "https://explorer.base.org",
+    disburseContractAddress: "",
+    logoUri: "/assets/networks/0x2105.png",
+  },
   "0xa4b1": {
     chainName: "Arbitrum One",
     shortName: "Arbitrum",

@@ -366,11 +366,11 @@ const CreateClaim = () => {
                 ).toString(),
               ],
               // Extra parameter here for worldcoin setup
-              [
-                "0x42FF98C4E85212a5D31358ACbFe76a621b50fC02",
-                "app_3066124e44753d8dffd50878d8498345",
-                "claim",
-              ],
+              // [
+              //   "0x42FF98C4E85212a5D31358ACbFe76a621b50fC02",
+              //   "app_3066124e44753d8dffd50878d8498345",
+              //   "claim",
+              // ],
             ];
 
             const response = await claimContract(

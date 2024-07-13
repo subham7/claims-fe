@@ -196,6 +196,7 @@ const Claim = ({ claimAddress }) => {
   const fetchContractData = async () => {
     try {
       const data = await claimSettings(claimAddress);
+      console.log("dropsata", data);
       setDropsData(data);
 
       // remaining in contract
@@ -369,9 +370,12 @@ const Claim = ({ claimAddress }) => {
     }
   };
 
-  const claimHandler = async () => {
+  const claimHandler = async (wiproof) => {
+    console.log("claim handler", wiproof);
+
     setIsClaiming(true);
     try {
+      console.log(dropsData);
       if (dropsData?.merkleRoot !== ZERO_MERKLE_ROOT) {
         const data = await getUserProofAndBalance(
           dropsData?.merkleRoot,
@@ -392,6 +396,10 @@ const Claim = ({ claimAddress }) => {
           proof,
           encodedLeaf,
           erc1155TokenId,
+          walletAddress,
+          wiproof.merkle_root,
+          wiproof.nullifier_hash,
+          wiproof.proof,
         );
 
         const claimedAmt = await claimAmount(claimAddress, walletAddress);
@@ -419,6 +427,10 @@ const Claim = ({ claimAddress }) => {
           [],
           "",
           erc1155TokenId,
+          walletAddress,
+          wiproof.merkle_root,
+          wiproof.nullifier_hash,
+          wiproof.proof,
         );
 
         fetchContractData();
