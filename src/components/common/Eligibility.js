@@ -42,7 +42,7 @@ const Eligibility = ({
           ),
         );
         return {
-          displayText: "Everyone",
+          displayText: "Users verified with World ID",
           description: `Upto ${maxClaimableAmount} ${tokenDetails.tokenSymbol} on first-come first serve basis.`,
         };
 

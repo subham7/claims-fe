@@ -12,13 +12,13 @@ const Footer = () => {
           window.open("https://stationx.network", "_blank");
         }}
         className={classes.logoContainer}>
-        <Typography className={classes.powered}>Powered by</Typography>
-        <Image
+        {/* <Typography className={classes.powered}>Powered by</Typography> */}
+        {/* <Image
           src={"/assets/images/logo.png"}
           height={15}
           width={75}
           alt="StationX"
-        />
+        /> */}
       </div>
       <div className={classes.linksContainer}>
         <Link target="_blank" href={"https://stationx.network"}>

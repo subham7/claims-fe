@@ -38,10 +38,10 @@ const Sidebar = ({ daoAddress, networkId }) => {
     <div className={classes.sidebar}>
       <div className={classes.iconsList}>
         <Image
-          src="/assets/images/monogram.png"
+          src="/assets/images/logo.png"
           height="28"
           width="28"
-          alt="monogram"
+          alt="veridrop"
           style={{
             marginBottom: "20px",
           }}
