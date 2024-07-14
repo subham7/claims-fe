@@ -126,9 +126,9 @@ const ListClaims = () => {
               Welcome to Drops
             </Typography>
             <div className={classes.headerBtns}>
-              <Button variant="contained" onClick={createDisburse}>
+              {/* <Button variant="contained" onClick={createDisburse}>
                 Disburse
-              </Button>
+              </Button> */}
               <Button variant="contained" onClick={createClaim}>
                 Create
               </Button>

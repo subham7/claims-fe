@@ -1012,14 +1012,14 @@ export const supportedNetworksChaindId = [
 ];
 
 export const stationNetworksChainId = [
-  arbitrum,
-  avalanche,
-  linea,
-  mainnet,
-  polygon,
-  scroll,
-  bsc,
-  base,
+  // arbitrum,
+  // avalanche,
+  // linea,
+  // mainnet,
+  // polygon,
+  // scroll,
+  // bsc,
+  // base,
   baseSepolia,
 ];
 

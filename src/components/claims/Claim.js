@@ -2,7 +2,13 @@ import PublicPageLayout from "@components/common/PublicPageLayout";
 import TwitterSharingModal from "@components/modals/TwitterSharingModal";
 import ProgressBar from "@components/progressbar";
 import Button from "@components/ui/button/Button";
-import { Skeleton, Typography } from "@mui/material";
+import {
+  Skeleton,
+  Typography,
+  FormControl,
+  MenuItem,
+  TextField,
+} from "@mui/material";
 import { IDKitWidget } from "@worldcoin/idkit";
 // import { ConnectKitButton } from "connectkit";
 import React, { useEffect, useState } from "react";
@@ -24,9 +30,10 @@ import {
   convertToWeiGovernance,
 } from "utils/globalFunctions";
 import { convertToFullNumber, processAmount } from "utils/helper";
-
+import { requestEthereumChain } from "utils/helper";
 import classes from "./Claim.module.scss";
 import ClaimInput from "./ClaimInput";
+import { CHAIN_CONFIG } from "utils/constants";
 
 const ClaimInputComponent = ({
   claimInputProps,
@@ -37,12 +44,59 @@ const ClaimInputComponent = ({
   claimRemaining,
   account,
 }) => {
-  console.log("**********", account);
+  const switchNetworkHandler = async (event) => {
+    const networkId = event.target.value;
+
+    if (typeof window !== "undefined") {
+      if (window?.ethereum?.networkVersion !== networkId) {
+        try {
+          await requestEthereumChain("wallet_switchEthereumChain", [
+            { chainId: networkId },
+          ]);
+        } catch (err) {
+          if (err.code === 4902 && CHAIN_CONFIG[networkId]) {
+            const chainConfig = CHAIN_CONFIG[networkId];
+            await window.ethereum.request({
+              method: "wallet_addEthereumChain",
+              params: [
+                {
+                  chainId: networkId,
+                  chainName: chainConfig.chainName,
+                  rpcUrls: chainConfig.rpcUrls,
+                  nativeCurrency: chainConfig?.nativeCurrency,
+                  blockExplorerUrls: [chainConfig?.blockExplorerUrl],
+                },
+              ],
+            });
+          } else {
+            console.log("some issue");
+          }
+        }
+      }
+    }
+  };
+
   return (
     <>
       <ClaimInput {...claimInputProps} />
 
       <div>
+        {/* <Typography className={classes.label}>
+          Select network to claim from
+        </Typography>
+        <FormControl sx={{ width: "100%" }}>
+          <TextField
+            variant="outlined"
+            name="selectedToken"
+            id="selectedToken"
+            onChange={switchNetworkHandler}
+            placeholder="Select network to claim from"
+            select>
+            <MenuItem value={"0x14a34"}>Base</MenuItem>
+            <MenuItem value={"0x14a34"}>Linea</MenuItem>
+          </TextField>
+        </FormControl> */}
+
         <IDKitWidget
           app_id="app_3066124e44753d8dffd50878d8498345"
           action="claim"
@@ -50,12 +104,21 @@ const ClaimInputComponent = ({
           onSuccess={buttonProps.onClick}
           autoClose>
           {({ open }) => (
-            <Button
+            <button
               onClick={open}
-              className={buttonProps.className}
-              variant={buttonProps.variant}>
-              <div>Verify with World ID</div>
-            </Button>
+              // className={classes.claim}
+              // variant={buttonProps.variant}
+              style={{
+                background: "#fff",
+                padding: "10px 15px",
+                borderRadius: "6px",
+                border: "none",
+                fontSize: "16px",
+                cursor: "pointer",
+                marginTop: "15px",
+              }}>
+              Verify with World ID
+            </button>
           )}
         </IDKitWidget>
       </div>
@@ -85,7 +148,7 @@ const ClaimInputComponent = ({
   );
 };
 
-const Claim = ({ claimAddress }) => {
+const Claim = ({ claimAddress, networkFromUrl }) => {
   const [claimsData, setClaimsData] = useState();
   const [loading, setLoading] = useState(false);
   const [erc1155TokenId, setErc1155TokenId] = useState(0);
@@ -122,7 +185,8 @@ const Claim = ({ claimAddress }) => {
   const currentTime = Date.now() / 1000;
   const { address: walletAddress } = useAccount();
   const chain = useChainId();
-  const networkId = "0x" + chain?.toString(16);
+  const networkId = networkFromUrl;
+  console.log("networkFromUrl", networkId);
 
   const {
     getDecimals,
