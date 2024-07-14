@@ -1,14 +1,4 @@
-import {
-  arbitrum,
-  avalanche,
-  base,
-  baseSepolia,
-  bsc,
-  linea,
-  mainnet,
-  polygon,
-  scroll,
-} from "viem/chains";
+import { baseSepolia } from "viem/chains";
 
 import { createCallAbi } from "abis/gnosis-abis/createCallAbi";
 import { fallbackHandlerAbi } from "abis/gnosis-abis/fallbackHandlerAbi";

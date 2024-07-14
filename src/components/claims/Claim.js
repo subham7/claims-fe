@@ -1,14 +1,8 @@
 import PublicPageLayout from "@components/common/PublicPageLayout";
 import TwitterSharingModal from "@components/modals/TwitterSharingModal";
 import ProgressBar from "@components/progressbar";
-import Button from "@components/ui/button/Button";
-import {
-  Skeleton,
-  Typography,
-  FormControl,
-  MenuItem,
-  TextField,
-} from "@mui/material";
+
+import { Skeleton, Typography } from "@mui/material";
 import { IDKitWidget } from "@worldcoin/idkit";
 // import { ConnectKitButton } from "connectkit";
 import React, { useEffect, useState } from "react";
